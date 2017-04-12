@@ -903,7 +903,7 @@ function e.WipeFrames()
 	wipe(characterTable)
 	e.GetBestClear()
 
-	if AstralKeyFrame then
+	if init then
 		AstralContentFrame.slider:Hide()
 		AstralCharacterContent.slider:Hide()
 		characterTable = e.DeepCopy(AstralCharacters)
