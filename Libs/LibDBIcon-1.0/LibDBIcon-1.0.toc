@@ -1,0 +1,16 @@
+## Interface: 70100
+## LoadOnDemand: 1
+## Title: Lib: DataBrokerIcon-1.0
+## Notes: Allows addons to easily create a lightweight minimap icon as an alternative to heavier LDB displays.
+## Author: Funkydude
+## X-Category: Library
+## X-License: GPLv2 or later
+## X-Credits: Rabbit, copystring
+## X-Curse-Packaged-Version: r56-release
+## X-Curse-Project-Name: LibDBIcon-1.0
+## X-Curse-Project-ID: libdbicon-1-0
+## X-Curse-Repository-ID: wow/libdbicon-1-0/mainline
+
+embeds.xml
+LibDBIcon-1.0\lib.xml
+

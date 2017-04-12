@@ -1,0 +1,22 @@
+## Interface: 50400
+## Title: Astral Keys
+## Notes: Keystone Manager for Astral Guild on Turalyon
+## Author: Phrike, Abbychu
+## Version: 1.1.2
+## SavedVariables: AstralKeys, AstralCharacters, AstralAffixes, AstralKeysSettings
+
+
+Events.lua
+embeds.xml
+
+Communications.lua
+Key Information.lua
+Unit Information.lua
+Character Info.lua
+ArtifactPower.lua
+ArtifactKnowledge.lua
+
+AstralKeys.lua
+
+Frame.lua
+MinimapButton.lua
