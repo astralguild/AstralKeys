@@ -1,6 +1,6 @@
 local _, e = ...
 
-local ASTRAL_VERSION = $Id$
+local ASTRAL_VERSION = '$Id$'
 
 local akEvents = CreateFrame('FRAME')
 
