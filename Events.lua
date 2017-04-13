@@ -1,7 +1,5 @@
 local _, e = ...
 
-local ASTRAL_VERSION = '$Id$'
-
 local akEvents = CreateFrame('FRAME')
 
 akEvents:SetScript("OnEvent", function(self, event, ...)
