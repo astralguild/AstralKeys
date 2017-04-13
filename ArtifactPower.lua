@@ -3,19 +3,30 @@ local _, e = ...
 local DUNGEON_TABLE = {}
 local WEEKLY_AP = {}
 
-local temp_dungeon = {}
-temp_dungeon[197] = 'Eye of Azshara'
-temp_dungeon[198] = 'Darkheart Thicket'
-temp_dungeon[199] = 'Black Rook Hold'
-temp_dungeon[200] = 'Halls of Valor'
-temp_dungeon[206] = 'Neltharion\'s Lair'
-temp_dungeon[207] = 'Vault of the Wardens'
-temp_dungeon[208] = 'Maw of Souls'
-temp_dungeon[209] = 'The Arcway'
-temp_dungeon[210] = 'Court of Stars'
-temp_dungeon[227] = 'Return to Karazhan: Lower'
-temp_dungeon[233] = 'Cathedral of Eternal Night'
-temp_dungeon[234] = 'Return to Karazhan: Upper'
+DUNGEON_TABLE[197] = {}
+DUNGEON_TABLE[197]['name'] = 'Eye of Azshara'
+DUNGEON_TABLE[198] = {}
+DUNGEON_TABLE[198]['name'] = 'Darkheart Thicket'
+DUNGEON_TABLE[199] = {}
+DUNGEON_TABLE[199]['name'] = 'Black Rook Hold'
+DUNGEON_TABLE[200] = {}
+DUNGEON_TABLE[200]['name'] = 'Halls of Valor'
+DUNGEON_TABLE[206] = {}
+DUNGEON_TABLE[206]['name'] = 'Neltharion\'s Lair'
+DUNGEON_TABLE[207] = {}
+DUNGEON_TABLE[207]['name'] = 'Vault of the Wardens'
+DUNGEON_TABLE[208] = {}
+DUNGEON_TABLE[208]['name'] = 'Maw of Souls'
+DUNGEON_TABLE[209] = {}
+DUNGEON_TABLE[209]['name'] = 'The Arcway'
+DUNGEON_TABLE[210] = {}
+DUNGEON_TABLE[210]['name'] = 'Court of Stars'
+DUNGEON_TABLE[227] = {}
+DUNGEON_TABLE[227]['name'] = 'Return to Karazhan: Lower'
+DUNGEON_TABLE[233] = {}
+DUNGEON_TABLE[233]['name'] = 'Cathedral of Eternal Night'
+DUNGEON_TABLE[234] = {}
+DUNGEON_TABLE[234]['name'] = 'Return to Karazhan: Upper'
 
 
 
@@ -54,52 +65,42 @@ Times
 ]]
 
 local name, mapID, runTime, a, b, c
-local dungeon = {}
 
-
-local function ParseMaps()
-	for _, map in pairs(C_ChallengeMode.GetMapTable()) do
-		name, mapID, runTime = C_ChallengeMode.GetMapInfo(map)
-		wipe(dungeon)
-		a, b, c = runTime, runTime * .8, runTime * .6
-		dungeon.name = name
-		dungeon['chestTimes'] = {}
-		dungeon.chestTimes[1] = a
-		dungeon.chestTimes[2] = b
-		dungeon.chestTimes[3] = c
-		dungeon['apTier'] = {}
-		if runTime == 1400 then
-			dungeon.apTier[1] = 175
-			dungeon.apTier[2] = 290
-			dungeon.apTier[3] = 325
-			dungeon.apTier[4] = 465
-			dungeon.apTier[5] = 725
-		elseif runTime > 1440 and runTime < 2700 then
-			dungeon.apTier[1] = 300
-			dungeon.apTier[2] = 475
-			dungeon.apTier[3] = 540
-			dungeon.apTier[4] = 775
-			dungeon.apTier[5] = 1000
-		elseif runTime == 2700 then
-			dungeon.apTier[1] = 375
-			dungeon.apTier[2] = 600
-			dungeon.apTier[3] = 675
-			dungeon.apTier[4] = 1000
-			dungeon.apTier[5] = 1500
-		end
-		DUNGEON_TABLE[map] = e.DeepCopy(dungeon)
-	end
-
-	return DUNGEON_TABLE
-end
 
 function e.BuildMapTable()
-	DUNGEON_TABLE = ParseMaps()
+	for map in pairs(DUNGEON_TABLE) do
+		name, mapID, runTime = C_ChallengeMode.GetMapInfo(map)
+		a, b, c = runTime, runTime * .8, runTime * .6
+		DUNGEON_TABLE[map].name = name
+		DUNGEON_TABLE[map]['chestTimes'] = {}
+		DUNGEON_TABLE[map].chestTimes[1] = a
+		DUNGEON_TABLE[map].chestTimes[2] = b
+		DUNGEON_TABLE[map].chestTimes[3] = c
+		DUNGEON_TABLE[map]['apTier'] = {}
+		if runTime == 1400 then
+			DUNGEON_TABLE[map].apTier[1] = 175
+			DUNGEON_TABLE[map].apTier[2] = 290
+			DUNGEON_TABLE[map].apTier[3] = 325
+			DUNGEON_TABLE[map].apTier[4] = 465
+			DUNGEON_TABLE[map].apTier[5] = 725
+		elseif runTime > 1440 and runTime < 2700 then
+			DUNGEON_TABLE[map].apTier[1] = 300
+			DUNGEON_TABLE[map].apTier[2] = 475
+			DUNGEON_TABLE[map].apTier[3] = 540
+			DUNGEON_TABLE[map].apTier[4] = 775
+			DUNGEON_TABLE[map].apTier[5] = 1000
+		elseif runTime == 2700 then
+			DUNGEON_TABLE[map].apTier[1] = 375
+			DUNGEON_TABLE[map].apTier[2] = 600
+			DUNGEON_TABLE[map].apTier[3] = 675
+			DUNGEON_TABLE[map].apTier[4] = 1000
+			DUNGEON_TABLE[map].apTier[5] = 1500
+		end
+	end
 end
 
 function e.GetMapName(mapID)
-	--return temp_dungeon[tonumber(mapID)]
-	return DUNGEON_TABLE[tonumber(mapID)]['name'] or temp_dungeon[mapID]
+	return DUNGEON_TABLE[tonumber(mapID)]['name']
 end
 
 local function GetMapTime(mapID, chestCount)

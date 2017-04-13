@@ -26,18 +26,19 @@ akComms:SetScript('OnEvent', function(self, event, ...)
 	arg, content = msg:match("^(%S*)%s*(.-)$")
 	if arg == 'updateV1' then
 		sender, unitClass, unitRealm = content:match('(%a+):(%a+):([%a%s-\']+)')
-		dungeonID, keyLevel, usable, affixOne, affixTwo, affixThree = content:match(':(%d+):(%d+):(%d+):(%d+):(%d+):(%d+)')
+		dungeonID, keyLevel, isUsable, affixOne, affixTwo, affixThree = content:match(':(%d+):(%d+):(%d+):(%d+):(%d+):(%d+)')
 		dungeonID = tonumber(dungeonID)
 		keyLevel = tonumber(keyLevel)
-		usable = tonumber(usable)
+		isUsable = tonumber(isUsable)
 		affixOne = tonumber(affixOne)
 		affixTwo = tonumber(affixTwo)
 		affixThree = tonumber(affixThree)
 
+
 		local currenta1 = tonumber(e.GetAffix(1))
 
 		if currenta1 ~= 0 and affixOne ~= 0 then
-			if tonumber(affixOne) ~= tonumber(e.GetAffix(1)) then
+			if tonumber(affixOne) ~= currenta1 then
 				e.WipeFrames()
  				--SendAddonMessage('AstralKeys', 'request', 'GUILD')
 			end
@@ -55,37 +56,21 @@ akComms:SetScript('OnEvent', function(self, event, ...)
 			e.SetAffix(3, affixThree)
 		end
 
-		local isFound = false
+		local id = e.GetUnitID(sender..unitRealm)
 
-		for i = 1, #AstralKeys do
-			if AstralKeys[i]['name'] == sender and unitRealm == AstralKeys[i]['realm'] then
-				if AstralKeys[i].level < keyLevel or AstralKeys[i].usable ~= usable then
-					AstralKeys[i].map = dungeonID
-					AstralKeys[i].level = keyLevel
-					AstralKeys[i].depleted = isDepleted
-					--[[
-					if AstralKeys[i].name == e.PlayerName() and BROADCAST then
-						if IsInGroup() then
-							local link, level = e.CreateKeyLink(i)
-							e.AnnounceNewKey(link, level)
-						end
-					end]]
-				end
-				isFound = true
+		if id then
+			if AstralKeys[id].level < keyLevel or AstralKeys[id].usable ~= isUsable then
+				AstralKeys[id].map = dungeonID
+				AstralKeys[id].level = keyLevel
+				AstralKeys[id].usable = isUsable
+				e.UpdateFrames()
 			end
+		else
+			table.insert(AstralKeys, {name = sender, class = unitClass, realm = unitRealm, map = dungeonID, level = keyLevel, usable = isUsable, a1 = affixOne, a2 = affixTwo, a3 = affixThree})
+			e.SetUnitID(sender .. unitRealm, #AstralKeys)
+			e.UpdateFrames()
 		end
 
-		if not isFound then
-			table.insert(AstralKeys, {name = sender, class = unitClass, realm = unitRealm, map = dungeonID, level = keyLevel, usable = usable, a1 = affixOne, a2 = affixTwo, a3 = affixThree})
-			if sender == e.PlayerName() then
-				if IsInGroup() then
-					local link, level = e.CreateKeyLink(#AstralKeys)
-					--e.AnnounceNewKey(link, level)
-				end
-			end
-		end
-
-		e.UpdateFrames()
 		e.UpdateAffixes()
 	end
 	if arg == 'request' then

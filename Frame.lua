@@ -319,7 +319,6 @@ local function CreateKeyFrame(parent, keyLevel)
 
 end
 
-
 local AstralKeyFrame = CreateFrame('FRAME', 'AstralKeyFrame', UIParent)
 AstralKeyFrame:SetWidth(650)
 AstralKeyFrame:SetHeight(500)
@@ -396,31 +395,41 @@ closeButton:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', -10, -10)
 -- Announce Buttons
 -----------------------------------------------------
 
-local anounceFrame = CreateFrame('FRAME', nil, AstralKeyFrame)
-anounceFrame:SetSize(60, 35)
-anounceFrame:SetPoint('TOPRIGHT', closeButton, 'BOTTOMRIGHT', 0, -5)
-anounceFrame.string = anounceFrame:CreateFontString('ARTWORK')
-anounceFrame.string:SetFont(FONT_CONTENT, FONT_SIZE)
-anounceFrame.string:SetPoint('TOPLEFT', anounceFrame, 'TOPLEFT')
-anounceFrame.string:SetText('Report to')
+local announceFrame = CreateFrame('FRAME', nil, AstralKeyFrame)
+announceFrame:SetSize(60, 20)
+announceFrame:SetPoint('TOPRIGHT', closeButton, 'BOTTOMRIGHT', 0, -5)
+announceFrame.texture = announceFrame:CreateTexture('BACKGROUND')
+announceFrame.texture:SetSize(16, 16)
+announceFrame.texture:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\speaker.tga')
+announceFrame.texture:SetPoint('LEFT', announceFrame, 'LEFT')
 
-local partyAnnounce = CreateFrame('BUTTON', nil, anounceFrame)
+
+announceFrame.string = announceFrame:CreateFontString('ARTWORK')
+announceFrame.string:SetFont(FONT_CONTENT, FONT_SIZE)
+announceFrame.string:SetPoint('TOPLEFT', announceFrame, 'TOPLEFT')
+--announceFrame.string:SetText('Report to')
+
+local partyAnnounce = CreateFrame('BUTTON', nil, announceFrame)
 partyAnnounce:SetSize(15, 15)
 partyAnnounce:SetNormalFontObject(FONT_OBJECT_CENTRE)
 partyAnnounce:SetHighlightFontObject(FONT_OBJECT_HIGHLIGHT)
 partyAnnounce:SetText('P')
-partyAnnounce:SetPoint('BOTTOMLEFT', anounceFrame, 'BOTTOMLEFT')
+partyAnnounce:GetFontString():SetTextColor(76/255, 144/255, 255/255, 1)
+
+partyAnnounce:SetPoint('LEFT', announceFrame.texture, 'RIGHT', 5, 0)
 
 partyAnnounce:SetScript('OnClick', function()
 	e.AnounceCharacterKeys('PARTY')
 	end)
 
-local guildAnnounce = CreateFrame('BUTTON', nil, anounceFrame)
+local guildAnnounce = CreateFrame('BUTTON', nil, announceFrame)
 guildAnnounce:SetSize(15, 15)
 guildAnnounce:SetNormalFontObject(FONT_OBJECT_CENTRE)
 guildAnnounce:SetHighlightFontObject(FONT_OBJECT_HIGHLIGHT)
 guildAnnounce:SetText('G')
-guildAnnounce:SetPoint('BOTTOMRIGHT', anounceFrame, 'BOTTOMRIGHT')
+guildAnnounce:GetFontString():SetTextColor(38/255, 214/255, 25/255, 1)
+
+guildAnnounce:SetPoint('LEFT', partyAnnounce, 'RIGHT')
 
 guildAnnounce:SetScript('OnClick', function()
 	e.AnounceCharacterKeys('GUILD')
@@ -733,7 +742,6 @@ AstralKeyFrame:SetScript('OnShow', function(self)
 	affixOne:UpdateInfo()
 	affixTwo:UpdateInfo()
 	affixThree:UpdateInfo()
-	e.UpdateCharacterFrames()
 	end)
 
 AstralKeyFrame:SetScript('OnDragStart', function(self)
@@ -844,6 +852,8 @@ local function InitializeFrame()
 	end
 
 
+	e.UpdateCharacterFrames()
+
 end
 
 function e.SortTable(A, v)
@@ -896,9 +906,7 @@ end
 
 
 function e.UpdateTables()
-	if #sortedTable ~= #AstralKeys then
-		sortedTable = e.DeepCopy(AstralKeys)
-	end
+	sortedTable = e.DeepCopy(AstralKeys)
 end
 
 function e.WipeFrames()

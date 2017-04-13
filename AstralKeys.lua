@@ -10,18 +10,13 @@ function e.CheckForWeeklyClear(a1)
 	local affix = tonumber(a1)
 
 	local currentAffix = e.GetAffix(1)
-	if currentAffix == 0 then return end
+	if tonumber(currentAffix) == 0 then return end
 
 	if currentAffix == affix then return end
 
 	AstralAffixes[1] = 0
 	AstralAffixes[2] = 0
 	AstralAffixes[3] = 0
-
-	if e.debug then
-		print('Debug: ' .. affix, currentAffix)
-	end
-
 	--e.WipeFrames()
 end
 
@@ -86,6 +81,10 @@ e.RegisterEvent('PLAYER_LOGIN', function()
 	end
 
 	--if isOlddata then wipe(AstralCharacters) end
+
+	for i = 1, #AstralKeys do
+		e.SetUnitID(AstralKeys[i].name .. AstralKeys[i].realm, i)
+	end
 	
 	C_ChallengeMode.RequestMapInfo()
 	e.SetPlayerName()

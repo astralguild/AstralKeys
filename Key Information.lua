@@ -29,13 +29,8 @@ e.RegisterEvent('CHALLENGE_MODE_MAPS_UPDATE', function()
  	end
  end)
 
-e.RegisterEvent('CHALLENGE_MODE_START', function()
-	keyLink = e.FindKeyStone(false)
-
-	end)
-
 e.RegisterEvent('CHALLENGE_MODE_COMPLETED', function()
-	e.FindKeyStone(true)
+	e.FindKeyStone(true, true)
 	end)
 
 function e.ParseAffixes()
@@ -108,7 +103,6 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 
 	e.CheckForWeeklyClear(a1)
 
-	print(sendUpdate)
 	if sendUpdate  and s ~= '' then
 		SendAddonMessage('AstralKeys', s, 'GUILD')
 	end
