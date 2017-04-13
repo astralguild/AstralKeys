@@ -17,7 +17,12 @@ function e.CheckForWeeklyClear(a1)
 	AstralAffixes[1] = 0
 	AstralAffixes[2] = 0
 	AstralAffixes[3] = 0
-	e.WipeFrames()
+
+	if e.debug then
+		print('Debug: ' .. affix, currentAffix)
+	end
+
+	--e.WipeFrames()
 end
 
 
@@ -52,9 +57,11 @@ IMP[3] = 'B'
 IMP[4] = 'T'
 IMP[5] = 'Q'
 
+local amount, index
+
 function e.ConvertToSI(quantity)
-	local amount = quantity
-	local index = 0
+	amount = quantity
+	index = 0
 
 	while amount > 1000 do
 		index = index + 1
@@ -78,7 +85,7 @@ e.RegisterEvent('PLAYER_LOGIN', function()
 		end
 	end
 
-	if isOlddata then wipe(AstralCharacters) end
+	--if isOlddata then wipe(AstralCharacters) end
 	
 	C_ChallengeMode.RequestMapInfo()
 	e.SetPlayerName()

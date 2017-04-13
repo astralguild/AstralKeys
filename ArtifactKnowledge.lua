@@ -55,7 +55,7 @@ AK_BONUS[49] = 424601
 AK_BONUS[50] = 552001
 
 function e.GetAKBonus(akLevel)
-	return AK_BONUS[akLevel]
+	return AK_BONUS[tonumber(akLevel)]
 end
 
 function e.ParseAKLevel()
@@ -67,7 +67,7 @@ end
 e.RegisterEvent('CURRENCY_DISPLAY_UPDATE', function()
 	for i = 1, #AstralCharacters do
 		if AstralCharacters[i].name == e.PlayerName() then
-			AstralCharacters[i].knowledge = e.ParseAKLevel()
+			AstralCharacters[i].knowledge = e.GetAKBonus(e.ParseAKLevel())
 		end
 	end
 

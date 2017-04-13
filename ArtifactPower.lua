@@ -53,12 +53,15 @@ Times
 
 ]]
 
+local name, mapID, runTime, a, b, c
+local dungeon = {}
+
+
 local function ParseMaps()
-	local dungeon = {}
 	for _, map in pairs(C_ChallengeMode.GetMapTable()) do
-		local name, mapID, runTime = C_ChallengeMode.GetMapInfo(map)
+		name, mapID, runTime = C_ChallengeMode.GetMapInfo(map)
 		wipe(dungeon)
-		local a, b, c = runTime, runTime * .8, runTime * .6
+		a, b, c = runTime, runTime * .8, runTime * .6
 		dungeon.name = name
 		dungeon['chestTimes'] = {}
 		dungeon.chestTimes[1] = a
@@ -95,9 +98,8 @@ function e.BuildMapTable()
 end
 
 function e.GetMapName(mapID)
-	local id = tonumber(mapID)
-	return temp_dungeon[mapID]
-	--return DUNGEON_TABLE[id]['name'] or temp_dungeon[id]
+	--return temp_dungeon[tonumber(mapID)]
+	return DUNGEON_TABLE[tonumber(mapID)]['name'] or temp_dungeon[mapID]
 end
 
 local function GetMapTime(mapID, chestCount)
@@ -121,8 +123,7 @@ end
 
 
 function e.GetMapAP(mapID, keyLevel)
-	local id = tonumber(mapID)
-	return DUNGEON_TABLE[id]['apTier'][GetKeyTier(tonumber(keyLevel))]
+	return DUNGEON_TABLE[tonumber(mapID)]['apTier'][GetKeyTier(tonumber(keyLevel))]
 end
 
 WEEKLY_AP[2] = 0
@@ -153,15 +154,16 @@ function e.GetWeeklyAP(keyLevel)
 	return 0
 end
 
+local amount, s, chest1, chest2, chest3
 
 function e.MapApText(mapID, keyLevel, isDepleted)
 	if isDepleted == 0 then return 'Depleted key.' end
 
-	local amount = e.GetMapAP(mapID, keyLevel) * e.GetAKBonus(e.ParseAKLevel())
-	local s = ''
-	local chest1 = e.ConvertToSI(amount/math.floor(GetMapTime(mapID, 1)/60))
-	local chest2 = e.ConvertToSI(amount/math.floor(GetMapTime(mapID, 2)/60))
-	local chest3 = e.ConvertToSI(amount/math.floor(GetMapTime(mapID, 3)/60))
+	amount = e.GetMapAP(mapID, keyLevel) * e.GetAKBonus(e.ParseAKLevel())
+	s = ''
+	chest1 = e.ConvertToSI(amount/math.floor(GetMapTime(mapID, 1)/60))
+	chest2 = e.ConvertToSI(amount/math.floor(GetMapTime(mapID, 2)/60))
+	chest3 = e.ConvertToSI(amount/math.floor(GetMapTime(mapID, 3)/60))
 	s = e.ConvertToSI(amount) .. ' AP\n' .. '+1 ' .. chest1 .. '/m \n+2 ' .. chest2 .. '/m  \n+3 ' .. chest3 .. '/m'
 	return s
 

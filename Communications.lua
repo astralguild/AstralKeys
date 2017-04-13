@@ -2,31 +2,31 @@ local _, e = ...
 
 local BROADCAST = true
 local temp = {}
+local sender, unitClass, unitRealm, dungeonID, keyLevel, usable, affixOne, affixTwo, affixThree
+
+local arg, content, msg, prefix, sender
 
 local akComms = CreateFrame('FRAME')
 akComms:RegisterEvent('CHAT_MSG_ADDON')
 RegisterAddonMessagePrefix('AstralKeys')
 
-local function AddonMessage(index)
-	local s = ''
-	
-	s = 'updateV1 ' ..  AstralKeys[index].name .. ":" .. AstralKeys[index].class .. ':' .. AstralKeys[index].realm .. ':' .. AstralKeys[index].map .. ':' .. AstralKeys[index].level .. ':' .. AstralKeys[index].usable .. ':' .. AstralKeys[index].a1 .. ':' .. AstralKeys[index].a2 .. ':' .. AstralKeys[index].a3
-	return s
+local function AddonMessage(index)	
+	return 'updateV1 ' ..  AstralKeys[index].name .. ":" .. AstralKeys[index].class .. ':' .. AstralKeys[index].realm .. ':' .. AstralKeys[index].map .. ':' .. AstralKeys[index].level .. ':' .. AstralKeys[index].usable .. ':' .. AstralKeys[index].a1 .. ':' .. AstralKeys[index].a2 .. ':' .. AstralKeys[index].a3
 end
 
 function e.AnnounceNewKey(keyLink, level)
-	if not BROADCAST then return end
+	if not BROADCAST and not IsInGroup() then return end
 	SendChatMessage('Astral Keys: New key ' .. keyLink .. ' +' .. level, 'PARTY')
 end
 
 akComms:SetScript('OnEvent', function(self, event, ...)
-	local prefix, msg, _, sender = ...
+	prefix, msg, _, sender = ...
 	if not (prefix == 'AstralKeys') then return end
 
-	local arg, content = msg:match("^(%S*)%s*(.-)$")
+	arg, content = msg:match("^(%S*)%s*(.-)$")
 	if arg == 'updateV1' then
-		local sender, unitClass, unitRealm = content:match('(%a+):(%a+):([%a%s-\']+)')
-		local dungeonID, keyLevel, usable, affixOne, affixTwo, affixThree = content:match(':(%d+):(%d+):(%d+):(%d+):(%d+):(%d+)')
+		sender, unitClass, unitRealm = content:match('(%a+):(%a+):([%a%s-\']+)')
+		dungeonID, keyLevel, usable, affixOne, affixTwo, affixThree = content:match(':(%d+):(%d+):(%d+):(%d+):(%d+):(%d+)')
 		dungeonID = tonumber(dungeonID)
 		keyLevel = tonumber(keyLevel)
 		usable = tonumber(usable)
@@ -63,12 +63,13 @@ akComms:SetScript('OnEvent', function(self, event, ...)
 					AstralKeys[i].map = dungeonID
 					AstralKeys[i].level = keyLevel
 					AstralKeys[i].depleted = isDepleted
+					--[[
 					if AstralKeys[i].name == e.PlayerName() and BROADCAST then
 						if IsInGroup() then
 							local link, level = e.CreateKeyLink(i)
 							e.AnnounceNewKey(link, level)
 						end
-					end
+					end]]
 				end
 				isFound = true
 			end
@@ -79,7 +80,7 @@ akComms:SetScript('OnEvent', function(self, event, ...)
 			if sender == e.PlayerName() then
 				if IsInGroup() then
 					local link, level = e.CreateKeyLink(#AstralKeys)
-					e.AnnounceNewKey(link, level)
+					--e.AnnounceNewKey(link, level)
 				end
 			end
 		end

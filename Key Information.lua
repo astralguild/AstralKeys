@@ -14,6 +14,7 @@ local GRAY = 'ff9d9d9d'
 local PURPLE = 'ffa335ee'
 
 local currentKey = ''
+local mapID, keyLevel, usable, a1, a2, a3, s, itemID, delink, link
 
 local init = false
 
@@ -52,8 +53,8 @@ function e.ParseAffixes()
 end
 
 function e.CreateKeyLink(index)
-	local s = '|c'
-	local mapID, keyLevel, usable, a1, a2, a3 = AstralKeys[index].map, AstralKeys[index].level, AstralKeys[index].usable, AstralKeys[index].a1, AstralKeys[index].a2, AstralKeys[index].a3
+	s = '|c'
+	mapID, keyLevel, usable, a1, a2, a3 = AstralKeys[index].map, AstralKeys[index].level, AstralKeys[index].usable, AstralKeys[index].a1, AstralKeys[index].a2, AstralKeys[index].a3
 
 	if tonumber(usable) == 1 then
 		s = s .. PURPLE
@@ -74,11 +75,10 @@ e.RegisterEvent('CHALLENGE_MODE_NEW_RECORD', function()
 
 e.RegisterEvent('CHAT_MSG_LOOT', function(...)
 	local msg = ...
-
 	if not msg:find('You') then return end
 
 	if msg:find('Keystone') then
-		e.FindKeyStone(true)
+		e.FindKeyStone(true, true)
 	end
 
 	end)
@@ -91,10 +91,8 @@ function e.GetAffix(affixNumber)
 	return AstralAffixes[affixNumber]
 end
 
-function e.FindKeyStone(sendUpdate)
-
-	local itemID, link, delink, dungeonID, keyLevel, usable, affixOne, affixTwo, affixThree
-	local s = ''
+function e.FindKeyStone(sendUpdate, anounceKey)
+	s = ''
 
 	for bag = 0, NUM_BAG_SLOTS + 1 do
 		for slot = 1, GetContainerNumSlots(bag) do
@@ -102,19 +100,22 @@ function e.FindKeyStone(sendUpdate)
 			if (itemID and itemID == 138019) then
 				link = GetContainerItemLink(bag, slot)
 				delink = link:gsub('\124', '\124\124')
-				dungeonID, keyLevel, usable, affixOne, affixTwo, affixThree = delink:match(':(%d+):(%d+):(%d+):(%d+):(%d+):(%d+)')
-				s = 'updateV1 ' .. e.PlayerName() .. ':' .. e.PlayerClass() .. ':' .. e.PlayerRealm() ..':' .. dungeonID .. ':' .. keyLevel .. ':' .. usable .. ':' .. affixOne .. ':' .. affixTwo .. ':' .. affixThree
+				mapID, keyLevel, usable, a1, a2, a3 = delink:match(':(%d+):(%d+):(%d+):(%d+):(%d+):(%d+)')
+				s = 'updateV1 ' .. e.PlayerName() .. ':' .. e.PlayerClass() .. ':' .. e.PlayerRealm() ..':' .. mapID .. ':' .. keyLevel .. ':' .. usable .. ':' .. a1 .. ':' .. a2 .. ':' .. a3
 			end
 		end
 	end
 
-	e.CheckForWeeklyClear(affixOne)
+	e.CheckForWeeklyClear(a1)
 
+	print(sendUpdate)
 	if sendUpdate  and s ~= '' then
 		SendAddonMessage('AstralKeys', s, 'GUILD')
 	end
 
-	return link
+	if anounceKey then
+		e.AnnounceNewKey(link, keyLevel)
+	end
 
 end
 
@@ -158,7 +159,6 @@ function e.GetBestKey(id)
 end
 
 function e.GetBestMap(unit)
-	local found = false
 
 	for i = 1, #AstralCharacters do
 		if AstralCharacters[i].name == unit then
@@ -172,12 +172,13 @@ function e.GetBestMap(unit)
 end
 
 --Returns map ID and keystone level run for current week
+local bestLevel, bestMap, weeklyBestLevel
 function e.GetBestClear()
 	if UnitLevel('player') ~= 110 then return end
-	local bestLevel = 0
-	local bestMap = 0
+	bestLevel = 0
+	bestMap = 0
 	for _, v in pairs(C_ChallengeMode.GetMapTable()) do
-		local _, _, weeklyBestLevel = C_ChallengeMode.GetMapPlayerStats(v)
+		_, _, weeklyBestLevel = C_ChallengeMode.GetMapPlayerStats(v)
 		if weeklyBestLevel then
 			if weeklyBestLevel > bestLevel then
 				bestLevel = weeklyBestLevel

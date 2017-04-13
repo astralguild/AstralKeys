@@ -14,7 +14,8 @@ local POSITIONS = {
 
 local offset = 0
 local characterOffset = 0
-local astral_len
+
+local name, keyLevel, mapID, class, usable, realm, indexEnd
 
 local currentSort = {}
 currentSort['section'] = 'key'
@@ -334,283 +335,421 @@ AstralKeyFrame:SetClampedToScreen(true)
 AstralKeyFrame:SetUserPlaced(true)
 AstralKeyFrame:Hide()
 
-local init = false
-local function CreateAstralKeyFrame()
-	init = true
-	e.GetBestClear()
+local logo = AstralKeyFrame:CreateTexture('ARTWORK')
+logo:SetSize(64, 64)
+logo:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\Astral.tga')
+logo:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 10, -10)
 
-	
+local title = CreateHeader(self, AstralKeyFrame, 'title', 220, 20, 'Astral Keys', 26)
+title:SetPoint('LEFT', logo, 'RIGHT', 10, -10)
 
-	local logo = AstralKeyFrame:CreateTexture('ARTWORK')
-	logo:SetSize(64, 64)
-	logo:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\Astral.tga')
-	logo:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 10, -10)
+AstralKeyFrame.centreDivider = AstralKeyFrame:CreateTexture('BACKGROUND')
+AstralKeyFrame.centreDivider:SetSize(1, 325)
+AstralKeyFrame.centreDivider:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 250, -125)
+AstralKeyFrame.centreDivider:SetColorTexture(0.2, 0.2, 0.2)
 
-	local title = CreateHeader(self, AstralKeyFrame, 'title', 220, 20, 'Astral Keys', 26)
-	title:SetPoint('LEFT', logo, 'RIGHT', 10, -10)
+local closeButton = CreateFrame('BUTTON', nil, AstralKeyFrame)
+closeButton:SetSize(15, 15)
+closeButton:SetNormalFontObject(FONT_OBJECT_CENTRE)
+closeButton:SetHighlightFontObject(FONT_OBJECT_HIGHLIGHT)
+closeButton:SetText('X')
 
-	AstralKeyFrame.centreDivider = AstralKeyFrame:CreateTexture('BACKGROUND')
-	AstralKeyFrame.centreDivider:SetSize(1, 325)
-	AstralKeyFrame.centreDivider:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 250, -125)
-	AstralKeyFrame.centreDivider:SetColorTexture(0.2, 0.2, 0.2)
+local toggleButton = CreateFrame('BUTTON', nil, AstralKeyFrame)
+toggleButton.mode = 0
+toggleButton:SetSize(16, 16)
+toggleButton:SetPoint('TOPRIGHT', closeButton, 'TOPLEFT', - 5, 0)
+toggleButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize.tga')
+toggleButton:SetHighlightTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize_highlight.tga', 'MOD')
 
-	local closeButton = CreateFrame('BUTTON', nil, AstralKeyFrame)
-	closeButton:SetSize(15, 15)
-	closeButton:SetNormalFontObject(FONT_OBJECT_CENTRE)
-	closeButton:SetHighlightFontObject(FONT_OBJECT_HIGHLIGHT)
-	closeButton:SetText('X')
-
-	local toggleButton = CreateFrame('BUTTON', nil, AstralKeyFrame)
-	toggleButton.mode = 0
-	toggleButton:SetSize(16, 16)
-	toggleButton:SetPoint('TOPRIGHT', closeButton, 'TOPLEFT', - 5, 0)
-	toggleButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize.tga')
-	toggleButton:SetHighlightTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize_highlight.tga', 'MOD')
-
-	toggleButton:SetScript('OnClick', function(self)
-		if self.mode == 0 then
-			self.mode = 1
-			self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\menu.tga')
-			self:SetHighlightTexture('Interface\\AddOns\\AstralKeys\\Media\\menu_highlight.tga', 'MOD')
-			AstralKeyFrame:SetWidth(400)
-			affixFrame:Hide()
-			astralCharacterFrame:Hide()
-			AstralKeyFrame.centreDivider:Hide()
-			AstralContentFrame:ClearAllPoints()
-			AstralContentFrame:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 5, -95)
-		else
-			self.mode = 0
-			self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize.tga')
-			self:SetHighlightTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize_highlight.tga', 'MOD')
-			AstralKeyFrame:SetWidth(650)
-			affixFrame:Show()
-			astralCharacterFrame:Show()
-			AstralKeyFrame.centreDivider:Show()
-			AstralContentFrame:ClearAllPoints()
-			AstralContentFrame:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 255, -95)
-		end
-		end)
-
-	closeButton:SetScript('OnClick', function()
-		AstralKeyFrame:Hide()
+toggleButton:SetScript('OnClick', function(self)
+	if self.mode == 0 then
+		self.mode = 1
+		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\menu.tga')
+		self:SetHighlightTexture('Interface\\AddOns\\AstralKeys\\Media\\menu_highlight.tga', 'MOD')
+		AstralKeyFrame:SetWidth(400)
+		affixFrame:Hide()
+		astralCharacterFrame:Hide()
+		AstralKeyFrame.centreDivider:Hide()
+		AstralContentFrame:ClearAllPoints()
+		AstralContentFrame:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 5, -95)
+	else
+		self.mode = 0
+		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize.tga')
+		self:SetHighlightTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize_highlight.tga', 'MOD')
+		AstralKeyFrame:SetWidth(650)
+		affixFrame:Show()
+		astralCharacterFrame:Show()
+		AstralKeyFrame.centreDivider:Show()
+		AstralContentFrame:ClearAllPoints()
+		AstralContentFrame:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 255, -95)
+	end
 	end)
 
-	closeButton:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', -10, -10)
+closeButton:SetScript('OnClick', function()
+	AstralKeyFrame:Hide()
+end)
 
-	-- Announce Buttons
-	-----------------------------------------------------
+closeButton:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', -10, -10)
 
-	local anounceFrame = CreateFrame('FRAME', nil, AstralKeyFrame)
-	anounceFrame:SetSize(60, 35)
-	anounceFrame:SetPoint('TOPRIGHT', closeButton, 'BOTTOMRIGHT', 0, -5)
-	anounceFrame.string = anounceFrame:CreateFontString('ARTWORK')
-	anounceFrame.string:SetFont(FONT_CONTENT, FONT_SIZE)
-	anounceFrame.string:SetPoint('TOPLEFT', anounceFrame, 'TOPLEFT')
-	anounceFrame.string:SetText('Report to')
 
-	local partyAnnounce = CreateFrame('BUTTON', nil, anounceFrame)
-	partyAnnounce:SetSize(15, 15)
-	partyAnnounce:SetNormalFontObject(FONT_OBJECT_CENTRE)
-	partyAnnounce:SetHighlightFontObject(FONT_OBJECT_HIGHLIGHT)
-	partyAnnounce:SetText('P')
-	partyAnnounce:SetPoint('BOTTOMLEFT', anounceFrame, 'BOTTOMLEFT')
 
-	partyAnnounce:SetScript('OnClick', function()
-		e.AnounceCharacterKeys('PARTY')
-		end)
+-- Announce Buttons
+-----------------------------------------------------
 
-	local guildAnnounce = CreateFrame('BUTTON', nil, anounceFrame)
-	guildAnnounce:SetSize(15, 15)
-	guildAnnounce:SetNormalFontObject(FONT_OBJECT_CENTRE)
-	guildAnnounce:SetHighlightFontObject(FONT_OBJECT_HIGHLIGHT)
-	guildAnnounce:SetText('G')
-	guildAnnounce:SetPoint('BOTTOMRIGHT', anounceFrame, 'BOTTOMRIGHT')
+local anounceFrame = CreateFrame('FRAME', nil, AstralKeyFrame)
+anounceFrame:SetSize(60, 35)
+anounceFrame:SetPoint('TOPRIGHT', closeButton, 'BOTTOMRIGHT', 0, -5)
+anounceFrame.string = anounceFrame:CreateFontString('ARTWORK')
+anounceFrame.string:SetFont(FONT_CONTENT, FONT_SIZE)
+anounceFrame.string:SetPoint('TOPLEFT', anounceFrame, 'TOPLEFT')
+anounceFrame.string:SetText('Report to')
 
-	guildAnnounce:SetScript('OnClick', function()
-		e.AnounceCharacterKeys('GUILD')
-		end)
+local partyAnnounce = CreateFrame('BUTTON', nil, anounceFrame)
+partyAnnounce:SetSize(15, 15)
+partyAnnounce:SetNormalFontObject(FONT_OBJECT_CENTRE)
+partyAnnounce:SetHighlightFontObject(FONT_OBJECT_HIGHLIGHT)
+partyAnnounce:SetText('P')
+partyAnnounce:SetPoint('BOTTOMLEFT', anounceFrame, 'BOTTOMLEFT')
 
-	-- Tooltip AstralKeyFrame
-	-----------------------------------------------------
+partyAnnounce:SetScript('OnClick', function()
+	e.AnounceCharacterKeys('PARTY')
+	end)
 
-	local mouseOverFrame = CreateFrame('FRAME', 'astralMouseOver', AstralKeyFrame)
-	mouseOverFrame:SetSize(156, 200)
-	mouseOverFrame:SetFrameStrata('TOOLTIP')
+local guildAnnounce = CreateFrame('BUTTON', nil, anounceFrame)
+guildAnnounce:SetSize(15, 15)
+guildAnnounce:SetNormalFontObject(FONT_OBJECT_CENTRE)
+guildAnnounce:SetHighlightFontObject(FONT_OBJECT_HIGHLIGHT)
+guildAnnounce:SetText('G')
+guildAnnounce:SetPoint('BOTTOMRIGHT', anounceFrame, 'BOTTOMRIGHT')
 
-	mouseOverFrame.tex = mouseOverFrame:CreateTexture('ARTWORK')
-	mouseOverFrame.tex:SetAllPoints()
-	mouseOverFrame.tex:SetColorTexture(0, 0, 0)
+guildAnnounce:SetScript('OnClick', function()
+	e.AnounceCharacterKeys('GUILD')
+	end)
 
-	mouseOverFrame.text = mouseOverFrame:CreateFontString('ARTWORK')
-	mouseOverFrame.text:SetFont(FONT_CONTENT, 14)
-	mouseOverFrame.text:SetPoint('TOPLEFT', mouseOverFrame, 'TOPLEFT', 8, -8)
-	mouseOverFrame.text:SetWordWrap(true)
-	mouseOverFrame.text:SetWidth(150)
-	mouseOverFrame.text:SetJustifyH('LEFT')
+-- Tooltip AstralKeyFrame
+-----------------------------------------------------
 
-	mouseOverFrame:Hide()
+local mouseOverFrame = CreateFrame('FRAME', 'astralMouseOver', AstralKeyFrame)
+mouseOverFrame:SetSize(156, 200)
+mouseOverFrame:SetFrameStrata('TOOLTIP')
 
-	function mouseOverFrame:SetText(text)
-		mouseOverFrame.text:SetText(text)
+mouseOverFrame.tex = mouseOverFrame:CreateTexture('ARTWORK')
+mouseOverFrame.tex:SetAllPoints()
+mouseOverFrame.tex:SetColorTexture(0, 0, 0)
+
+mouseOverFrame.text = mouseOverFrame:CreateFontString('ARTWORK')
+mouseOverFrame.text:SetFont(FONT_CONTENT, 14)
+mouseOverFrame.text:SetPoint('TOPLEFT', mouseOverFrame, 'TOPLEFT', 8, -8)
+mouseOverFrame.text:SetWordWrap(true)
+mouseOverFrame.text:SetWidth(150)
+mouseOverFrame.text:SetJustifyH('LEFT')
+
+mouseOverFrame:Hide()
+
+function mouseOverFrame:SetText(text)
+	mouseOverFrame.text:SetText(text)
+end
+
+function mouseOverFrame:AdjustHeight()
+	self:SetWidth(150)
+	self:SetHeight(self.text:GetStringHeight() + 14)
+	self.tex:ClearAllPoints()
+	self.tex:SetAllPoints()
+end
+
+function mouseOverFrame:AdjustSize(width)
+	self.text:SetWidth(width or self.text:GetStringWidth())
+	self:SetHeight(self.text:GetStringHeight() + 14)
+	self:SetWidth((width or self.text:GetStringWidth()) + 14)
+	self.tex:ClearAllPoints()
+	self.tex:SetAllPoints()
+end
+
+-- Affix Frames
+-----------------------------------------------------
+
+local affixFrame = CreateFrame('FRAME', 'affixFrame', AstralKeyFrame)
+affixFrame:SetSize(200, 70)
+affixFrame:SetPoint('TOPLEFT', logo, 'BOTTOMLEFT', 5, -10)
+
+local affixHeader = CreateHeader(self, affixFrame, 'affixHeader', 175, 20, 'Affixes:', 12)
+affixHeader:SetPoint('TOPLEFT', affixFrame, 'TOPLEFT')
+
+local affixOne = CreateFrame('FRAME', 'AstralAffixOne', affixFrame)
+affixOne.aid = e.GetAffix(1)
+
+affixOne:SetSize(100, 20)
+affixOne:SetPoint('TOPLEFT', affixHeader, 'BOTTOMLEFT', 10, -5)
+affixOne.string = affixOne:CreateFontString('ARTWORK')
+affixOne.string:SetFont(FONT_CONTENT, FONT_SIZE + 2)
+affixOne.string:SetPoint('LEFT', affixOne, 'LEFT', 25, 0)
+
+affixOne.texture = affixOne:CreateTexture('ARTWORK')
+affixOne.texture:SetSize(20, 20)
+affixOne.texture:SetPoint('LEFT', affixOne, 'LEFT')
+affixOne.texture:SetTexture(nil)
+
+function affixOne:UpdateInfo()
+	self.aid = e.GetAffix(1)
+	if self.aid ~= 0 then
+		self.string:SetText(C_ChallengeMode.GetAffixInfo(self.aid))
+		self.texture:SetTexture(select(3, C_ChallengeMode.GetAffixInfo(self.aid)))
 	end
+end
 
-	function mouseOverFrame:AdjustHeight()
-		self:SetWidth(150)
-		self:SetHeight(self.text:GetStringHeight() + 14)
-		self.tex:ClearAllPoints()
-		self.tex:SetAllPoints()
+affixOne:SetScript('OnEnter', function(self)
+	if tonumber(self.aid) == 0 then return end
+
+	astralMouseOver:SetText(select(2, C_ChallengeMode.GetAffixInfo(self.aid)))
+	astralMouseOver:AdjustSize(150)
+	astralMouseOver:SetPoint('TOPLEFT', self, 'BOTTOMRIGHT', -15, 10)
+	astralMouseOver:Show()
+
+	end)
+
+affixOne:SetScript('OnLeave', function()
+	astralMouseOver:Hide()
+	end)
+
+local affixTwo = CreateFrame('FRAME', 'AstralAffixTwo', affixFrame)
+affixTwo.aid = e.GetAffix(2)
+
+affixTwo:SetSize(100, 20)
+affixTwo:SetPoint('TOPLEFT', affixOne, 'BOTTOMLEFT', 0, -5)
+affixTwo.string = affixTwo:CreateFontString('ARTWORK')
+affixTwo.string:SetFont(FONT_CONTENT, FONT_SIZE + 2)
+affixTwo.string:SetPoint('LEFT', affixTwo, 'LEFT', 25, 0)
+
+affixTwo.texture = affixTwo:CreateTexture('ARTWORK')
+affixTwo.texture:SetSize(20, 20)
+affixTwo.texture:SetPoint('LEFT', affixTwo, 'LEFT')
+affixTwo.texture:SetTexture(nil)
+
+function affixTwo:UpdateInfo()
+	self.aid = e.GetAffix(2)
+	if self.aid ~= 0 then
+		self.string:SetText(C_ChallengeMode.GetAffixInfo(self.aid))
+		self.texture:SetTexture(select(3, C_ChallengeMode.GetAffixInfo(self.aid)))
 	end
+end
 
-	function mouseOverFrame:AdjustSize(width)
-		self.text:SetWidth(width or self.text:GetStringWidth())
-		self:SetHeight(self.text:GetStringHeight() + 14)
-		self:SetWidth((width or self.text:GetStringWidth()) + 14)
-		self.tex:ClearAllPoints()
-		self.tex:SetAllPoints()
+affixTwo:SetScript('OnEnter', function(self)
+	if tonumber(self.aid) == 0 then return end
+
+	astralMouseOver:SetText(select(2, C_ChallengeMode.GetAffixInfo(self.aid)))
+	astralMouseOver:AdjustSize(150)
+	astralMouseOver:SetPoint('TOPLEFT', self, 'BOTTOMRIGHT', -15, 10)
+	astralMouseOver:Show()
+
+	end)
+
+affixTwo:SetScript('OnLeave', function()
+	astralMouseOver:Hide()
+	end)
+
+local affixThree = CreateFrame('FRAME', 'AstralAffixThree', affixFrame)
+affixThree.aid = e.GetAffix(3)
+
+affixThree:SetSize(100, 20)
+affixThree:SetPoint('TOPLEFT', affixOne, 'TOPRIGHT', 10, 0)
+affixThree.string = affixThree:CreateFontString('ARTWORK')
+affixThree.string:SetFont(FONT_CONTENT, FONT_SIZE + 2)
+affixThree.string:SetPoint('LEFT', affixThree, 'LEFT', 25, 0)
+
+affixThree.texture = affixThree:CreateTexture('ARTWORK')
+affixThree.texture:SetSize(20, 20)
+affixThree.texture:SetPoint('LEFT', affixThree, 'LEFT')
+affixThree.texture:SetTexture(nil)
+
+function affixThree:UpdateInfo()
+	self.aid = e.GetAffix(3)
+	if self.aid ~= 0 then
+		self.string:SetText(C_ChallengeMode.GetAffixInfo(self.aid))
+		self.texture:SetTexture(select(3, C_ChallengeMode.GetAffixInfo(self.aid)))
 	end
+end
 
-	-- Affix Frames
-	-----------------------------------------------------
+affixThree:SetScript('OnEnter', function(self) 
+	if tonumber(self.aid) == 0 then return end
 
-	local affixFrame = CreateFrame('FRAME', 'affixFrame', AstralKeyFrame)
-	affixFrame:SetSize(200, 70)
-	affixFrame:SetPoint('TOPLEFT', logo, 'BOTTOMLEFT', 5, -10)
+	astralMouseOver:SetText(select(2, C_ChallengeMode.GetAffixInfo(self.aid)))
+	astralMouseOver:AdjustSize(150)
+	astralMouseOver:SetPoint('TOPLEFT', self, 'BOTTOMRIGHT', -15, 10)
+	astralMouseOver:Show()
 
-	local affixHeader = CreateHeader(self, affixFrame, 'affixHeader', 175, 20, 'Affixes:', 12)
-	affixHeader:SetPoint('TOPLEFT', affixFrame, 'TOPLEFT')
+	end)
 
-	local affixOne = CreateFrame('FRAME', 'AstralAffixOne', affixFrame)
-	affixOne.aid = e.GetAffix(1)
+affixThree:SetScript('OnLeave', function()
+	astralMouseOver:Hide()
+	end)
 
-	affixOne:SetSize(100, 20)
-	affixOne:SetPoint('TOPLEFT', affixHeader, 'BOTTOMLEFT', 10, -5)
-	affixOne.string = affixOne:CreateFontString('ARTWORK')
-	affixOne.string:SetFont(FONT_CONTENT, FONT_SIZE + 2)
-	affixOne.string:SetPoint('LEFT', affixOne, 'LEFT', 25, 0)
+-- Character Frames
+----------------------------------------------------------------
+local characterFrame = CreateFrame('FRAME', 'astralCharacterFrame', AstralKeyFrame)
+characterFrame:SetSize(215, 320)
+characterFrame:SetPoint('TOPLEFT', affixFrame, 'BOTTOMLEFT', 0, -10)
 
-	affixOne.texture = affixOne:CreateTexture('ARTWORK')
-	affixOne.texture:SetSize(20, 20)
-	affixOne.texture:SetPoint('LEFT', affixOne, 'LEFT')
-	affixOne.texture:SetTexture(nil)
+local characterHeader = CreateHeader(self, characterFrame, 'affixHeader', 175, 20, 'Characters', 10)
+characterHeader:SetPoint('TOPLEFT', characterFrame, 'TOPLEFT')
 
-	function affixOne:UpdateInfo()
-		self.aid = e.GetAffix(1)
-		if self.aid ~= 0 then
-			self.string:SetText(C_ChallengeMode.GetAffixInfo(self.aid))
-			self.texture:SetTexture(select(3, C_ChallengeMode.GetAffixInfo(self.aid)))
+local characterContent = CreateFrame('FRAME', 'AstralCharacterContent', characterFrame)
+
+characterContent.slider = characterContent:CreateTexture('BACKGROUND')
+characterContent.slider:SetSize(8, 8)
+characterContent.slider:SetColorTexture(0.2, 0.2, 0.2)
+characterContent.slider:SetAlpha(.2)
+
+characterContent:SetScript('OnEnter', function()
+	AstralCharacterContent.slider:SetAlpha(1)
+	end)
+
+characterContent:SetScript('OnLeave', function()
+	AstralCharacterContent.slider:SetAlpha(.2)
+	end)
+
+
+
+
+-- Key Frames
+----------------------------------------------------------------
+
+local contentFrame = CreateFrame('FRAME', 'AstralContentFrame', AstralKeyFrame)
+contentFrame:SetSize(375, 390)
+contentFrame:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 255, -95)
+contentFrame:EnableMouseWheel(true)
+
+contentFrame.slider = contentFrame:CreateTexture('BACKGROUND')
+contentFrame.slider:SetColorTexture(0.2, 0.2, 0.2)
+contentFrame.slider:SetSize(8, 8)
+contentFrame.slider:SetPoint('TOPLEFT', contentFrame, 'TOPRIGHT')
+contentFrame.slider:SetAlpha(0.2)
+
+if #AstralKeys > 26 then
+	contentFrame.slider:Show()
+else
+	contentFrame.slider:Hide()
+end
+
+function contentFrame:ResetSlider()
+	contentFrame.slider:SetPoint('TOPLEFT', contentFrame, 'TOPRIGHT')
+end
+
+contentFrame:SetScript('OnMouseWheel', function(self, delta)
+	if #AstralKeys < 27 then return end
+
+	if delta < 0 then -- Scroll down
+		if (#AstralKeys - offset) > 26 then
+			offset = offset - delta
+			e.UpdateFrames()
+		end			
+	else
+		if offset > 0 then -- Scroll up
+			offset = offset - delta
+			e.UpdateFrames()
 		end
+	end  
+
+	contentFrame.slider:ClearAllPoints()
+	contentFrame.slider:SetPoint('TOPLEFT', contentFrame, 'TOPRIGHT', 0, -offset/(#sortedTable - 26) * 385)
+
+	end)
+
+contentFrame:SetScript('OnEnter', function()
+	contentFrame.slider:SetAlpha(1)
+	end)
+
+contentFrame:SetScript('OnLeave', function()
+	contentFrame.slider:SetAlpha(0.2)
+	end)
+
+local keyButton = CreateButton(contentFrame, 'keyButton', 75, 20, 'Key Level', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT)
+keyButton:SetPoint('BOTTOMLEFT', contentFrame, 'TOPLEFT')
+keyButton:SetScript('OnClick', function()
+	contentFrame:ResetSlider()
+	offset = 0
+	currentSort.section = 'key'
+	if keyButton.sort == 0 then
+		keyButton.sort = 1
+		mapButton.sort = 0
+		nameButton.sort = 0
+		currentSort.orientation = 1
+	else
+		keyButton.sort = 0
+		currentSort.orientation = 0
 	end
+	e.UpdateFrames()
 
-	affixOne:SetScript('OnEnter', function(self)
-		if tonumber(self.aid) == 0 then return end
+	end)
 
-		astralMouseOver:SetText(select(2, C_ChallengeMode.GetAffixInfo(self.aid)))
-		astralMouseOver:AdjustSize(150)
-		astralMouseOver:SetPoint('TOPLEFT', self, 'BOTTOMRIGHT', -15, 10)
-		astralMouseOver:Show()
-
-		end)
-
-	affixOne:SetScript('OnLeave', function()
-		astralMouseOver:Hide()
-		end)
-
-	local affixTwo = CreateFrame('FRAME', 'AstralAffixTwo', affixFrame)
-	affixTwo.aid = e.GetAffix(2)
-
-	affixTwo:SetSize(100, 20)
-	affixTwo:SetPoint('TOPLEFT', affixOne, 'BOTTOMLEFT', 0, -5)
-	affixTwo.string = affixTwo:CreateFontString('ARTWORK')
-	affixTwo.string:SetFont(FONT_CONTENT, FONT_SIZE + 2)
-	affixTwo.string:SetPoint('LEFT', affixTwo, 'LEFT', 25, 0)
-
-	affixTwo.texture = affixTwo:CreateTexture('ARTWORK')
-	affixTwo.texture:SetSize(20, 20)
-	affixTwo.texture:SetPoint('LEFT', affixTwo, 'LEFT')
-	affixTwo.texture:SetTexture(nil)
-
-	function affixTwo:UpdateInfo()
-		self.aid = e.GetAffix(2)
-		if self.aid ~= 0 then
-			self.string:SetText(C_ChallengeMode.GetAffixInfo(self.aid))
-			self.texture:SetTexture(select(3, C_ChallengeMode.GetAffixInfo(self.aid)))
-		end
+local mapButton = CreateButton(contentFrame, 'mapButton', 190, 20, 'Dungeon Map', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT)
+mapButton:SetPoint('LEFT', keyButton, 'RIGHT')
+mapButton:SetScript('OnClick', function()
+	contentFrame:ResetSlider()
+	offset = 0
+	currentSort.section = 'map'
+	if mapButton.sort == 0 then
+		mapButton.sort = 1
+		keyButton.sort = 0
+		nameButton.sort = 0
+		currentSort.orientation = 1
+	else
+		mapButton.sort = 0
+		currentSort.orientation = 0
 	end
+	e.UpdateFrames()
 
-	affixTwo:SetScript('OnEnter', function(self)
-		if tonumber(self.aid) == 0 then return end
+	end)
 
-		astralMouseOver:SetText(select(2, C_ChallengeMode.GetAffixInfo(self.aid)))
-		astralMouseOver:AdjustSize(150)
-		astralMouseOver:SetPoint('TOPLEFT', self, 'BOTTOMRIGHT', -15, 10)
-		astralMouseOver:Show()
-
-		end)
-
-	affixTwo:SetScript('OnLeave', function()
-		astralMouseOver:Hide()
-		end)
-
-	local affixThree = CreateFrame('FRAME', 'AstralAffixThree', affixFrame)
-	affixThree.aid = e.GetAffix(3)
-
-	affixThree:SetSize(100, 20)
-	affixThree:SetPoint('TOPLEFT', affixOne, 'TOPRIGHT', 10, 0)
-	affixThree.string = affixThree:CreateFontString('ARTWORK')
-	affixThree.string:SetFont(FONT_CONTENT, FONT_SIZE + 2)
-	affixThree.string:SetPoint('LEFT', affixThree, 'LEFT', 25, 0)
-
-	affixThree.texture = affixThree:CreateTexture('ARTWORK')
-	affixThree.texture:SetSize(20, 20)
-	affixThree.texture:SetPoint('LEFT', affixThree, 'LEFT')
-	affixThree.texture:SetTexture(nil)
-
-	function affixThree:UpdateInfo()
-		self.aid = e.GetAffix(3)
-		if self.aid ~= 0 then
-			self.string:SetText(C_ChallengeMode.GetAffixInfo(self.aid))
-			self.texture:SetTexture(select(3, C_ChallengeMode.GetAffixInfo(self.aid)))
-		end
+local nameButton = CreateButton(contentFrame, 'nameButton', 100, 20, 'Player Name', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT)
+nameButton:SetPoint('LEFT', mapButton, 'RIGHT')
+nameButton:SetScript('OnClick', function()
+	contentFrame:ResetSlider()
+	offset = 0
+	currentSort.section = 'name'
+	if nameButton.sort == 0 then
+		nameButton.sort = 1
+		mapButton.sort = 0
+		keyButton.sort = 0
+		currentSort.orientation = 1
+	else
+		nameButton.sort = 0
+		currentSort.orientation = 0
 	end
+	e.UpdateFrames()
 
-	affixThree:SetScript('OnEnter', function(self) 
-		if tonumber(self.aid) == 0 then return end
+	end)
 
-		astralMouseOver:SetText(select(2, C_ChallengeMode.GetAffixInfo(self.aid)))
-		astralMouseOver:AdjustSize(150)
-		astralMouseOver:SetPoint('TOPLEFT', self, 'BOTTOMRIGHT', -15, 10)
-		astralMouseOver:Show()
 
-		end)
 
-	affixThree:SetScript('OnLeave', function()
-		astralMouseOver:Hide()
-		end)
+AstralKeyFrame:SetScript('OnKeyDown', function(self, key)
+	if key == 'ESCAPE' then
+		self:SetPropagateKeyboardInput(false)
+		self:Hide()
+	end
+	end)
 
-	-- Character Frames
-	----------------------------------------------------------------
+AstralKeyFrame:SetScript('OnShow', function(self)
+	self:SetPropagateKeyboardInput(true)
+	affixOne:UpdateInfo()
+	affixTwo:UpdateInfo()
+	affixThree:UpdateInfo()
+	e.UpdateCharacterFrames()
+	end)
 
-	local characterFrame = CreateFrame('FRAME', 'astralCharacterFrame', AstralKeyFrame)
-	characterFrame:SetSize(215, 320)
-	characterFrame:SetPoint('TOPLEFT', affixFrame, 'BOTTOMLEFT', 0, -10)
+AstralKeyFrame:SetScript('OnDragStart', function(self)
+	--self:SetUserPlaced(true)
+	self:StartMoving()
+	end)
 
-	local characterHeader = CreateHeader(self, characterFrame, 'affixHeader', 175, 20, 'Characters', 10)
-	characterHeader:SetPoint('TOPLEFT', characterFrame, 'TOPLEFT')
+AstralKeyFrame:SetScript('OnDragStop', function(self)
+	self:StopMovingOrSizing()
+	end)
 
-	local characterContent = CreateFrame('FRAME', 'AstralCharacterContent', characterFrame)
 
-	characterContent.slider = characterContent:CreateTexture('BACKGROUND')
-	characterContent.slider:SetSize(8, 8)
-	characterContent.slider:SetColorTexture(0.2, 0.2, 0.2)
-	characterContent.slider:SetAlpha(.2)
-
-	characterContent:SetScript('OnEnter', function()
-		AstralCharacterContent.slider:SetAlpha(1)
-		end)
-
-	characterContent:SetScript('OnLeave', function()
-		AstralCharacterContent.slider:SetAlpha(.2)
-		end)
+local init = false
+local function InitializeFrame()
+	init = true
+	e.GetBestClear()
 
 	local id = e.CharacterID()
 	local endIndex
@@ -632,11 +771,11 @@ local function CreateAstralKeyFrame()
 		else
 			endIndex = 8
 		end
-		
+
 		for i = 1, endIndex do
-			characters[i] = CreateCharacterFrame(characterFrame, nil, characterTable[i].name, nil, false)
-			characters[i]:SetPoint('TOPLEFT', characterContent, 'TOPLEFT', 0, -34*(i - 1) - 4)
-		end
+		characters[i] = CreateCharacterFrame(characterFrame, nil, characterTable[i].name, nil, false)
+		characters[i]:SetPoint('TOPLEFT', characterContent, 'TOPLEFT', 0, -34*(i - 1) - 4)
+	end
 	else
 		characterContent:SetSize(215, 290)
 		characterContent:SetPoint('TOPLEFT', characterHeader, 'BOTTOMLEFT', 0, -5)	
@@ -648,9 +787,9 @@ local function CreateAstralKeyFrame()
 		end
 
 		for i = 1, endIndex do
-			characters[i] = CreateCharacterFrame(characterFrame, nil, characterTable[i].name, nil, false)
-			characters[i]:SetPoint('TOPLEFT', characterContent, 'TOPLEFT', 0, -34*(i-1) - 4)
-		end
+		characters[i] = CreateCharacterFrame(characterFrame, nil, characterTable[i].name, nil, false)
+		characters[i]:SetPoint('TOPLEFT', characterContent, 'TOPLEFT', 0, -34*(i-1) - 4)
+	end
 	end
 
 	characterContent.slider:SetPoint('TOPLEFT', characterContent, 'TOPRIGHT', 0, -10)
@@ -681,129 +820,18 @@ local function CreateAstralKeyFrame()
 		characterContent.slider:SetPoint('TOPLEFT', characterContent, 'TOPRIGHT', 0, characterContent:GetHeight() * -characterOffset/(#characterTable - #characters))
 
 		end)
-	
-	-- Key Frames
-	----------------------------------------------------------------
 
-	local contentFrame = CreateFrame('FRAME', 'AstralContentFrame', AstralKeyFrame)
-	contentFrame:SetSize(375, 390)
-	contentFrame:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 255, -95)
-	contentFrame:EnableMouseWheel(true)
-
-	contentFrame.slider = contentFrame:CreateTexture('BACKGROUND')
-	contentFrame.slider:SetColorTexture(0.2, 0.2, 0.2)
-	contentFrame.slider:SetSize(8, 8)
-	contentFrame.slider:SetPoint('TOPLEFT', contentFrame, 'TOPRIGHT')
-	contentFrame.slider:SetAlpha(0.2)
-
-	if #AstralKeys > 26 then
-		contentFrame.slider:Show()
-	else
-		contentFrame.slider:Hide()
-	end
-
-	function contentFrame:ResetSlider()
-		contentFrame.slider:SetPoint('TOPLEFT', contentFrame, 'TOPRIGHT')
-	end
-
-	contentFrame:SetScript('OnMouseWheel', function(self, delta)
-		if #AstralKeys < 27 then return end
-
-		if delta < 0 then -- Scroll down
-			if (#AstralKeys - offset) > 26 then
-				offset = offset - delta
-				e.UpdateFrames()
-			end			
-		else
-			if offset > 0 then -- Scroll up
-				offset = offset - delta
-				e.UpdateFrames()
-			end
-		end  
-
-		contentFrame.slider:ClearAllPoints()
-		contentFrame.slider:SetPoint('TOPLEFT', contentFrame, 'TOPRIGHT', 0, -offset/(#sortedTable - 26) * 385)
-
-		end)
-
-	contentFrame:SetScript('OnEnter', function()
-		contentFrame.slider:SetAlpha(1)
-		end)
-
-	contentFrame:SetScript('OnLeave', function()
-		contentFrame.slider:SetAlpha(0.2)
-		end)
-
+	-- MAX 26
 	sortedTable = e.DeepCopy(AstralKeys)
 
-	local keyButton = CreateButton(contentFrame, 'keyButton', 75, 20, 'Key Level', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT)
-	keyButton:SetPoint('BOTTOMLEFT', contentFrame, 'TOPLEFT')
-	keyButton:SetScript('OnClick', function()
-		contentFrame:ResetSlider()
-		offset = 0
-		currentSort.section = 'key'
-		if keyButton.sort == 0 then
-			keyButton.sort = 1
-			mapButton.sort = 0
-			nameButton.sort = 0
-			currentSort.orientation = 1
-		else
-			keyButton.sort = 0
-			currentSort.orientation = 0
-		end
-		e.UpdateFrames()
-
-		end)
-
-	local mapButton = CreateButton(contentFrame, 'mapButton', 190, 20, 'Dungeon Map', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT)
-	mapButton:SetPoint('LEFT', keyButton, 'RIGHT')
-	mapButton:SetScript('OnClick', function()
-		contentFrame:ResetSlider()
-		offset = 0
-		currentSort.section = 'map'
-		if mapButton.sort == 0 then
-			mapButton.sort = 1
-			keyButton.sort = 0
-			nameButton.sort = 0
-			currentSort.orientation = 1
-		else
-			mapButton.sort = 0
-			currentSort.orientation = 0
-		end
-		e.UpdateFrames()
-
-		end)
-
-	local nameButton = CreateButton(contentFrame, 'nameButton', 100, 20, 'Player Name', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT)
-	nameButton:SetPoint('LEFT', mapButton, 'RIGHT')
-	nameButton:SetScript('OnClick', function()
-		contentFrame:ResetSlider()
-		offset = 0
-		currentSort.section = 'name'
-		if nameButton.sort == 0 then
-			nameButton.sort = 1
-			mapButton.sort = 0
-			keyButton.sort = 0
-			currentSort.orientation = 1
-		else
-			nameButton.sort = 0
-			currentSort.orientation = 0
-		end
-		e.UpdateFrames()
-
-		end)
-	
-	-- MAX 26
-	local indexEnd
-
 	if #sortedTable < 27 then
-			indexEnd = #sortedTable
-		else
-			indexEnd = 26
-		end
+		indexEnd = #sortedTable
+	else
+		indexEnd = 26
+	end
 
 	for i = 1, indexEnd do
-		local name, keyLevel, mapID, class, usable, realm = sortedTable[i].name, sortedTable[i].level, sortedTable[i].map, sortedTable[i].class, sortedTable[i].usable, sortedTable[i].realm
+		name, keyLevel, mapID, class, usable, realm = sortedTable[i].name, sortedTable[i].level, sortedTable[i].map, sortedTable[i].class, sortedTable[i].usable, sortedTable[i].realm
 
 		nameFrames[i] = CreateNameFrame(contentFrame, name, class, realm)		
 		keyFrames[i] = CreateKeyFrame(contentFrame, keyLevel)
@@ -815,31 +843,6 @@ local function CreateAstralKeyFrame()
 		nameFrames[i]:SetPoint('TOPLEFT', nameButton, 'BOTTOMLEFT', 5, (i-1) * -15 - 3)
 	end
 
-	AstralKeyFrame:SetScript('OnKeyDown', function(self, key)
-		if key == 'ESCAPE' then
-			self:SetPropagateKeyboardInput(false)
-			self:Hide()
-		end
-		end)
-
-	AstralKeyFrame:SetScript('OnShow', function(self)
-		self:SetPropagateKeyboardInput(true)
-		affixOne:UpdateInfo()
-		affixTwo:UpdateInfo()
-		affixThree:UpdateInfo()
-		e.UpdateCharacterFrames()
-		end)
-
-	AstralKeyFrame:SetScript('OnDragStart', function(self)
-		--self:SetUserPlaced(true)
-		self:StartMoving()
-		end)
-
-	AstralKeyFrame:SetScript('OnDragStop', function(self)
-		self:StopMovingOrSizing()
-		end)
-
-	AstralKeyFrame:Hide()
 
 end
 
@@ -930,6 +933,8 @@ function e.WipeFrames()
 	e.FindKeyStone(true)
 end
 
+local name, keyLevel, mapID, class, usable, realm, index
+
 function e.UpdateFrames()
 	if not init then return end
 	e.UpdateTables()
@@ -938,11 +943,8 @@ function e.UpdateFrames()
 
 	if #AstralKeys > 26 then
 		AstralContentFrame.slider:Show()
-	else
-		AstralContentFrame.slider:Hide()
 	end
 
-	local indexEnd
 	if #sortedTable < 27 then
 		indexEnd = #sortedTable
 	else
@@ -950,8 +952,8 @@ function e.UpdateFrames()
 	end
 
 	for i = 1, indexEnd do
-		local index = i + offset
-		local name, keyLevel, mapID, class, usable, realm = sortedTable[index].name, sortedTable[index].level, sortedTable[index].map, sortedTable[index].class, sortedTable[index].usable, sortedTable[index].realm
+		index = i + offset
+		name, keyLevel, mapID, class, usable, realm = sortedTable[index].name, sortedTable[index].level, sortedTable[index].map, sortedTable[index].class, sortedTable[index].usable, sortedTable[index].realm
 		if nameFrames[i] then
 			nameFrames[i]:SetNameInfo(name, class, realm)
 			keyFrames[i]:SetKeyInfo(keyLevel)
@@ -986,7 +988,7 @@ function e.UpdateCharacterFrames()
 end
 
 function e.AstralToggle()
-	if not init then CreateAstralKeyFrame() end
+	if not init then InitializeFrame() end
 
 	AstralKeyFrame:SetShown(not AstralKeyFrame:IsShown())
 end
