@@ -358,13 +358,13 @@ toggleButton.mode = 0
 toggleButton:SetSize(16, 16)
 toggleButton:SetPoint('TOPRIGHT', closeButton, 'TOPLEFT', - 5, 0)
 toggleButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize.tga')
-toggleButton:SetHighlightTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize_highlight.tga', 'MOD')
+toggleButton:SetHighlightTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize_highlight.tga', 'BLEND')
 
 toggleButton:SetScript('OnClick', function(self)
 	if self.mode == 0 then
 		self.mode = 1
 		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\menu.tga')
-		self:SetHighlightTexture('Interface\\AddOns\\AstralKeys\\Media\\menu_highlight.tga', 'MOD')
+		self:SetHighlightTexture('Interface\\AddOns\\AstralKeys\\Media\\menu_highlight.tga', 'BLEND')
 		AstralKeyFrame:SetWidth(400)
 		affixFrame:Hide()
 		astralCharacterFrame:Hide()
@@ -374,7 +374,7 @@ toggleButton:SetScript('OnClick', function(self)
 	else
 		self.mode = 0
 		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize.tga')
-		self:SetHighlightTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize_highlight.tga', 'MOD')
+		self:SetHighlightTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize_highlight.tga', 'BLEND')
 		AstralKeyFrame:SetWidth(650)
 		affixFrame:Show()
 		astralCharacterFrame:Show()

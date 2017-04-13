@@ -101,7 +101,11 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 		end
 	end
 
+	local oldMap, oldLevel, oldUsable = e.GetCharacterKey(e.PlayerName())
+
 	e.CheckForWeeklyClear(a1)
+
+	if tonumber(oldMap) == tonumber(mapID) and tonumber(oldLevel) == tonumber(keyLevel) and tonumber(oldUsable) == tonumber(usable) then return end
 
 	if sendUpdate  and s ~= '' then
 		SendAddonMessage('AstralKeys', s, 'GUILD')
