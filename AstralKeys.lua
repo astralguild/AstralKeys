@@ -2,8 +2,6 @@ local a, e = ...
 if not AstralKeys then AstralKeys = {} end
 if not AstralCharacters then AstralCharacters = {} end
 
-e.version = @file-abbreviated-hash@
-
 function e.CheckForWeeklyClear(a1)
 	local affix = tonumber(a1)
 
