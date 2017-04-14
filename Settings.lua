@@ -1,6 +1,6 @@
 local _, e = ...
 
-local version = GetAddonMetaData('AstralKeys', 'version')
+local version = GetAddOnMetadata('AstralKeys', 'version')
 version = version:gsub('[%a%p]', '')
 
 if not AstralKeysSettings then 
