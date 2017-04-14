@@ -5,7 +5,7 @@ version = version:gsub('[%a%p]', '')
 
 if not AstralKeysSettings then 
 	AstralKeysSettings = {
-		['resetSettings'] = false,
+		['resetSettings'] = true,
 		['frameOptions'] = {
 			['orientation'] = 0,
 			['sortMethod'] = 'level',
@@ -23,10 +23,10 @@ frame:RegisterEvent('ADDON_LOADED')
 frame:SetScript('OnEvent', function(self, event, ...)
 	local addon = ...
 	if addon == 'AstralKeys' then
-		if tonumber(version) >= 1116 and AstralKeysSettings['resetSettings'] then
+		if tonumber(version) >= 1116 and not AstralKeysSettings['resetSettings'] then
 			AstralKeysSettings = {}
 			AstralKeysSettings = {
-			['resetSettings'] = false,
+			['resetSettings'] = true,
 			['frameOptions'] = {
 				['orientation'] = 0,
 				['sortMethod'] = 'level',
