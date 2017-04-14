@@ -3,11 +3,12 @@
 ## Notes: Keystone Manager for Astral Guild on Turalyon
 ## Author: Phrike, Abbychu
 ## Version: 1.1.3
-## SavedVariables: AstralKeys, AstralCharacters, AstralAffixes, AstralKeysSettings
+## SavedVariables: AstralKeys, AstralCharacters, AstralAffixes, AstralKeysSettings, AstralMinimap
 
-
-Events.lua
 embeds.xml
+Settings.lua
+Events.lua
+Tables.lua
 
 Communications.lua
 Key Information.lua
@@ -18,5 +19,6 @@ ArtifactKnowledge.lua
 
 AstralKeys.lua
 
+Frame Functions.lua
 Frame.lua
 MinimapButton.lua

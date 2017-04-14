@@ -11,8 +11,7 @@ local astralkeysLDB = LibStub("LibDataBroker-1.1"):NewDataObject("AstralKeys", {
 local icon = LibStub("LibDBIcon-1.0")
 
 function addon:OnInitialize()
-	-- Obviously you'll need a ## SavedVariables: BunniesDB line in your TOC, duh!
-	self.db = LibStub("AceDB-3.0"):New("AstralKeysSettings", {
+	self.db = LibStub("AceDB-3.0"):New("AstralMinimap", {
 		profile = {
 			minimap = {
 				hide = false,

@@ -1,10 +1,8 @@
 local a, e = ...
 if not AstralKeys then AstralKeys = {} end
 if not AstralCharacters then AstralCharacters = {} end
-if not AstralKeySettings then
-	AstralKeySettings = {}
-	AstralKeySettings['minimized'] = false
-end
+
+e.version = @file-abbreviated-hash@
 
 function e.CheckForWeeklyClear(a1)
 	local affix = tonumber(a1)
@@ -18,22 +16,6 @@ function e.CheckForWeeklyClear(a1)
 	AstralAffixes[2] = 0
 	AstralAffixes[3] = 0
 	--e.WipeFrames()
-end
-
-
-function e.DeepCopy(orig)
-    local orig_type = type(orig)
-    local copy
-    if orig_type == 'table' then
-        copy = {}
-        for orig_key, orig_value in next, orig, nil do
-            copy[e.DeepCopy(orig_key)] = e.DeepCopy(orig_value)
-        end
-        setmetatable(copy, e.DeepCopy(getmetatable(orig)))
-    else -- number, string, boolean, etc
-        copy = orig
-    end
-    return copy
 end
 
 local SI = {}

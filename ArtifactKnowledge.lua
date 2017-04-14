@@ -64,11 +64,10 @@ function e.ParseAKLevel()
 end
 
 -- FIRED FOR LEARNING AK
-e.RegisterEvent('CURRENCY_DISPLAY_UPDATE', function()
+e.RegisterEvent('CURRENCY_DISPLAY_UPDATE', function(...)
 	for i = 1, #AstralCharacters do
 		if AstralCharacters[i].name == e.PlayerName() then
 			AstralCharacters[i].knowledge = e.GetAKBonus(e.ParseAKLevel())
 		end
 	end
-
 	end)

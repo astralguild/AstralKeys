@@ -23,13 +23,20 @@ currentSort['orientation'] = 0
 
 local BACKDROPBUTTON = {
 bgFile = nil,
-edgeFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 16, edgeSize = 2,
+edgeFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 16, edgeSize = 1,
 insets = {left = 0, right = 0, top = 0, bottom = 0}
 }
+
+
 
 local FONT_HEADER = "Interface\\AddOns\\AstralKeys\\Media\\big_noodle_titling.TTF"
 local FONT_CONTENT = "Interface\\AddOns\\AstralKeys\\Media\\Lato-Regular.TTF"
 local FONT_SIZE = 13
+
+local FONT_OBJECT_LEFT = CreateFont("FONT_OBJECT_LEFT")
+FONT_OBJECT_LEFT:SetFont(FONT_CONTENT, FONT_SIZE)
+FONT_OBJECT_LEFT:SetJustifyH('LEFT')
+FONT_OBJECT_LEFT:SetTextColor(1, 1, 1)
 
 local FONT_OBJECT_CENTRE = CreateFont("FONT_OBJECT_CENTRE")
 FONT_OBJECT_CENTRE:SetFont(FONT_CONTENT, FONT_SIZE)
@@ -101,11 +108,32 @@ local function CreateButton(parent, btnID, width, height, text, fontobject, high
 	return button
 end
 
+local function CreateCheckBox(parent, cbID, label)
+	local checkbox = CreateFrame('CheckButton', nil, parent)
+	checkbox:SetSize(12, 12)
+	checkbox:SetBackdrop(BACKDROPBUTTON)
+	checkbox:SetBackdropBorderColor(85/255, 85/255, 85/255)
+	checkbox:SetNormalFontObject(FONT_OBJECT_LEFT)
+	checkbox:SetText(label)
+
+	checkbox:SetNormalTexture(nil)
+	checkbox:SetBackdropColor(0, 0, 0)
+	checkbox:GetFontString():SetPoint('LEFT', checkbox, 'RIGHT', 3, 0)
+
+	checkbox.t = checkbox:CreateTexture('PUSHEDTEXTURE', 'BACKGROUND')
+	checkbox.t:SetSize(6, 6)
+	checkbox.t:SetPoint('TOPLEFT', checkbox, 'TOPLEFT', 3, -3)
+	checkbox.t:SetColorTexture(.9, .9, .9)
+	checkbox:SetCheckedTexture(checkbox.t)
+
+	return checkbox
+end
+
 local function CreateCharacterFrame(parent, name, unitName, bestKey, createDivider)
 
 	local frame = CreateFrame('FRAME', name, parent)
 	frame:SetSize(210, 31)
-	frame:SetFrameLevel(10)
+	frame:SetFrameLevel(5)
 
 	frame.tid = ''
 	frame.unit = unitName
@@ -331,8 +359,13 @@ AstralKeyFrame:RegisterForDrag('LeftButton')
 AstralKeyFrame:EnableKeyboard(true)
 AstralKeyFrame:SetPropagateKeyboardInput(true)
 AstralKeyFrame:SetClampedToScreen(true)
-AstralKeyFrame:SetUserPlaced(true)
 AstralKeyFrame:Hide()
+
+AstralKeyFrame.version = AstralKeyFrame:CreateFontString('ARTWORK')
+AstralKeyFrame.version:SetFont(FONT_CONTENT, FONT_SIZE - 3)
+AstralKeyFrame.version:SetPoint('BOTTOMRIGHT', AstralKeyFrame, 'BOTTOMRIGHT', -5, 5)
+AstralKeyFrame.version:SetText('v'.. GetAddOnMetadata('AstralKeys', 'version'))
+AstralKeyFrame.version:SetJustifyH('RIGHT')
 
 local logo = AstralKeyFrame:CreateTexture('ARTWORK')
 logo:SetSize(64, 64)
@@ -360,22 +393,28 @@ toggleButton:SetPoint('TOPRIGHT', closeButton, 'TOPLEFT', - 5, 0)
 toggleButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize.tga')
 toggleButton:SetHighlightTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize_highlight.tga', 'BLEND')
 
+
 toggleButton:SetScript('OnClick', function(self)
-	if self.mode == 0 then
-		self.mode = 1
+	local left, bottom, width = AstralKeyFrame:GetRect()
+	if e.GetViewMode() == 0 then
+		e.SetViewMode(1)
 		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\menu.tga')
 		self:SetHighlightTexture('Interface\\AddOns\\AstralKeys\\Media\\menu_highlight.tga', 'BLEND')
 		AstralKeyFrame:SetWidth(400)
+		AstralKeyFrame:ClearAllPoints()
+		AstralKeyFrame:SetPoint('BOTTOMLEFT', UIParent, 'BOTTOMLEFT', left + width - 400, bottom)
 		affixFrame:Hide()
 		astralCharacterFrame:Hide()
 		AstralKeyFrame.centreDivider:Hide()
 		AstralContentFrame:ClearAllPoints()
 		AstralContentFrame:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 5, -95)
 	else
-		self.mode = 0
+		e.SetViewMode(0)
 		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize.tga')
 		self:SetHighlightTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize_highlight.tga', 'BLEND')
 		AstralKeyFrame:SetWidth(650)
+		AstralKeyFrame:ClearAllPoints()
+		AstralKeyFrame:SetPoint('BOTTOMLEFT', UIParent, 'BOTTOMLEFT', left + width - 650, bottom)
 		affixFrame:Show()
 		astralCharacterFrame:Show()
 		AstralKeyFrame.centreDivider:Show()
@@ -390,7 +429,36 @@ end)
 
 closeButton:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', -10, -10)
 
+local quickOptionsFrame = CreateFrame('FRAME', 'quickOptionsFrame', AstralKeyFrame)
+quickOptionsFrame:SetSize(250, 45)
+quickOptionsFrame:SetBackdrop(BACKDROP)
+quickOptionsFrame:SetBackdropColor(0, 0, 0, 1)
+quickOptionsFrame:SetFrameLevel(10)
+quickOptionsFrame:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', -10, - 28)
+quickOptionsFrame:Hide()
 
+local showOffline = CreateCheckBox(quickOptionsFrame, 'showOffline', 'Show offline')
+showOffline:SetPoint('BOTTOMLEFT', quickOptionsFrame, 'CENTER', -10, 2)
+showOffline:SetChecked(e.GetShowOffline())
+showOffline:SetScript('OnClick', function ()
+	e.SetShowOffline(showOffline:GetChecked())
+	e.UpdateFrames()
+	-- body
+end)
+---function e.CreateEditBox(self, parent, name, width, label, minValue, maxValue)
+local minKeyLevel = e.CreateEditBox(quickOptionsFrame, 'minKeyLevel', 40, 'Min key level', 1, 100)
+minKeyLevel:SetPoint('TOPLEFT', showOffline, 'BOTTOMLEFT', 0, -5)
+minKeyLevel:SetValue(e.GetMinKeyLevel())
+
+local quickOptions = CreateFrame('BUTTON', nil, AstralKeyFrame)
+quickOptions:SetSize(16, 16)
+quickOptions:SetPoint('TOPRIGHT', toggleButton, 'TOPLEFT', -5, 0)
+quickOptions:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\folder.tga')
+quickOptions:SetHighlightTexture('Interface\\AddOns\\AstralKeys\\Media\\folder_highlight.tga', 'MOD')
+quickOptions:SetScript('OnClick', function ()
+	--quickOptionsFrame:SetShown(not quickOptionsFrame:IsShown())
+end)
+quickOptions:Hide()
 
 -- Announce Buttons
 -----------------------------------------------------
@@ -640,6 +708,7 @@ else
 end
 
 function contentFrame:ResetSlider()
+	offset = 0
 	contentFrame.slider:SetPoint('TOPLEFT', contentFrame, 'TOPRIGHT')
 end
 
@@ -675,17 +744,12 @@ local keyButton = CreateButton(contentFrame, 'keyButton', 75, 20, 'Key Level', F
 keyButton:SetPoint('BOTTOMLEFT', contentFrame, 'TOPLEFT')
 keyButton:SetScript('OnClick', function()
 	contentFrame:ResetSlider()
-	offset = 0
-	currentSort.section = 'key'
-	if keyButton.sort == 0 then
-		keyButton.sort = 1
-		mapButton.sort = 0
-		nameButton.sort = 0
-		currentSort.orientation = 1
+	if e.GetSortMethod() ~= 'level' then
+		e.SetOrientation(0)
 	else
-		keyButton.sort = 0
-		currentSort.orientation = 0
+		e.SetOrientation(1 - e.GetOrientation())
 	end
+	e.SetSortMethod('level')
 	e.UpdateFrames()
 
 	end)
@@ -694,17 +758,12 @@ local mapButton = CreateButton(contentFrame, 'mapButton', 190, 20, 'Dungeon Map'
 mapButton:SetPoint('LEFT', keyButton, 'RIGHT')
 mapButton:SetScript('OnClick', function()
 	contentFrame:ResetSlider()
-	offset = 0
-	currentSort.section = 'map'
-	if mapButton.sort == 0 then
-		mapButton.sort = 1
-		keyButton.sort = 0
-		nameButton.sort = 0
-		currentSort.orientation = 1
+	if e.GetSortMethod() ~= 'map' then
+		e.SetOrientation(0)
 	else
-		mapButton.sort = 0
-		currentSort.orientation = 0
+		e.SetOrientation(1 - e.GetOrientation())
 	end
+	e.SetSortMethod('map')
 	e.UpdateFrames()
 
 	end)
@@ -713,17 +772,12 @@ local nameButton = CreateButton(contentFrame, 'nameButton', 100, 20, 'Player Nam
 nameButton:SetPoint('LEFT', mapButton, 'RIGHT')
 nameButton:SetScript('OnClick', function()
 	contentFrame:ResetSlider()
-	offset = 0
-	currentSort.section = 'name'
-	if nameButton.sort == 0 then
-		nameButton.sort = 1
-		mapButton.sort = 0
-		keyButton.sort = 0
-		currentSort.orientation = 1
+	if e.GetSortMethod() ~= 'name' then
+		e.SetOrientation(0)
 	else
-		nameButton.sort = 0
-		currentSort.orientation = 0
+		e.SetOrientation(1 - e.GetOrientation())
 	end
+	e.SetSortMethod('name')
 	e.UpdateFrames()
 
 	end)
@@ -754,10 +808,27 @@ AstralKeyFrame:SetScript('OnDragStop', function(self)
 	end)
 
 
+
+
 local init = false
 local function InitializeFrame()
 	init = true
 	e.GetBestClear()
+	sortedTable = e.DeepCopy(AstralKeys)
+
+	--sortedTable = e.UpdateTables()
+
+	if e.GetViewMode() == 1 then
+		AstralKeyFrame:SetWidth(400)
+		affixFrame:Hide()
+		astralCharacterFrame:Hide()
+		AstralKeyFrame.centreDivider:Hide()
+		AstralContentFrame:ClearAllPoints()
+		AstralContentFrame:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 5, -95)
+		toggleButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\menu.tga')
+		toggleButton:SetHighlightTexture('Interface\\AddOns\\AstralKeys\\Media\\menu_highlight.tga', 'BLEND')
+	end
+
 
 	local id = e.CharacterID()
 	local endIndex
@@ -830,7 +901,7 @@ local function InitializeFrame()
 		end)
 
 	-- MAX 26
-	sortedTable = e.DeepCopy(AstralKeys)
+	e.SortTable(sortedTable, e.GetSortMethod())
 
 	if #sortedTable < 27 then
 		indexEnd = #sortedTable
@@ -851,50 +922,8 @@ local function InitializeFrame()
 		nameFrames[i]:SetPoint('TOPLEFT', nameButton, 'BOTTOMLEFT', 5, (i-1) * -15 - 3)
 	end
 
-
 	e.UpdateCharacterFrames()
 
-end
-
-function e.SortTable(A, v)
-	if v == 'key' then
-		v = 'level'
-	end
-	if v == 'map' then
-	    for j = 2, #A do
-	        --Select item to sort
-	        key = A[j]
-	        i = j - 1
-	        while (i > 0) and (e.GetMapName(A[i][v]) > e.GetMapName(key[v])) do
-	            --Move placement index back
-	            A[i + 1] = A[i]
-	            i = i - 1
-	        end
-	        --Place current item back into the list
-	        A[i + 1] = key
-	    end
-
-	    if currentSort.orientation == 0 then
-	    	table.sort(A, function(a, b) return e.GetMapName(a[v]) > e.GetMapName(b[v]) end)
-	    end
-	else
-	    for j = 2, #A do
-	        --Select item to sort
-	        key = A[j]
-	        i = j - 1
-	        while (i > 0) and (A[i][v] > key[v]) do
-	            --Move placement index back
-	            A[i + 1] = A[i]
-	            i = i - 1
-	        end
-	        --Place current item back into the list
-	        A[i + 1] = key
-	    end
-
-	    if currentSort.orientation == 0 then
-	    	table.sort(A, function(a, b) return a[v] > b[v] end)
-	    end
-	end
 end
 
 function e.UpdateAffixes()
@@ -904,10 +933,6 @@ function e.UpdateAffixes()
 	AstralAffixThree:UpdateInfo()
 end
 
-
-function e.UpdateTables()
-	sortedTable = e.DeepCopy(AstralKeys)
-end
 
 function e.WipeFrames()
 	wipe(AstralCharacters)
@@ -945,9 +970,9 @@ local name, keyLevel, mapID, class, usable, realm, index
 
 function e.UpdateFrames()
 	if not init then return end
-	e.UpdateTables()
+	sortedTable = e.DeepCopy(AstralKeys)
 
-	e.SortTable(sortedTable, currentSort.section)
+	e.SortTable(sortedTable, e.GetSortMethod())
 
 	if #AstralKeys > 26 then
 		AstralContentFrame.slider:Show()

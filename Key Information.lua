@@ -1,8 +1,5 @@
 local _, e = ...
 
-local keyTable = {}
-local sortedTable = {}
-local characterTable = {}
 if not AstralAffixes then 
 	AstralAffixes = {} 
 	AstralAffixes[1] = 0
@@ -69,7 +66,13 @@ e.RegisterEvent('CHALLENGE_MODE_NEW_RECORD', function()
 	end)
 
 e.RegisterEvent('CHAT_MSG_LOOT', function(...)
+
 	local msg = ...
+	local sender = select(5, ...) -- Should return unit that looted
+	--test = {...}
+	--tprint(test)
+	--print(msg, sender)
+	if not sender == e.PlayerName() then return end
 	if not msg:find('You') then return end
 
 	if msg:find('Keystone') then
