@@ -33,10 +33,10 @@ local FONT_HEADER = "Interface\\AddOns\\AstralKeys\\Media\\big_noodle_titling.TT
 local FONT_CONTENT = "Interface\\AddOns\\AstralKeys\\Media\\Lato-Regular.TTF"
 local FONT_SIZE = 13
 
-local FONT_OBJECT_LEFT = CreateFont("FONT_OBJECT_LEFT")
-FONT_OBJECT_LEFT:SetFont(FONT_CONTENT, FONT_SIZE)
-FONT_OBJECT_LEFT:SetJustifyH('LEFT')
-FONT_OBJECT_LEFT:SetTextColor(1, 1, 1)
+local FONT_OBJECT_RIGHT = CreateFont("FONT_OBJECT_RIGHT")
+FONT_OBJECT_RIGHT:SetFont(FONT_CONTENT, FONT_SIZE)
+FONT_OBJECT_RIGHT:SetJustifyH('RIGHT')
+FONT_OBJECT_RIGHT:SetTextColor(1, 1, 1)
 
 local FONT_OBJECT_CENTRE = CreateFont("FONT_OBJECT_CENTRE")
 FONT_OBJECT_CENTRE:SetFont(FONT_CONTENT, FONT_SIZE)
@@ -113,12 +113,12 @@ local function CreateCheckBox(parent, cbID, label)
 	checkbox:SetSize(12, 12)
 	checkbox:SetBackdrop(BACKDROPBUTTON)
 	checkbox:SetBackdropBorderColor(85/255, 85/255, 85/255)
-	checkbox:SetNormalFontObject(FONT_OBJECT_LEFT)
+	checkbox:SetNormalFontObject(FONT_OBJECT_RIGHT)
 	checkbox:SetText(label)
 
 	checkbox:SetNormalTexture(nil)
 	checkbox:SetBackdropColor(0, 0, 0)
-	checkbox:GetFontString():SetPoint('LEFT', checkbox, 'RIGHT', 3, 0)
+	checkbox:GetFontString():SetPoint('RIGHT', checkbox, 'LEFT', -5, 0)
 
 	checkbox.t = checkbox:CreateTexture('PUSHEDTEXTURE', 'BACKGROUND')
 	checkbox.t:SetSize(6, 6)
@@ -430,7 +430,7 @@ end)
 closeButton:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', -10, -10)
 
 local quickOptionsFrame = CreateFrame('FRAME', 'quickOptionsFrame', AstralKeyFrame)
-quickOptionsFrame:SetSize(250, 45)
+quickOptionsFrame:SetSize(150, 45)
 quickOptionsFrame:SetBackdrop(BACKDROP)
 quickOptionsFrame:SetBackdropColor(0, 0, 0, 1)
 quickOptionsFrame:SetFrameLevel(10)
@@ -438,17 +438,27 @@ quickOptionsFrame:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', -10, - 28)
 quickOptionsFrame:Hide()
 
 local showOffline = CreateCheckBox(quickOptionsFrame, 'showOffline', 'Show offline')
-showOffline:SetPoint('BOTTOMLEFT', quickOptionsFrame, 'CENTER', -10, 2)
-showOffline:SetChecked(e.GetShowOffline())
-showOffline:SetScript('OnClick', function ()
-	e.SetShowOffline(showOffline:GetChecked())
+showOffline:SetPoint('TOPRIGHT', quickOptionsFrame, 'TOPRIGHT', -5, -5)
+
+showOffline:SetScript('OnClick', function (self)
+	e.SetShowOffline(self:GetChecked())
 	e.UpdateFrames()
-	-- body
 end)
----function e.CreateEditBox(self, parent, name, width, label, minValue, maxValue)
-local minKeyLevel = e.CreateEditBox(quickOptionsFrame, 'minKeyLevel', 40, 'Min key level', 1, 100)
-minKeyLevel:SetPoint('TOPLEFT', showOffline, 'BOTTOMLEFT', 0, -5)
-minKeyLevel:SetValue(e.GetMinKeyLevel())
+
+local minKeyLevel = e.CreateEditBox(quickOptionsFrame, 'minKeyLevel', 25, 'Min announce level', 1, 100)
+minKeyLevel:SetPoint('TOPRIGHT', showOffline, 'BOTTOMRIGHT', 0, -5)
+minKeyLevel:SetScript('OnEditFocusLost', function(self)
+	e.SetMinKeyLevel(self:GetNumber())
+		end)
+minKeyLevel:EnableMouseWheel(true)
+minKeyLevel:SetScript('OnMouseWheel', function(self, delta)
+	if self:GetNumber() + delta < self.minValue or self:GetNumber() + delta > self.maxValue then
+		return
+	else
+		self:SetNumber(self:GetNumber() + delta)
+		e.SetMinKeyLevel(self:GetNumber())
+	end
+	end)
 
 local quickOptions = CreateFrame('BUTTON', nil, AstralKeyFrame)
 quickOptions:SetSize(16, 16)
@@ -456,9 +466,8 @@ quickOptions:SetPoint('TOPRIGHT', toggleButton, 'TOPLEFT', -5, 0)
 quickOptions:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\folder.tga')
 quickOptions:SetHighlightTexture('Interface\\AddOns\\AstralKeys\\Media\\folder_highlight.tga', 'MOD')
 quickOptions:SetScript('OnClick', function ()
-	--quickOptionsFrame:SetShown(not quickOptionsFrame:IsShown())
+	quickOptionsFrame:SetShown(not quickOptionsFrame:IsShown())
 end)
-quickOptions:Hide()
 
 -- Announce Buttons
 -----------------------------------------------------
@@ -799,7 +808,6 @@ AstralKeyFrame:SetScript('OnShow', function(self)
 	end)
 
 AstralKeyFrame:SetScript('OnDragStart', function(self)
-	--self:SetUserPlaced(true)
 	self:StartMoving()
 	end)
 
@@ -813,10 +821,14 @@ AstralKeyFrame:SetScript('OnDragStop', function(self)
 local init = false
 local function InitializeFrame()
 	init = true
+	
+	showOffline:SetChecked(e.GetShowOffline())
+	minKeyLevel:SetValue(e.GetMinKeyLevel())
 	e.GetBestClear()
 	sortedTable = e.DeepCopy(AstralKeys)
 
-	--sortedTable = e.UpdateTables()
+	e.UpdateTables(sortedTable)
+	e.SortTable(sortedTable, e.GetSortMethod())
 
 	if e.GetViewMode() == 1 then
 		AstralKeyFrame:SetWidth(400)
@@ -901,7 +913,6 @@ local function InitializeFrame()
 		end)
 
 	-- MAX 26
-	e.SortTable(sortedTable, e.GetSortMethod())
 
 	if #sortedTable < 27 then
 		indexEnd = #sortedTable
@@ -922,6 +933,7 @@ local function InitializeFrame()
 		nameFrames[i]:SetPoint('TOPLEFT', nameButton, 'BOTTOMLEFT', 5, (i-1) * -15 - 3)
 	end
 
+	e.UpdateFrames()
 	e.UpdateCharacterFrames()
 
 end
@@ -972,6 +984,8 @@ function e.UpdateFrames()
 	if not init then return end
 	sortedTable = e.DeepCopy(AstralKeys)
 
+	sortedTable = e.UpdateTables(sortedTable)
+
 	e.SortTable(sortedTable, e.GetSortMethod())
 
 	if #AstralKeys > 26 then
@@ -984,21 +998,36 @@ function e.UpdateFrames()
 		indexEnd = 26
 	end
 
-	for i = 1, indexEnd do
-		index = i + offset
-		name, keyLevel, mapID, class, usable, realm = sortedTable[index].name, sortedTable[index].level, sortedTable[index].map, sortedTable[index].class, sortedTable[index].usable, sortedTable[index].realm
-		if nameFrames[i] then
+	if #sortedTable < #nameFrames then
+		for i = 1, indexEnd do
+			index = i + offset
+			name, keyLevel, mapID, class, usable, realm = sortedTable[index].name, sortedTable[index].level, sortedTable[index].map, sortedTable[index].class, sortedTable[index].usable, sortedTable[index].realm
 			nameFrames[i]:SetNameInfo(name, class, realm)
 			keyFrames[i]:SetKeyInfo(keyLevel)
 			mapFrames[i]:SetMapInfo(mapID, usable, keyLevel)
-		else
-			nameFrames[i] = CreateNameFrame(AstralContentFrame, name, class, realm)
-			keyFrames[i] = CreateKeyFrame(AstralContentFrame, keyLevel)
-			mapFrames[i] = CreateMapFrame(AstralContentFrame, mapID, usable, keyLevel)
+		end
+		for i = indexEnd + 1, #nameFrames do
+			nameFrames[i]:SetNameInfo('', nil, nil)
+			keyFrames[i]:SetKeyInfo(-1)
+			mapFrames[i]:SetMapInfo(-1, nil, nil)
+		end
+	else
+		for i = 1, indexEnd do
+			index = i + offset
+			name, keyLevel, mapID, class, usable, realm = sortedTable[index].name, sortedTable[index].level, sortedTable[index].map, sortedTable[index].class, sortedTable[index].usable, sortedTable[index].realm
+			if nameFrames[i] then
+				nameFrames[i]:SetNameInfo(name, class, realm)
+				keyFrames[i]:SetKeyInfo(keyLevel)
+				mapFrames[i]:SetMapInfo(mapID, usable, keyLevel)
+			else
+				nameFrames[i] = CreateNameFrame(AstralContentFrame, name, class, realm)
+				keyFrames[i] = CreateKeyFrame(AstralContentFrame, keyLevel)
+				mapFrames[i] = CreateMapFrame(AstralContentFrame, mapID, usable, keyLevel)
 
-			keyFrames[i]:SetPoint('TOPLEFT', keyButton, 'BOTTOMLEFT', 5, (i-1) * -15 - 3)
-			mapFrames[i]:SetPoint('TOPLEFT', mapButton, 'BOTTOMLEFT', 5, (i-1) * -15 - 3)
-			nameFrames[i]:SetPoint('TOPLEFT', nameButton, 'BOTTOMLEFT', 5, (i-1) * -15 - 3)
+				keyFrames[i]:SetPoint('TOPLEFT', keyButton, 'BOTTOMLEFT', 5, (i-1) * -15 - 3)
+				mapFrames[i]:SetPoint('TOPLEFT', mapButton, 'BOTTOMLEFT', 5, (i-1) * -15 - 3)
+				nameFrames[i]:SetPoint('TOPLEFT', nameButton, 'BOTTOMLEFT', 5, (i-1) * -15 - 3)
+			end
 		end
 	end
 

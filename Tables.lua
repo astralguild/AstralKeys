@@ -1,35 +1,35 @@
 local _, e = ...
 
-local data = {}
+local units = {}
 
 local function ParseOnlineUnits(A)
-	tprint(A[2])
-	local guildName, online
-	for i = 1, select(2, GetNumGuildMembers()) do
+	local tbl = {}
+	wipe(units)
+	local guildName
+	local numOnline = select(2, GetNumGuildMembers())
+	for i = 1, numOnline do
 		guildName = GetGuildRosterInfo(i)
 		guildName = Ambiguate(guildName, 'GUILD')
-		for n = 1, #A do
-			if A[n]['realm'] then
-			 	if A[n]['realm'] == e.PlayerRealm() then
-					if A[n].name ~= guildName then
-						table.remove(A, n)
-					end
-				end
-			else
-				table.remove(A, n)
-			end
+		units[guildName] = true
+	end
+
+	for k, v in pairs(A) do
+		local key = v.name
+		if units[key] then
+			tbl[#tbl+1] = v
 		end
 	end
+
+	return tbl
 end
 
-function e.UpdateTables()
-	wipe(data)
-	data = e.DeepCopy(AstralKeys)
+function e.UpdateTables(table)
+	table = e.DeepCopy(AstralKeys)
 	if not e.GetShowOffline() then
-		ParseOnlineUnits(data)
+		table = ParseOnlineUnits(table)
 	end
 
-	return data
+	return table
 end
 
 function e.SortTable(A, v)

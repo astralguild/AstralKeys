@@ -87,8 +87,10 @@ function e.AnounceCharacterKeys(channel)
 
 		if id then
 			local link, keyLevel = e.CreateKeyLink(id)
-			if channel == 'PARTY' and not IsInGroup() then return end
-			SendChatMessage(e.CharacterName(i) .. ' ' .. link .. ' +' .. keyLevel, channel)
+			if keyLevel >= e.GetMinKeyLevel() then
+				if channel == 'PARTY' and not IsInGroup() then return end
+				SendChatMessage(e.CharacterName(i) .. ' ' .. link .. ' +' .. keyLevel, channel)
+			end
 		end
 	end
 end

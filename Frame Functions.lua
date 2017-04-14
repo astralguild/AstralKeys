@@ -7,7 +7,7 @@ insets = {left = 0, right = 0, top = 0, bottom = 0}
 
 local FONT_HEADER = "Interface\\AddOns\\AstralKeys\\Media\\big_noodle_titling.TTF"
 local FONT_CONTENT = "Interface\\AddOns\\AstralKeys\\Media\\Lato-Regular.TTF"
-local FONT_SIZE = 13
+local FONT_SIZE = 12
 
 local FONTOBJECT_EDITBOX = CreateFont("FONTOBJECT_EDITBOX")
 FONTOBJECT_EDITBOX:SetFont(FONT_CONTENT, FONT_SIZE - 1)
@@ -48,7 +48,7 @@ function e.CreateEditBox(parent, name, width, label, minValue, maxValue)
 		end)
 
 	if label then
-		editBox.label = e.CreateLabel(editBox, label, 'right')
+		editBox.label = e.CreateLabel(editBox, label, 'left')
 	end
 
 	function editBox:SetValue(value)
