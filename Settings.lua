@@ -1,8 +1,8 @@
 local _, e = ...
 
---local version = GetAddonMetaData('AstralKeys', 'version')
---version = version:gsub('%.', '')
-local version = 1116
+local version = GetAddonMetaData('AstralKeys', 'version')
+version = version:gsub('[%a%p]', '')
+
 if not AstralKeysSettings then 
 	AstralKeysSettings = {
 		['resetSettings'] = false,
