@@ -1,11 +1,14 @@
 local _, e = ...
 
 if not AstralAffixes then 
-	AstralAffixes = {} 
+	AstralAffixes = {}
+end
+--[[
 	AstralAffixes[1] = 0
 	AstralAffixes[2] = 0
 	AstralAffixes[3] = 0
 end
+]]
 
 local GRAY = 'ff9d9d9d'
 local PURPLE = 'ffa335ee'
@@ -19,6 +22,7 @@ e.RegisterEvent('CHALLENGE_MODE_MAPS_UPDATE', function()
 	if UnitLevel('player') ~= 110 then return end
 	e.GetBestClear()
  	if not init then
+ 		e.UpdateGuildList()
  		e.FindKeyStone(true)
  		e.BuildMapTable()
  		SendAddonMessage('AstralKeys', 'request', 'GUILD')
@@ -26,23 +30,11 @@ e.RegisterEvent('CHALLENGE_MODE_MAPS_UPDATE', function()
  	end
  end)
 
-e.RegisterEvent('CHALLENGE_MODE_COMPLETED', function()
+e.RegisterEvent('BAG_UPDATE', function(...)
+
+	e.UnregisterEvent('BAG_UPDATE')
 	e.FindKeyStone(true, true)
 	end)
-
-function e.ParseAffixes()
-	for i=1, #AstralKeys do
-		if AstralKeys[i].a1 ~= 0 then
-			AstralAffixes[1] = AstralKeys[i].a1
-		end
-		if AstralKeys[i].a2 ~= 0 then
-			AstralAffixes[2] = AstralKeys[i].a2
-		end
-		if AstralKeys[i].a3 ~= 0 then
-			AstralAffixes[3] = AstralKeys[i].a3
-		end
-	end
-end
 
 function e.CreateKeyLink(index)
 	s = '|c'
@@ -65,21 +57,6 @@ e.RegisterEvent('CHALLENGE_MODE_NEW_RECORD', function()
 	e.UpdateCharacterFrames()
 	end)
 
-e.RegisterEvent('CHAT_MSG_LOOT', function(...)
-
-	local msg = ...
-	local sender = select(5, ...) -- Should return unit that looted
-	--test = {...}
-	--tprint(test)
-	--print(msg, sender)
-	if not sender == e.PlayerName() then return end
-	if not msg:find('You') then return end
-
-	if msg:find('Keystone') then
-		e.FindKeyStone(true, true)
-	end
-
-	end)
 
 function e.SetAffix(affixNumber, affixID)
 	AstralAffixes[affixNumber] = affixID
@@ -90,7 +67,8 @@ function e.GetAffix(affixNumber)
 end
 
 function e.FindKeyStone(sendUpdate, anounceKey)
-	s = ''
+	local mapID, keyLevel, usable, a1, a2, a3, s, itemID, delink, link
+	local s = ''
 
 	for bag = 0, NUM_BAG_SLOTS + 1 do
 		for slot = 1, GetContainerNumSlots(bag) do
@@ -100,21 +78,50 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 				delink = link:gsub('\124', '\124\124')
 				mapID, keyLevel, usable, a1, a2, a3 = delink:match(':(%d+):(%d+):(%d+):(%d+):(%d+):(%d+)')
 				s = 'updateV1 ' .. e.PlayerName() .. ':' .. e.PlayerClass() .. ':' .. e.PlayerRealm() ..':' .. mapID .. ':' .. keyLevel .. ':' .. usable .. ':' .. a1 .. ':' .. a2 .. ':' .. a3
+				--s = 'updateV1 CHARACTERSAZ:DEMONHUNTER:Bleeding Hollow:201:22:1:13:13:10'				
 			end
 		end
 	end
 
-	local oldMap, oldLevel, oldUsable = e.GetCharacterKey(e.PlayerName())
+	if not link then 
+		e.RegisterEvent('CHAT_MSG_LOOT', function(...)
 
-	e.CheckForWeeklyClear(a1)
+		local msg = ...
+		local sender = select(5, ...) -- Should return unit that looted
+		if not sender == e.PlayerName() then return end
+		--if not msg:find('You') then return end
+
+		if msg:find('Keystone') then
+			e.FindKeyStone(true, true)
+			e.UnregisterEvent('CHAT_MSG_LOOT')
+		end
+
+		end)
+	end
+
+	local oldMap, oldLevel, oldUsable = e.GetUnitKey(e.PlayerID())
 
 	if tonumber(oldMap) == tonumber(mapID) and tonumber(oldLevel) == tonumber(keyLevel) and tonumber(oldUsable) == tonumber(usable) then return end
 
 	if sendUpdate  and s ~= '' then
-		SendAddonMessage('AstralKeys', s, 'GUILD')
+		if IsInGuild() then
+			SendAddonMessage('AstralKeys', s, 'GUILD')
+		else
+			AstralKeys[#AstralKeys + 1] = {
+			['name'] = e.PlayerName(),
+			['class'] = e.PlayerClass(),
+			['realm'] = e.PlayerRealm(),
+			['map'] = tonumber(mapID),
+			['level'] = tonumber(keyLevel),
+			['usable'] = tonumber(usable),
+			['a1'] = tonumber(a1),
+			['a2'] = tonumber(a2),
+			['a3'] = tonumber(a3),
+			}
+		end
 	end
 
-	if anounceKey then
+	if anounceKey and link then
 		e.AnnounceNewKey(link, keyLevel)
 	end
 
@@ -124,7 +131,7 @@ function e.GetKeyLevelByIndex(index)
 	return AstralKeys[index].keyLevel
 end
 
-local function CreateKeyText(mapID, level, isDepleted)
+local function CreateKeyText(mapID, level, usable)
 	if not isDepleted then
 		return level .. ' ' .. C_ChallengeMode.GetMapInfo(mapID)
 	else
@@ -139,7 +146,7 @@ end
 function e.GetUnitKey(id)
 	if not id then return '' end
 
-	return AstralKeys[id].map
+	return AstralKeys[id]['map'], AstralKeys[id]['level'], AstralKeys[id]['usable']
 end
 
 function e.GetCharacterKey(unit)

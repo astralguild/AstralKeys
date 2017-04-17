@@ -34,13 +34,13 @@ akComms:SetScript('OnEvent', function(self, event, ...)
 		affixTwo = tonumber(affixTwo)
 		affixThree = tonumber(affixThree)
 
+		if not e.UnitInGuild(sender) then return end
 
 		local currenta1 = tonumber(e.GetAffix(1))
 
 		if currenta1 ~= 0 and affixOne ~= 0 then
 			if tonumber(affixOne) ~= currenta1 then
 				e.WipeFrames()
- 				--SendAddonMessage('AstralKeys', 'request', 'GUILD')
 			end
 		end
 
@@ -76,7 +76,11 @@ akComms:SetScript('OnEvent', function(self, event, ...)
 	if arg == 'request' then
 		if sender == e.PlayerName() .. '-' .. e.PlayerRealm() then return end
 		for i = 1, #AstralKeys do
-			SendAddonMessage('AstralKeys', AddonMessage(i), 'GUILD')
+			if AstralKeys[i].realm == e.PlayerRealm() then
+				if e.UnitInGuild(AstralKeys[i].name) then
+					SendAddonMessage('AstralKeys', AddonMessage(i), 'GUILD')
+				end
+			end
 		end
 	end
 	end)

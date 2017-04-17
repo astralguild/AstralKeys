@@ -77,7 +77,7 @@ function e.BuildMapTable()
 		DUNGEON_TABLE[map].chestTimes[2] = b
 		DUNGEON_TABLE[map].chestTimes[3] = c
 		DUNGEON_TABLE[map]['apTier'] = {}
-		if runTime == 1400 then
+		if runTime == 1440 then
 			DUNGEON_TABLE[map].apTier[1] = 175
 			DUNGEON_TABLE[map].apTier[2] = 290
 			DUNGEON_TABLE[map].apTier[3] = 325

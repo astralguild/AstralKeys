@@ -16,6 +16,10 @@ function e.RegisterEvent(event, func)
 	end
 end
 
+function e.UnregisterEvent(event)
+	akEvents:UnregisterEvent(event)
+	akEvents[event] = nil
+end
 
 --[[
 e.RegisterEvent('CHAT_MSG_SYSTEM', function(...)

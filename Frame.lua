@@ -349,7 +349,7 @@ end
 
 local AstralKeyFrame = CreateFrame('FRAME', 'AstralKeyFrame', UIParent)
 AstralKeyFrame:SetWidth(650)
-AstralKeyFrame:SetHeight(500)
+AstralKeyFrame:SetHeight(505)
 AstralKeyFrame:SetPoint('CENTER', UIParent, 'CENTER')
 AstralKeyFrame:EnableMouse(true)
 AstralKeyFrame:SetBackdrop(BACKDROP)
@@ -361,9 +361,76 @@ AstralKeyFrame:SetPropagateKeyboardInput(true)
 AstralKeyFrame:SetClampedToScreen(true)
 AstralKeyFrame:Hide()
 
+local guildInfo = CreateFrame('FRAME', nil, AstralKeyFrame)
+guildInfo:SetSize(125, 13)
+guildInfo:SetPoint('BOTTOMRIGHT', AstralKeyFrame, 'BOTTOMRIGHT', -5, 5)
+guildInfo:EnableMouse(true)
+guildInfo:SetScript('OnMouseDown', function(self) 
+	if not astralGuildInfo then
+		local astralGuildInfo = CreateFrame('FRAME', 'astralGuildInfo', UIParent)
+		astralGuildInfo:SetFrameLevel(8)
+		astralGuildInfo:SetSize(200, 100)
+		astralGuildInfo:SetBackdrop(BACKDROPBUTTON)
+		astralGuildInfo:SetBackdropBorderColor(.2, .2, .2, 1)
+		astralGuildInfo:SetPoint('BOTTOM', UIParent, 'TOP', 0, -300)
+
+		astralGuildInfo.text = astralGuildInfo:CreateFontString('ARTWORK')
+		astralGuildInfo.text:SetFont(FONT_CONTENT, FONT_SIZE)
+		astralGuildInfo.text:SetPoint('TOP', astralGuildInfo,'TOP', 0, -10)
+		astralGuildInfo.text:SetText('Visit Astral at')
+
+		astralGuildInfo.editBox = CreateFrame('EditBox', nil, astralGuildInfo)
+		astralGuildInfo.editBox:SetSize(180, 20)
+		astralGuildInfo.editBox:SetPoint('TOP', astralGuildInfo.text, 'BOTTOM', 0, -10)
+
+		astralGuildInfo.tex = astralGuildInfo:CreateTexture('ARTWORK')
+		astralGuildInfo.tex:SetSize(198, 98)
+		astralGuildInfo.tex:SetPoint('TOPLEFT', astralGuildInfo, 'TOPLEFT', 1, -1)
+		astralGuildInfo.tex:SetColorTexture(0, 0, 0)
+
+		astralGuildInfo.editBox:SetBackdrop(BACKDROPBUTTON)
+		astralGuildInfo.editBox:SetBackdropBorderColor(.2, .2, .2, 1)
+		astralGuildInfo.editBox:SetFontObject(FONT_OBJECT_CENTRE)
+		astralGuildInfo.editBox:SetText('www.astralguild.com')
+		astralGuildInfo.editBox:HighlightText()
+		astralGuildInfo.editBox:SetScript('OnChar', function(self, char)
+			self:SetText('www.astralguild.com')
+			self:HighlightText()
+
+		astralGuildInfo.editBox:SetScript("OnEscapePressed", function(self)
+			astralGuildInfo:Hide()
+		end)
+
+			end)
+		astralGuildInfo.editBox:SetScript('OnEditFocusLost', function(self)
+			self:SetText('www.astralguild.com')
+			self:HighlightText()
+			end)
+
+		astralGuildInfo.button = CreateButton(astralGuildInfo, nil, 40, 20, 'OK', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT)
+		astralGuildInfo.button:SetBackdrop(BACKDROPBUTTON)
+		astralGuildInfo.button:SetBackdropBorderColor(.2, .2, .2, 1)
+		astralGuildInfo.button:SetPoint('BOTTOM', astralGuildInfo, 'BOTTOM', 0, 10)
+		astralGuildInfo.button.t:ClearAllPoints()
+		astralGuildInfo.button.t = nil
+		astralGuildInfo.button:SetScript('OnClick', function(self)
+			astralGuildInfo:Hide() end)
+	else
+		astralGuildInfo:Show()
+	end
+ end)
+
+
+
+guildInfo.string = guildInfo:CreateFontString('ARTWORK')
+guildInfo.string:SetFont(FONT_CONTENT, FONT_SIZE - 2)
+guildInfo.string:SetText('Astral - Turalyon (US)')
+guildInfo.string:SetJustifyH('RIGHT')
+guildInfo.string:SetPoint('BOTTOMRIGHT', guildInfo, 'BOTTOMRIGHT')
+
 AstralKeyFrame.version = AstralKeyFrame:CreateFontString('ARTWORK')
 AstralKeyFrame.version:SetFont(FONT_CONTENT, FONT_SIZE - 3)
-AstralKeyFrame.version:SetPoint('BOTTOMRIGHT', AstralKeyFrame, 'BOTTOMRIGHT', -5, 5)
+AstralKeyFrame.version:SetPoint('BOTTOMRIGHT', guildInfo, 'TOPRIGHT')
 AstralKeyFrame.version:SetText('v'.. GetAddOnMetadata('AstralKeys', 'version'))
 AstralKeyFrame.version:SetJustifyH('RIGHT')
 
@@ -392,7 +459,6 @@ toggleButton:SetSize(16, 16)
 toggleButton:SetPoint('TOPRIGHT', closeButton, 'TOPLEFT', - 5, 0)
 toggleButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize.tga')
 toggleButton:SetHighlightTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize_highlight.tga', 'BLEND')
-
 
 toggleButton:SetScript('OnClick', function(self)
 	local left, bottom, width = AstralKeyFrame:GetRect()
@@ -464,7 +530,7 @@ local quickOptions = CreateFrame('BUTTON', nil, AstralKeyFrame)
 quickOptions:SetSize(16, 16)
 quickOptions:SetPoint('TOPRIGHT', toggleButton, 'TOPLEFT', -5, 0)
 quickOptions:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\folder.tga')
-quickOptions:SetHighlightTexture('Interface\\AddOns\\AstralKeys\\Media\\folder_highlight.tga', 'MOD')
+quickOptions:SetHighlightTexture('Interface\\AddOns\\AstralKeys\\Media\\folder_highlight.tga', 'BLEND')
 quickOptions:SetScript('OnClick', function ()
 	quickOptionsFrame:SetShown(not quickOptionsFrame:IsShown())
 end)
@@ -510,6 +576,16 @@ guildAnnounce:SetPoint('LEFT', partyAnnounce, 'RIGHT')
 
 guildAnnounce:SetScript('OnClick', function()
 	e.AnounceCharacterKeys('GUILD')
+	end)
+
+quickOptionsFrame:SetScript('OnShow', function(self)
+	partyAnnounce:Disable()
+	guildAnnounce:Disable()
+	end)
+
+quickOptionsFrame:SetScript('OnHide', function(self)
+	partyAnnounce:Enable()
+	guildAnnounce:Enable()
 	end)
 
 -- Tooltip AstralKeyFrame
@@ -722,10 +798,10 @@ function contentFrame:ResetSlider()
 end
 
 contentFrame:SetScript('OnMouseWheel', function(self, delta)
-	if #AstralKeys < 27 then return end
+	if #AstralKeys < 26 then return end
 
 	if delta < 0 then -- Scroll down
-		if (#AstralKeys - offset) > 26 then
+		if (#AstralKeys - offset) > 25 then
 			offset = offset - delta
 			e.UpdateFrames()
 		end			
@@ -737,7 +813,7 @@ contentFrame:SetScript('OnMouseWheel', function(self, delta)
 	end  
 
 	contentFrame.slider:ClearAllPoints()
-	contentFrame.slider:SetPoint('TOPLEFT', contentFrame, 'TOPRIGHT', 0, -offset/(#sortedTable - 26) * 385)
+	contentFrame.slider:SetPoint('TOPLEFT', contentFrame, 'TOPRIGHT', 0, -offset/(#sortedTable - 25) * 380)
 
 	end)
 
@@ -821,7 +897,7 @@ AstralKeyFrame:SetScript('OnDragStop', function(self)
 local init = false
 local function InitializeFrame()
 	init = true
-	
+
 	showOffline:SetChecked(e.GetShowOffline())
 	minKeyLevel:SetValue(e.GetMinKeyLevel())
 	e.GetBestClear()
@@ -912,12 +988,11 @@ local function InitializeFrame()
 
 		end)
 
-	-- MAX 26
-
-	if #sortedTable < 27 then
+	-- MAX 25
+	if #sortedTable < 26 then
 		indexEnd = #sortedTable
 	else
-		indexEnd = 26
+		indexEnd = 25
 	end
 
 	for i = 1, indexEnd do
@@ -975,7 +1050,7 @@ function e.WipeFrames()
 		keyFrames[i]:SetKeyInfo(-1)
 		mapFrames[i]:SetMapInfo(-1)
 	end
-	e.FindKeyStone(true)
+	--e.FindKeyStone(true)
 end
 
 local name, keyLevel, mapID, class, usable, realm, index
@@ -988,14 +1063,14 @@ function e.UpdateFrames()
 
 	e.SortTable(sortedTable, e.GetSortMethod())
 
-	if #AstralKeys > 26 then
+	if #AstralKeys > 25 then
 		AstralContentFrame.slider:Show()
 	end
 
-	if #sortedTable < 27 then
+	if #sortedTable < 26 then
 		indexEnd = #sortedTable
 	else
-		indexEnd = 26
+		indexEnd = 25
 	end
 
 	if #sortedTable < #nameFrames then

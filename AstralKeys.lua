@@ -1,20 +1,7 @@
 local a, e = ...
 if not AstralKeys then AstralKeys = {} end
 if not AstralCharacters then AstralCharacters = {} end
-
-function e.CheckForWeeklyClear(a1)
-	local affix = tonumber(a1)
-
-	local currentAffix = e.GetAffix(1)
-	if tonumber(currentAffix) == 0 then return end
-
-	if currentAffix == affix then return end
-
-	AstralAffixes[1] = 0
-	AstralAffixes[2] = 0
-	AstralAffixes[3] = 0
-	--e.WipeFrames()
-end
+local REGION_RESET = 288000
 
 local SI = {}
 SI[0] = ''
@@ -52,15 +39,14 @@ function e.ConvertToSI(quantity)
 end
 
 e.RegisterEvent('PLAYER_LOGIN', function()
-	local isOlddata = false
-	for i = 1, #AstralCharacters do
-		if not AstralCharacters[i].realm then
-			isOlddata = true
-			break
-		end
+	local d = date('*t')
+	local secs = d.sec + d.min * 60 + d.hour * 60 + d.wday * 24*60*60
+	if secs >= REGION_RESET and AstralKeysSettings.initTime < secs then
+		wipe(AstralCharacters)
+		wipe(AstralKeys)
+		wipe(AstralAffixes)
+		AstralKeysSettings.initTime = e.DataInitTime()
 	end
-
-	--if isOlddata then wipe(AstralCharacters) end
 
 	for i = 1, #AstralKeys do
 		e.SetUnitID(AstralKeys[i].name .. AstralKeys[i].realm, i)

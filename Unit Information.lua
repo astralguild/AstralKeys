@@ -1,6 +1,20 @@
 local _, e = ...
 
 local unitList = {}
+local guildList = {}
+
+function e.UpdateGuildList()
+	wipe(guildList)
+	local name
+	for i = 1, GetNumGuildMembers() do
+		name = Ambiguate(GetGuildRosterInfo(i), 'GUILD')
+		guildList[name] = true
+	end
+end
+
+function e.UnitInGuild(unit)
+	return guildList[unit]
+end
 
 function e.SetUnitID(unit, unitID)
 	unitList[unit] = unitID
@@ -39,3 +53,4 @@ function e.GetColoredClassText(index)
 	return WrapTextInColor(AstralKeys[index].name , GetClassColor(AstralKeys[index].class))
 end
 
+e.RegisterEvent('GUILD_ROSTER_UPDATE', function() e.UpdateGuildList() end)

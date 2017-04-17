@@ -1,11 +1,20 @@
 local _, e = ...
 
-local version = GetAddOnMetadata('AstralKeys', 'version')
+local version
+version = GetAddOnMetadata('AstralKeys', 'version')
 version = version:gsub('[%a%p]', '')
+
+if version == '' then version = 1118 end
+
+function e.DataInitTime()
+	local d = date('*t')
+	return d.sec + d.min * 60 + d.hour * 60 + d.wday * 24*60*60
+end
+
 
 if not AstralKeysSettings then 
 	AstralKeysSettings = {
-		['resetSettings'] = true,
+		['initTime'] = e.DataInitTime(),
 		['frameOptions'] = {
 			['orientation'] = 0,
 			['sortMethod'] = 'level',
@@ -18,15 +27,19 @@ if not AstralKeysSettings then
 		}
 end
 
+--[[
 local frame = CreateFrame('FRAME')
 frame:RegisterEvent('ADDON_LOADED')
 frame:SetScript('OnEvent', function(self, event, ...)
 	local addon = ...
 	if addon == 'AstralKeys' then
-		if tonumber(version) >= 1116 and not AstralKeysSettings['resetSettings'] then
+		print(GetAddOnMetadata('AstralKeys', 'version'))
+		--if tonumber(version) == 1118 then wipe(AstralKeys) end
+		if (tonumber(version) >= 1118) and (AstralKeysSettings['resetSettings']) then
 			AstralKeysSettings = {}
 			AstralKeysSettings = {
-			['resetSettings'] = true,
+			['initTime'] = GetServerTime(),
+			['resetSettings'] = false,
 			['frameOptions'] = {
 				['orientation'] = 0,
 				['sortMethod'] = 'level',
@@ -39,11 +52,8 @@ frame:SetScript('OnEvent', function(self, event, ...)
 			}
 		end
 	end
-
 	end)
-
-
-
+]]
 
 function e.GetOrientation()
 	return AstralKeysSettings.frameOptions.orientation
