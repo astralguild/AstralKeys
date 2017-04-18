@@ -19,11 +19,9 @@ IMP[3] = 'B'
 IMP[4] = 'T'
 IMP[5] = 'Q'
 
-local amount, index
-
 function e.ConvertToSI(quantity)
-	amount = quantity
-	index = 0
+	local amount = quantity
+	local index = 0
 
 	while amount > 1000 do
 		index = index + 1
@@ -40,7 +38,8 @@ end
 
 e.RegisterEvent('PLAYER_LOGIN', function()
 	local d = date('*t')
-	local secs = d.sec + d.min * 60 + d.hour * 60 + d.wday * 24*60*60
+	local secs = d.sec + d.min * 60 + d.hour * 60* 60 + d.wday * 24*60*60
+	--print(secs, REGION_RESET, AstralKeysSettings.initTime)
 	if secs >= REGION_RESET and AstralKeysSettings.initTime < secs then
 		wipe(AstralCharacters)
 		wipe(AstralKeys)
@@ -48,9 +47,18 @@ e.RegisterEvent('PLAYER_LOGIN', function()
 		AstralKeysSettings.initTime = e.DataInitTime()
 	end
 
+	if d.wday == 3 and d.hour < 8 then
+		local time = 0
+		local frame = CreateFrame('FRAME')
+		frame:SetScript('OnUpdate', function(self, elapsed)
+			time = 0 + elapsed
+			end)
+	end
+
 	for i = 1, #AstralKeys do
 		e.SetUnitID(AstralKeys[i].name .. AstralKeys[i].realm, i)
 	end
+
 	
 	C_ChallengeMode.RequestMapInfo()
 	e.SetPlayerName()

@@ -1,7 +1,6 @@
 local _, e = ...
 
 local BROADCAST = true
-local temp = {}
 local sender, unitClass, unitRealm, dungeonID, keyLevel, usable, affixOne, affixTwo, affixThree
 
 local arg, content, msg, prefix, sender
@@ -20,13 +19,13 @@ function e.AnnounceNewKey(keyLink, level)
 end
 
 akComms:SetScript('OnEvent', function(self, event, ...)
-	prefix, msg, _, sender = ...
+	local prefix, msg, _, sender = ...
 	if not (prefix == 'AstralKeys') then return end
 
-	arg, content = msg:match("^(%S*)%s*(.-)$")
+	local arg, content = msg:match("^(%S*)%s*(.-)$")
 	if arg == 'updateV1' then
-		sender, unitClass, unitRealm = content:match('(%a+):(%a+):([%a%s-\']+)')
-		dungeonID, keyLevel, isUsable, affixOne, affixTwo, affixThree = content:match(':(%d+):(%d+):(%d+):(%d+):(%d+):(%d+)')
+		local sender, unitClass, unitRealm = content:match('(%a+):(%a+):([%a%s-\']+)')
+		local dungeonID, keyLevel, isUsable, affixOne, affixTwo, affixThree = content:match(':(%d+):(%d+):(%d+):(%d+):(%d+):(%d+)')
 		dungeonID = tonumber(dungeonID)
 		keyLevel = tonumber(keyLevel)
 		isUsable = tonumber(isUsable)
@@ -40,7 +39,7 @@ akComms:SetScript('OnEvent', function(self, event, ...)
 
 		if currenta1 ~= 0 and affixOne ~= 0 then
 			if tonumber(affixOne) ~= currenta1 then
-				e.WipeFrames()
+				--e.WipeFrames()
 			end
 		end
 
@@ -76,10 +75,8 @@ akComms:SetScript('OnEvent', function(self, event, ...)
 	if arg == 'request' then
 		if sender == e.PlayerName() .. '-' .. e.PlayerRealm() then return end
 		for i = 1, #AstralKeys do
-			if AstralKeys[i].realm == e.PlayerRealm() then
-				if e.UnitInGuild(AstralKeys[i].name) then
-					SendAddonMessage('AstralKeys', AddonMessage(i), 'GUILD')
-				end
+			if e.UnitInGuild(AstralKeys[i].name) then
+				SendAddonMessage('AstralKeys', AddonMessage(i), 'GUILD')
 			end
 		end
 	end

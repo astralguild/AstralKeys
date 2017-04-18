@@ -813,7 +813,7 @@ contentFrame:SetScript('OnMouseWheel', function(self, delta)
 	end  
 
 	contentFrame.slider:ClearAllPoints()
-	contentFrame.slider:SetPoint('TOPLEFT', contentFrame, 'TOPRIGHT', 0, -offset/(#sortedTable - 25) * 380)
+	contentFrame.slider:SetPoint('TOPLEFT', contentFrame, 'TOPRIGHT', 0, -offset/(#sortedTable - 25) * 365)
 
 	end)
 

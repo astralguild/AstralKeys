@@ -13,8 +13,7 @@ end
 local GRAY = 'ff9d9d9d'
 local PURPLE = 'ffa335ee'
 
-local currentKey = ''
-local mapID, keyLevel, usable, a1, a2, a3, s, itemID, delink, link
+--local mapID, keyLevel, usable, a1, a2, a3, s, itemID, delink, link
 
 local init = false
 
@@ -30,15 +29,21 @@ e.RegisterEvent('CHALLENGE_MODE_MAPS_UPDATE', function()
  	end
  end)
 
-e.RegisterEvent('BAG_UPDATE', function(...)
+e.RegisterEvent('CHALLENGE_MODE_START', function()
+	--print('this shit started')
+	e.RegisterEvent('BAG_UPDATE', function() 
+		--STUFF
+		end)
 
-	e.UnregisterEvent('BAG_UPDATE')
-	e.FindKeyStone(true, true)
+	end)
+
+e.RegisterEvent('BAG_UPDATE', function(...)
+	--e.FindKeyStone(true, true)
 	end)
 
 function e.CreateKeyLink(index)
-	s = '|c'
-	mapID, keyLevel, usable, a1, a2, a3 = AstralKeys[index].map, AstralKeys[index].level, AstralKeys[index].usable, AstralKeys[index].a1, AstralKeys[index].a2, AstralKeys[index].a3
+	local s = '|c'
+	local mapID, keyLevel, usable, a1, a2, a3 = AstralKeys[index].map, AstralKeys[index].level, AstralKeys[index].usable, AstralKeys[index].a1, AstralKeys[index].a2, AstralKeys[index].a3
 
 	if tonumber(usable) == 1 then
 		s = s .. PURPLE
@@ -67,7 +72,7 @@ function e.GetAffix(affixNumber)
 end
 
 function e.FindKeyStone(sendUpdate, anounceKey)
-	local mapID, keyLevel, usable, a1, a2, a3, s, itemID, delink, link
+	local s, itemID, delink, link
 	local s = ''
 
 	for bag = 0, NUM_BAG_SLOTS + 1 do
@@ -76,7 +81,7 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 			if (itemID and itemID == 138019) then
 				link = GetContainerItemLink(bag, slot)
 				delink = link:gsub('\124', '\124\124')
-				mapID, keyLevel, usable, a1, a2, a3 = delink:match(':(%d+):(%d+):(%d+):(%d+):(%d+):(%d+)')
+				local mapID, keyLevel, usable, a1, a2, a3 = delink:match(':(%d+):(%d+):(%d+):(%d+):(%d+):(%d+)')
 				s = 'updateV1 ' .. e.PlayerName() .. ':' .. e.PlayerClass() .. ':' .. e.PlayerRealm() ..':' .. mapID .. ':' .. keyLevel .. ':' .. usable .. ':' .. a1 .. ':' .. a2 .. ':' .. a3
 				--s = 'updateV1 CHARACTERSAZ:DEMONHUNTER:Bleeding Hollow:201:22:1:13:13:10'				
 			end
@@ -85,6 +90,7 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 
 	if not link then 
 		e.RegisterEvent('CHAT_MSG_LOOT', function(...)
+			--print('registering event to find key')
 
 		local msg = ...
 		local sender = select(5, ...) -- Should return unit that looted
@@ -92,13 +98,19 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 		--if not msg:find('You') then return end
 
 		if msg:find('Keystone') then
+			--print('loot event fired to find it')
 			e.FindKeyStone(true, true)
 			e.UnregisterEvent('CHAT_MSG_LOOT')
 		end
 
 		end)
 	end
-
+--[[
+	e.RegisterEvent('BAG_UPDATE', function()
+		e.FindKeyStone(true, true)
+		print('bag update fired to find it')
+		end)
+]]
 	local oldMap, oldLevel, oldUsable = e.GetUnitKey(e.PlayerID())
 
 	if tonumber(oldMap) == tonumber(mapID) and tonumber(oldLevel) == tonumber(keyLevel) and tonumber(oldUsable) == tonumber(usable) then return end
@@ -183,8 +195,8 @@ end
 local bestLevel, bestMap, weeklyBestLevel
 function e.GetBestClear()
 	if UnitLevel('player') ~= 110 then return end
-	bestLevel = 0
-	bestMap = 0
+	local bestLevel = 0
+	local bestMap = 0
 	for _, v in pairs(C_ChallengeMode.GetMapTable()) do
 		_, _, weeklyBestLevel = C_ChallengeMode.GetMapPlayerStats(v)
 		if weeklyBestLevel then

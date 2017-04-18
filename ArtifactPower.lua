@@ -64,13 +64,10 @@ Times
 
 ]]
 
-local name, mapID, runTime, a, b, c
-
-
 function e.BuildMapTable()
 	for map in pairs(DUNGEON_TABLE) do
-		name, mapID, runTime = C_ChallengeMode.GetMapInfo(map)
-		a, b, c = runTime, runTime * .8, runTime * .6
+		local name, mapID, runTime = C_ChallengeMode.GetMapInfo(map)
+		local a, b, c = runTime, runTime * .8, runTime * .6
 		DUNGEON_TABLE[map].name = name
 		DUNGEON_TABLE[map]['chestTimes'] = {}
 		DUNGEON_TABLE[map].chestTimes[1] = a
@@ -134,7 +131,7 @@ WEEKLY_AP[5] = 1925
 WEEKLY_AP[6] = 1925
 WEEKLY_AP[7] = 2150
 WEEKLY_AP[8] = 2150
-WEEKLY_AP[9] = 0
+WEEKLY_AP[9] = 2150  --UPDATE NEEDED, COULD NOT FIND PROPER VALUE
 WEEKLY_AP[10] = 3125
 WEEKLY_AP[11] = 3525
 WEEKLY_AP[12] = 3925
@@ -169,6 +166,4 @@ function e.MapApText(mapID, keyLevel, isDepleted)
 	return s
 
 end
---string.format('%.2f', test)
-	
 		

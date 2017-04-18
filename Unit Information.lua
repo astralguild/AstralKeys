@@ -7,7 +7,9 @@ function e.UpdateGuildList()
 	wipe(guildList)
 	local name
 	for i = 1, GetNumGuildMembers() do
-		name = Ambiguate(GetGuildRosterInfo(i), 'GUILD')
+		name = GetGuildRosterInfo(i)
+		if not name then return end
+		name = Ambiguate(name, 'guild')
 		guildList[name] = true
 	end
 end

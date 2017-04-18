@@ -8,7 +8,7 @@ if version == '' then version = 1118 end
 
 function e.DataInitTime()
 	local d = date('*t')
-	return d.sec + d.min * 60 + d.hour * 60 + d.wday * 24*60*60
+	return d.sec + d.min * 60 + d.hour * 60*60 + d.wday * 24*60*60
 end
 
 

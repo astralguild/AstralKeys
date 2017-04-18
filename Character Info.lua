@@ -6,9 +6,6 @@ function e.CharacterID()
 	return characterID
 end
 
-function e.PlayerID()
-	return playerID
-end
 
 function e.SetCharacterID()
 	characterID = e.GetCharacterID(e.PlayerName())
@@ -40,6 +37,10 @@ end
 
 function e.CharacterClass(id)
 	return AstralCharacters[id].class
+end
+
+function e.PlayerID()
+	return playerID
 end
 
 function e.SetPlayerName()
