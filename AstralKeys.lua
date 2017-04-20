@@ -34,10 +34,9 @@ function e.ConvertToSI(quantity)
 end
 
 e.RegisterEvent('PLAYER_LOGIN', function()
+	local d = date('*t')
 	e.SetPlayerName()
 	e.SetPlayerClass()
-	e.SetPlayerID()
-	e.SetCharacterID()
 	e.SetPlayerRealm()
 
 	if GetServerTime() > AstralKeysSettings.initTime then
@@ -51,6 +50,30 @@ e.RegisterEvent('PLAYER_LOGIN', function()
 		e.FindKeyStone(true, false)
 	end
 
+	if d.wday == 3 and d.hour < 8 then
+		local frame = CreateFrame('FRAME')
+		local interval
+		frame:SetScript('OnUpdate', function(self, elapsed)
+			interval = interval + elapsed
+			if interval > 30 then
+				if GetServerTime() > AstralKeysSettings.initTime then
+					AstralCharacters = {}
+					AstralKeys = {}
+					AstralAffixes = {}
+					AstralAffixes[1] = 0
+					AstralAffixes[2] = 0
+					AstralAffixes[3] = 0
+					AstralKeysSettings.initTime = e.DataResetTime()
+					e.FindKeyStone(true, false)
+					self:SetScript('OnUpdate', nil)
+					self = nil
+				end
+			end 
+			end)
+	end
+
+	e.SetPlayerID()
+	e.SetCharacterID()
 	for i = 1, #AstralKeys do
 		e.SetUnitID(AstralKeys[i].name .. AstralKeys[i].realm, i)
 	end
