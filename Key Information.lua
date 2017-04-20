@@ -72,7 +72,7 @@ function e.GetAffix(affixNumber)
 end
 
 function e.FindKeyStone(sendUpdate, anounceKey)
-	local s, itemID, delink, link
+	local mapID, keyLevel, usable, a1, a2, a3, s, itemID, delink, link
 	local s = ''
 
 	for bag = 0, NUM_BAG_SLOTS + 1 do
@@ -81,7 +81,7 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 			if (itemID and itemID == 138019) then
 				link = GetContainerItemLink(bag, slot)
 				delink = link:gsub('\124', '\124\124')
-				local mapID, keyLevel, usable, a1, a2, a3 = delink:match(':(%d+):(%d+):(%d+):(%d+):(%d+):(%d+)')
+				mapID, keyLevel, usable, a1, a2, a3 = delink:match(':(%d+):(%d+):(%d+):(%d+):(%d+):(%d+)')
 				s = 'updateV1 ' .. e.PlayerName() .. ':' .. e.PlayerClass() .. ':' .. e.PlayerRealm() ..':' .. mapID .. ':' .. keyLevel .. ':' .. usable .. ':' .. a1 .. ':' .. a2 .. ':' .. a3
 				--s = 'updateV1 CHARACTERSAZ:DEMONHUNTER:Bleeding Hollow:201:22:1:13:13:10'				
 			end
@@ -112,7 +112,6 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 		end)
 ]]
 	local oldMap, oldLevel, oldUsable = e.GetUnitKey(e.PlayerID())
-
 	if tonumber(oldMap) == tonumber(mapID) and tonumber(oldLevel) == tonumber(keyLevel) and tonumber(oldUsable) == tonumber(usable) then return end
 
 	if sendUpdate  and s ~= '' then
@@ -156,7 +155,7 @@ local function CreateKeyText(mapID, level, usable)
 end
 
 function e.GetUnitKey(id)
-	if not id then return '' end
+	if not id or (id < 1 ) then return -1, -1, -1 end
 
 	return AstralKeys[id]['map'], AstralKeys[id]['level'], AstralKeys[id]['usable']
 end

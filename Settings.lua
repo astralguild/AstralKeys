@@ -11,26 +11,51 @@ function e.DataInitTime()
 	return d.sec + d.min * 60 + d.hour * 60*60 + d.wday * 24*60*60
 end
 
+function e.DataResetTime()
+	local serverTime = GetServerTime()
+	local d = date('*t')
+	local secs = 60 - d.sec
+	local mins = math.floor(59 - d.min + d.sec/100)
+	local hours = math.floor(23 - d.hour + d.min/100)
+	local days
+	if d.wday > 2 then 
+		days = math.floor(7 - d.wday + d.hour/100) + 2
+	else
+		days = math.floor(2 - d.wday + d.hour/100)
+	end
 
-if not AstralKeysSettings then 
-	AstralKeysSettings = {
-		['initTime'] = e.DataInitTime(),
-		['frameOptions'] = {
-			['orientation'] = 0,
-			['sortMethod'] = 'level',
-			['quickOptions'] = {
-				['showOffline'] = 0,
-				['minKeyLevel'] = 1,
-				},
-			['viewMode'] = 0,
-			},
-		}
+	local time = (((days * 24 + hours + 8) * 60 + mins) * 60 + secs) + serverTime
+
+	return time
 end
 
---[[
 local frame = CreateFrame('FRAME')
 frame:RegisterEvent('ADDON_LOADED')
 frame:SetScript('OnEvent', function(self, event, ...)
+	local addon = ...
+	if addon == 'AstralKeys' then
+
+		if not AstralKeysSettings then
+			AstralKeysSettings = {
+				['initTime'] = e.DataResetTime(),
+				['frameOptions'] = {
+					['orientation'] = 0,
+					['sortMethod'] = 'level',
+					['quickOptions'] = {
+						['showOffline'] = 0,
+						['minKeyLevel'] = 1,
+						},
+					['viewMode'] = 0,
+					},
+				}
+		end
+		if not AstralKeys then AstralKeys = {} end
+		if not AstralCharacters then AstralCharacters = {} end
+		end
+	end)
+
+--[[
+
 	local addon = ...
 	if addon == 'AstralKeys' then
 		print(GetAddOnMetadata('AstralKeys', 'version'))

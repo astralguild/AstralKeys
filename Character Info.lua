@@ -33,6 +33,7 @@ function e.GetCharacterID(unit)
 			return i
 		end
 	end
+	return nil
 end
 
 function e.CharacterClass(id)

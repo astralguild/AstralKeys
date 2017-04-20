@@ -1,6 +1,4 @@
 local a, e = ...
-if not AstralKeys then AstralKeys = {} end
-if not AstralCharacters then AstralCharacters = {} end
 local REGION_RESET = 288000
 
 local SI = {}
@@ -33,39 +31,39 @@ function e.ConvertToSI(quantity)
 	else
 		return math.floor(amount) .. ' ' .. SI[index]
 	end
-
 end
 
 e.RegisterEvent('PLAYER_LOGIN', function()
-	local d = date('*t')
-	local secs = d.sec + d.min * 60 + d.hour * 60* 60 + d.wday * 24*60*60
-	--print(secs, REGION_RESET, AstralKeysSettings.initTime)
-	if secs >= REGION_RESET and AstralKeysSettings.initTime < secs then
-		wipe(AstralCharacters)
-		wipe(AstralKeys)
-		wipe(AstralAffixes)
-		AstralKeysSettings.initTime = e.DataInitTime()
-	end
+	e.SetPlayerName()
+	e.SetPlayerClass()
+	e.SetPlayerID()
+	e.SetCharacterID()
+	e.SetPlayerRealm()
 
-	if d.wday == 3 and d.hour < 8 then
-		local time = 0
-		local frame = CreateFrame('FRAME')
-		frame:SetScript('OnUpdate', function(self, elapsed)
-			time = 0 + elapsed
-			end)
+	if GetServerTime() > AstralKeysSettings.initTime then
+		AstralCharacters = {}
+		AstralKeys = {}
+		AstralAffixes = {}
+		AstralAffixes[1] = 0
+		AstralAffixes[2] = 0
+		AstralAffixes[3] = 0
+		AstralKeysSettings.initTime = e.DataResetTime()
+		e.FindKeyStone(true, false)
 	end
 
 	for i = 1, #AstralKeys do
 		e.SetUnitID(AstralKeys[i].name .. AstralKeys[i].realm, i)
 	end
 
-	
+	e.RegisterEvent('CURRENCY_DISPLAY_UPDATE', function(...)
+	for i = 1, #AstralCharacters do
+		if AstralCharacters[i].name == e.PlayerName() then
+			AstralCharacters[i].knowledge = e.GetAKBonus(e.ParseAKLevel())
+		end
+	end
+	end)
+
 	C_ChallengeMode.RequestMapInfo()
-	e.SetPlayerName()
-	e.SetPlayerClass()
-	e.SetPlayerID()
-	e.SetCharacterID()
-	e.SetPlayerRealm()
 
 
 end)

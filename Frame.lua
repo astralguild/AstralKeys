@@ -653,7 +653,7 @@ affixOne.texture:SetTexture(nil)
 
 function affixOne:UpdateInfo()
 	self.aid = e.GetAffix(1)
-	if self.aid ~= 0 then
+	if self.aid ~= 0 and self.aid then
 		self.string:SetText(C_ChallengeMode.GetAffixInfo(self.aid))
 		self.texture:SetTexture(select(3, C_ChallengeMode.GetAffixInfo(self.aid)))
 	end
@@ -769,9 +769,6 @@ characterContent:SetScript('OnLeave', function()
 	AstralCharacterContent.slider:SetAlpha(.2)
 	end)
 
-
-
-
 -- Key Frames
 ----------------------------------------------------------------
 
@@ -786,11 +783,6 @@ contentFrame.slider:SetSize(8, 8)
 contentFrame.slider:SetPoint('TOPLEFT', contentFrame, 'TOPRIGHT')
 contentFrame.slider:SetAlpha(0.2)
 
-if #AstralKeys > 26 then
-	contentFrame.slider:Show()
-else
-	contentFrame.slider:Hide()
-end
 
 function contentFrame:ResetSlider()
 	offset = 0
@@ -897,6 +889,12 @@ AstralKeyFrame:SetScript('OnDragStop', function(self)
 local init = false
 local function InitializeFrame()
 	init = true
+
+	if #AstralKeys > 26 then
+		contentFrame.slider:Show()
+	else
+		contentFrame.slider:Hide()
+	end
 
 	showOffline:SetChecked(e.GetShowOffline())
 	minKeyLevel:SetValue(e.GetMinKeyLevel())
