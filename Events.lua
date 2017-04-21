@@ -21,19 +21,12 @@ function e.UnregisterEvent(event)
 	akEvents[event] = nil
 end
 
-e.RegisterEvent('CHAT_MSG_LOOT', function(...)
-
-		local msg = ...
-		local sender = select(5, ...) -- Should return unit that looted
-		if not sender == e.PlayerName() then return end
-		--if not msg:find('You') then return end
-
-		if msg:find('Keystone') then
-			e.FindKeyStone(true, true)
-			e.UnregisterEvent('CHAT_MSG_LOOT')
-		end
-
-		end)
+function e.IsEventRegistered(event)
+	if akEvents[event] then return true
+	else
+		return false
+	end
+end
 
 --[[
 e.RegisterEvent('CHAT_MSG_SYSTEM', function(...)

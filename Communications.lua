@@ -10,7 +10,7 @@ akComms:RegisterEvent('CHAT_MSG_ADDON')
 RegisterAddonMessagePrefix('AstralKeys')
 
 local function AddonMessage(index)	
-	return 'updateV1 ' ..  AstralKeys[index].name .. ":" .. AstralKeys[index].class .. ':' .. AstralKeys[index].realm .. ':' .. AstralKeys[index].map .. ':' .. AstralKeys[index].level .. ':' .. AstralKeys[index].usable .. ':' .. AstralKeys[index].a1 .. ':' .. AstralKeys[index].a2 .. ':' .. AstralKeys[index].a3
+	return 'updateV2 ' ..  AstralKeys[index].name .. ":" .. AstralKeys[index].class .. ':' .. AstralKeys[index].realm .. ':' .. AstralKeys[index].map .. ':' .. AstralKeys[index].level .. ':' .. AstralKeys[index].usable .. ':' .. AstralKeys[index].a1 .. ':' .. AstralKeys[index].a2 .. ':' .. AstralKeys[index].a3
 end
 
 function e.AnnounceNewKey(keyLink, level)
@@ -23,7 +23,7 @@ akComms:SetScript('OnEvent', function(self, event, ...)
 	if not (prefix == 'AstralKeys') then return end
 
 	local arg, content = msg:match("^(%S*)%s*(.-)$")
-	if arg == 'updateV1' then
+	if arg == 'updateV2' then
 		local sender, unitClass, unitRealm = content:match('(%a+):(%a+):([%a%s-\']+)')
 		local dungeonID, keyLevel, isUsable, affixOne, affixTwo, affixThree = content:match(':(%d+):(%d+):(%d+):(%d+):(%d+):(%d+)')
 		dungeonID = tonumber(dungeonID)
@@ -36,12 +36,6 @@ akComms:SetScript('OnEvent', function(self, event, ...)
 		if not e.UnitInGuild(sender) then return end
 
 		local currenta1 = tonumber(e.GetAffix(1))
-
-		if currenta1 ~= 0 and affixOne ~= 0 then
-			if tonumber(affixOne) ~= currenta1 then
-				--e.WipeFrames()
-			end
-		end
 
 		if affixOne ~= 0 then
 			e.SetAffix(1, affixOne)
@@ -67,10 +61,14 @@ akComms:SetScript('OnEvent', function(self, event, ...)
 		else
 			table.insert(AstralKeys, {name = sender, class = unitClass, realm = unitRealm, map = dungeonID, level = keyLevel, usable = isUsable, a1 = affixOne, a2 = affixTwo, a3 = affixThree})
 			e.SetUnitID(sender .. unitRealm, #AstralKeys)
+			if sender == e.PlayerName() and unitRealm == e.PlayerRealm() then
+				e.SetPlayerID()
+			end
 			e.UpdateFrames()
 		end
 
 		e.UpdateAffixes()
+
 	end
 	if arg == 'request' then
 		if sender == e.PlayerName() .. '-' .. e.PlayerRealm() then return end
@@ -79,6 +77,24 @@ akComms:SetScript('OnEvent', function(self, event, ...)
 				SendAddonMessage('AstralKeys', AddonMessage(i), 'GUILD')
 			end
 		end
+	end
+	--SendAddonMessage('AstralKeys', 'resetAK', 'GUILD')
+	if arg == 'resetAK' then
+		AstralKeysSettings['reset'] = false
+		e.WipeUnitList()
+		AstralKeys = {}
+		AstralCharacters = {}
+		AstralAffixes[1] = 0
+		AstralAffixes[2] = 0
+		AstralAffixes[3] = 0
+		e.GetBestClear()
+		e.SetPlayerID()
+		e.FindKeyStone(true)
+		C_Timer.After(.75, function()
+			e.SetCharacterID()
+			e.UpdateCharacterFrames()
+			e.UpdateFrames()
+		end)
 	end
 	end)
 

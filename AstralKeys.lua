@@ -73,7 +73,7 @@ e.RegisterEvent('PLAYER_LOGIN', function()
 	end
 
 	e.SetPlayerID()
-	e.SetCharacterID()
+
 	for i = 1, #AstralKeys do
 		e.SetUnitID(AstralKeys[i].name .. AstralKeys[i].realm, i)
 	end
@@ -87,6 +87,5 @@ e.RegisterEvent('PLAYER_LOGIN', function()
 	end)
 
 	C_ChallengeMode.RequestMapInfo()
-
 
 end)

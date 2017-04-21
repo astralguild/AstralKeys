@@ -21,8 +21,9 @@ e.RegisterEvent('CHALLENGE_MODE_MAPS_UPDATE', function()
 	if UnitLevel('player') ~= 110 then return end
 	e.GetBestClear()
  	if not init then
+		e.SetCharacterID()
  		e.UpdateGuildList()
- 		e.FindKeyStone(true)
+ 		e.FindKeyStone(true, false)
  		e.BuildMapTable()
  		SendAddonMessage('AstralKeys', 'request', 'GUILD')
  		init = true
@@ -82,60 +83,82 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 				link = GetContainerItemLink(bag, slot)
 				delink = link:gsub('\124', '\124\124')
 				mapID, keyLevel, usable, a1, a2, a3 = delink:match(':(%d+):(%d+):(%d+):(%d+):(%d+):(%d+)')
-				s = 'updateV1 ' .. e.PlayerName() .. ':' .. e.PlayerClass() .. ':' .. e.PlayerRealm() ..':' .. mapID .. ':' .. keyLevel .. ':' .. usable .. ':' .. a1 .. ':' .. a2 .. ':' .. a3
+				s = 'updateV2 ' .. e.PlayerName() .. ':' .. e.PlayerClass() .. ':' .. e.PlayerRealm() ..':' .. mapID .. ':' .. keyLevel .. ':' .. usable .. ':' .. a1 .. ':' .. a2 .. ':' .. a3
 				--s = 'updateV1 CHARACTERSAZ:DEMONHUNTER:Bleeding Hollow:201:22:1:13:13:10'				
 			end
 		end
 	end
 
-	if not link then 
-		e.RegisterEvent('CHAT_MSG_LOOT', function(...)
-			--print('registering event to find key')
+	if not link then
+		if not e.IsEventRegistered('CHAT_MSG_LOOT') then
+			e.RegisterEvent('CHAT_MSG_LOOT', function(...)
+				local msg = ...
+				local sender = select(5, ...) -- Should return unit that looted
+				if not sender == e.PlayerName() then return end
 
-		local msg = ...
-		local sender = select(5, ...) -- Should return unit that looted
-		if not sender == e.PlayerName() then return end
-		--if not msg:find('You') then return end
-
-		if msg:find('Keystone') then
-			--print('loot event fired to find it')
-			e.FindKeyStone(true, true)
-			e.UnregisterEvent('CHAT_MSG_LOOT')
+				if string.lower(msg):find('keystone') then
+					e.RegisterEvent('BAG_UPDATE', function()
+						e.FindKeyStone(true, true)
+						e.UnregisterEvent('BAG_UPDATE')
+						e.UnregisterEvent('CHAT_MSG_LOOT')
+						end)
+				end
+			end)
 		end
+	else
+		if not e.IsEventRegistered('BAG_UPDATE') then
+			e.RegisterEvent('BAG_UPDATE', function()
+				e.FindKeyStone(true, true)
+				end)
+		end
+	end	
 
-		end)
-	end
---[[
-	e.RegisterEvent('BAG_UPDATE', function()
-		e.FindKeyStone(true, true)
-		print('bag update fired to find it')
-		end)
-]]
 	local oldMap, oldLevel, oldUsable = e.GetUnitKey(e.PlayerID())
 	if tonumber(oldMap) == tonumber(mapID) and tonumber(oldLevel) == tonumber(keyLevel) and tonumber(oldUsable) == tonumber(usable) then return end
 
 	if sendUpdate  and s ~= '' then
 		if IsInGuild() then
 			SendAddonMessage('AstralKeys', s, 'GUILD')
+			if anounceKey then
+				e.AnnounceNewKey(link, keyLevel)
+			end
 		else
-			AstralKeys[#AstralKeys + 1] = {
-			['name'] = e.PlayerName(),
-			['class'] = e.PlayerClass(),
-			['realm'] = e.PlayerRealm(),
-			['map'] = tonumber(mapID),
-			['level'] = tonumber(keyLevel),
-			['usable'] = tonumber(usable),
-			['a1'] = tonumber(a1),
-			['a2'] = tonumber(a2),
-			['a3'] = tonumber(a3),
-			}
+			local foundPlayer = false
+			for i = 1, #AstralKeys do
+				if AstralKeys[i].name == e.PlayerName() then
+					foundPlayer = true
+					if AstralKeys[i].level < tonumber(keyLevel) or AstralKeys[i].usable ~= tonumber(usable) then
+						AstralKeys[i].map = tonumber(mapID)
+						AstralKeys[i].level = tonumber(keyLevel)
+						AstralKeys[i].usable = tonumber(usable)
+						AstralKeys[i].a1 = tonumber(a1)
+						AstralKeys[i].a2 = tonumber(a2)
+						AstralKeys[i].a3 = tonumber(a3)
+						if anounceKey then
+							e.AnnounceNewKey(link, keyLevel)
+						end
+					end
+				end
+			end
+
+			if not foundPlayer then
+				AstralKeys[#AstralKeys + 1] = {
+				['name'] = e.PlayerName(),
+				['class'] = e.PlayerClass(),
+				['realm'] = e.PlayerRealm(),
+				['map'] = tonumber(mapID),
+				['level'] = tonumber(keyLevel),
+				['usable'] = tonumber(usable),
+				['a1'] = tonumber(a1),
+				['a2'] = tonumber(a2),
+				['a3'] = tonumber(a3),
+				}
+				if anounceKey then
+					e.AnnounceNewKey(link, keyLevel)
+				end
+			end
 		end
 	end
-
-	if anounceKey and link then
-		e.AnnounceNewKey(link, keyLevel)
-	end
-
 end
 
 function e.GetKeyLevelByIndex(index)
@@ -191,13 +214,13 @@ function e.GetBestMap(unit)
 end
 
 --Returns map ID and keystone level run for current week
-local bestLevel, bestMap, weeklyBestLevel
+
 function e.GetBestClear()
 	if UnitLevel('player') ~= 110 then return end
 	local bestLevel = 0
 	local bestMap = 0
 	for _, v in pairs(C_ChallengeMode.GetMapTable()) do
-		_, _, weeklyBestLevel = C_ChallengeMode.GetMapPlayerStats(v)
+		local _, _, weeklyBestLevel = C_ChallengeMode.GetMapPlayerStats(v)
 		if weeklyBestLevel then
 			if weeklyBestLevel > bestLevel then
 				bestLevel = weeklyBestLevel

@@ -171,7 +171,7 @@ local function CreateCharacterFrame(parent, name, unitName, bestKey, createDivid
 	end
 
 	function frame:UpdateInformation(unit)
-		if unit ~= '' then
+		if unit ~= '' and unit then
 			self.unit = unit
 			self.tid = e.GetCharacterID(self.unit)
 			self.unitClass = e.CharacterClass(self.tid)
@@ -790,10 +790,10 @@ function contentFrame:ResetSlider()
 end
 
 contentFrame:SetScript('OnMouseWheel', function(self, delta)
-	if #AstralKeys < 26 then return end
+	if #sortedTable < 26 then return end
 
 	if delta < 0 then -- Scroll down
-		if (#AstralKeys - offset) > 25 then
+		if (#sortedTable - offset) > 25 then
 			offset = offset - delta
 			e.UpdateFrames()
 		end			
@@ -890,19 +890,20 @@ local init = false
 local function InitializeFrame()
 	init = true
 
-	if #AstralKeys > 26 then
-		contentFrame.slider:Show()
-	else
-		contentFrame.slider:Hide()
-	end
-
 	showOffline:SetChecked(e.GetShowOffline())
 	minKeyLevel:SetValue(e.GetMinKeyLevel())
-	e.GetBestClear()
+
+	characterTable = e.DeepCopy(AstralCharacters)
 	sortedTable = e.DeepCopy(AstralKeys)
 
 	e.UpdateTables(sortedTable)
 	e.SortTable(sortedTable, e.GetSortMethod())
+
+	if #sortedTable > 26 then
+		contentFrame.slider:Show()
+	else
+		contentFrame.slider:Hide()
+	end
 
 	if e.GetViewMode() == 1 then
 		AstralKeyFrame:SetWidth(400)
@@ -919,7 +920,6 @@ local function InitializeFrame()
 	local id = e.CharacterID()
 	local endIndex
 
-	characterTable = e.DeepCopy(AstralCharacters)
 
 	if id then	
 
@@ -938,9 +938,9 @@ local function InitializeFrame()
 		end
 
 		for i = 1, endIndex do
-		characters[i] = CreateCharacterFrame(characterFrame, nil, characterTable[i].name, nil, false)
-		characters[i]:SetPoint('TOPLEFT', characterContent, 'TOPLEFT', 0, -34*(i - 1) - 4)
-	end
+			characters[i] = CreateCharacterFrame(characterFrame, nil, characterTable[i].name, nil, false)
+			characters[i]:SetPoint('TOPLEFT', characterContent, 'TOPLEFT', 0, -34*(i - 1) - 4)
+		end
 	else
 		characterContent:SetSize(215, 290)
 		characterContent:SetPoint('TOPLEFT', characterHeader, 'BOTTOMLEFT', 0, -5)	
@@ -1061,8 +1061,10 @@ function e.UpdateFrames()
 
 	e.SortTable(sortedTable, e.GetSortMethod())
 
-	if #AstralKeys > 25 then
+	if #sortedTable > 25 then
 		AstralContentFrame.slider:Show()
+	else
+		AstralContentFrame.slider:Hide()
 	end
 
 	if #sortedTable < 26 then
@@ -1074,7 +1076,7 @@ function e.UpdateFrames()
 	if #sortedTable < #nameFrames then
 		for i = 1, indexEnd do
 			index = i + offset
-			name, keyLevel, mapID, class, usable, realm = sortedTable[index].name, sortedTable[index].level, sortedTable[index].map, sortedTable[index].class, sortedTable[index].usable, sortedTable[index].realm
+			local name, keyLevel, mapID, class, usable, realm = sortedTable[index].name, sortedTable[index].level, sortedTable[index].map, sortedTable[index].class, sortedTable[index].usable, sortedTable[index].realm
 			nameFrames[i]:SetNameInfo(name, class, realm)
 			keyFrames[i]:SetKeyInfo(keyLevel)
 			mapFrames[i]:SetMapInfo(mapID, usable, keyLevel)
@@ -1107,18 +1109,28 @@ function e.UpdateFrames()
 end
 
 function e.UpdateCharacterFrames()
+	characterTable = e.DeepCopy(AstralCharacters)
 
 	if e.CharacterID() then
+		table.remove(characterTable, e.CharacterID())
 		playerCharacter:UpdateInformation(e.PlayerName())
 		for i = 1, #characters do
-			characters[i]:UpdateInformation(characterTable[i + characterOffset].name)
+			if characterTable[i] then
+				characters[i]:UpdateInformation(characterTable[i + characterOffset]['name'])
+			else
+				characters[i]:UpdateInformation('')
+			end				
 		end
 	else
-		if #characterTable > 0 then
+		--if #characterTable > 0 then
 			for i = 1, #characters do
-				characters[i]:UpdateInformation(characterTable[i + characterOffset].name)
+				if characterTable[i] then
+					characters[i]:UpdateInformation(characterTable[i + characterOffset]['name'])
+				else
+					characters[i]:UpdateInformation('')
+				end
 			end
-		end
+		--end
 	end
 end
 

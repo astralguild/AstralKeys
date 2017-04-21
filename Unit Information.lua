@@ -26,6 +26,10 @@ function e.GetUnitID(unit)
 	return unitList[unit]
 end
 
+function e.WipeUnitList()
+	wipe(unitList)
+end
+
 function e.UnitRealm(unit)
 	for i = 1, #AstralKeys do
 		if AstralKeys[i].name == unit then
