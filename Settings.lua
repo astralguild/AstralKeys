@@ -24,6 +24,23 @@ function e.DataResetTime()
 	return time
 end
 
+if not AstralKeysSettings then
+	AstralKeysSettings = {
+				['resetVersion'] = 1122,
+				['reset'] = true,
+				['initTime'] = e.DataResetTime(),
+				['frameOptions'] = {
+					['orientation'] = 0,
+					['sortMethod'] = 'level',
+					['quickOptions'] = {
+						['showOffline'] = 0,
+						['minKeyLevel'] = 1,
+						},
+					['viewMode'] = 0,
+					},
+				}
+end
+
 local frame = CreateFrame('FRAME')
 frame:RegisterEvent('ADDON_LOADED')
 frame:SetScript('OnEvent', function(self, event, ...)
