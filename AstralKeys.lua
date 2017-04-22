@@ -68,7 +68,8 @@ e.RegisterEvent('PLAYER_LOGIN', function()
 					self:SetScript('OnUpdate', nil)
 					self = nil
 				end
-			end 
+				interval = 0
+			end
 			end)
 	end
 

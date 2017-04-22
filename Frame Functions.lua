@@ -67,6 +67,3 @@ function e.CreateEditBox(parent, name, width, label, minValue, maxValue)
 	return editBox
 
 end
-
-function e.CreatePopup()
-end

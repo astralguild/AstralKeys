@@ -28,8 +28,6 @@ DUNGEON_TABLE[233]['name'] = 'Cathedral of Eternal Night'
 DUNGEON_TABLE[234] = {}
 DUNGEON_TABLE[234]['name'] = 'Return to Karazhan: Upper'
 
-
-
 --[[ 
 Times
 	-1440
@@ -60,8 +58,6 @@ Times
  	-725
  	-1200
  	-1500
-
-
 ]]
 
 function e.BuildMapTable()
@@ -80,18 +76,21 @@ function e.BuildMapTable()
 			DUNGEON_TABLE[map].apTier[3] = 325
 			DUNGEON_TABLE[map].apTier[4] = 465
 			DUNGEON_TABLE[map].apTier[5] = 725
+			DUNGEON_TABLE[map].apTier[6] = 1025
 		elseif runTime > 1440 and runTime < 2700 then
 			DUNGEON_TABLE[map].apTier[1] = 300
 			DUNGEON_TABLE[map].apTier[2] = 475
 			DUNGEON_TABLE[map].apTier[3] = 540
 			DUNGEON_TABLE[map].apTier[4] = 775
-			DUNGEON_TABLE[map].apTier[5] = 1000
+			DUNGEON_TABLE[map].apTier[5] = 1200
+			DUNGEON_TABLE[map].apTier[6] = 1700
 		elseif runTime == 2700 then
 			DUNGEON_TABLE[map].apTier[1] = 375
 			DUNGEON_TABLE[map].apTier[2] = 600
 			DUNGEON_TABLE[map].apTier[3] = 675
 			DUNGEON_TABLE[map].apTier[4] = 1000
 			DUNGEON_TABLE[map].apTier[5] = 1500
+			DUNGEON_TABLE[map].apTier[6] = 2125
 		end
 	end
 end
@@ -113,20 +112,21 @@ local function GetKeyTier(keyLevel)
 			return 3
 		elseif keyLevel < 15 then
 			return 4
-		else
+		elseif keyLevel < 20 then
 			return 5
+		else
+			return 6
 		end
 	end
 end
-
 
 function e.GetMapAP(mapID, keyLevel)
 	return DUNGEON_TABLE[tonumber(mapID)]['apTier'][GetKeyTier(tonumber(keyLevel))]
 end
 
-WEEKLY_AP[2] = 0
+WEEKLY_AP[2] = 1250
 WEEKLY_AP[3] = 1250
-WEEKLY_AP[4] = 0
+WEEKLY_AP[4] = 1250
 WEEKLY_AP[5] = 1925
 WEEKLY_AP[6] = 1925
 WEEKLY_AP[7] = 2150
@@ -152,16 +152,14 @@ function e.GetWeeklyAP(keyLevel)
 	return 0
 end
 
-local amount, s, chest1, chest2, chest3
+function e.MapApText(mapID, keyLevel, isUsable)
+	if isUsable == 0 then return 'Depleted key.' end
 
-function e.MapApText(mapID, keyLevel, isDepleted)
-	if isDepleted == 0 then return 'Depleted key.' end
-
-	amount = e.GetMapAP(mapID, keyLevel) * e.GetAKBonus(e.ParseAKLevel())
-	s = ''
-	chest1 = e.ConvertToSI(amount/math.floor(GetMapTime(mapID, 1)/60))
-	chest2 = e.ConvertToSI(amount/math.floor(GetMapTime(mapID, 2)/60))
-	chest3 = e.ConvertToSI(amount/math.floor(GetMapTime(mapID, 3)/60))
+	local amount = e.GetMapAP(mapID, keyLevel) * e.GetAKBonus(e.ParseAKLevel())
+	local s = ''
+	local chest1 = e.ConvertToSI(amount/math.floor(GetMapTime(mapID, 1)/60))
+	local chest2 = e.ConvertToSI(amount/math.floor(GetMapTime(mapID, 2)/60))
+	local chest3 = e.ConvertToSI(amount/math.floor(GetMapTime(mapID, 3)/60))
 	s = e.ConvertToSI(amount) .. ' AP\n' .. '+1 ' .. chest1 .. '/m \n+2 ' .. chest2 .. '/m  \n+3 ' .. chest3 .. '/m'
 	return s
 

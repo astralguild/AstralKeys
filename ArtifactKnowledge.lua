@@ -62,5 +62,3 @@ function e.ParseAKLevel()
 	local amount = select(2, GetCurrencyInfo(1171))
 	return amount
 end
-
--- FIRED FOR LEARNING AK
