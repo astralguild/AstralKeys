@@ -228,6 +228,7 @@ end
 local nameFrames = {}
 local keyFrames = {}
 local mapFrames = {}
+local completedFrames = {}
 
 local function CreateNameFrame(parent, unitName, unitClass, unitRealm)
 	local frame = CreateFrame('FRAME', nil, parent)
@@ -347,8 +348,38 @@ local function CreateKeyFrame(parent, keyLevel)
 
 end
 
+local function CreateCompleteFrame(parent, completed)
+	local frame = CreateFrame('FRAME', nil, parent)
+	frame:SetSize(15, 15)
+	frame.isCompleted = completed
+
+	frame.tex = frame:CreateTexture('BACKGROUND')
+	frame.tex:SetSize(15, 15)
+	frame.tex:SetPoint('TOPLEFT', frame, 'TOPLEFT')
+	frame.tex:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\check.tga')
+
+	if frame.isCompleted == 1 then
+		frame:Show()
+	else
+		frame:Hide()
+	end
+
+	function frame:SetCompletedInfo(completed)
+		if not completed then self.isCompleted = 0 end
+		self.isCompleted = completed
+		if self.isCompleted == 1 then
+			self:Show()
+		else
+			self:Hide()
+		end
+	end
+
+	return frame
+end
+
+
 local AstralKeyFrame = CreateFrame('FRAME', 'AstralKeyFrame', UIParent)
-AstralKeyFrame:SetWidth(650)
+AstralKeyFrame:SetWidth(655)
 AstralKeyFrame:SetHeight(505)
 AstralKeyFrame:SetPoint('CENTER', UIParent, 'CENTER')
 AstralKeyFrame:EnableMouse(true)
@@ -466,9 +497,9 @@ toggleButton:SetScript('OnClick', function(self)
 		e.SetViewMode(1)
 		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\menu.tga')
 		self:SetHighlightTexture('Interface\\AddOns\\AstralKeys\\Media\\menu_highlight.tga', 'BLEND')
-		AstralKeyFrame:SetWidth(400)
+		AstralKeyFrame:SetWidth(405)
 		AstralKeyFrame:ClearAllPoints()
-		AstralKeyFrame:SetPoint('BOTTOMLEFT', UIParent, 'BOTTOMLEFT', left + width - 400, bottom)
+		AstralKeyFrame:SetPoint('BOTTOMLEFT', UIParent, 'BOTTOMLEFT', left + width - 405, bottom)
 		affixFrame:Hide()
 		astralCharacterFrame:Hide()
 		AstralKeyFrame.centreDivider:Hide()
@@ -478,9 +509,9 @@ toggleButton:SetScript('OnClick', function(self)
 		e.SetViewMode(0)
 		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize.tga')
 		self:SetHighlightTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize_highlight.tga', 'BLEND')
-		AstralKeyFrame:SetWidth(650)
+		AstralKeyFrame:SetWidth(655)
 		AstralKeyFrame:ClearAllPoints()
-		AstralKeyFrame:SetPoint('BOTTOMLEFT', UIParent, 'BOTTOMLEFT', left + width - 650, bottom)
+		AstralKeyFrame:SetPoint('BOTTOMLEFT', UIParent, 'BOTTOMLEFT', left + width - 655, bottom)
 		affixFrame:Show()
 		astralCharacterFrame:Show()
 		AstralKeyFrame.centreDivider:Show()
@@ -660,7 +691,7 @@ function affixOne:UpdateInfo()
 end
 
 affixOne:SetScript('OnEnter', function(self)
-	if tonumber(self.aid) == 0 then return end
+	if tonumber(self.aid) == 0 or not self.aid then return end
 
 	astralMouseOver:SetText(select(2, C_ChallengeMode.GetAffixInfo(self.aid)))
 	astralMouseOver:AdjustSize(150)
@@ -689,14 +720,14 @@ affixTwo.texture:SetTexture(nil)
 
 function affixTwo:UpdateInfo()
 	self.aid = e.GetAffix(2)
-	if self.aid ~= 0 then
+	if self.aid ~= 0 and self.aid then
 		self.string:SetText(C_ChallengeMode.GetAffixInfo(self.aid))
 		self.texture:SetTexture(select(3, C_ChallengeMode.GetAffixInfo(self.aid)))
 	end
 end
 
 affixTwo:SetScript('OnEnter', function(self)
-	if tonumber(self.aid) == 0 then return end
+	if tonumber(self.aid) == 0 or not self.aid then return end
 
 	astralMouseOver:SetText(select(2, C_ChallengeMode.GetAffixInfo(self.aid)))
 	astralMouseOver:AdjustSize(150)
@@ -725,14 +756,14 @@ affixThree.texture:SetTexture(nil)
 
 function affixThree:UpdateInfo()
 	self.aid = e.GetAffix(3)
-	if self.aid ~= 0 then
+	if self.aid ~= 0 and self.aid then
 		self.string:SetText(C_ChallengeMode.GetAffixInfo(self.aid))
 		self.texture:SetTexture(select(3, C_ChallengeMode.GetAffixInfo(self.aid)))
 	end
 end
 
 affixThree:SetScript('OnEnter', function(self) 
-	if tonumber(self.aid) == 0 then return end
+	if tonumber(self.aid) == 0 or not self.aid then return end
 
 	astralMouseOver:SetText(select(2, C_ChallengeMode.GetAffixInfo(self.aid)))
 	astralMouseOver:AdjustSize(150)
@@ -859,7 +890,19 @@ nameButton:SetScript('OnClick', function()
 
 	end)
 
+local completeButton = CreateButton(contentFrame, 'completeButton', 30, 20, '10+', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT)
+completeButton:SetPoint('LEFT', nameButton, 'RIGHT')
+completeButton:SetScript('OnClick', function()
+	contentFrame:ResetSlider()
+	if e.GetSortMethod() ~= 'weeklyCache' then
+		e.SetOrientation(0)
+	else
+		e.SetOrientation(1 - e.GetOrientation())
+	end
+	e.SetSortMethod('weeklyCache')
+	e.UpdateFrames()
 
+	end)
 
 AstralKeyFrame:SetScript('OnKeyDown', function(self, key)
 	if key == 'ESCAPE' then
@@ -883,9 +926,6 @@ AstralKeyFrame:SetScript('OnDragStop', function(self)
 	self:StopMovingOrSizing()
 	end)
 
-
-
-
 local init = false
 local function InitializeFrame()
 	init = true
@@ -906,7 +946,7 @@ local function InitializeFrame()
 	end
 
 	if e.GetViewMode() == 1 then
-		AstralKeyFrame:SetWidth(400)
+		AstralKeyFrame:SetWidth(405)
 		affixFrame:Hide()
 		astralCharacterFrame:Hide()
 		AstralKeyFrame.centreDivider:Hide()
@@ -916,10 +956,8 @@ local function InitializeFrame()
 		toggleButton:SetHighlightTexture('Interface\\AddOns\\AstralKeys\\Media\\menu_highlight.tga', 'BLEND')
 	end
 
-
 	local id = e.CharacterID()
 	local endIndex
-
 
 	if id then	
 
@@ -994,16 +1032,18 @@ local function InitializeFrame()
 	end
 
 	for i = 1, indexEnd do
-		name, keyLevel, mapID, class, usable, realm = sortedTable[i].name, sortedTable[i].level, sortedTable[i].map, sortedTable[i].class, sortedTable[i].usable, sortedTable[i].realm
+		name, keyLevel, mapID, class, usable, realm, completed = sortedTable[i].name, sortedTable[i].level, sortedTable[i].map, sortedTable[i].class, sortedTable[i].usable, sortedTable[i].realm, sortedTable[i].weeklyCache
 
 		nameFrames[i] = CreateNameFrame(contentFrame, name, class, realm)		
 		keyFrames[i] = CreateKeyFrame(contentFrame, keyLevel)
 		mapFrames[i] = CreateMapFrame(contentFrame, mapID, usable, keyLevel)
+		completedFrames[i] = CreateCompleteFrame(contentFrame, completed)
 
 
 		keyFrames[i]:SetPoint('TOPLEFT', keyButton, 'BOTTOMLEFT', 5, (i-1) * -15 - 3)
 		mapFrames[i]:SetPoint('TOPLEFT', mapButton, 'BOTTOMLEFT', 5, (i-1) * -15 - 3)
 		nameFrames[i]:SetPoint('TOPLEFT', nameButton, 'BOTTOMLEFT', 5, (i-1) * -15 - 3)
+		completedFrames[i]:SetPoint('TOPLEFT', completeButton, 'BOTTOMLEFT', 5, (i-1) * -15, -3)
 	end
 
 	e.UpdateFrames()
@@ -1017,7 +1057,6 @@ function e.UpdateAffixes()
 	AstralAffixTwo:UpdateInfo()
 	AstralAffixThree:UpdateInfo()
 end
-
 
 function e.WipeFrames()
 	wipe(AstralCharacters)
@@ -1047,6 +1086,7 @@ function e.WipeFrames()
 		nameFrames[i]:SetNameInfo('')
 		keyFrames[i]:SetKeyInfo(-1)
 		mapFrames[i]:SetMapInfo(-1)
+		completedFrames[i]:SetCompletedInfo(0)
 	end
 	--e.FindKeyStone(true)
 end
@@ -1055,6 +1095,9 @@ local name, keyLevel, mapID, class, usable, realm, index
 
 function e.UpdateFrames()
 	if not init then return end
+
+	local name, keyLevel, mapID, class, usable, realm, index
+
 	sortedTable = e.DeepCopy(AstralKeys)
 
 	sortedTable = e.UpdateTables(sortedTable)
@@ -1076,32 +1119,37 @@ function e.UpdateFrames()
 	if #sortedTable < #nameFrames then
 		for i = 1, indexEnd do
 			index = i + offset
-			local name, keyLevel, mapID, class, usable, realm = sortedTable[index].name, sortedTable[index].level, sortedTable[index].map, sortedTable[index].class, sortedTable[index].usable, sortedTable[index].realm
+			local name, keyLevel, mapID, class, usable, realm, completed = sortedTable[index].name, sortedTable[index].level, sortedTable[index].map, sortedTable[index].class, sortedTable[index].usable, sortedTable[index].realm, sortedTable[index].weeklyCache
 			nameFrames[i]:SetNameInfo(name, class, realm)
 			keyFrames[i]:SetKeyInfo(keyLevel)
 			mapFrames[i]:SetMapInfo(mapID, usable, keyLevel)
+			completedFrames[i]:SetCompletedInfo(completed)
 		end
 		for i = indexEnd + 1, #nameFrames do
 			nameFrames[i]:SetNameInfo('', nil, nil)
 			keyFrames[i]:SetKeyInfo(-1)
 			mapFrames[i]:SetMapInfo(-1, nil, nil)
+			completedFrames[i]:SetCompletedInfo(0)
 		end
 	else
 		for i = 1, indexEnd do
 			index = i + offset
-			name, keyLevel, mapID, class, usable, realm = sortedTable[index].name, sortedTable[index].level, sortedTable[index].map, sortedTable[index].class, sortedTable[index].usable, sortedTable[index].realm
+			local name, keyLevel, mapID, class, usable, realm, completed = sortedTable[index].name, sortedTable[index].level, sortedTable[index].map, sortedTable[index].class, sortedTable[index].usable, sortedTable[index].realm, sortedTable[index].weeklyCache
 			if nameFrames[i] then
 				nameFrames[i]:SetNameInfo(name, class, realm)
 				keyFrames[i]:SetKeyInfo(keyLevel)
 				mapFrames[i]:SetMapInfo(mapID, usable, keyLevel)
+				completedFrames[i]:SetCompletedInfo(completed)
 			else
 				nameFrames[i] = CreateNameFrame(AstralContentFrame, name, class, realm)
 				keyFrames[i] = CreateKeyFrame(AstralContentFrame, keyLevel)
 				mapFrames[i] = CreateMapFrame(AstralContentFrame, mapID, usable, keyLevel)
+				completedFrames[i] = CreateCompleteFrame(contentFrame, completed)
 
 				keyFrames[i]:SetPoint('TOPLEFT', keyButton, 'BOTTOMLEFT', 5, (i-1) * -15 - 3)
 				mapFrames[i]:SetPoint('TOPLEFT', mapButton, 'BOTTOMLEFT', 5, (i-1) * -15 - 3)
 				nameFrames[i]:SetPoint('TOPLEFT', nameButton, 'BOTTOMLEFT', 5, (i-1) * -15 - 3)
+				completedFrames[i]:SetPoint('TOPLEFT', completeButton, 'BOTTOMLEFT', 5, (i-1) * -15 - 3)
 			end
 		end
 	end
@@ -1109,7 +1157,7 @@ function e.UpdateFrames()
 end
 
 function e.UpdateCharacterFrames()
-	characterTable = e.DeepCopy(AstralCharacters)
+	--characterTable = e.DeepCopy(AstralCharacters)
 
 	if e.CharacterID() then
 		table.remove(characterTable, e.CharacterID())

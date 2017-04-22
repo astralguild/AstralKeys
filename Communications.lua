@@ -10,7 +10,7 @@ akComms:RegisterEvent('CHAT_MSG_ADDON')
 RegisterAddonMessagePrefix('AstralKeys')
 
 local function AddonMessage(index)	
-	return 'updateV2 ' ..  AstralKeys[index].name .. ":" .. AstralKeys[index].class .. ':' .. AstralKeys[index].realm .. ':' .. AstralKeys[index].map .. ':' .. AstralKeys[index].level .. ':' .. AstralKeys[index].usable .. ':' .. AstralKeys[index].a1 .. ':' .. AstralKeys[index].a2 .. ':' .. AstralKeys[index].a3
+	return 'updateV3 ' ..  AstralKeys[index].name .. ":" .. AstralKeys[index].class .. ':' .. AstralKeys[index].realm .. ':' .. AstralKeys[index].map .. ':' .. AstralKeys[index].level .. ':' .. AstralKeys[index].usable .. ':' .. AstralKeys[index].a1 .. ':' .. AstralKeys[index].a2 .. ':' .. AstralKeys[index].a3 .. ':' .. AstralKeys[index].weeklyCache
 end
 
 function e.AnnounceNewKey(keyLink, level)
@@ -23,19 +23,18 @@ akComms:SetScript('OnEvent', function(self, event, ...)
 	if not (prefix == 'AstralKeys') then return end
 
 	local arg, content = msg:match("^(%S*)%s*(.-)$")
-	if arg == 'updateV2' then
+	if arg == 'updateV3' then
 		local sender, unitClass, unitRealm = content:match('(%a+):(%a+):([%a%s-\']+)')
-		local dungeonID, keyLevel, isUsable, affixOne, affixTwo, affixThree = content:match(':(%d+):(%d+):(%d+):(%d+):(%d+):(%d+)')
+		local dungeonID, keyLevel, isUsable, affixOne, affixTwo, affixThree, weekly10 = content:match(':(%d+):(%d+):(%d+):(%d+):(%d+):(%d+):(%d+)')
 		dungeonID = tonumber(dungeonID)
 		keyLevel = tonumber(keyLevel)
 		isUsable = tonumber(isUsable)
 		affixOne = tonumber(affixOne)
 		affixTwo = tonumber(affixTwo)
 		affixThree = tonumber(affixThree)
+		weekly10 = tonumber(weekly10)
 
 		if not e.UnitInGuild(sender) then return end
-
-		local currenta1 = tonumber(e.GetAffix(1))
 
 		if affixOne ~= 0 then
 			e.SetAffix(1, affixOne)
@@ -52,6 +51,8 @@ akComms:SetScript('OnEvent', function(self, event, ...)
 		local id = e.GetUnitID(sender..unitRealm)
 
 		if id then
+			if AstralKeys[id].weeklyCache ~= weekly10 then AstralKeys[id].weeklyCache = weekly10 end
+
 			if AstralKeys[id].level < keyLevel or AstralKeys[id].usable ~= isUsable then
 				AstralKeys[id].map = dungeonID
 				AstralKeys[id].level = keyLevel
@@ -59,7 +60,7 @@ akComms:SetScript('OnEvent', function(self, event, ...)
 				e.UpdateFrames()
 			end
 		else
-			table.insert(AstralKeys, {name = sender, class = unitClass, realm = unitRealm, map = dungeonID, level = keyLevel, usable = isUsable, a1 = affixOne, a2 = affixTwo, a3 = affixThree})
+			table.insert(AstralKeys, {name = sender, class = unitClass, realm = unitRealm, map = dungeonID, level = keyLevel, usable = isUsable, a1 = affixOne, a2 = affixTwo, a3 = affixThree, weeklyCache = weekly10})
 			e.SetUnitID(sender .. unitRealm, #AstralKeys)
 			if sender == e.PlayerName() and unitRealm == e.PlayerRealm() then
 				e.SetPlayerID()
@@ -68,7 +69,6 @@ akComms:SetScript('OnEvent', function(self, event, ...)
 		end
 
 		e.UpdateAffixes()
-
 	end
 	if arg == 'request' then
 		if sender == e.PlayerName() .. '-' .. e.PlayerRealm() then return end
@@ -78,6 +78,16 @@ akComms:SetScript('OnEvent', function(self, event, ...)
 			end
 		end
 	end
+	--[[
+	SendAddonMessage('AstralKeys', 'updateV3 Jpeg:DEMONHUNTER:Turalyon:200:22:1:13:13:10:1', 'GUILD')
+	SendAddonMessage('AstralKeys', 'updateV3 Unsu:SHAMAN:Turalyon:227:22:1:13:13:10:1', 'GUILD')
+	SendAddonMessage('AstralKeys', 'updateV3 Phrike:MAGE:Turalyon:200:22:1:13:13:10:0', 'GUILD')
+	SendAddonMessage('AstralKeys', 'updateV3 Ripmalv:SHAMN:Turalyon:234:22:1:13:13:10:0', 'GUILD')
+
+
+
+
+	]]
 	--SendAddonMessage('AstralKeys', 'resetAK', 'GUILD')
 	if arg == 'resetAK' then
 		AstralKeysSettings['reset'] = false

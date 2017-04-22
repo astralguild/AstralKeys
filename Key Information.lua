@@ -2,18 +2,13 @@ local _, e = ...
 
 if not AstralAffixes then 
 	AstralAffixes = {}
-end
---[[
 	AstralAffixes[1] = 0
 	AstralAffixes[2] = 0
 	AstralAffixes[3] = 0
 end
-]]
 
 local GRAY = 'ff9d9d9d'
 local PURPLE = 'ffa335ee'
-
---local mapID, keyLevel, usable, a1, a2, a3, s, itemID, delink, link
 
 local init = false
 
@@ -23,24 +18,12 @@ e.RegisterEvent('CHALLENGE_MODE_MAPS_UPDATE', function()
  	if not init then
 		e.SetCharacterID()
  		e.UpdateGuildList()
- 		e.FindKeyStone(true, false)
+ 		e.FindKeyStone(true, false, true)
  		e.BuildMapTable()
  		SendAddonMessage('AstralKeys', 'request', 'GUILD')
  		init = true
  	end
  end)
-
-e.RegisterEvent('CHALLENGE_MODE_START', function()
-	--print('this shit started')
-	e.RegisterEvent('BAG_UPDATE', function() 
-		--STUFF
-		end)
-
-	end)
-
-e.RegisterEvent('BAG_UPDATE', function(...)
-	--e.FindKeyStone(true, true)
-	end)
 
 function e.CreateKeyLink(index)
 	local s = '|c'
@@ -63,6 +46,19 @@ e.RegisterEvent('CHALLENGE_MODE_NEW_RECORD', function()
 	e.UpdateCharacterFrames()
 	end)
 
+e.RegisterEvent('CHALLENGE_MODE_COMPLETED', function()
+	e.RegisterEvent('BAG_UPDATE', function()
+		e.FindKeyStone(true, true)
+		end)
+	end)
+
+local function Completed10()
+	if AstralCharacters[e.CharacterID()].level >= 10 then
+		return 1
+	else
+		return 0
+	end
+end
 
 function e.SetAffix(affixNumber, affixID)
 	AstralAffixes[affixNumber] = affixID
@@ -72,7 +68,7 @@ function e.GetAffix(affixNumber)
 	return AstralAffixes[affixNumber]
 end
 
-function e.FindKeyStone(sendUpdate, anounceKey)
+function e.FindKeyStone(sendUpdate, anounceKey, force)
 	local mapID, keyLevel, usable, a1, a2, a3, s, itemID, delink, link
 	local s = ''
 
@@ -83,8 +79,8 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 				link = GetContainerItemLink(bag, slot)
 				delink = link:gsub('\124', '\124\124')
 				mapID, keyLevel, usable, a1, a2, a3 = delink:match(':(%d+):(%d+):(%d+):(%d+):(%d+):(%d+)')
-				s = 'updateV2 ' .. e.PlayerName() .. ':' .. e.PlayerClass() .. ':' .. e.PlayerRealm() ..':' .. mapID .. ':' .. keyLevel .. ':' .. usable .. ':' .. a1 .. ':' .. a2 .. ':' .. a3
-				--s = 'updateV1 CHARACTERSAZ:DEMONHUNTER:Bleeding Hollow:201:22:1:13:13:10'				
+				s = 'updateV3 ' .. e.PlayerName() .. ':' .. e.PlayerClass() .. ':' .. e.PlayerRealm() ..':' .. mapID .. ':' .. keyLevel .. ':' .. usable .. ':' .. a1 .. ':' .. a2 .. ':' .. a3 .. ':' .. Completed10()
+				--s = 'updateV3 CHARACTERSAZ:DEMONHUNTER:Bleeding Hollow:201:22:1:13:13:10:16'				
 			end
 		end
 	end
@@ -105,16 +101,14 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 				end
 			end)
 		end
-	else
-		if not e.IsEventRegistered('BAG_UPDATE') then
-			e.RegisterEvent('BAG_UPDATE', function()
-				e.FindKeyStone(true, true)
-				end)
-		end
-	end	
+	end
 
 	local oldMap, oldLevel, oldUsable = e.GetUnitKey(e.PlayerID())
-	if tonumber(oldMap) == tonumber(mapID) and tonumber(oldLevel) == tonumber(keyLevel) and tonumber(oldUsable) == tonumber(usable) then return end
+	if tonumber(oldMap) == tonumber(mapID) and tonumber(oldLevel) == tonumber(keyLevel) and tonumber(oldUsable) == tonumber(usable) and not force then return end
+
+	if link and e.IsEventRegistered('BAG_UPDATE') then
+		e.UnregisterEvent('BAG_UPDATE')
+	end
 
 	if sendUpdate  and s ~= '' then
 		if IsInGuild() then
@@ -153,6 +147,7 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 				['a2'] = tonumber(a2),
 				['a3'] = tonumber(a3),
 				}
+				e.SetUnitID(e.PlayerName() .. e.PlayerRealm(), #AstralKeys)
 				if anounceKey then
 					e.AnnounceNewKey(link, keyLevel)
 				end

@@ -29,7 +29,16 @@ frame:RegisterEvent('ADDON_LOADED')
 frame:SetScript('OnEvent', function(self, event, ...)
 	local addon = ...
 	if addon == 'AstralKeys' then
-		if not AstralKeysSettings['reset'] then
+		if not AstralKeysSettings['reset'] or not AstralKeysSettings['resetVersion'] then
+			AstralKeysSettings = nil
+			AstralKeys = {}
+			AstralCharacters = {}
+			AstralAffixes[1] = 0
+			AstralAffixes[2] = 0
+			AstralAffixes[3] = 0
+		end
+
+		if AstralKeysSettings['resetVersion'] and AstralKeysSettings['resetVersion'] ~= 1122 then
 			AstralKeysSettings = nil
 			AstralKeys = {}
 			AstralCharacters = {}
@@ -40,7 +49,7 @@ frame:SetScript('OnEvent', function(self, event, ...)
 
 		if not AstralKeysSettings then
 			AstralKeysSettings = {
-				['resetVersion'] = 1121,
+				['resetVersion'] = 1122,
 				['reset'] = true,
 				['initTime'] = e.DataResetTime(),
 				['frameOptions'] = {

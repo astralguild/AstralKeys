@@ -6,7 +6,6 @@ function e.CharacterID()
 	return characterID
 end
 
-
 function e.SetCharacterID()
 	characterID = e.GetCharacterID(e.PlayerName())
 end
