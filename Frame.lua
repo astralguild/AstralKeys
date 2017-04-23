@@ -1155,7 +1155,7 @@ function e.UpdateFrames()
 end
 
 function e.UpdateCharacterFrames()
-	--characterTable = e.DeepCopy(AstralCharacters)
+	characterTable = e.DeepCopy(AstralCharacters)
 
 	if e.CharacterID() then
 		table.remove(characterTable, e.CharacterID())

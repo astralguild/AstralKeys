@@ -26,19 +26,19 @@ end
 
 if not AstralKeysSettings then
 	AstralKeysSettings = {
-				['resetVersion'] = 1122,
-				['reset'] = true,
-				['initTime'] = e.DataResetTime(),
-				['frameOptions'] = {
-					['orientation'] = 0,
-					['sortMethod'] = 'level',
-					['quickOptions'] = {
-						['showOffline'] = 0,
-						['minKeyLevel'] = 1,
-						},
-					['viewMode'] = 0,
-					},
-				}
+		['resetVersion'] = 1122,
+		['reset'] = true,
+		['initTime'] = e.DataResetTime(),
+		['frameOptions'] = {
+			['orientation'] = 0,
+			['sortMethod'] = 'level',
+			['quickOptions'] = {
+				['showOffline'] = 0,
+				['minKeyLevel'] = 1,
+				},
+			['viewMode'] = 0,
+			},
+		}
 end
 
 local frame = CreateFrame('FRAME')
