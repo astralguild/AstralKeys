@@ -67,6 +67,10 @@ akComms:SetScript('OnEvent', function(self, event, ...)
 			e.UpdateFrames()
 		end
 
+		if sender == e.PlayerName() and unitRealm == e.PlayerRealm() then
+			e.UpdateCharacterFrames()
+		end
+		
 		e.UpdateAffixes()
 	end
 	if arg == 'request' then
