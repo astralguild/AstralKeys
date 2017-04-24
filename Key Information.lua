@@ -113,7 +113,7 @@ function e.FindKeyStone(sendUpdate, anounceKey, force)
 	if sendUpdate  and s ~= '' then
 		if IsInGuild() then
 			SendAddonMessage('AstralKeys', s, 'GUILD')
-			if anounceKey then
+			if anounceKey and tonumber(usable) == 1 then
 				e.AnnounceNewKey(link, keyLevel)
 			end
 		else
@@ -128,7 +128,7 @@ function e.FindKeyStone(sendUpdate, anounceKey, force)
 						AstralKeys[i].a1 = tonumber(a1)
 						AstralKeys[i].a2 = tonumber(a2)
 						AstralKeys[i].a3 = tonumber(a3)
-						if anounceKey then
+						if anounceKey and tonumber(usable) == 1 then
 							e.AnnounceNewKey(link, keyLevel)
 						end
 					end
@@ -148,7 +148,7 @@ function e.FindKeyStone(sendUpdate, anounceKey, force)
 				['a3'] = tonumber(a3),
 				}
 				e.SetUnitID(e.PlayerName() .. e.PlayerRealm(), #AstralKeys)
-				if anounceKey then
+				if anounceKey and tonumber(usable) == 1 then
 					e.AnnounceNewKey(link, keyLevel)
 				end
 			end

@@ -1096,7 +1096,7 @@ function e.UpdateFrames()
 
 	local name, keyLevel, mapID, class, usable, realm, index
 
-	sortedTable = e.DeepCopy(AstralKeys)
+	--sortedTable = e.DeepCopy(AstralKeys)
 
 	sortedTable = e.UpdateTables(sortedTable)
 
@@ -1168,15 +1168,13 @@ function e.UpdateCharacterFrames()
 			end				
 		end
 	else
-		--if #characterTable > 0 then
-			for i = 1, #characters do
-				if characterTable[i] then
-					characters[i]:UpdateInformation(characterTable[i + characterOffset]['name'])
-				else
-					characters[i]:UpdateInformation('')
-				end
+		for i = 1, #characters do
+			if characterTable[i] then
+				characters[i]:UpdateInformation(characterTable[i + characterOffset]['name'])
+			else
+				characters[i]:UpdateInformation('')
 			end
-		--end
+		end
 	end
 end
 
@@ -1188,10 +1186,12 @@ end
 
 SLASH_ASTRALKEYS1 = '/astralkeys'
 SLASH_ASTRALKEYS2 = '/ak'
+SLASH_ASTRALKEYSV1 = '/akv'
 
 local function handler(msg)
 	e.AstralToggle()
 end
 
 SlashCmdList['ASTRALKEYS'] = handler;
-SlashCmdList['AK'] = handler;
+SlashCmdList['ASTRALKEYSV'] = function(msg) e.VersionCheck() end
+--SlashCmdList['AK'] = handler;

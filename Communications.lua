@@ -1,9 +1,8 @@
 local _, e = ...
 
 local BROADCAST = true
-local sender, unitClass, unitRealm, dungeonID, keyLevel, usable, affixOne, affixTwo, affixThree
-
-local arg, content, msg, prefix, sender
+local versionList = {}
+local highestVersion
 
 local akComms = CreateFrame('FRAME')
 akComms:RegisterEvent('CHAT_MSG_ADDON')
@@ -68,6 +67,10 @@ akComms:SetScript('OnEvent', function(self, event, ...)
 			e.UpdateFrames()
 		end
 
+		if sender == e.PlayerName() and unitRealm == e.PlayerRealm() then
+			e.UpdateCharacterFrames()
+		end
+		
 		e.UpdateAffixes()
 	end
 	if arg == 'request' then
@@ -78,15 +81,24 @@ akComms:SetScript('OnEvent', function(self, event, ...)
 			end
 		end
 	end
+	if arg =='versionRequest' then
+		local version = GetAddOnMetadata('AstralKeys', 'version')
+		version = version:gsub('[%a%p]', '')
+		SendAddonMessage('AstralKeys', 'versionPush ' .. version .. ':' .. e.PlayerClass(), 'GUILD')
+	end
+	if arg == 'versionPush' then
+		local version, class = content:match('(%d+):(%a+)')
+		if tonumber(version) > highestVersion then
+			highestVersion = tonumber(content)
+		end
+		sender = Ambiguate(sender, 'GUILD')
+		versionList[sender] = {version = version, class = class}
+	end
 	--[[
 	SendAddonMessage('AstralKeys', 'updateV3 Jpeg:DEMONHUNTER:Turalyon:200:22:1:13:13:10:1', 'GUILD')
 	SendAddonMessage('AstralKeys', 'updateV3 Unsu:SHAMAN:Turalyon:227:22:1:13:13:10:1', 'GUILD')
 	SendAddonMessage('AstralKeys', 'updateV3 Phrike:MAGE:Turalyon:200:22:1:13:13:10:0', 'GUILD')
 	SendAddonMessage('AstralKeys', 'updateV3 Ripmalv:SHAMN:Turalyon:234:22:1:13:13:10:0', 'GUILD')
-
-
-
-
 	]]
 	--SendAddonMessage('AstralKeys', 'resetAK', 'GUILD')
 	if arg == 'resetAK' then
@@ -120,4 +132,29 @@ function e.AnounceCharacterKeys(channel)
 			end
 		end
 	end
+end
+
+
+local function PrintVersion()
+	local s = 'Astral Keys players out of date: '
+	highestVersion = 22222
+	local i = 1
+	for k,v in pairs(versionList) do
+		if tonumber(v.version) < highestVersion then
+			s = s .. WrapTextInColorCode(k, select(4, GetClassColor(v.class))) .. ' (' .. v.version .. ')'
+			if i > 1 then s = s .. ', ' end
+			i = i + 1
+		end
+	end
+	ChatFrame1:AddMessage(s)
+end
+
+local timer
+function e.VersionCheck()
+	if not IsInGuild() then return end
+	highestVersion = 0
+	wipe(versionList)
+	SendAddonMessage('AstralKeys', 'versionRequest', 'GUILD')
+	if timer then timer:Cancel() end
+	timer =  C_Timer.NewTicker(3, PrintVersion, 1)
 end
