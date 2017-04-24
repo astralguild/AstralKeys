@@ -80,16 +80,15 @@ akComms:SetScript('OnEvent', function(self, event, ...)
 	if arg =='versionRequest' then
 		local version = GetAddOnMetadata('AstralKeys', 'version')
 		version = version:gsub('[%a%p]', '')
-		version = '1125'
 		SendAddonMessage('AstralKeys', 'versionPush ' .. version .. ':' .. e.PlayerClass(), 'GUILD')
 	end
 	if arg == 'versionPush' then
 		local version, class = content:match('(%d+):(%a+)')
-		print(version, class)
-		if tonumber(content) > highestVersion then
+		if tonumber(version) > highestVersion then
 			highestVersion = tonumber(content)
 		end
-		versionList[Ambiguate(sender, 'GUILD')] = {version = version, class = class}
+		sender = Ambiguate(sender, 'GUILD')
+		versionList[sender] = {version = version, class = class}
 	end
 	--[[
 	SendAddonMessage('AstralKeys', 'updateV3 Jpeg:DEMONHUNTER:Turalyon:200:22:1:13:13:10:1', 'GUILD')
@@ -133,11 +132,14 @@ end
 
 
 local function PrintVersion()
-	local s = 'Astral Keys version check: '
+	local s = 'Astral Keys players out of date: '
 	highestVersion = 22222
+	local i = 1
 	for k,v in pairs(versionList) do
 		if tonumber(v.version) < highestVersion then
 			s = s .. WrapTextInColorCode(k, select(4, GetClassColor(v.class))) .. ' (' .. v.version .. ')'
+			if i > 1 then s = s .. ', ' end
+			i = i + 1
 		end
 	end
 	ChatFrame1:AddMessage(s)
@@ -145,6 +147,7 @@ end
 
 local timer
 function e.VersionCheck()
+	if not IsInGuild() then return end
 	highestVersion = 0
 	wipe(versionList)
 	SendAddonMessage('AstralKeys', 'versionRequest', 'GUILD')
