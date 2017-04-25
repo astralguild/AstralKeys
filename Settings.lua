@@ -22,7 +22,7 @@ end
 
 if not AstralKeysSettings then
 	AstralKeysSettings = {
-		['resetVersion'] = 1129,
+		['resetVersion'] = 1130,
 		['reset'] = true,
 		['initTime'] = e.DataResetTime(),
 		['frameOptions'] = {
@@ -51,7 +51,7 @@ frame:SetScript('OnEvent', function(self, event, ...)
 			AstralAffixes[3] = 0
 		end
 
-		if AstralKeysSettings['resetVersion'] and AstralKeysSettings['resetVersion'] ~= 1129 then
+		if AstralKeysSettings['resetVersion'] and AstralKeysSettings['resetVersion'] ~= 1130 then
 			AstralKeysSettings = nil
 			AstralKeys = {}
 			AstralCharacters = {}
@@ -62,7 +62,7 @@ frame:SetScript('OnEvent', function(self, event, ...)
 
 		if not AstralKeysSettings then
 			AstralKeysSettings = {
-				['resetVersion'] = 1129,
+				['resetVersion'] = 1130,
 				['reset'] = true,
 				['initTime'] = e.DataResetTime(),
 				['frameOptions'] = {
