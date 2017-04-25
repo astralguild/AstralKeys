@@ -1,32 +1,28 @@
 local _, e = ...
 
-local version
-version = GetAddOnMetadata('AstralKeys', 'version')
-version = version:gsub('[%a%p]', '')
-
-if version == '' then version = 1118 end
-
 function e.DataResetTime()
 	local serverTime = GetServerTime()
 	local d = date('*t')
 	local secs = 60 - d.sec
-	local mins = math.floor(59 - d.min + d.sec/100)
+	local mins = math.floor(60 - d.min + d.sec/100)
 	local hours = math.floor(23 - d.hour + d.min/100)
 	local days
+	local hourOffset, minOffset = math.modf(difftime(time(), time(date('!*t'))))/3600
+	minOffset = minOffset or 0
 	if d.wday > 2 then 
 		days = math.floor(7 - d.wday + d.hour/100) + 2
 	else
 		days = math.floor(2 - d.wday + d.hour/100)
 	end
 
-	local time = (((days * 24 + hours + 8) * 60 + mins) * 60 + secs) + serverTime
+	local time = (((days * 24 + hours + 8 + 8 + hourOffset) * 60 + mins + minOffset) * 60 + secs) + serverTime
 
 	return time
 end
 
 if not AstralKeysSettings then
 	AstralKeysSettings = {
-		['resetVersion'] = 1122,
+		['resetVersion'] = 1128,
 		['reset'] = true,
 		['initTime'] = e.DataResetTime(),
 		['frameOptions'] = {
@@ -55,7 +51,7 @@ frame:SetScript('OnEvent', function(self, event, ...)
 			AstralAffixes[3] = 0
 		end
 
-		if AstralKeysSettings['resetVersion'] and AstralKeysSettings['resetVersion'] ~= 1122 then
+		if AstralKeysSettings['resetVersion'] and AstralKeysSettings['resetVersion'] ~= 1128 then
 			AstralKeysSettings = nil
 			AstralKeys = {}
 			AstralCharacters = {}
@@ -66,7 +62,7 @@ frame:SetScript('OnEvent', function(self, event, ...)
 
 		if not AstralKeysSettings then
 			AstralKeysSettings = {
-				['resetVersion'] = 1122,
+				['resetVersion'] = 1128,
 				['reset'] = true,
 				['initTime'] = e.DataResetTime(),
 				['frameOptions'] = {

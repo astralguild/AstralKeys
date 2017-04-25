@@ -59,8 +59,13 @@ e.RegisterEvent('CHALLENGE_MODE_COMPLETED', function()
 	end)
 
 local function Completed10()
-	if AstralCharacters[e.CharacterID()].level >= 10 then
-		return 1
+	if not e.CharacterID() then return 0 end
+	if AstralCharacters[e.CharacterID()]['level'] then
+	 if AstralCharacters[e.CharacterID()].level >= 10 then
+			return 1
+		else
+			return 0
+		end
 	else
 		return 0
 	end
