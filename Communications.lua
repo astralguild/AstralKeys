@@ -97,7 +97,7 @@ akComms:SetScript('OnEvent', function(self, event, ...)
 	if arg == 'versionPush' then
 		local version, class = content:match('(%d+):(%a+)')
 		if tonumber(version) > highestVersion then
-			highestVersion = tonumber(content)
+			highestVersion = tonumber(version)
 		end
 		sender = Ambiguate(sender, 'GUILD')
 		versionList[sender] = {version = version, class = class}
@@ -142,10 +142,8 @@ function e.AnounceCharacterKeys(channel)
 	end
 end
 
-
 local function PrintVersion()
 	local s = 'Astral Keys players out of date: '
-	highestVersion = 22222
 	local i = 1
 	for k,v in pairs(versionList) do
 		if tonumber(v.version) < highestVersion then
