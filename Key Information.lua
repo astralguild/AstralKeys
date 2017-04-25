@@ -44,6 +44,12 @@ end
 e.RegisterEvent('CHALLENGE_MODE_NEW_RECORD', function()
 	e.GetBestClear()
 	e.UpdateCharacterFrames()
+
+	if AstralKeys[e.PlayerID()].weeklyCache == 0 then
+		if AstralCharacters[e.CharacterID()].level >= 10 then
+			SendAddonMessage('AstralKeys', 'updateWeekly 1')
+		end
+	end
 	end)
 
 e.RegisterEvent('CHALLENGE_MODE_COMPLETED', function()

@@ -22,8 +22,16 @@ akComms:SetScript('OnEvent', function(self, event, ...)
 	if not (prefix == 'AstralKeys') then return end
 
 	local arg, content = msg:match("^(%S*)%s*(.-)$")
+
+	if arg == 'updateWeekly' then
+		local id e.GetUnitID(sender)
+		if id then
+			AstralKeys[id].weeklyCache = tonumber(content)
+		end
+	end
+
 	if arg == 'updateV3' then
-		local sender, unitClass, unitRealm = content:match('(%a+):(%a+):([%a%s-\']+)')
+		local unit, unitClass, unitRealm = content:match('(%a+):(%a+):([%a%s-\']+)')
 		local dungeonID, keyLevel, isUsable, affixOne, affixTwo, affixThree, weekly10 = content:match(':(%d+):(%d+):(%d+):(%d+):(%d+):(%d+):(%d+)')
 		dungeonID = tonumber(dungeonID)
 		keyLevel = tonumber(keyLevel)
@@ -33,7 +41,7 @@ akComms:SetScript('OnEvent', function(self, event, ...)
 		affixThree = tonumber(affixThree)
 		weekly10 = tonumber(weekly10)
 
-		if not e.UnitInGuild(sender) then return end
+		if not e.UnitInGuild(unit) then return end
 
 		if affixOne ~= 0 then
 			e.SetAffix(1, affixOne)
@@ -47,7 +55,7 @@ akComms:SetScript('OnEvent', function(self, event, ...)
 			e.SetAffix(3, affixThree)
 		end
 
-		local id = e.GetUnitID(sender..unitRealm)
+		local id = e.GetUnitID(unit..unitRealm)
 
 		if id then
 			if AstralKeys[id].weeklyCache ~= weekly10 then AstralKeys[id].weeklyCache = weekly10 end
@@ -59,9 +67,9 @@ akComms:SetScript('OnEvent', function(self, event, ...)
 				e.UpdateFrames()
 			end
 		else
-			table.insert(AstralKeys, {name = sender, class = unitClass, realm = unitRealm, map = dungeonID, level = keyLevel, usable = isUsable, a1 = affixOne, a2 = affixTwo, a3 = affixThree, weeklyCache = weekly10})
-			e.SetUnitID(sender .. unitRealm, #AstralKeys)
-			if sender == e.PlayerName() and unitRealm == e.PlayerRealm() then
+			table.insert(AstralKeys, {name = unit, class = unitClass, realm = unitRealm, map = dungeonID, level = keyLevel, usable = isUsable, a1 = affixOne, a2 = affixTwo, a3 = affixThree, weeklyCache = weekly10})
+			e.SetUnitID(unit .. unitRealm, #AstralKeys)
+			if unit == e.PlayerName() and unitRealm == e.PlayerRealm() then
 				e.SetPlayerID()
 			end
 			e.UpdateFrames()
