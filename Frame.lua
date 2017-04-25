@@ -846,7 +846,7 @@ contentFrame:SetScript('OnLeave', function()
 	contentFrame.slider:SetAlpha(0.2)
 	end)
 
-local keyButton = CreateButton(contentFrame, 'keyButton', 75, 20, 'Key Level', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT)
+local keyButton = CreateButton(contentFrame, 'keyButton', 75, 20, 'Level', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT)
 keyButton:SetPoint('BOTTOMLEFT', contentFrame, 'TOPLEFT')
 keyButton:SetScript('OnClick', function()
 	contentFrame:ResetSlider()
@@ -860,7 +860,7 @@ keyButton:SetScript('OnClick', function()
 
 	end)
 
-local mapButton = CreateButton(contentFrame, 'mapButton', 190, 20, 'Dungeon Map', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT)
+local mapButton = CreateButton(contentFrame, 'mapButton', 190, 20, 'Dungeon', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT)
 mapButton:SetPoint('LEFT', keyButton, 'RIGHT')
 mapButton:SetScript('OnClick', function()
 	contentFrame:ResetSlider()
@@ -874,7 +874,7 @@ mapButton:SetScript('OnClick', function()
 
 	end)
 
-local nameButton = CreateButton(contentFrame, 'nameButton', 100, 20, 'Player Name', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT)
+local nameButton = CreateButton(contentFrame, 'nameButton', 100, 20, 'Player', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT)
 nameButton:SetPoint('LEFT', mapButton, 'RIGHT')
 nameButton:SetScript('OnClick', function()
 	contentFrame:ResetSlider()

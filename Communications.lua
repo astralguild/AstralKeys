@@ -99,7 +99,6 @@ akComms:SetScript('OnEvent', function(self, event, ...)
 		if tonumber(version) > highestVersion then
 			highestVersion = tonumber(version)
 		end
-		sender = Ambiguate(sender, 'GUILD')
 		versionList[sender] = {version = version, class = class}
 	end
 	--[[
@@ -143,16 +142,28 @@ function e.AnounceCharacterKeys(channel)
 end
 
 local function PrintVersion()
-	local s = 'Astral Keys players out of date: '
+	local outOfDate = 'Out of date: '
+	local upToDate = 'Up to date: '
+	local notInstalled = 'Not installed: '
+
 	local i = 1
 	for k,v in pairs(versionList) do
 		if tonumber(v.version) < highestVersion then
-			s = s .. WrapTextInColorCode(k, select(4, GetClassColor(v.class))) .. ' (' .. v.version .. ')'
-			if i > 1 then s = s .. ', ' end
-			i = i + 1
+			outOfDate = outOfDate .. WrapTextInColorCode(Ambiguate(k, 'GUILD'), select(4, GetClassColor(v.class))) .. '(' .. v.version .. ') '
+		else
+			upToDate = upToDate .. WrapTextInColorCode(Ambiguate(k, 'GUILD'), select(4, GetClassColor(v.class))) .. '(' .. v.version .. ') '
 		end
 	end
-	ChatFrame1:AddMessage(s)
+	for i = 1, select(2, GetNumGuildMembers()) do
+		local unit = GetGuildRosterInfo(i)
+		local class = select(11, GetGuildRosterInfo(i))
+		if not versionList[unit] then
+			notInstalled = notInstalled .. WrapTextInColorCode(Ambiguate(unit, 'GUILD'), select(4, GetClassColor(class))) .. ' '
+		end
+	end
+	ChatFrame1:AddMessage(outOfDate)
+	ChatFrame1:AddMessage(upToDate)
+	ChatFrame1:AddMessage(notInstalled)
 end
 
 local timer
