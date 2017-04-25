@@ -52,10 +52,10 @@ e.RegisterEvent('PLAYER_LOGIN', function()
 
 	if d.wday == 3 and d.hour < 8 then
 		local frame = CreateFrame('FRAME')
-		local interval
+		frame.interval = 0
 		frame:SetScript('OnUpdate', function(self, elapsed)
-			interval = interval + elapsed
-			if interval > 30 then
+			frame.interval = frame.interval + elapsed
+			if frame.interval > 30 then
 				if GetServerTime() > AstralKeysSettings.initTime then
 					AstralCharacters = {}
 					AstralKeys = {}
@@ -68,7 +68,7 @@ e.RegisterEvent('PLAYER_LOGIN', function()
 					self:SetScript('OnUpdate', nil)
 					self = nil
 				end
-				interval = 0
+				frame.interval = 0
 			end
 			end)
 	end

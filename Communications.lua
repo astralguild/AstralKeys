@@ -27,6 +27,7 @@ akComms:SetScript('OnEvent', function(self, event, ...)
 		local id e.GetUnitID(sender)
 		if id then
 			AstralKeys[id].weeklyCache = tonumber(content)
+			e.UpdateFrames()
 		end
 	end
 

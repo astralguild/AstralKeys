@@ -95,7 +95,7 @@ function e.FindKeyStone(sendUpdate, anounceKey, force)
 		if not e.IsEventRegistered('CHAT_MSG_LOOT') then
 			e.RegisterEvent('CHAT_MSG_LOOT', function(...)
 				local msg = ...
-				local sender = select(5, ...) -- Should return unit that looted
+				local sender = select(5, ...)
 				if not sender == e.PlayerName() then return end
 
 				if string.lower(msg):find('keystone') then
@@ -160,10 +160,6 @@ function e.FindKeyStone(sendUpdate, anounceKey, force)
 			end
 		end
 	end
-end
-
-function e.GetKeyLevelByIndex(index)
-	return AstralKeys[index].keyLevel
 end
 
 local function CreateKeyText(mapID, level, usable)
