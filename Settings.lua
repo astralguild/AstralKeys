@@ -15,7 +15,7 @@ function e.DataResetTime()
 		days = math.floor(2 - d.wday + d.hour/100)
 	end
 
-	local time = (((days * 24 + hours - hourOffset)) * 60 + mins + minOffset) * 60 + secs) + serverTime
+	local time = (((days * 24 + hours - hourOffset) * 60 + mins + minOffset) * 60 + secs) + serverTime
 
 	return time
 end
