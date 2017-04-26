@@ -15,14 +15,15 @@ function e.DataResetTime()
 		days = math.floor(2 - d.wday + d.hour/100)
 	end
 
-	local time = (((days * 24 + hours - hourOffset) * 60 + mins + minOffset) * 60 + secs) + serverTime
+
+	local time = (((days * 24 + hours + 16 + hourOffset) * 60 + mins + minOffset) * 60 + secs) + serverTime
 
 	return time
 end
 
 if not AstralKeysSettings then
 	AstralKeysSettings = {
-		['resetVersion'] = 1130,
+		['resetVersion'] = 1131,
 		['reset'] = true,
 		['initTime'] = e.DataResetTime(),
 		['frameOptions'] = {
@@ -42,27 +43,14 @@ frame:RegisterEvent('ADDON_LOADED')
 frame:SetScript('OnEvent', function(self, event, ...)
 	local addon = ...
 	if addon == 'AstralKeys' then
-		if not AstralKeysSettings['reset'] or not AstralKeysSettings['resetVersion'] then
-			AstralKeysSettings = nil
+		if not AstralKeysSettings['reset'] or not AstralKeysSettings['resetVersion'] or AstralKeysSettings['resetVersion'] ~=1131 then
 			AstralKeys = {}
 			AstralCharacters = {}
 			AstralAffixes[1] = 0
 			AstralAffixes[2] = 0
 			AstralAffixes[3] = 0
-		end
-
-		if AstralKeysSettings['resetVersion'] and AstralKeysSettings['resetVersion'] ~= 1130 then
-			AstralKeysSettings = nil
-			AstralKeys = {}
-			AstralCharacters = {}
-			AstralAffixes[1] = 0
-			AstralAffixes[2] = 0
-			AstralAffixes[3] = 0
-		end
-
-		if not AstralKeysSettings then
 			AstralKeysSettings = {
-				['resetVersion'] = 1130,
+				['resetVersion'] = 1131,
 				['reset'] = true,
 				['initTime'] = e.DataResetTime(),
 				['frameOptions'] = {
@@ -76,9 +64,6 @@ frame:SetScript('OnEvent', function(self, event, ...)
 					},
 				}
 		end
-
-		if not AstralKeys then AstralKeys = {} end
-		if not AstralCharacters then AstralCharacters = {} end
 		end
 	end)
 
