@@ -14,7 +14,7 @@ RegisterAddonMessagePrefix('AstralKeys')
 
 akComms:SetScript('OnEvent', function(self, event, ...)
 	local prefix, msg = ...
-	if not (prefix == 'pfl') then return end
+	if not (prefix == 'AstralKeys') then return end
 
 	local arg, content = msg:match("^(%S*)%s*(.-)$")
 		akComms[arg](content, ...)
@@ -108,6 +108,7 @@ e.RegisterPrefix('updateWeekly', UpdateWeekly10)
 
 local function PushKeyList(...)
 	local sender = select(5, ...)
+	print(sender)
 	if sender == e.PlayerName() .. '-' .. e.PlayerRealm() then return end
 	for i = 1, #AstralKeys do
 		if e.UnitInGuild(AstralKeys[i].name) then
