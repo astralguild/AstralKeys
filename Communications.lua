@@ -2,7 +2,7 @@ local _, e = ...
 
 local BROADCAST = true
 local versionList = {}
-local highestVersion
+local highestVersion = 0
 
 local akComms = CreateFrame('FRAME')
 akComms:RegisterEvent('CHAT_MSG_ADDON')
@@ -109,6 +109,7 @@ akComms:SetScript('OnEvent', function(self, event, ...)
 	SendAddonMessage('AstralKeys', 'updateV3 Ripmalv:SHAMN:Turalyon:234:22:1:13:13:10:0', 'GUILD')
 	]]
 	--SendAddonMessage('AstralKeys', 'resetAK', 'GUILD')
+	
 	if arg == 'resetAK' then
 		AstralKeysSettings['reset'] = false
 		e.WipeUnitList()
