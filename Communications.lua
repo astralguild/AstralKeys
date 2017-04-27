@@ -103,7 +103,7 @@ local function UpdateKeyList(entry)
 				e.UpdateCharacterFrames()
 			end
 		end
-	else	
+	else
 		local unit, unitClass, unitRealm = entry:match('(%a+):(%a+):([%a%s-\']+)')
 		local dungeonID, keyLevel, isUsable, affixOne, affixTwo, affixThree, weekly10 = entry:match(':(%d+):(%d+):(%d+):(%d+):(%d+):(%d+):(%d+)')
 
@@ -168,10 +168,13 @@ local function UpdateWeekly10(...)
 end
 e.RegisterPrefix('updateWeekly', UpdateWeekly10)
 
+local ticker = {}
 local function PushKeyList(...)
-	local sender = select(4, ...)
-	--if sender == e.PlayerName() .. '-' .. e.PlayerRealm() then return end
+	if ticker['_remainingIterations'] and ticker['_remainingIterations'] > 0 then ticker:Cancel() end
+	local sender = select(5, ...)
+	if sender == e.PlayerName() .. '-' .. e.PlayerRealm() then return end
 	wipe(messageStack)
+	wipe(messageQueue)
 	for i = 1, #AstralKeys do
 		if e.UnitInGuild(AstralKeys[i].name .. '-' .. AstralKeys[i].realm) then
 			messageStack[#messageStack + 1] = AddonMessage(i) .. '_'
@@ -192,9 +195,19 @@ local function PushKeyList(...)
 		end
 	end
 
-	for i = 1, #messageQueue do
-		SendAddonMessage('AstralKeys', 'updateV4 ' .. messageQueue[i], 'GUILD')
+	local function SendEntries()
+		for i = 1, 5 do
+			if messageQueue[1] then
+				SendAddonMessage('AstralKeys', 'updateV4 ' .. messageQueue[1], 'GUILD')
+				table.remove(messageQueue, 1)
+			else
+				break
+			end
+		end
 	end
+
+	local tickerIterations = math.ceil(#messageQueue/5)
+	ticker = C_Timer.NewTicker(1, SendEntries, tickerIterations)
 	
 end
 
@@ -245,6 +258,25 @@ e.RegisterPrefix('resetAK', ResetAK)
 	SendAddonMessage('AstralKeys', 'updateV4 Abbychu:DRUID:Turalyon:234:22:1:13:13:10:0', 'GUILD')
 	SendAddonMessage('AstralKeys', 'updateV4 Shootsu:HUNTER:Turalyon:234:22:1:13:13:10:0', 'GUILD')
 	SendAddonMessage('AstralKeys', 'updateV4 Terra:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
+	SendAddonMessage('AstralKeys', 'updateV4 Dagrdk:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
+	SendAddonMessage('AstralKeys', 'updateV4 Illegalsaur:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
+	SendAddonMessage('AstralKeys', 'updateV4 Senketsoo:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
+	SendAddonMessage('AstralKeys', 'updateV4 Zerow:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
+	SendAddonMessage('AstralKeys', 'updateV4 Seksygoose:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
+	SendAddonMessage('AstralKeys', 'updateV4 Alligro:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
+	SendAddonMessage('AstralKeys', 'updateV4 Chargemybutt:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
+	SendAddonMessage('AstralKeys', 'updateV4 Memebigboy:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
+
+	SendAddonMessage('AstralKeys', 'updateV4 Codky:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
+	SendAddonMessage('AstralKeys', 'updateV4 Tiorda:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
+	SendAddonMessage('AstralKeys', 'updateV4 Codyh:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
+	SendAddonMessage('AstralKeys', 'updateV4 Poppey:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
+	SendAddonMessage('AstralKeys', 'updateV4 Sheevil:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
+	SendAddonMessage('AstralKeys', 'updateV4 Atarai:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
+	SendAddonMessage('AstralKeys', 'updateV4 Amrun:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
+	SendAddonMessage('AstralKeys', 'updateV4 Spuuns:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
+	SendAddonMessage('AstralKeys', 'updateV4 Toastneggs:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
+	SendAddonMessage('AstralKeys', 'updateV4 Wibbley:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
 
 ]]
 function e.AnounceCharacterKeys(channel)
@@ -298,18 +330,3 @@ function e.VersionCheck()
 	if timer then timer:Cancel() end
 	timer =  C_Timer.NewTicker(3, function() PrintVersion() e.UnregisterPrefix('versionPush') end, 1)
 end
-
---[[
-PARSE COMBINED MESSAGES
-test = 'Jpeg:DEMONHUNTER:Turalyon:200:22:1:13:13:10:1_Unsu:SHAMAN:Turalyon:227:22:1:13:13:10:1_'
-strings = {}
-
-test:sub(1, test:find('_'))
-
-while test:find('_') do
-strings[#strings + 1] = test:sub(1, test:find('_') - 1)
-test = test:sub(test:find('_')+1 , test:len())
-end
-
-tprint(strings)
-]]
