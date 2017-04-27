@@ -44,8 +44,8 @@ frame:SetScript('OnEvent', function(self, event, ...)
 	local addon = ...
 	if addon == 'AstralKeys' then
 		if not AstralKeysSettings['reset'] or not AstralKeysSettings['resetVersion'] or AstralKeysSettings['resetVersion'] ~=1131 then
-			AstralKeys = {}
-			AstralCharacters = {}
+			wipe(AstralKeys)
+			wipe(AstralCharacters)
 			AstralAffixes[1] = 0
 			AstralAffixes[2] = 0
 			AstralAffixes[3] = 0
