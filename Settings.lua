@@ -23,7 +23,7 @@ end
 
 if not AstralKeysSettings then
 	AstralKeysSettings = {
-		['resetVersion'] = 1131,
+		['resetVersion'] = 1134,
 		['reset'] = true,
 		['initTime'] = e.DataResetTime(),
 		['frameOptions'] = {
@@ -43,14 +43,14 @@ frame:RegisterEvent('ADDON_LOADED')
 frame:SetScript('OnEvent', function(self, event, ...)
 	local addon = ...
 	if addon == 'AstralKeys' then
-		if not AstralKeysSettings['reset'] or not AstralKeysSettings['resetVersion'] or AstralKeysSettings['resetVersion'] ~=1131 then
+		if not AstralKeysSettings['reset'] or not AstralKeysSettings['resetVersion'] or AstralKeysSettings['resetVersion'] ~=1134 then
 			wipe(AstralKeys)
 			wipe(AstralCharacters)
 			AstralAffixes[1] = 0
 			AstralAffixes[2] = 0
 			AstralAffixes[3] = 0
 			AstralKeysSettings = {
-				['resetVersion'] = 1131,
+				['resetVersion'] = 1134,
 				['reset'] = true,
 				['initTime'] = e.DataResetTime(),
 				['frameOptions'] = {

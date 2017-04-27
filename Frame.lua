@@ -682,7 +682,6 @@ affixOne.texture:SetTexture(nil)
 
 function affixOne:UpdateInfo()
 	self.aid = e.GetAffix(1)
-	print(self.aid)
 	if self.aid ~= 0 and self.aid then
 		self.string:SetText(C_ChallengeMode.GetAffixInfo(self.aid))
 		self.texture:SetTexture(select(3, C_ChallengeMode.GetAffixInfo(self.aid)))
