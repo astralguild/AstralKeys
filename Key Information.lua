@@ -90,7 +90,7 @@ function e.FindKeyStone(sendUpdate, anounceKey, force)
 				link = GetContainerItemLink(bag, slot)
 				delink = link:gsub('\124', '\124\124')
 				mapID, keyLevel, usable, a1, a2, a3 = delink:match(':(%d+):(%d+):(%d+):(%d+):(%d+):(%d+)')
-				s = 'updateV3 ' .. e.PlayerName() .. ':' .. e.PlayerClass() .. ':' .. e.PlayerRealm() ..':' .. mapID .. ':' .. keyLevel .. ':' .. usable .. ':' .. a1 .. ':' .. a2 .. ':' .. a3 .. ':' .. Completed10()
+				s = 'updateV4 ' .. e.PlayerName() .. ':' .. e.PlayerClass() .. ':' .. e.PlayerRealm() ..':' .. mapID .. ':' .. keyLevel .. ':' .. usable .. ':' .. a1 .. ':' .. a2 .. ':' .. a3 .. ':' .. Completed10()
 				--s = 'updateV3 CHARACTERSAZ:DEMONHUNTER:Bleeding Hollow:201:22:1:13:13:10:16'				
 			end
 		end
