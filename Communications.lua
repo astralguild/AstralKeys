@@ -96,7 +96,7 @@ e.RegisterPrefix('updateV3', UpdateKeyList)
 
 local function UpdateWeekly10(...)
 	local weekly = ...
-	local sender = select(5, ...)
+	local sender = select(4, ...)
 
 	local id = e.GetUnitID(sender)
 	if id then
@@ -106,7 +106,7 @@ end
 e.RegisterPrefix('updateWeekly', UpdateWeekly10)
 
 local function PushKeyList(...)
-	local sender = select(5, ...)
+	local sender = select(4, ...)
 	if sender == e.PlayerName() .. '-' .. e.PlayerRealm() then return end
 	for i = 1, #AstralKeys do
 		if e.UnitInGuild(AstralKeys[i].name) then
@@ -123,8 +123,9 @@ local function VersionRequest()
 end
 e.RegisterPrefix('versionRequest', VersionRequest)
 
-local function VersionPush(msg)
-	local version, class = content:match('(%d+):(%a+)')
+local function VersionPush(msg, ...)
+	local sender = select(4, ...)
+	local version, class = msg:match('(%d+):(%a+)')
 	if tonumber(version) > highestVersion then
 		highestVersion = tonumber(version)
 	end
@@ -149,6 +150,7 @@ local function ResetAK()
 	end)
 end
 e.RegisterPrefix('resetAK', ResetAK)
+--SendAddonMessage('AstralKeys', 'resetAK', 'GUILD')
 
 function e.AnounceCharacterKeys(channel)
 	for i = 1, #AstralCharacters do
@@ -184,8 +186,8 @@ local function PrintVersion()
 			notInstalled = notInstalled .. WrapTextInColorCode(Ambiguate(unit, 'GUILD'), select(4, GetClassColor(class))) .. ' '
 		end
 	end
-	ChatFrame1:AddMessage(outOfDate)
 	ChatFrame1:AddMessage(upToDate)
+	ChatFrame1:AddMessage(outOfDate)
 	ChatFrame1:AddMessage(notInstalled)
 end
 
