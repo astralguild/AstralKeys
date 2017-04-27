@@ -2,9 +2,9 @@ local _, e = ...
 
 function e.DataResetTime()
 	local serverTime = GetServerTime()
-	local d = date('*t')
+	local d = date('*t', serverTime)
 	local secs = 60 - d.sec
-	local mins = math.floor(60 - d.min + d.sec/100)
+	local mins = math.floor(59 - d.min + d.sec/100)
 	local hours = math.floor(23 - d.hour + d.min/100)
 	local days
 	local hourOffset, minOffset = math.modf(difftime(time(), time(date('!*t'))))/3600
