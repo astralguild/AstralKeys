@@ -3,14 +3,12 @@ local _, e = ...
 local akEvents = CreateFrame('FRAME')
 
 akEvents:SetScript("OnEvent", function(self, event, ...)
-		--akEvents[event](self, ...)
 		akEvents[event](...)
 end)
 
 
 function e.RegisterEvent(event, func)
 	akEvents:RegisterEvent(event)
-	--akEvents[event] = function(self, ...)
 	akEvents[event] = function(...)
 	func(...)
 	end
@@ -27,6 +25,7 @@ function e.IsEventRegistered(event)
 		return false
 	end
 end
+
 
 --[[
 e.RegisterEvent('CHAT_MSG_SYSTEM', function(...)
