@@ -9,7 +9,6 @@ function e.UpdateGuildList()
 	for i = 1, GetNumGuildMembers() do
 		name = GetGuildRosterInfo(i)
 		if not name then return end
-		name = Ambiguate(name, 'guild')
 		guildList[name] = true
 	end
 end

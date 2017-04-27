@@ -1,20 +1,20 @@
 local _, e = ...
 
 local units = {}
+local tbl = {}
 
 local function ParseOnlineUnits(A)
-	local tbl = {}
+	wipe(tbl)
 	wipe(units)
 	local guildName
 	local numOnline = select(2, GetNumGuildMembers())
 	for i = 1, numOnline do
 		guildName = GetGuildRosterInfo(i)
-		guildName = Ambiguate(guildName, 'GUILD')
 		units[guildName] = true
 	end
 
 	for k, v in pairs(A) do
-		local key = v.name
+		local key = v.name .. '-' .. v.realm
 		if units[key] then
 			tbl[#tbl+1] = v
 		end

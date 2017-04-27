@@ -40,8 +40,8 @@ e.RegisterEvent('PLAYER_LOGIN', function()
 	e.SetPlayerRealm()
 
 	if GetServerTime() > AstralKeysSettings.initTime then
-		AstralCharacters = {}
-		AstralKeys = {}
+		wipe(AstralCharacters)
+		wipe(AstralKeys)
 		AstralAffixes = {}
 		AstralAffixes[1] = 0
 		AstralAffixes[2] = 0
@@ -76,7 +76,7 @@ e.RegisterEvent('PLAYER_LOGIN', function()
 	e.SetPlayerID()
 
 	for i = 1, #AstralKeys do
-		e.SetUnitID(AstralKeys[i].name .. AstralKeys[i].realm, i)
+		e.SetUnitID(AstralKeys[i].name .. '-' ..  AstralKeys[i].realm, i)
 	end
 
 	e.RegisterEvent('CURRENCY_DISPLAY_UPDATE', function(...)

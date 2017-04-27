@@ -685,6 +685,9 @@ function affixOne:UpdateInfo()
 	if self.aid ~= 0 and self.aid then
 		self.string:SetText(C_ChallengeMode.GetAffixInfo(self.aid))
 		self.texture:SetTexture(select(3, C_ChallengeMode.GetAffixInfo(self.aid)))
+	else
+		self.string:SetText('')
+		self.texture:SetTexture('')
 	end
 end
 
@@ -721,6 +724,9 @@ function affixTwo:UpdateInfo()
 	if self.aid ~= 0 and self.aid then
 		self.string:SetText(C_ChallengeMode.GetAffixInfo(self.aid))
 		self.texture:SetTexture(select(3, C_ChallengeMode.GetAffixInfo(self.aid)))
+	else
+		self.string:SetText('')
+		self.texture:SetTexture('')
 	end
 end
 
@@ -757,6 +763,9 @@ function affixThree:UpdateInfo()
 	if self.aid ~= 0 and self.aid then
 		self.string:SetText(C_ChallengeMode.GetAffixInfo(self.aid))
 		self.texture:SetTexture(select(3, C_ChallengeMode.GetAffixInfo(self.aid)))
+	else
+		self.string:SetText('')
+		self.texture:SetTexture('')
 	end
 end
 
