@@ -12,6 +12,7 @@ local PURPLE = 'ffa335ee'
 
 local init = false
 
+-- USE THIS FOR UPDATING HIGHEST KEY LEVEL RAN
 e.RegisterEvent('CHALLENGE_MODE_MAPS_UPDATE', function()
 	if UnitLevel('player') ~= 110 then return end
 	e.GetBestClear()
@@ -52,10 +53,16 @@ e.RegisterEvent('CHALLENGE_MODE_NEW_RECORD', function()
 	end
 	end)
 
+-- DO NOT USE THIS ONE
 e.RegisterEvent('CHALLENGE_MODE_COMPLETED', function()
-	e.RegisterEvent('BAG_UPDATE', function()
+	e.RegisterEvent('PLAYER_REGEN_ENABLED', function()
+		
+	C_Timer.After(1, function() 
 		e.FindKeyStone(true, true)
 		end)
+		end)
+
+	e.UnregisterEvent('PLAYER_REGEN_ENABLED')
 	end)
 
 local function Completed10()
