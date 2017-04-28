@@ -127,9 +127,9 @@ local function CreateCheckBox(parent, cbID, label)
 	return checkbox
 end
 
-local function CreateCharacterFrame(parent, name, unitName, bestKey, createDivider)
+local function CreateCharacterFrame(parent, frameName, unitName, bestKey, createDivider)
 
-	local frame = CreateFrame('FRAME', name, parent)
+	local frame = CreateFrame('FRAME', frameName, parent)
 	frame:SetSize(210, 31)
 	frame:SetFrameLevel(5)
 
