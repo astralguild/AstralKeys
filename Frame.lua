@@ -966,13 +966,13 @@ local function InitializeFrame()
 	local id = e.CharacterID()
 	local endIndex
 
-	if id then	
+	if id then
 
-		local playerCharacter = CreateCharacterFrame(characterFrame, 'playerCharacter', characterTable[id].name, nil, false)
-		playerCharacter:SetPoint('TOPLEFT', characterHeader, 'BOTTOMLEFT', 0, -5)
+		characters[1] = CreateCharacterFrame(characterFrame, nil, characterTable[id].name, nil, false)
+		characters[1]:SetPoint('TOPLEFT', characterHeader, 'BOTTOMLEFT', 0, -5)
 
 		characterContent:SetSize(215, 260)
-		characterContent:SetPoint('TOPLEFT', playerCharacter, 'BOTTOMLEFT')	
+		characterContent:SetPoint('TOPLEFT', characterHeader, 'BOTTOMLEFT', 0, -39)
 
 		table.remove(characterTable, id)
 
@@ -983,12 +983,12 @@ local function InitializeFrame()
 		end
 
 		for i = 1, endIndex do
-			characters[i] = CreateCharacterFrame(characterFrame, nil, characterTable[i].name, nil, false)
-			characters[i]:SetPoint('TOPLEFT', characterContent, 'TOPLEFT', 0, -34*(i - 1) - 4)
+			characters[i+1] = CreateCharacterFrame(characterFrame, nil, characterTable[i].name, nil, false)
+			characters[i+1]:SetPoint('TOPLEFT', characterContent, 'TOPLEFT', 0, -34*(i - 1) - 4)
 		end
 	else
 		characterContent:SetSize(215, 290)
-		characterContent:SetPoint('TOPLEFT', characterHeader, 'BOTTOMLEFT', 0, -5)	
+		characterContent:SetPoint('TOPLEFT', characterHeader, 'BOTTOMLEFT', 0, -5)
 
 		if #characterTable < 10 then
 			endIndex = #characterTable
@@ -997,9 +997,9 @@ local function InitializeFrame()
 		end
 
 		for i = 1, endIndex do
-		characters[i] = CreateCharacterFrame(characterFrame, nil, characterTable[i].name, nil, false)
-		characters[i]:SetPoint('TOPLEFT', characterContent, 'TOPLEFT', 0, -34*(i-1) - 4)
-	end
+			characters[i] = CreateCharacterFrame(characterFrame, nil, characterTable[i].name, nil, false)
+			characters[i]:SetPoint('TOPLEFT', characterContent, 'TOPLEFT', 0, -34*(i-1) - 4)
+		end
 	end
 
 	characterContent.slider:SetPoint('TOPLEFT', characterContent, 'TOPRIGHT', 0, -10)
@@ -1167,14 +1167,14 @@ function e.UpdateCharacterFrames()
 	characterTable = e.DeepCopy(AstralCharacters)
 
 	if e.CharacterID() then
+		characters[1]:UpdateInformation(e.PlayerName())
 		table.remove(characterTable, e.CharacterID())
-		playerCharacter:UpdateInformation(e.PlayerName())
-		for i = 1, #characters do
-			if characterTable[i] then
-				characters[i]:UpdateInformation(characterTable[i + characterOffset]['name'])
+		for i = 2, #characters do
+			if characterTable[i-1] then
+				characters[i]:UpdateInformation(characterTable[i + characterOffset - 1]['name'])
 			else
 				characters[i]:UpdateInformation('')
-			end				
+			end	
 		end
 	else
 		for i = 1, #characters do

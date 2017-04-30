@@ -159,7 +159,7 @@ e.RegisterPrefix('updateV4', UpdateKeyList)
 
 local function UpdateWeekly10(...)
 	local weekly = ...
-	local sender = select(4, ...)
+	local sender = select(5, ...)
 
 	local id = e.GetUnitID(sender)
 	if id then
@@ -180,8 +180,8 @@ local function PushKeyList(...)
 			messageStack[#messageStack + 1] = AddonMessage(i) .. '_'
 		end
 	end
-	-- Keep 10 characters for prefix length, extra incase version goes into double digits
 
+	-- Keep 10 characters for prefix length, extra incase version goes into double digits
 	local index = 1
 	messageQueue[index] = ''
 	while messageStack[1] do		
@@ -210,7 +210,6 @@ local function PushKeyList(...)
 	ticker = C_Timer.NewTicker(1, SendEntries, tickerIterations)
 	
 end
-
 	
 e.RegisterPrefix('request', PushKeyList)
 
@@ -251,33 +250,6 @@ end
 e.RegisterPrefix('resetAK', ResetAK)
 --SendAddonMessage('AstralKeys', 'resetAK', 'GUILD')
 --[[SendAddonMessage('AstralKeys', 'updateV4 Jpeg:DEMONHUNTER:Turalyon:200:22:1:13:13:10:1', 'GUILD')
-	SendAddonMessage('AstralKeys', 'updateV4 Unsu:SHAMAN:Turalyon:227:22:1:13:13:10:1', 'GUILD')
-	SendAddonMessage('AstralKeys', 'updateV4 Phrike:MAGE:Turalyon:200:22:1:13:13:10:0', 'GUILD')
-	SendAddonMessage('AstralKeys', 'updateV4 Ripmalv:SHAMAN:Turalyon:234:22:1:13:13:10:0', 'GUILD')
-	SendAddonMessage('AstralKeys', 'updateV4 Ipsi:DRUID:Turalyon:234:22:1:13:13:10:0', 'GUILD')
-	SendAddonMessage('AstralKeys', 'updateV4 Abbychu:DRUID:Turalyon:234:22:1:13:13:10:0', 'GUILD')
-	SendAddonMessage('AstralKeys', 'updateV4 Shootsu:HUNTER:Turalyon:234:22:1:13:13:10:0', 'GUILD')
-	SendAddonMessage('AstralKeys', 'updateV4 Terra:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
-	SendAddonMessage('AstralKeys', 'updateV4 Dagrdk:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
-	SendAddonMessage('AstralKeys', 'updateV4 Illegalsaur:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
-	SendAddonMessage('AstralKeys', 'updateV4 Senketsoo:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
-	SendAddonMessage('AstralKeys', 'updateV4 Zerow:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
-	SendAddonMessage('AstralKeys', 'updateV4 Seksygoose:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
-	SendAddonMessage('AstralKeys', 'updateV4 Alligro:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
-	SendAddonMessage('AstralKeys', 'updateV4 Chargemybutt:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
-	SendAddonMessage('AstralKeys', 'updateV4 Memebigboy:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
-
-	SendAddonMessage('AstralKeys', 'updateV4 Codky:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
-	SendAddonMessage('AstralKeys', 'updateV4 Tiorda:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
-	SendAddonMessage('AstralKeys', 'updateV4 Codyh:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
-	SendAddonMessage('AstralKeys', 'updateV4 Poppey:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
-	SendAddonMessage('AstralKeys', 'updateV4 Sheevil:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
-	SendAddonMessage('AstralKeys', 'updateV4 Atarai:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
-	SendAddonMessage('AstralKeys', 'updateV4 Amrun:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
-	SendAddonMessage('AstralKeys', 'updateV4 Spuuns:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
-	SendAddonMessage('AstralKeys', 'updateV4 Toastneggs:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
-	SendAddonMessage('AstralKeys', 'updateV4 Wibbley:DEATHKNIGHT:Turalyon:234:22:1:13:13:10:0', 'GUILD')
-
 ]]
 function e.AnounceCharacterKeys(channel)
 	for i = 1, #AstralCharacters do

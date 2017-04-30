@@ -24,6 +24,12 @@ e.RegisterEvent('CHALLENGE_MODE_MAPS_UPDATE', function()
  		SendAddonMessage('AstralKeys', 'request', 'GUILD')
  		init = true
  	end
+
+ 	if AstralKeys[e.PlayerID()]['weeklyCache'] == 0 then
+		if AstralCharacters[e.CharacterID()].level >= 10 then
+			SendAddonMessage('AstralKeys', 'updateWeekly 1')
+		end
+	end
  end)
 
 function e.CreateKeyLink(index)
@@ -55,9 +61,10 @@ e.RegisterEvent('CHALLENGE_MODE_NEW_RECORD', function()
 
 -- DO NOT USE THIS ONE
 e.RegisterEvent('CHALLENGE_MODE_COMPLETED', function()
+	--C_Timer.After(3, function() e.FindKeyStone(true, true) print('3 sec after') end)
 	e.RegisterEvent('PLAYER_REGEN_ENABLED', function()
 		
-	C_Timer.After(1, function() 
+	C_Timer.After(3, function() 
 		e.FindKeyStone(true, true)
 		end)
 		end)
