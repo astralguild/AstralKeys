@@ -24,7 +24,7 @@ local function Weekly10()
 end
 
 local function InitData()
-	if UnitLeve('player') ~= 110 then return end
+	if UnitLevel('player') ~= 110 then return end
 	e.GetBestClear()
 	e.SetCharacterID()
 	e.UpdateGuildList()
