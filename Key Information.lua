@@ -13,6 +13,31 @@ local PURPLE = 'ffa335ee'
 local init = false
 
 -- USE THIS FOR UPDATING HIGHEST KEY LEVEL RAN
+local function Weekly10()
+	if not e.PlayerID() then return end
+	if AstralKeys[e.PlayerID()]['weeklyCache'] == 0 then
+		if AstralCharacters[e.CharacterID()].level >= 10 then
+			SendAddonMessage('AstralKeys', 'updateWeekly 1')
+			e.UpdateCharacterFrames()
+		end
+	end
+end
+
+local function InitData()
+	if UnitLeve('player') ~= 110 then return end
+	e.GetBestClear()
+	e.SetCharacterID()
+	e.UpdateGuildList()
+	e.FindKeyStone(true, false, true)
+	e.BuildMapTable()
+	SendAddonMessage('AstralKeys', 'request', 'GUILD')
+
+	e.UnregisterEvent('CHALLENGE_MODE_MAPS_UPDATE')
+	e.RegisterEvent('CHALLENGE_MODE_MAPS_UPDATE', Weekly10)
+end
+e.RegisterEvent('CHALLENGE_MODE_MAPS_UPDATE', InitData)
+
+--[[
 e.RegisterEvent('CHALLENGE_MODE_MAPS_UPDATE', function()
 	if UnitLevel('player') ~= 110 then return end
 	e.GetBestClear()
@@ -31,7 +56,7 @@ e.RegisterEvent('CHALLENGE_MODE_MAPS_UPDATE', function()
 			e.UpdateCharacterFrames()
 		end
 	end
- end)
+ end)]]
 
 function e.CreateKeyLink(index)
 	local s = '|c'

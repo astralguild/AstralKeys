@@ -1,5 +1,7 @@
 local a, e = ...
 local REGION_RESET = 288000
+if not AstralKeys then AstralKeys = {} end
+if not AstralCharacters then AstralCharacters = {} end
 
 local SI = {}
 SI[0] = ''
@@ -39,6 +41,8 @@ e.RegisterEvent('PLAYER_LOGIN', function()
 	e.SetPlayerClass()
 	e.SetPlayerRealm()
 
+	-- Reset time 15:00 UTC AMERICAS
+	-- 07:00 UTC EU
 	if GetServerTime() > AstralKeysSettings.initTime then
 		wipe(AstralCharacters)
 		wipe(AstralKeys)
