@@ -537,6 +537,7 @@ showOffline:SetPoint('TOPRIGHT', quickOptionsFrame, 'TOPRIGHT', -5, -5)
 
 showOffline:SetScript('OnClick', function (self)
 	e.SetShowOffline(self:GetChecked())
+	offset = 0
 	e.UpdateFrames()
 end)
 
@@ -1097,8 +1098,6 @@ function e.WipeFrames()
 	end
 	--e.FindKeyStone(true)
 end
-
-local name, keyLevel, mapID, class, usable, realm, index
 
 function e.UpdateFrames()
 	if not init then return end
