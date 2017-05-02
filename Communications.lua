@@ -197,7 +197,7 @@ local function PushKeyList(...)
 
 	local function SendEntries()
 		for i = 1, 5 do
-			if messageQueue[1] then
+			if messageQueue[1] and messageQueue[1] ~= '' then
 				SendAddonMessage('AstralKeys', 'updateV4 ' .. messageQueue[1], 'GUILD')
 				table.remove(messageQueue, 1)
 			else

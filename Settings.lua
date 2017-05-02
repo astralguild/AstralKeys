@@ -1,5 +1,32 @@
 local _, e = ...
 
+
+	-- Reset time 15:00 UTC AMERICAS
+	-- 07:00 UTC EU
+--[[
+function DataResetTime()
+	local serverTime = GetServerTime()
+	local d = date('!*t')
+	local secs = 60 - d.sec
+	local mins = math.floor(59 - d.min + d.sec/100)
+	local hours = math.floor(23 - d.hour + d.min/100)
+	local days
+	local hourOffset, minOffset = math.modf(difftime(serverTime, time(d)))/3600
+	minOffset = minOffset or 0
+	if d.wday > 2 then 
+		days = math.floor(7 - d.wday + d.hour/100) + 2
+	else
+		days = math.floor(2 - d.wday + d.hour/100)
+	end
+
+	if d.isdst then hours = hours + 1 end
+
+
+	local time = (((days * 24 + hours + 15) * 60 + mins) * 60 + secs) + serverTime
+
+	return time
+end]]
+
 function e.DataResetTime()
 	local serverTime = GetServerTime()
 	local d = date('*t', serverTime)
