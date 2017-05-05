@@ -13,7 +13,6 @@ end
 
 local akComms = CreateFrame('FRAME')
 akComms:RegisterEvent('CHAT_MSG_ADDON')
-RegisterAddonMessagePrefix('AstralKeys')
 
 akComms:SetScript('OnEvent', function(self, event, ...)
 	local prefix, msg = ...
@@ -54,16 +53,34 @@ local function UpdateKeyList(entry)
 			entry = sub(entry, _pos + 1, entry:len())
 		end
 		for i = 1, #messageReceived do
-			local unit, unitClass, unitRealm = messageReceived[i]:match('(%a+):(%a+):([%a%s-\']+)')
-			local dungeonID, keyLevel, isUsable, affixOne, affixTwo, affixThree, weekly10 = messageReceived[i]:match(':(%d+):(%d+):(%d+):(%d+):(%d+):(%d+):(%d+)')
+			local messageContents = {}
+			while find(messageReceived[i], ':') do
+				local _pos = find(messageReceived[i], ':')
+				messageContents[#messageContents + 1] = sub(messageReceived[i], 1, _pos -1)
+				messageReceived[i] = sub(messageReceived[i], _pos + 1, messageReceived[i]:len())
+			end
+			messageContents[#messageContents + 1] = messageReceived[i]
+			--[[
+			NAME
+			CLASS
+			REALM
+			MAP
+			KEYLEVEL
+			ISUABLE
+			AFFIXONE
+			AFFIXTWO
+			AFFIXTHREE
+			WEEKLY10
+			]]
+			local unit, unitClass, unitRealm = messageContents[1], messageContents[2], messageContents[3]
 
-			dungeonID = tonumber(dungeonID)
-			keyLevel = tonumber(keyLevel)
-			isUsable = tonumber(isUsable)
-			affixOne = tonumber(affixOne)
-			affixTwo = tonumber(affixTwo)
-			affixThree = tonumber(affixThree)
-			weekly10 = tonumber(weekly10)
+			local dungeonID = tonumber(messageContents[4])
+			local keyLevel = tonumber(messageContents[5])
+			local isUsable = tonumber(messageContents[6])
+			local affixOne = tonumber(messageContents[7])
+			local affixTwo = tonumber(messageContents[8])
+			local affixThree = tonumber(messageContents[9])
+			local weekly10 = tonumber(messageContents[10])
 
 			if not e.UnitInGuild(unit .. '-' .. unitRealm) then return end
 
@@ -99,21 +116,28 @@ local function UpdateKeyList(entry)
 				e.UpdateFrames()
 			end
 
-			if sender == e.PlayerName() and unitRealm == e.PlayerRealm() then
+			if unit == e.PlayerName() and unitRealm == e.PlayerRealm() then
 				e.UpdateCharacterFrames()
 			end
 		end
 	else
-		local unit, unitClass, unitRealm = entry:match('(%a+):(%a+):([%a%s-\']+)')
-		local dungeonID, keyLevel, isUsable, affixOne, affixTwo, affixThree, weekly10 = entry:match(':(%d+):(%d+):(%d+):(%d+):(%d+):(%d+):(%d+)')
+		local messageContents = {}
+		while find(entry, ':') do
+			local _pos = find(entry, ':')
+			messageContents[#messageContents + 1] = sub(entry, 1, _pos -1)
+			entry = sub(entry, _pos + 1, entry:len())
+		end
+		messageContents[#messageContents + 1] = entry
 
-		dungeonID = tonumber(dungeonID)
-		keyLevel = tonumber(keyLevel)
-		isUsable = tonumber(isUsable)
-		affixOne = tonumber(affixOne)
-		affixTwo = tonumber(affixTwo)
-		affixThree = tonumber(affixThree)
-		weekly10 = tonumber(weekly10)
+		local unit, unitClass, unitRealm = messageContents[1], messageContents[2], messageContents[3]
+
+		local dungeonID = tonumber(messageContents[4])
+		local keyLevel = tonumber(messageContents[5])
+		local isUsable = tonumber(messageContents[6])
+		local affixOne = tonumber(messageContents[7])
+		local affixTwo = tonumber(messageContents[8])
+		local affixThree = tonumber(messageContents[9])
+		local weekly10 = tonumber(messageContents[10])
 
 		if not e.UnitInGuild(unit .. '-' .. unitRealm) then return end
 
@@ -149,7 +173,7 @@ local function UpdateKeyList(entry)
 			e.UpdateFrames()
 		end
 
-		if sender == e.PlayerName() and unitRealm == e.PlayerRealm() then
+		if unit == e.PlayerName() and unitRealm == e.PlayerRealm() then
 			e.UpdateCharacterFrames()
 		end
 	end

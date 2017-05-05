@@ -1,5 +1,5 @@
 local a, e = ...
-local REGION_RESET = 288000
+local REGION_RESET_US = 288000
 if not AstralKeys then AstralKeys = {} end
 if not AstralCharacters then AstralCharacters = {} end
 
@@ -59,7 +59,9 @@ e.RegisterEvent('PLAYER_LOGIN', function()
 		frame.interval = 0
 		frame:SetScript('OnUpdate', function(self, elapsed)
 			frame.interval = frame.interval + elapsed
-			if frame.interval > 30 then
+			if frame.interval > 1 then
+				local secsToMin = date('%S')
+				if secsToMin == 00 then end
 				if GetServerTime() > AstralKeysSettings.initTime then
 					AstralCharacters = {}
 					AstralKeys = {}
@@ -77,6 +79,7 @@ e.RegisterEvent('PLAYER_LOGIN', function()
 			end)
 	end
 
+	RegisterAddonMessagePrefix('AstralKeys')
 	e.SetPlayerID()
 
 	for i = 1, #AstralKeys do

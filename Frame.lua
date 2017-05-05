@@ -1163,6 +1163,7 @@ function e.UpdateFrames()
 end
 
 function e.UpdateCharacterFrames()
+	if not init then return end
 	characterTable = e.DeepCopy(AstralCharacters)
 
 	if e.CharacterID() then

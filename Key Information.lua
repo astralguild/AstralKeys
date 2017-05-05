@@ -10,17 +10,13 @@ end
 local GRAY = 'ff9d9d9d'
 local PURPLE = 'ffa335ee'
 
-local init = false
-
 -- USE THIS FOR UPDATING HIGHEST KEY LEVEL RAN
 local function Weekly10()
-	if not e.PlayerID() then return end
-	if AstralKeys[e.PlayerID()]['weeklyCache'] == 0 then
-		if AstralCharacters[e.CharacterID()].level >= 10 then
-			SendAddonMessage('AstralKeys', 'updateWeekly 1')
-			e.UpdateCharacterFrames()
-		end
+	e.GetBestClear()
+	if AstralCharacters[e.CharacterID()].level >= 10 then
+		SendAddonMessage('AstralKeys', 'updateWeekly 1')
 	end
+	e.UpdateCharacterFrames()
 end
 
 local function InitData()
@@ -74,7 +70,7 @@ function e.CreateKeyLink(index)
 	return s, keyLevel
 end
 
--- DO NOT USE THIS ONE
+--[[ DO NOT USE THIS ONE
 e.RegisterEvent('CHALLENGE_MODE_NEW_RECORD', function()
 	e.GetBestClear()
 	e.UpdateCharacterFrames()
@@ -84,19 +80,11 @@ e.RegisterEvent('CHALLENGE_MODE_NEW_RECORD', function()
 			SendAddonMessage('AstralKeys', 'updateWeekly 1')
 		end
 	end
-	end)
+	end)]]
 
 e.RegisterEvent('CHALLENGE_MODE_COMPLETED', function()
-	--C_Timer.After(3, function() e.FindKeyStone(true, true) print('3 sec after') end)
-	e.RegisterEvent('PLAYER_REGEN_ENABLED', function()
-		
-	C_Timer.After(3, function() 
-		e.FindKeyStone(true, true)
-		end)
-		end)
-
-	e.UnregisterEvent('PLAYER_REGEN_ENABLED')
-	end)
+	C_Timer.After(3, function() e.FindKeyStone(true, true) end)
+end)
 
 local function Completed10()
 	if not e.CharacterID() then return 0 end
@@ -131,7 +119,7 @@ function e.FindKeyStone(sendUpdate, anounceKey, force)
 				delink = link:gsub('\124', '\124\124')
 				mapID, keyLevel, usable, a1, a2, a3 = delink:match(':(%d+):(%d+):(%d+):(%d+):(%d+):(%d+)')
 				s = 'updateV4 ' .. e.PlayerName() .. ':' .. e.PlayerClass() .. ':' .. e.PlayerRealm() ..':' .. mapID .. ':' .. keyLevel .. ':' .. usable .. ':' .. a1 .. ':' .. a2 .. ':' .. a3 .. ':' .. Completed10()
-				--s = 'updateV3 CHARACTERSAZ:DEMONHUNTER:Bleeding Hollow:201:22:1:13:13:10:16'				
+				--s = 'updateV4 CHARACTERSAZ:DEMONHUNTER:Bleeding Hollow:201:22:1:13:13:10:16:1'				
 			end
 		end
 	end
@@ -164,9 +152,6 @@ function e.FindKeyStone(sendUpdate, anounceKey, force)
 	if sendUpdate  and s ~= '' then
 		if IsInGuild() then
 			SendAddonMessage('AstralKeys', s, 'GUILD')
-			if anounceKey and tonumber(usable) == 1 then
-				e.AnnounceNewKey(link, keyLevel)
-			end
 		else
 			local foundPlayer = false
 			for i = 1, #AstralKeys do
@@ -179,9 +164,6 @@ function e.FindKeyStone(sendUpdate, anounceKey, force)
 						AstralKeys[i].a1 = tonumber(a1)
 						AstralKeys[i].a2 = tonumber(a2)
 						AstralKeys[i].a3 = tonumber(a3)
-						if anounceKey and tonumber(usable) == 1 then
-							e.AnnounceNewKey(link, keyLevel)
-						end
 					end
 				end
 			end
@@ -199,11 +181,11 @@ function e.FindKeyStone(sendUpdate, anounceKey, force)
 				['a3'] = tonumber(a3),
 				}
 				e.SetUnitID(e.PlayerName() .. e.PlayerRealm(), #AstralKeys)
-				if anounceKey and tonumber(usable) == 1 then
-					e.AnnounceNewKey(link, keyLevel)
-				end
 			end
 		end
+	end
+	if anounceKey and tonumber(usable) == 1 then
+		e.AnnounceNewKey(link, keyLevel)
 	end
 end
 
