@@ -4,6 +4,7 @@ local BROADCAST = true
 local versionList = {}
 local messageStack = {}
 local messageQueue = {}
+local messageContents = {}
 local highestVersion = 0
 local find, sub = string.find, string.sub
 
@@ -46,14 +47,14 @@ end
 
 local function UpdateKeyList(entry)
 	local messageReceived = {}
-	if find(entry, '_') then
+	if find(entry, '_') then -- Character to seperate multiple entries
 		while find(entry, '_') do
 			local _pos = find(entry, '_')
 			messageReceived[#messageReceived + 1] = sub(entry, 1, _pos - 1)
 			entry = sub(entry, _pos + 1, entry:len())
 		end
 		for i = 1, #messageReceived do
-			local messageContents = {}
+			wipe(messageContents)
 			while find(messageReceived[i], ':') do
 				local _pos = find(messageReceived[i], ':')
 				messageContents[#messageContents + 1] = sub(messageReceived[i], 1, _pos -1)
@@ -121,7 +122,7 @@ local function UpdateKeyList(entry)
 			end
 		end
 	else
-		local messageContents = {}
+		wipe(messageContents)
 		while find(entry, ':') do
 			local _pos = find(entry, ':')
 			messageContents[#messageContents + 1] = sub(entry, 1, _pos -1)
@@ -170,7 +171,6 @@ local function UpdateKeyList(entry)
 			if unit == e.PlayerName() and unitRealm == e.PlayerRealm() then
 				e.SetPlayerID()
 			end
-			e.UpdateFrames()
 		end
 
 		if unit == e.PlayerName() and unitRealm == e.PlayerRealm() then

@@ -35,15 +35,28 @@ function e.ConvertToSI(quantity)
 	end
 end
 
+local d = {}
+local updateCounter = 0
+local function checkTime()
+	updateCounter = updateCounter + 1
+	d = date('!*t')
+	if updateCounter > 60 then
+		updateCounter = 0
+		collectgarbage('collect')
+	end
+	return d
+end
+
 e.RegisterEvent('PLAYER_LOGIN', function()
-	local d = date('*t')
+	local d = date('!*t')
+	local resetTime = time(d)
 	e.SetPlayerName()
 	e.SetPlayerClass()
 	e.SetPlayerRealm()
 
-	-- Reset time 15:00 UTC AMERICAS
-	-- 07:00 UTC EU
-	if GetServerTime() > AstralKeysSettings.initTime then
+	local region = GetCurrentRegion()
+
+	if resetTime > AstralKeysSettings.initTime then
 		wipe(AstralCharacters)
 		wipe(AstralKeys)
 		AstralAffixes = {}
@@ -54,15 +67,33 @@ e.RegisterEvent('PLAYER_LOGIN', function()
 		e.FindKeyStone(true, false)
 	end
 
-	if d.wday == 3 and d.hour < 8 then
+	if d.wday == 3 and d.hour < 15 and region ~= 3 then
 		local frame = CreateFrame('FRAME')
+		frame.d = {}
+		frame.firstPass = true
 		frame.interval = 0
+		frame.resetInterval = 1
+		frame.sec = 0
+		frame.min = 0
+		frame.cTime = 0
+
 		frame:SetScript('OnUpdate', function(self, elapsed)
-			frame.interval = frame.interval + elapsed
-			if frame.interval > 1 then
-				local secsToMin = date('%S')
-				if secsToMin == 00 then end
-				if GetServerTime() > AstralKeysSettings.initTime then
+			self.interval = self.interval + elapsed
+			if self.interval > self.resetInterval then
+				--self.sec = tonumber(self.d.sec)
+				
+				--self.min = tonumber(self.d.min)
+				--[[if sec > 54 or (sec > 0 and sec < 5) then 
+					self.resetInterval = 1
+				else
+					self.resetInterval = 27
+				end
+				if self.firstPass then 
+					self.resetInterval = 1
+				end]]
+				self.cTime = time(checkTime())
+
+				if self.cTime > AstralKeysSettings.initTime then
 					AstralCharacters = {}
 					AstralKeys = {}
 					AstralAffixes = {}
@@ -74,9 +105,44 @@ e.RegisterEvent('PLAYER_LOGIN', function()
 					self:SetScript('OnUpdate', nil)
 					self = nil
 				end
-				frame.interval = 0
+				self.interval = 0
 			end
 			end)
+	elseif d.wday == 4 and d.hour < 7 and region == 3 then
+		local frame = CreateFrame('FRAME')
+		frame.d = {}
+		frame.interval = 0
+		frame.resetInterval = 1
+
+		frame:SetScript('OnUpdate', function(self, elapsed)
+			self.interval = self.interval + elapsed
+			if self.interval > self.resetInterval then 
+				local sec = tonumber(date('%S'))
+				local min = tonumber(date('%M'))
+				if sec > 55 or (sec > 0 and sec < 5) then 
+					self.resetInterval = 1
+				else
+					self.resetInterval = 55
+				end
+				self.d = date('!*t')
+				local cTime = time(self.d)
+
+				if cTime > AstralKeysSettings.initTime then
+					AstralCharacters = {}
+					AstralKeys = {}
+					AstralAffixes = {}
+					AstralAffixes[1] = 0
+					AstralAffixes[2] = 0
+					AstralAffixes[3] = 0
+					AstralKeysSettings.initTime = e.DataResetTime()
+					e.FindKeyStone(true, false)
+					self:SetScript('OnUpdate', nil)
+					self = nil
+				end
+				self.interval = 0
+			end
+			end)
+
 	end
 
 	RegisterAddonMessagePrefix('AstralKeys')
