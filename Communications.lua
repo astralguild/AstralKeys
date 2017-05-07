@@ -121,6 +121,7 @@ local function UpdateKeyList(entry)
 				e.UpdateCharacterFrames()
 			end
 		end
+		--collectgarbage('collect')
 	else
 		wipe(messageContents)
 		while find(entry, ':') do

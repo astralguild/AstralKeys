@@ -10,7 +10,6 @@ end
 local GRAY = 'ff9d9d9d'
 local PURPLE = 'ffa335ee'
 
--- USE THIS FOR UPDATING HIGHEST KEY LEVEL RAN
 local function Weekly10()
 	e.GetBestClear()
 	if AstralCharacters[e.CharacterID()].level >= 10 then
