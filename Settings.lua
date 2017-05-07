@@ -3,7 +3,7 @@ local _, e = ...
 
 	-- Reset time 15:00 UTC AMERICAS
 	-- 07:00 UTC EU
-
+--[[
 function e.DataResetTime()
 	local d = date('!*t')
 	local secs = 60 - d.sec
@@ -29,8 +29,8 @@ function e.DataResetTime()
 	local resetTime = (((days * 24 + hours) * 60 + mins) * 60 + secs) + time(d)
 
 	return resetTime
-end
---[[
+end]]
+
 function e.DataResetTime()
 	local serverTime = GetServerTime()
 	local d = date('*t', serverTime)
@@ -57,7 +57,7 @@ function e.DataResetTime()
 	local time = (((days * 24 + hours + hourOffset) * 60 + mins + minOffset) * 60 + secs) + serverTime
 
 	return time
-end]]
+end
 
 if not AstralKeysSettings then
 	AstralKeysSettings = {
