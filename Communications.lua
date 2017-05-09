@@ -155,7 +155,6 @@ local function UpdateKeyList(entry)
 		end
 
 		local id = e.GetUnitID(unit .. '-' .. unitRealm)
-		print(id)
 
 		if id then
 			if AstralKeys[id].weeklyCache ~= weekly10 then AstralKeys[id].weeklyCache = weekly10 end
