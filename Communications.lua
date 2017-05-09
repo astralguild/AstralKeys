@@ -121,7 +121,6 @@ local function UpdateKeyList(entry)
 				e.UpdateCharacterFrames()
 			end
 		end
-		--collectgarbage('collect')
 	else
 		wipe(messageContents)
 		while find(entry, ':') do
@@ -156,6 +155,7 @@ local function UpdateKeyList(entry)
 		end
 
 		local id = e.GetUnitID(unit .. '-' .. unitRealm)
+		print(id)
 
 		if id then
 			if AstralKeys[id].weeklyCache ~= weekly10 then AstralKeys[id].weeklyCache = weekly10 end
@@ -278,7 +278,7 @@ e.RegisterPrefix('resetAK', ResetAK)
 ]]
 function e.AnounceCharacterKeys(channel)
 	for i = 1, #AstralCharacters do
-		local id = e.UnitID(e.CharacterName(i))
+		local id = e.GetUnitID(e.CharacterName(i) .. '-' .. e.CharacterRealm(i))
 
 		if id then
 			local link, keyLevel = e.CreateKeyLink(id)

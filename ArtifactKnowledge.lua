@@ -54,10 +54,13 @@ AK_BONUS[48] = 326601
 AK_BONUS[49] = 424601
 AK_BONUS[50] = 552001
 
+-- Returns artifact bonus percent
+-- @param akLevel integer value representing artifact level
 function e.GetAKBonus(akLevel)
 	return AK_BONUS[tonumber(akLevel)]
 end
 
+--Gets Artifact Knowledge level
 function e.ParseAKLevel()
 	local amount = select(2, GetCurrencyInfo(1171))
 	return amount

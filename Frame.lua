@@ -1102,9 +1102,7 @@ end
 function e.UpdateFrames()
 	if not init then return end
 
-	local name, keyLevel, mapID, class, usable, realm, index
-
-	--sortedTable = e.DeepCopy(AstralKeys)
+	local name, keyLevel, mapID, class, usable, realm, index, completed
 
 	sortedTable = e.UpdateTables(sortedTable)
 
@@ -1125,7 +1123,7 @@ function e.UpdateFrames()
 	if #sortedTable < #nameFrames then
 		for i = 1, indexEnd do
 			index = i + offset
-			local name, keyLevel, mapID, class, usable, realm, completed = sortedTable[index].name, sortedTable[index].level, sortedTable[index].map, sortedTable[index].class, sortedTable[index].usable, sortedTable[index].realm, sortedTable[index].weeklyCache
+			name, keyLevel, mapID, class, usable, realm, completed = sortedTable[index].name, sortedTable[index].level, sortedTable[index].map, sortedTable[index].class, sortedTable[index].usable, sortedTable[index].realm, sortedTable[index].weeklyCache
 			nameFrames[i]:SetNameInfo(name, class, realm)
 			keyFrames[i]:SetKeyInfo(keyLevel)
 			mapFrames[i]:SetMapInfo(mapID, usable, keyLevel)
@@ -1140,7 +1138,7 @@ function e.UpdateFrames()
 	else
 		for i = 1, indexEnd do
 			index = i + offset
-			local name, keyLevel, mapID, class, usable, realm, completed = sortedTable[index].name, sortedTable[index].level, sortedTable[index].map, sortedTable[index].class, sortedTable[index].usable, sortedTable[index].realm, sortedTable[index].weeklyCache
+			name, keyLevel, mapID, class, usable, realm, completed = sortedTable[index].name, sortedTable[index].level, sortedTable[index].map, sortedTable[index].class, sortedTable[index].usable, sortedTable[index].realm, sortedTable[index].weeklyCache
 			if nameFrames[i] then
 				nameFrames[i]:SetNameInfo(name, class, realm)
 				keyFrames[i]:SetKeyInfo(keyLevel)

@@ -6,11 +6,13 @@ local _, e = ...
 --[[
 function e.DataResetTime()
 	local d = date('!*t')
+
 	local secs = 60 - d.sec
 	local mins = math.floor(59 - d.min + d.sec/100)
 	local hours = math.floor(23 - d.hour + d.min/100)
 	local days
-	if d.wday > 2 then 
+
+	if d.wday > 3 then 
 		days = math.floor(7 - d.wday + d.hour/100) + 2
 	else
 		days = math.floor(2 - d.wday + d.hour/100)
@@ -23,13 +25,14 @@ function e.DataResetTime()
 		hours = hours + 7
 		days = days + 1
 	else
-		hours = hours + 7
+		hours = hours + 15
 	end
 
 	local resetTime = (((days * 24 + hours) * 60 + mins) * 60 + secs) + time(d)
 
 	return resetTime
 end]]
+
 
 function e.DataResetTime()
 	local serverTime = GetServerTime()

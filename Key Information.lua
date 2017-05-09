@@ -69,18 +69,6 @@ function e.CreateKeyLink(index)
 	return s, keyLevel
 end
 
---[[ DO NOT USE THIS ONE
-e.RegisterEvent('CHALLENGE_MODE_NEW_RECORD', function()
-	e.GetBestClear()
-	e.UpdateCharacterFrames()
-
-	if AstralKeys[e.PlayerID()]['weeklyCache'] == 0 then
-		if AstralCharacters[e.CharacterID()].level >= 10 then
-			SendAddonMessage('AstralKeys', 'updateWeekly 1')
-		end
-	end
-	end)]]
-
 e.RegisterEvent('CHALLENGE_MODE_COMPLETED', function()
 	C_Timer.After(3, function() e.FindKeyStone(true, true) end)
 end)
@@ -141,8 +129,8 @@ function e.FindKeyStone(sendUpdate, anounceKey, force)
 		end
 	end
 
-	local oldMap, oldLevel, oldUsable = e.GetUnitKey(e.PlayerID())
-	if tonumber(oldMap) == tonumber(mapID) and tonumber(oldLevel) == tonumber(keyLevel) and tonumber(oldUsable) == tonumber(usable) and not force then return end
+	local oldMap, oldLevel, oldUsable = e.GetUnitKeyByID(e.PlayerID())
+	if tonumber(oldMap) == tonumber(mapID) and tonumber(oldLevel) == tonumber(keyLevel) and tonumber(oldUsable) == tonumber(usable) then return end
 
 	if link and e.IsEventRegistered('BAG_UPDATE') then
 		e.UnregisterEvent('BAG_UPDATE')
@@ -200,8 +188,8 @@ local function CreateKeyText(mapID, level, usable)
 	end
 end
 
-function e.GetUnitKey(id)
-	if not id or (id < 1 ) then return -1, -1, -1 end
+function e.GetUnitKeyByID(id)
+	if not id or (id < 1 ) then return end
 
 	return AstralKeys[id]['map'], AstralKeys[id]['level'], AstralKeys[id]['usable']
 end
