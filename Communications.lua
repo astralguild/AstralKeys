@@ -1,6 +1,5 @@
 local _, e = ...
 
-local BROADCAST = true
 local versionList = {}
 local messageStack = {}
 local messageQueue = {}
@@ -41,7 +40,8 @@ function e.UnregisterPrefix(prefix)
 end
 
 function e.AnnounceNewKey(keyLink, level)
-	if not BROADCAST and not IsInGroup() then return end
+	if not IsInGroup() then return end
+	if not e.AnnounceKey() then return end
 	SendChatMessage('Astral Keys: New key ' .. keyLink .. ' +' .. level, 'PARTY')
 end
 

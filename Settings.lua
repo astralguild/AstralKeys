@@ -76,6 +76,9 @@ if not AstralKeysSettings then
 				},
 			['viewMode'] = 0,
 			},
+		['options'] = {
+			['announceKey'] = true,
+			},
 		}
 end
 
@@ -102,6 +105,9 @@ frame:SetScript('OnEvent', function(self, event, ...)
 						['minKeyLevel'] = 1,
 						},
 					['viewMode'] = 0,
+					},
+				['options'] = {
+					['announceKey'] = true,
 					},
 				}
 		end
@@ -146,4 +152,12 @@ end
 
 function e.SetViewMode(int)
 	AstralKeysSettings.frameOptions.viewMode = int
+end
+
+function e.ToggleAnnounce()
+	AstralKeysSettings.options.announceKey = not AstralKeysSettings.options.announceKey
+end
+
+function e.AnnounceKey()
+	return AstralKeysSettings.options.announceKey
 end

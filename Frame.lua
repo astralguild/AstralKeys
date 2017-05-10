@@ -483,7 +483,6 @@ closeButton:SetHighlightFontObject(FONT_OBJECT_HIGHLIGHT)
 closeButton:SetText('X')
 
 local toggleButton = CreateFrame('BUTTON', nil, AstralKeyFrame)
-toggleButton.mode = 0
 toggleButton:SetSize(16, 16)
 toggleButton:SetPoint('TOPRIGHT', closeButton, 'TOPLEFT', - 5, 0)
 toggleButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize.tga')
@@ -571,11 +570,23 @@ end)
 local announceFrame = CreateFrame('FRAME', nil, AstralKeyFrame)
 announceFrame:SetSize(60, 20)
 announceFrame:SetPoint('TOPRIGHT', closeButton, 'BOTTOMRIGHT', 0, -5)
-announceFrame.texture = announceFrame:CreateTexture('BACKGROUND')
+announceFrame.announce = CreateFrame('BUTTON', nil, announceFrame)
+announceFrame.announce:SetSize(16, 16)
+announceFrame.announce:SetPoint('LEFT', announceFrame, 'LEFT')
+announceFrame.announce:SetScript('OnClick', function(self)
+	if e.AnnounceKey() then
+		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\speaker2.tga')
+	else
+		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\speaker.tga')
+	end
+	e.ToggleAnnounce()
+	end)
+
+--[[announceFrame.texture = announceFrame:CreateTexture('BACKGROUND')
 announceFrame.texture:SetSize(16, 16)
 announceFrame.texture:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\speaker.tga')
 announceFrame.texture:SetPoint('LEFT', announceFrame, 'LEFT')
-
+]]
 
 announceFrame.string = announceFrame:CreateFontString('ARTWORK')
 announceFrame.string:SetFont(FONT_CONTENT, FONT_SIZE)
@@ -951,6 +962,12 @@ local function InitializeFrame()
 		contentFrame.slider:Show()
 	else
 		contentFrame.slider:Hide()
+	end
+
+	if e.AnnounceKey() then
+		announceFrame.announce:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\speaker.tga')
+	else
+		announceFrame.announce:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\speaker2.tga')
 	end
 
 	if e.GetViewMode() == 1 then
