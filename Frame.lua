@@ -600,7 +600,7 @@ partyAnnounce:SetHighlightFontObject(FONT_OBJECT_HIGHLIGHT)
 partyAnnounce:SetText('P')
 partyAnnounce:GetFontString():SetTextColor(76/255, 144/255, 255/255, 1)
 
-partyAnnounce:SetPoint('LEFT', announceFrame.texture, 'RIGHT', 5, 0)
+partyAnnounce:SetPoint('LEFT', announceFrame.announce, 'RIGHT', 5, 0)
 
 partyAnnounce:SetScript('OnClick', function()
 	e.AnounceCharacterKeys('PARTY')

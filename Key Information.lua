@@ -188,6 +188,10 @@ local function CreateKeyText(mapID, level, usable)
 	end
 end
 
+function e.ParseString(string)
+	return false
+end
+
 function e.GetUnitKeyByID(id)
 	if not id or (id < 1 ) then return end
 
