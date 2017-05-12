@@ -116,11 +116,11 @@ e.RegisterEvent('PLAYER_LOGIN', function()
 	end
 
 	RegisterAddonMessagePrefix('AstralKeys')
-	e.SetPlayerID()
 
 	for i = 1, #AstralKeys do
 		e.SetUnitID(AstralKeys[i].name .. '-' ..  AstralKeys[i].realm, i)
 	end
+	e.SetPlayerID()
 
 	e.RegisterEvent('CURRENCY_DISPLAY_UPDATE', function(...)
 	for i = 1, #AstralCharacters do

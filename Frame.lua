@@ -1085,27 +1085,13 @@ end
 
 function e.WipeFrames()
 	wipe(AstralCharacters)
-	wipe(characterTable)
+	wipe(AstralKeys)
 	e.GetBestClear()
 
-	if init then
-		AstralContentFrame.slider:Hide()
-		AstralCharacterContent.slider:Hide()
-		characterTable = e.DeepCopy(AstralCharacters)
-		if playerCharacter then
-			playerCharacter:UpdateInformation(e.PlayerName())
-			table.remove(characterTable, e.CharacterID())
-		end
-		for i = 1, #characters do
-			characters[i]:UpdateInformation('')
-		end
-		for i = 1, #characterTable do
-			characters[i]:UpdateInformation(characterTable[i].name)
-		end
-	end
-
-	wipe(AstralKeys)
 	wipe(sortedTable)
+
+	offset = 0
+	characterOffset = 0
 
 	for i = 1, #nameFrames do
 		nameFrames[i]:SetNameInfo('')
@@ -1113,7 +1099,6 @@ function e.WipeFrames()
 		mapFrames[i]:SetMapInfo(-1)
 		completedFrames[i]:SetCompletedInfo(0)
 	end
-	--e.FindKeyStone(true)
 end
 
 function e.UpdateFrames()

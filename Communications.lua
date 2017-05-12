@@ -256,12 +256,10 @@ end
 local function ResetAK()
 	AstralKeysSettings['reset'] = false
 	e.WipeUnitList()
-	wipe(AstralKeys)
-	wipe(AstralCharacters)
+	e.WipeFrames()
 	AstralAffixes[1] = 0
 	AstralAffixes[2] = 0
 	AstralAffixes[3] = 0
-	e.GetBestClear()
 	e.SetPlayerID()
 	e.FindKeyStone(true)
 	e.SetCharacterID()
