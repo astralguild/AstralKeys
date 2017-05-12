@@ -3,7 +3,8 @@ local _, e = ...
 local unitList = {}
 local guildList = {}
 
--- Puts all guild members in a table
+-- Puts all guild member's into a table for checking if unit in guild
+
 function e.UpdateGuildList()
 	wipe(guildList)
 	local name
@@ -31,32 +32,23 @@ end
 
 -- Retrieves ID number for associated unit
 -- @param unit Unit name and server
+
 function e.GetUnitID(unit)
 	return unitList[unit]
 end
 
 -- Clears unit list
+
 function e.WipeUnitList()
 	wipe(unitList)
 end
 
---[[ Retrieves unit's realm
--- @param unit Name of unit
-function e.UnitRealm(unit)
-	for i = 1, #AstralKeys do
-		if AstralKeys[i].name == unit then
-			return AstralKeys[i].realm
-		end
-	end
-end
+-- Retrieves unit's realm
+-- @param unit id
 
---function e.UnitID(unit)
-	for i = 1, #AstralKeys do
-		if AstralKeys[i].name == unit then
-			return i
-		end
-	end
-end]]
+function e.UnitRealm(id)
+	return AstralKeys[id].realm
+end
 
 function e.UnitName(index)
 	return AstralKeys[index].name

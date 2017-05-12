@@ -39,7 +39,7 @@ e.RegisterEvent('CHALLENGE_MODE_MAPS_UPDATE', function()
  	if not init then
 		e.SetCharacterID()
  		e.UpdateGuildList()
- 		e.FindKeyStone(true, false, true)
+ 		e.FindKeyStone(true, false)
  		e.BuildMapTable()
  		SendAddonMessage('AstralKeys', 'request', 'GUILD')
  		init = true
@@ -94,7 +94,7 @@ function e.GetAffix(affixNumber)
 	return AstralAffixes[affixNumber]
 end
 
-function e.FindKeyStone(sendUpdate, anounceKey, force)
+function e.FindKeyStone(sendUpdate, anounceKey)
 	local mapID, keyLevel, usable, a1, a2, a3, s, itemID, delink, link
 	local s = ''
 
@@ -103,8 +103,7 @@ function e.FindKeyStone(sendUpdate, anounceKey, force)
 			itemID = GetContainerItemID(bag, slot)
 			if (itemID and itemID == 138019) then
 				link = GetContainerItemLink(bag, slot)
-				delink = link:gsub('\124', '\124\124')
-				mapID, keyLevel, usable, a1, a2, a3 = delink:match(':(%d+):(%d+):(%d+):(%d+):(%d+):(%d+)')
+				mapID, keyLevel, usable, a1, a2, a3 = e.ParseLink(link)
 				s = 'updateV4 ' .. e.PlayerName() .. ':' .. e.PlayerClass() .. ':' .. e.PlayerRealm() ..':' .. mapID .. ':' .. keyLevel .. ':' .. usable .. ':' .. a1 .. ':' .. a2 .. ':' .. a3 .. ':' .. Completed10()
 				--s = 'updateV4 CHARACTERSAZ:DEMONHUNTER:Bleeding Hollow:201:22:1:13:13:10:16:1'				
 			end
@@ -188,8 +187,15 @@ local function CreateKeyText(mapID, level, usable)
 	end
 end
 
-function e.ParseString(string)
-	return false
+-- Parses item link to get mapID, key level, isUsable, affix1, affix2, affix3
+-- @param link Item Link for keystone
+-- return mapID, keyLevel, usable, affix1, affix2, affix3 Integer values
+
+function e.ParseLink(link)
+	if not link:find('keystone') then return end -- Not a keystone link, don't do anything
+	local delink = link:gsub('\124', '\124\124')
+	local mapID, keyLevel, usable, affix1, affix2, affix3 = delink:match(':(%d+):(%d+):(%d+):(%d+):(%d+):(%d+)')
+	return mapID, keyLevel, usable, affix1, affix2, affix3
 end
 
 function e.GetUnitKeyByID(id)

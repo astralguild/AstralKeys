@@ -168,15 +168,15 @@ local function CreateCharacterFrame(parent, frameName, unitName, bestKey, create
 
 	end
 
-	function frame:UpdateInformation(unit)
+	function frame:UpdateInformation(unit, realm)
 		if unit ~= '' and unit then
 			self.unit = unit
-			self.tid = e.GetCharacterID(self.unit)
+			self.tid = e.GetCharacterID(unit, realm)
 			self.unitClass = e.CharacterClass(self.tid)
 			self.bestKey = e.GetBestKey(self.tid)
 			self.bestMap = e.GetBestMap(self.unit)
 			self.weeklyAP = e.GetWeeklyAP(self.bestKey)
-			self.realm = e.CharacterRealm(self.tid)
+			self.realm = realm
 
 			local name = self.unit
 
@@ -675,7 +675,7 @@ local affixFrame = CreateFrame('FRAME', 'affixFrame', AstralKeyFrame)
 affixFrame:SetSize(200, 70)
 affixFrame:SetPoint('TOPLEFT', logo, 'BOTTOMLEFT', 5, -10)
 
-local affixHeader = CreateHeader(self, affixFrame, 'affixHeader', 175, 20, 'Affixes:', 12)
+local affixHeader = CreateHeader(self, affixFrame, 'affixHeader', 175, 20, 'Affixes', 12)
 affixHeader:SetPoint('TOPLEFT', affixFrame, 'TOPLEFT')
 
 local affixOne = CreateFrame('FRAME', 'AstralAffixOne', affixFrame)
@@ -1090,7 +1090,6 @@ function e.WipeFrames()
 	wipe(characterTable)
 	e.GetBestClear()
 
-
 	offset = 0
 	characterOffset = 0
 end
@@ -1161,11 +1160,11 @@ function e.UpdateCharacterFrames()
 	characterTable = e.DeepCopy(AstralCharacters)
 
 	if e.CharacterID() then
-		characters[1]:UpdateInformation(e.PlayerName())
+		characters[1]:UpdateInformation(e.PlayerName(), e.PlayerRealm())
 		table.remove(characterTable, e.CharacterID())
 		for i = 2, #characters do
 			if characterTable[i-1] then
-				characters[i]:UpdateInformation(characterTable[i + characterOffset - 1]['name'])
+				characters[i]:UpdateInformation(characterTable[i + characterOffset - 1]['name'], characterTable[i + characterOffset - 1]['realm'])
 			else
 				characters[i]:UpdateInformation('')
 			end	
@@ -1173,7 +1172,7 @@ function e.UpdateCharacterFrames()
 	else
 		for i = 1, #characters do
 			if characterTable[i] then
-				characters[i]:UpdateInformation(characterTable[i + characterOffset]['name'])
+				characters[i]:UpdateInformation(characterTable[i + characterOffset]['name'], characterTable[i + characterOffset]['realm'])
 			else
 				characters[i]:UpdateInformation('')
 			end

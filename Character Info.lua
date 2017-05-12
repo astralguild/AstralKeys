@@ -7,7 +7,7 @@ function e.CharacterID()
 end
 
 function e.SetCharacterID()
-	characterID = e.GetCharacterID(e.PlayerName())
+	characterID = e.GetCharacterID(e.PlayerName(), e.PlayerRealm())
 end
 
 function e.SetPlayerID()
@@ -26,9 +26,9 @@ function e.CharacterName(id)
 	return AstralCharacters[id].name
 end
 
-function e.GetCharacterID(unit)
+function e.GetCharacterID(unit, realm)
 	for i = 1, #AstralCharacters do
-		if AstralCharacters[i].name == unit then
+		if AstralCharacters[i].name == unit and AstralCharacters[i].realm == realm then
 			return i
 		end
 	end
