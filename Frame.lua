@@ -1086,19 +1086,13 @@ end
 function e.WipeFrames()
 	wipe(AstralCharacters)
 	wipe(AstralKeys)
+	wipe(sortedTable)
+	wipe(characterTable)
 	e.GetBestClear()
 
-	wipe(sortedTable)
 
 	offset = 0
 	characterOffset = 0
-
-	for i = 1, #nameFrames do
-		nameFrames[i]:SetNameInfo('')
-		keyFrames[i]:SetKeyInfo(-1)
-		mapFrames[i]:SetMapInfo(-1)
-		completedFrames[i]:SetCompletedInfo(0)
-	end
 end
 
 function e.UpdateFrames()
