@@ -449,8 +449,6 @@ guildInfo:SetScript('OnMouseDown', function(self)
 	end
  end)
 
-
-
 guildInfo.string = guildInfo:CreateFontString('ARTWORK')
 guildInfo.string:SetFont(FONT_CONTENT, FONT_SIZE - 2)
 guildInfo.string:SetText('Astral - Turalyon (US)')
@@ -468,7 +466,7 @@ logo:SetSize(64, 64)
 logo:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\Astral.tga')
 logo:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 10, -10)
 
-local title = CreateHeader(self, AstralKeyFrame, 'title', 220, 20, 'Astral Keys', 26)
+local title = e.CreateHeader(self, AstralKeyFrame, 'title', 220, 20, 'Astral Keys', 26)
 title:SetPoint('LEFT', logo, 'RIGHT', 10, -10)
 
 AstralKeyFrame.centreDivider = AstralKeyFrame:CreateTexture('BACKGROUND')
@@ -582,16 +580,9 @@ announceFrame.announce:SetScript('OnClick', function(self)
 	e.ToggleAnnounce()
 	end)
 
---[[announceFrame.texture = announceFrame:CreateTexture('BACKGROUND')
-announceFrame.texture:SetSize(16, 16)
-announceFrame.texture:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\speaker.tga')
-announceFrame.texture:SetPoint('LEFT', announceFrame, 'LEFT')
-]]
-
 announceFrame.string = announceFrame:CreateFontString('ARTWORK')
 announceFrame.string:SetFont(FONT_CONTENT, FONT_SIZE)
 announceFrame.string:SetPoint('TOPLEFT', announceFrame, 'TOPLEFT')
---announceFrame.string:SetText('Report to')
 
 local partyAnnounce = CreateFrame('BUTTON', nil, announceFrame)
 partyAnnounce:SetSize(15, 15)
@@ -675,7 +666,7 @@ local affixFrame = CreateFrame('FRAME', 'affixFrame', AstralKeyFrame)
 affixFrame:SetSize(200, 70)
 affixFrame:SetPoint('TOPLEFT', logo, 'BOTTOMLEFT', 5, -10)
 
-local affixHeader = CreateHeader(self, affixFrame, 'affixHeader', 175, 20, 'Affixes', 12)
+local affixHeader = e.CreateHeader(self, affixFrame, 'affixHeader', 175, 20, 'Affixes', 12)
 affixHeader:SetPoint('TOPLEFT', affixFrame, 'TOPLEFT')
 
 local affixOne = CreateFrame('FRAME', 'AstralAffixOne', affixFrame)
@@ -801,7 +792,7 @@ local characterFrame = CreateFrame('FRAME', 'astralCharacterFrame', AstralKeyFra
 characterFrame:SetSize(215, 320)
 characterFrame:SetPoint('TOPLEFT', affixFrame, 'BOTTOMLEFT', 0, -10)
 
-local characterHeader = CreateHeader(self, characterFrame, 'affixHeader', 175, 20, 'Characters', 10)
+local characterHeader = e.CreateHeader(self, characterFrame, 'affixHeader', 175, 20, 'Characters', 10)
 characterHeader:SetPoint('TOPLEFT', characterFrame, 'TOPLEFT')
 
 local characterContent = CreateFrame('FRAME', 'AstralCharacterContent', characterFrame)

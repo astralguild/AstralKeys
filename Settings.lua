@@ -87,6 +87,7 @@ frame:RegisterEvent('ADDON_LOADED')
 frame:SetScript('OnEvent', function(self, event, ...)
 	local addon = ...
 	if addon == 'AstralKeys' then
+		_G['AstralEngine'] = e
 		if not AstralKeysSettings['reset'] or not AstralKeysSettings['resetVersion'] or AstralKeysSettings['resetVersion'] ~= 1142 then
 			wipe(AstralKeys)
 			wipe(AstralCharacters)
