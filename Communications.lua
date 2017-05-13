@@ -111,6 +111,7 @@ local function UpdateKeyList(entry)
 			else
 				table.insert(AstralKeys, {name = unit, class = unitClass, realm = unitRealm, map = dungeonID, level = keyLevel, usable = isUsable, a1 = affixOne, a2 = affixTwo, a3 = affixThree, weeklyCache = weekly10})
 				e.SetUnitID(unit .. '-' .. unitRealm, #AstralKeys)
+				e.UpdateFrames()
 				if unit == e.PlayerName() and unitRealm == e.PlayerRealm() then
 					e.SetPlayerID()
 				end
@@ -168,6 +169,7 @@ local function UpdateKeyList(entry)
 		else
 			table.insert(AstralKeys, {name = unit, class = unitClass, realm = unitRealm, map = dungeonID, level = keyLevel, usable = isUsable, a1 = affixOne, a2 = affixTwo, a3 = affixThree, weeklyCache = weekly10})
 			e.SetUnitID(unit .. '-' .. unitRealm, #AstralKeys)
+			e.UpdateFrames()
 			if unit == e.PlayerName() and unitRealm == e.PlayerRealm() then
 				e.SetPlayerID()
 			end
