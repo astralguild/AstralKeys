@@ -24,7 +24,7 @@ end
 
 -- Sets a number to a unit for quicker access to table
 -- @param unit  Unit name and server
--- @param unitID integer
+-- @param unitID integer value
 
 function e.SetUnitID(unit, unitID)
 	unitList[unit] = unitID

@@ -166,7 +166,7 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 				['a2'] = tonumber(a2),
 				['a3'] = tonumber(a3),
 				}
-				e.SetUnitID(e.PlayerName() .. e.PlayerRealm(), #AstralKeys)
+				e.SetUnitID(e.PlayerName() .. '-' ..  e.PlayerRealm(), #AstralKeys)
 			end
 		end
 	end
@@ -176,10 +176,10 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 end
 
 local function CreateKeyText(mapID, level, usable)
-	if not isDepleted then
+	if not usable then
 		return level .. ' ' .. C_ChallengeMode.GetMapInfo(mapID)
 	else
-		if tonumber(isDepleted) == 0 then
+		if tonumber(usable) == 0 then
 			return WrapTextInColorCode(level .. ' ' .. C_ChallengeMode.GetMapInfo(mapID), 'ff9d9d9d')
 		else
 			return level .. ' ' .. C_ChallengeMode.GetMapInfo(mapID)
