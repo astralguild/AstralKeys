@@ -12,9 +12,13 @@ edgeFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 
 insets = {left = 0, right = 0, top = 0, bottom = 0}
 }
 
-local FONT_HEADER = "Interface\\AddOns\\AstralKeys\\Media\\big_noodle_titling.TTF"
-local FONT_CONTENT = "Interface\\AddOns\\AstralKeys\\Media\\Lato-Regular.TTF"
-local FONT_SIZE = 13
+e.FONT_HEADER = "Interface\\AddOns\\AstralKeys\\Media\\big_noodle_titling.TTF"
+e.FONT_CONTENT = "Interface\\AddOns\\AstralKeys\\Media\\Lato-Regular.TTF"
+e.FONT_SIZE = 13
+
+local FONT_HEADER = e.FONT_HEADER
+local FONT_CONTENT = e.FONT_CONTENT
+local FONT_SIZE = e.FONT_SIZE
 
 local FONT_OBJECT_EDITBOX = CreateFont("FONTOBJECT_EDITBOX")
 FONTOBJECT_EDITBOX:SetFont(FONT_CONTENT, FONT_SIZE - 1)
