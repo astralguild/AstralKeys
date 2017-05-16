@@ -126,7 +126,7 @@ end
 
 WEEKLY_AP[2] = 1250
 WEEKLY_AP[3] = 1250
-WEEKLY_AP[4] = 1250
+WEEKLY_AP[4] = 1925
 WEEKLY_AP[5] = 1925
 WEEKLY_AP[6] = 1925
 WEEKLY_AP[7] = 2150
@@ -143,13 +143,11 @@ WEEKLY_AP[17] = 5800
 WEEKLY_AP[18] = 6200
 WEEKLY_AP[19] = 6600
 WEEKLY_AP[20] = 7000
+WEEKLY_AP[21] = 7400
+WEEKLY_AP[22] = 7800
 
 function e.GetWeeklyAP(keyLevel)
-	if WEEKLY_AP[keyLevel] ~= 0 then
-		return WEEKLY_AP[keyLevel]
-	end
-
-	return 0
+	return WEEKLY_AP[keyLevel] or WEEKLY_AP[#WEEKLY_AP]
 end
 
 function e.MapApText(mapID, keyLevel, isUsable)
