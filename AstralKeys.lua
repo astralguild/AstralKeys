@@ -55,7 +55,7 @@ e.RegisterEvent('PLAYER_LOGIN', function()
 		e.FindKeyStone(true, false)
 	end
 
-	if d.wday == 3 and d.hour < 15 and region ~= 3 then
+	if d.wday == 3 and d.hour < 8 and region ~= 3 then
 		local frame = CreateFrame('FRAME')
 		frame.elapsed = 0
 		frame.first = true
