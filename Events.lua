@@ -6,7 +6,6 @@ akEvents:SetScript("OnEvent", function(self, event, ...)
 		akEvents[event](...)
 end)
 
-
 function e.RegisterEvent(event, func)
 	akEvents:RegisterEvent(event)
 	akEvents[event] = function(...)
@@ -26,32 +25,110 @@ function e.IsEventRegistered(event)
 	end
 end
 
+local Events = {}
+Events.__index = Events
+WoWEvents = CreateFrame('FRAME', 'WoWEvents')
+WoWEvents.tbl = {}
 
---[[
-e.RegisterEvent('CHAT_MSG_SYSTEM', function(...)
-	local msg = ...
-	if msg:find('Artifact Power') then
-		local amount = msg:sub(msg:find('%s%d'), msg:find('%d%s'))
-		if amount:find(',') then
-			amount = amount:gsub(',', '')
-			print(amount)
-			amount = tonumber(amount)
-			print(amount .. ' type: ' .. type(amount))
+-- Creates new event object
+-- @param f Function to be called on event
+-- @param name Name for the function for identification
+-- @return Event object with method to be called on event fire
+
+function Events:NewEvent(f, name)
+	local obj = {}
+
+	obj.name = name or 'nil'
+	obj.method = f
+
+	return obj
+end
+
+-- Registers function to an event
+-- @param event Event that is fired when function is to be called
+-- @param f Function to be called when event is fired
+-- @param name Name of function, used as an identifier
+
+function Events:Register(event, f, name)
+	local obj = self:NewEvent(f, name)
+
+	if not self.tbl[event] then 
+		self.tbl[event] = {}
+		WoWEvents:RegisterEvent(event)
+	 end
+	table.insert(self.tbl[event], obj)
+end
+
+-- Unregisters function from being called on event
+-- @param event Event the object's method is to be removed from
+-- @name The name of the object to be removed
+
+function Events:Unregister(event, name)
+	local objs = self.tbl[event]
+	if not objs then return end
+	for id, obj in pairs(objs) do
+		if obj.name == name then
+			objs[id] = nil
+			break
 		end
 	end
-	end)
-]]
+end
 
+-- Checks to see if an object is registered for an event
+-- @param event The event the object is to be called on
+-- @param name The name of the object that is to be checked
+-- @return True or false if the object is bound to an event
 
---[[
-where link = CHAT_SYSTEM_MSG where 'Artifact Power' is found.
+function Events:IsRegistered(event, name)
+	local objs = self.tbl[event]
+	if not objs then return false end
 
-delink = link:sub(link:find('%s%d'), link:find('%d%s'))
-amount = delink:gsub(',', '')
+	for key, obj in pairs(objs) do
+		if obj.name == name then
+			return true
+		end
+	end
 
-/script print(link:sub(link:find('%s%d'), link:find('%d%s')))
+	return false
+end
 
-/script print((link:sub(link:find('%s%d'), link:find('%d%s'))):gsub(',', ''))
+-- On event handler
+-- @param event Event that was fired
+-- @param ... Arguments for said event
 
+function Events:OnEvent(event, ...)
+	local objs = self.tbl[event]
+	if not objs then return end
+	for k, obj in pairs(objs) do
+		obj.method(...)
+	end
+end
 
-]]
+-- Mixin the contents from Event's to WoWEvents
+for k,v in pairs(Events) do
+	if type(v) == 'function' and WoWEvents[k] == nil then
+		WoWEvents[k] = v
+	end
+end
+
+local function abc( ... )
+	local chan = select(9, ...)
+	if chan ~= 'bittieTest' then return end
+	print('abc', ...)
+	WoWEvents:Unregister('CHAT_MSG_CHANNEL', 'abc')
+end
+
+local function def(...)
+	local chan = select(9, ...)
+	if chan ~= 'bittieTest' then return end
+	print('def')
+	if not WoWEvents:IsRegistered('CHAT_MSG_CHANNEL', 'abc') then
+		print('not registered')
+		WoWEvents:Register('CHAT_MSG_SAY', abc, 'abc')
+	end
+end
+
+WoWEvents:Register('CHAT_MSG_CHANNEL', abc, 'abc')
+WoWEvents:Register('CHAT_MSG_CHANNEL', def, 'TEST')
+
+WoWEvents:SetScript('OnEvent', Events.OnEvent)

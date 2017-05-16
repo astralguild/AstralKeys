@@ -11,33 +11,62 @@ local function AddonMessage(index)
 	return AstralKeys[index].name .. ":" .. AstralKeys[index].class .. ':' .. AstralKeys[index].realm .. ':' .. AstralKeys[index].map .. ':' .. AstralKeys[index].level .. ':' .. AstralKeys[index].usable .. ':' .. AstralKeys[index].a1 .. ':' .. AstralKeys[index].a2 .. ':' .. AstralKeys[index].a3 .. ':' .. AstralKeys[index].weeklyCache
 end
 
-local akComms = CreateFrame('FRAME')
-akComms:RegisterEvent('CHAT_MSG_ADDON')
+AstralComs = CreateFrame('FRAME')
+AstralComs:RegisterEvent('CHAT_MSG_ADDON')
+AstralComs.dtbl = {}
 
-akComms:SetScript('OnEvent', function(self, event, ...)
-	local prefix, msg = ...
-	if not (prefix == 'AstralKeys') then return end
+function AstralComs:RegisterPrefix(channel, prefix, f)
+	if not channel then channel = 'GUILD' end
+	if not self.dtbl[channel] then self.dtbl[channel] = {} end
+	
+	local obj = {}
+	obj.method = f
+	obj.prefix = prefix
 
-	local arg, content = msg:match("^(%S*)%s*(.-)$")
-		if e.IsPrefixRegistered(arg) then
-			akComms[arg](content, ...)
+	table.insert(self.dtbl[channel], obj)
+end
+
+function AstralComs:UnregisterPrefix(channel, prefix)
+	local objs = self.dtbl[channel]
+	if not objs then return end
+	for id, obj in pairs(objs) do
+		if obj.prefix == prefix then
+			table.remove(objs, id)
+			--objs[id] = nil
+			break
 		end
-	end)
-
-function e.RegisterPrefix(prefix, func)
-	akComms[prefix] = function(...)
-	func(...)
 	end
 end
 
-function e.IsPrefixRegistered(prefix)
-	return akComms[prefix]
+function AstralComs:IsPrefixRegistered(channel, prefix)
+	local objs = self.dtbl[channel]
+	if not objs then return end
+	for _, obj in pairs(objs) do
+		if obj.prefix == prefix then
+			return true
+		end
+	end
+	return false
 end
 
-function e.UnregisterPrefix(prefix)
-	if not e.IsPrefixRegistered(prefix) then return end
-	akComms[prefix] = nil
+function AstralComs:OnEvent(event, ...)
+	local prefix, msg, channel = ...
+	if not (prefix == 'AstralKeys') then return end
+
+	local objs = self.dtbl[channel]
+	if not objs then return end
+
+	local arg, content = msg:match("^(%S*)%s*(.-)$")
+
+	for _, obj in pairs(objs) do
+		if obj.prefix == arg then
+			obj.method(content, ...)
+		end
+	end
+
 end
+
+AstralComs:SetScript('OnEvent', AstralComs.OnEvent)
 
 function e.AnnounceNewKey(keyLink, level)
 	if not IsInGroup() then return end
@@ -111,7 +140,6 @@ local function UpdateKeyList(entry)
 			else
 				table.insert(AstralKeys, {name = unit, class = unitClass, realm = unitRealm, map = dungeonID, level = keyLevel, usable = isUsable, a1 = affixOne, a2 = affixTwo, a3 = affixThree, weeklyCache = weekly10})
 				e.SetUnitID(unit .. '-' .. unitRealm, #AstralKeys)
-				e.UpdateFrames()
 				if unit == e.PlayerName() and unitRealm == e.PlayerRealm() then
 					e.SetPlayerID()
 				end
@@ -181,7 +209,7 @@ local function UpdateKeyList(entry)
 	end
 	e.UpdateAffixes()
 end
-e.RegisterPrefix('updateV4', UpdateKeyList)
+AstralComs:RegisterPrefix('GUILD', 'updateV4', UpdateKeyList)
 
 local function UpdateWeekly10(...)
 	local weekly = ...
@@ -192,7 +220,7 @@ local function UpdateWeekly10(...)
 		AstralKeys[id].weeklyCache = tonumber(weekly)
 	end
 end
-e.RegisterPrefix('updateWeekly', UpdateWeekly10)
+AstralComs:RegisterPrefix('GUILD', 'updateWeekly', UpdateWeekly10)
 
 local ticker = {}
 local function PushKeyList(...)
@@ -236,15 +264,14 @@ local function PushKeyList(...)
 	ticker = C_Timer.NewTicker(1, SendEntries, tickerIterations)
 	
 end
-	
-e.RegisterPrefix('request', PushKeyList)
+AstralComs:RegisterPrefix('GUILD', 'request', PushKeyList)
 
 local function VersionRequest()
 	local version = GetAddOnMetadata('AstralKeys', 'version')
 	version = version:gsub('[%a%p]', '')
 	SendAddonMessage('AstralKeys', 'versionPush ' .. version .. ':' .. e.PlayerClass(), 'GUILD')
 end
-e.RegisterPrefix('versionRequest', VersionRequest)
+AstralComs:RegisterPrefix('GUILD', 'versionRequest', VersionRequest)
 
 local function VersionPush(msg, ...)
 	local sender = select(4, ...)
@@ -271,7 +298,7 @@ local function ResetAK()
 		e.UpdateFrames()
 	end)
 end
-e.RegisterPrefix('resetAK', ResetAK)
+AstralComs:RegisterPrefix('GUILD', 'resetAK', ResetAK)
 --SendAddonMessage('AstralKeys', 'resetAK', 'GUILD')
 --[[SendAddonMessage('AstralKeys', 'updateV4 Jpeg:DEMONHUNTER:Turalyon:200:22:1:13:13:10:1', 'GUILD')
 ]]
@@ -317,12 +344,13 @@ end
 local timer
 function e.VersionCheck()
 	if not IsInGuild() then return end
-	if not e.IsPrefixRegistered('versionPush') then
-		e.RegisterPrefix('versionPush', VersionPush)
+	if not AstralComs:IsPrefixRegistered('GUILD', 'versionPush') then
+		AstralComs:RegisterPrefix('GUILD', 'versionPush', VersionPush)
 	end
+
 	highestVersion = 0
 	wipe(versionList)
 	SendAddonMessage('AstralKeys', 'versionRequest', 'GUILD')
 	if timer then timer:Cancel() end
-	timer =  C_Timer.NewTicker(3, function() PrintVersion() e.UnregisterPrefix('versionPush') end, 1)
+	timer =  C_Timer.NewTicker(3, function() PrintVersion() AstralComs:UnregisterPrefix('GUILD', 'versionPush') end, 1)
 end
