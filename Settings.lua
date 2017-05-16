@@ -3,36 +3,6 @@ local _, e = ...
 
 	-- Reset time 15:00 UTC AMERICAS
 	-- 07:00 UTC EU
---[[
-function e.DataResetTime()
-	local d = date('!*t')
-
-	local secs = 60 - d.sec
-	local mins = math.floor(59 - d.min + d.sec/100)
-	local hours = math.floor(23 - d.hour + d.min/100)
-	local days
-
-	if d.wday > 3 then 
-		days = math.floor(7 - d.wday + d.hour/100) + 2
-	else
-		days = math.floor(2 - d.wday + d.hour/100)
-	end
-
-	if d.isdst then hours = hours + 1 end
-
-	local region = GetCurrentRegion()
-	if region == 3 then 
-		hours = hours + 7
-		days = days + 1
-	else
-		hours = hours + 15
-	end
-
-	local resetTime = (((days * 24 + hours) * 60 + mins) * 60 + secs) + time(d)
-
-	return resetTime
-end]]
-
 
 function e.DataResetTime()
 	local serverTime = GetServerTime()
@@ -64,7 +34,7 @@ end
 
 if not AstralKeysSettings then
 	AstralKeysSettings = {
-		['resetVersion'] = 1142,
+		['resetVersion'] = 1143,
 		['reset'] = true,
 		['initTime'] = e.DataResetTime(),
 		['frameOptions'] = {
@@ -88,14 +58,14 @@ frame:SetScript('OnEvent', function(self, event, ...)
 	local addon = ...
 	if addon == 'AstralKeys' then
 		_G['AstralEngine'] = e
-		if not AstralKeysSettings['reset'] or not AstralKeysSettings['resetVersion'] or AstralKeysSettings['resetVersion'] ~= 1142 then
+		if not AstralKeysSettings['reset'] or not AstralKeysSettings['resetVersion'] or AstralKeysSettings['resetVersion'] ~= 1143 then
 			wipe(AstralKeys)
 			wipe(AstralCharacters)
 			AstralAffixes[1] = 0
 			AstralAffixes[2] = 0
 			AstralAffixes[3] = 0
 			AstralKeysSettings = {
-				['resetVersion'] = 1142,
+				['resetVersion'] = 1143,
 				['reset'] = true,
 				['initTime'] = e.DataResetTime(),
 				['frameOptions'] = {
