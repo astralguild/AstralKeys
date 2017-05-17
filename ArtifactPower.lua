@@ -147,6 +147,7 @@ WEEKLY_AP[21] = 7400
 WEEKLY_AP[22] = 7800
 
 function e.GetWeeklyAP(keyLevel)
+	if keyLevel == 0 then return 0 end
 	return WEEKLY_AP[keyLevel] or WEEKLY_AP[#WEEKLY_AP]
 end
 

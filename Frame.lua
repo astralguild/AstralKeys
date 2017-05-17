@@ -201,7 +201,7 @@ local function CreateCharacterFrame(parent, frameName, unitName, bestKey, create
 	frame:SetScript('OnEnter', function(self)
 		if not self.tid then return end
 
-		if self.weeklyAP then
+		if self.weeklyAP > 0 then
 			astralMouseOver:SetText(self.bestMap .. '\n- ' .. e.ConvertToSI(self.weeklyAP * e.CharacterAK(self.tid)) .. ' AP')
 		else
 			astralMouseOver:SetText(self.bestMap)
