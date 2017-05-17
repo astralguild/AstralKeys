@@ -13,7 +13,7 @@ function e.DataResetTime()
 	local days
 	local hourOffset, minOffset = math.modf(difftime(time(), time(date('!*t'))))/3600
 	minOffset = minOffset or 0
-	if d.wday > 3 then 
+	if d.wday > 2 then 
 		days = math.floor(7 - d.wday + d.hour/100) + 2
 	else
 		days = math.floor(2 - d.wday + d.hour/100)

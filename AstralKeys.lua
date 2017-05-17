@@ -38,6 +38,7 @@ end
 e.RegisterEvent('PLAYER_LOGIN', function()
 	local d = date('*t')
 	local currentTime = time(d)
+	local hourOffset, minOffset = math.modf(difftime(time(), time(date('!*t'))))/3600
 	e.SetPlayerName()
 	e.SetPlayerClass()
 	e.SetPlayerRealm()
@@ -55,7 +56,7 @@ e.RegisterEvent('PLAYER_LOGIN', function()
 		e.FindKeyStone(true, false)
 	end
 
-	if d.wday == 3 and d.hour < 8 and region ~= 3 then
+	if d.wday == 3 and d.hour < 16 + hourOffset and region ~= 3 then
 		local frame = CreateFrame('FRAME')
 		frame.elapsed = 0
 		frame.first = true
