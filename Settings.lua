@@ -3,6 +3,52 @@ local _, e = ...
 
 	-- Reset time 15:00 UTC AMERICAS
 	-- 07:00 UTC EU
+--[[
+function e.DataResetTime()
+	local region = GetCurrentRegion()
+	local serverTime = GetServerTime()
+	local d = date('*t', serverTime)
+	local hourOffset, minOffset = math.modf(difftime(time(), time(date('!*t'))))/3600
+	local hours
+	local days
+
+	if region ~= 3 then
+		hours = 15 + (d.isdst and 1 or 0)
+		if d.wday > 2 then
+			if d.wday == 3 then
+				if d.hour < 15 + (d.isdst and 1 or 0) + hourOffset then
+					days = 0
+				else
+					days = 7
+				end
+			else
+				days = 10 - d.wday
+			end
+		else
+			days = 3 - d.wday
+		end
+	else
+		hours = 7 + (d.isdst and 1 or 0)
+		if d.wday > 3 then
+			if d.wday == 4 then
+				if d.hour < 7 + (d.isdst and 1 or 0) + hourOffset then
+					days = 0
+				else
+					days = 7
+				end
+			else
+				days = 10 - d.wday
+			end
+		else
+			days = 4 - d.wday
+		end
+	end
+
+	local time = (((days * 24 + hours + hourOffset) * 60) * 60) + serverTime - d.hour*3600 - d.min*60 - d.sec
+
+	return time
+end
+]]
 
 function e.DataResetTime()
 	local serverTime = GetServerTime()
