@@ -7,16 +7,14 @@ local messageContents = {}
 local highestVersion = 0
 local find, sub = string.find, string.sub
 
-local function AddonMessage(index)	
-	return AstralKeys[index].name .. ":" .. AstralKeys[index].class .. ':' .. AstralKeys[index].realm .. ':' .. AstralKeys[index].map .. ':' .. AstralKeys[index].level .. ':' .. AstralKeys[index].usable .. ':' .. AstralKeys[index].a1 .. ':' .. AstralKeys[index].a2 .. ':' .. AstralKeys[index].a3 .. ':' .. AstralKeys[index].weeklyCache
-end
-
 AstralComs = CreateFrame('FRAME')
 AstralComs:RegisterEvent('CHAT_MSG_ADDON')
 AstralComs.dtbl = {}
 
 function AstralComs:RegisterPrefix(channel, prefix, f)
 	if not channel then channel = 'GUILD' end
+	if self:IsPrefixRegistered(channel, prefix) then return end
+
 	if not self.dtbl[channel] then self.dtbl[channel] = {} end
 	
 	local obj = {}
@@ -40,7 +38,7 @@ end
 
 function AstralComs:IsPrefixRegistered(channel, prefix)
 	local objs = self.dtbl[channel]
-	if not objs then return end
+	if not objs then return false end
 	for _, obj in pairs(objs) do
 		if obj.prefix == prefix then
 			return true
@@ -74,8 +72,28 @@ function e.AnnounceNewKey(keyLink, level)
 	SendChatMessage('Astral Keys: New key ' .. keyLink .. ' +' .. level, 'PARTY')
 end
 
+local function AddonMessage(index)	
+	return AstralKeys[index].name .. ":" .. AstralKeys[index].class .. ':' .. AstralKeys[index].realm .. ':' .. AstralKeys[index].map .. ':' .. AstralKeys[index].level .. ':' .. AstralKeys[index].usable .. ':' .. AstralKeys[index].a1 .. ':' .. AstralKeys[index].a2 .. ':' .. AstralKeys[index].a3 .. ':' .. AstralKeys[index].weeklyCache
+end
+
+function e.ParseMessage(message)
+	local entry = message
+	wipe(messageContents)
+	local _pos
+	while find(entry, ':') do
+		_pos = find(entry, ':')
+		messageContents[#messageContents + 1] = sub(entry, 1, _pos - 1)
+		entry = sub(entry, _pos + 1, entry:len())
+	end
+	messageContents[#messageContents + 1 ] = entry
+
+	return unpack(messageContents)
+end
+
+
 local function UpdateKeyList(entry)
 	local messageReceived = {}
+	local unit, unitClass, unitRealm, dungeonID, keyLevel, usable, affixOne, affixTwo, affixThree
 	if find(entry, '_') then -- Character to seperate multiple entries
 		while find(entry, '_') do
 			local _pos = find(entry, '_')
@@ -83,14 +101,14 @@ local function UpdateKeyList(entry)
 			entry = sub(entry, _pos + 1, entry:len())
 		end
 		for i = 1, #messageReceived do
-			wipe(messageContents)
+			--[[wipe(messageContents)
 			while find(messageReceived[i], ':') do
 				local _pos = find(messageReceived[i], ':')
 				messageContents[#messageContents + 1] = sub(messageReceived[i], 1, _pos -1)
 				messageReceived[i] = sub(messageReceived[i], _pos + 1, messageReceived[i]:len())
 			end
 			messageContents[#messageContents + 1] = messageReceived[i]
-			--[[
+			--
 			NAME
 			CLASS
 			REALM
@@ -101,7 +119,7 @@ local function UpdateKeyList(entry)
 			AFFIXTWO
 			AFFIXTHREE
 			WEEKLY10
-			]]
+			]]--[[
 			local unit, unitClass, unitRealm = messageContents[1], messageContents[2], messageContents[3]
 
 			local dungeonID = tonumber(messageContents[4])
@@ -111,6 +129,15 @@ local function UpdateKeyList(entry)
 			local affixTwo = tonumber(messageContents[8])
 			local affixThree = tonumber(messageContents[9])
 			local weekly10 = tonumber(messageContents[10])
+]]
+			unit, unitClass, unitRealm, dungeonID, keyLevel, isUsable, affixOne, affixTwo, affixThree, weekly10 = e.ParseMessage(messageReceived[i])
+			dungeonID = tonumber(dungeonID)
+			keyLevel = tonumber(keyLevel)
+			isUsable = tonumber(isUsable)
+			affixOne = tonumber(affixOne)
+			affixTwo = tonumber(affixTwo)
+			affixThree = tonumber(affixThree)
+			weekly10 = tonumber(weekly10)
 
 			if not e.UnitInGuild(unit .. '-' .. unitRealm) then return end
 

@@ -25,17 +25,15 @@ function e.IsEventRegistered(event)
 	end
 end
 
-local Events = {}
-Events.__index = Events
-WoWEvents = CreateFrame('FRAME', 'WoWEvents')
-WoWEvents.tbl = {}
+AstralEvents = CreateFrame('FRAME', 'AstralEvents')
+AstralEvents.dtbl = {}
 
 -- Creates new event object
 -- @param f Function to be called on event
 -- @param name Name for the function for identification
 -- @return Event object with method to be called on event fire
 
-function Events:NewEvent(f, name)
+function AstralEvents:NewEvent(f, name)
 	local obj = {}
 
 	obj.name = name or 'nil'
@@ -49,22 +47,23 @@ end
 -- @param f Function to be called when event is fired
 -- @param name Name of function, used as an identifier
 
-function Events:Register(event, f, name)
+function AstralEvents:Register(event, f, name)
+	if self:IsRegistered(event, name) then return end
 	local obj = self:NewEvent(f, name)
 
-	if not self.tbl[event] then 
-		self.tbl[event] = {}
-		WoWEvents:RegisterEvent(event)
-	 end
-	table.insert(self.tbl[event], obj)
+	if not self.dtbl[event] then 
+		self.dtbl[event] = {}
+		AstralEvents:RegisterEvent(event)
+	end
+	table.insert(self.dtbl[event], obj)
 end
 
 -- Unregisters function from being called on event
 -- @param event Event the object's method is to be removed from
 -- @name The name of the object to be removed
 
-function Events:Unregister(event, name)
-	local objs = self.tbl[event]
+function AstralEvents:Unregister(event, name)
+	local objs = self.dtbl[event]
 	if not objs then return end
 	for id, obj in pairs(objs) do
 		if obj.name == name then
@@ -79,8 +78,8 @@ end
 -- @param name The name of the object that is to be checked
 -- @return True or false if the object is bound to an event
 
-function Events:IsRegistered(event, name)
-	local objs = self.tbl[event]
+function AstralEvents:IsRegistered(event, name)
+	local objs = self.dtbl[event]
 	if not objs then return false end
 
 	for key, obj in pairs(objs) do
@@ -96,39 +95,41 @@ end
 -- @param event Event that was fired
 -- @param ... Arguments for said event
 
-function Events:OnEvent(event, ...)
-	local objs = self.tbl[event]
+function AstralEvents:OnEvent(event, ...)
+	local objs = self.dtbl[event]
 	if not objs then return end
 	for k, obj in pairs(objs) do
 		obj.method(...)
 	end
 end
 
--- Mixin the contents from Event's to WoWEvents
-for k,v in pairs(Events) do
-	if type(v) == 'function' and WoWEvents[k] == nil then
-		WoWEvents[k] = v
-	end
-end
+AstralEvents:SetScript('OnEvent', AstralEvents.OnEvent)
 
+--[[ Mixin the contents from Event's to AstralEvents
+for k,v in pairs(Events) do
+	if type(v) == 'function' and AstralEvents[k] == nil then
+		AstralEvents[k] = v
+	end
+end]]
+
+-- Simple test stuff
 local function abc( ... )
 	local chan = select(9, ...)
 	if chan ~= 'bittieTest' then return end
 	print('abc', ...)
-	WoWEvents:Unregister('CHAT_MSG_CHANNEL', 'abc')
+	AstralEvents:Unregister('CHAT_MSG_CHANNEL', 'abc')
 end
 
 local function def(...)
 	local chan = select(9, ...)
 	if chan ~= 'bittieTest' then return end
 	print('def')
-	if not WoWEvents:IsRegistered('CHAT_MSG_CHANNEL', 'abc') then
+	if not AstralEvents:IsRegistered('CHAT_MSG_CHANNEL', 'abc') then
 		print('not registered')
-		WoWEvents:Register('CHAT_MSG_SAY', abc, 'abc')
+		AstralEvents:Register('CHAT_MSG_SAY', abc, 'abc')
 	end
 end
 
-WoWEvents:Register('CHAT_MSG_CHANNEL', abc, 'abc')
-WoWEvents:Register('CHAT_MSG_CHANNEL', def, 'TEST')
+AstralEvents:Register('CHAT_MSG_CHANNEL', abc, 'abc')
+AstralEvents:Register('CHAT_MSG_CHANNEL', def, 'TEST')
 
-WoWEvents:SetScript('OnEvent', Events.OnEvent)

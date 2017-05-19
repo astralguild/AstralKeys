@@ -94,6 +94,23 @@ function e.GetAffix(affixNumber)
 	return AstralAffixes[affixNumber]
 end
 
+function e.GetKeyInfo()
+	local mapID, keyLevel, usable, a1, a2, a3, s, itemID, delink, link
+
+	for bag = 0, NUM_BAG_SLOTS + 1 do
+		for slot = 1, GetContainerNumSlots(bag) do
+			itemID = GetContainerItemID(bag, slot)
+			if (itemID and itemID == 138019) then
+				link = GetContainerItemLink(bag, slot)
+				mapID, keyLevel, usable, a1, a2, a3 = e.ParseLink(link)				
+			end
+		end
+	end
+
+	return mapID, keyLevel, usable, a1, a2, a3
+
+end
+
 function e.FindKeyStone(sendUpdate, anounceKey)
 	local mapID, keyLevel, usable, a1, a2, a3, s, itemID, delink, link
 	local s = ''

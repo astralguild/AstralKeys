@@ -306,7 +306,7 @@ local function CreateMapFrame(parent, mapID, isUsable, keyLevel)
 			if self.map ~= -1 then
 				astralMouseOver:ClearAllPoints()
 				astralMouseOver:SetPoint('TOPLEFT', self, 'CENTER', 35, 0)
-				astralMouseOver:SetText(e.MapApText(frame.map, frame.level, frame.usable))
+				astralMouseOver:SetText(e.MapApText(self.map, self.level, self.usable))
 				astralMouseOver:AdjustSize()
 				astralMouseOver:Show()
 				AstralContentFrame.slider:SetAlpha(1)
@@ -623,7 +623,8 @@ quickOptionsFrame:SetScript('OnHide', function(self)
 -- Tooltip AstralKeyFrame
 -----------------------------------------------------
 
-local mouseOverFrame = CreateFrame('FRAME', 'astralMouseOver', AstralKeyFrame)
+--local mouseOverFrame = CreateFrame('FRAME', 'astralMouseOver', AstralKeyFrame)
+local mouseOverFrame = CreateFrame('FRAME', 'astralMouseOver', UIParent)
 mouseOverFrame:SetSize(156, 200)
 mouseOverFrame:SetFrameStrata('TOOLTIP')
 

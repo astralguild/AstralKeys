@@ -1,6 +1,6 @@
 local _, e = ...
 
-local playerClass, playerName, numArtifacts, akBonus, characterID, playerID, playerRealm
+local playerClass, playerName, numArtifacts, characterID, playerID, playerRealm
 
 function e.CharacterID()
 	return characterID
@@ -64,4 +64,8 @@ end
 
 function e.PlayerName()
 	return playerName
+end
+
+function e.PlayerAK()
+	return AstralCharacters[characterID].knowledge
 end

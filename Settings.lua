@@ -1,10 +1,18 @@
 local _, e = ...
 
+local REGION = {}
+REGION[1] = {}
+REGION[1].RESET_DAY = 3
+REGION[1].RESET_HOUR = 15
+REGION[3] = {}
+REGION[3].RESET_DAY = 4
+REGION[3].RESET_HOUR = 7
+
 
 	-- Reset time 15:00 UTC AMERICAS
 	-- 07:00 UTC EU
 --[[
-function e.DataResetTime()
+function DataResetTime()
 	local region = GetCurrentRegion()
 	local serverTime = GetServerTime()
 	local d = date('*t', serverTime)
