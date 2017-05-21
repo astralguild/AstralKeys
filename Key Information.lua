@@ -32,26 +32,6 @@ local function InitData()
 end
 e.RegisterEvent('CHALLENGE_MODE_MAPS_UPDATE', InitData)
 
---[[
-e.RegisterEvent('CHALLENGE_MODE_MAPS_UPDATE', function()
-	if UnitLevel('player') ~= 110 then return end
-	e.GetBestClear()
- 	if not init then
-		e.SetCharacterID()
- 		e.UpdateGuildList()
- 		e.FindKeyStone(true, false)
- 		e.BuildMapTable()
- 		SendAddonMessage('AstralKeys', 'request', 'GUILD')
- 		init = true
- 	end
-
- 	if AstralKeys[e.PlayerID()]['weeklyCache'] == 0 then
-		if AstralCharacters[e.CharacterID()].level >= 10 then
-			SendAddonMessage('AstralKeys', 'updateWeekly 1')
-			e.UpdateCharacterFrames()
-		end
-	end
- end)]]
 
 function e.CreateKeyLink(index)
 	local s = '|c'

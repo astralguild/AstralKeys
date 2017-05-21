@@ -91,7 +91,7 @@ function e.ParseMessage(message)
 end
 
 
-local function UpdateKeyList(entry)
+local function UpdateKeyList(entry, ...)
 	local messageReceived = {}
 	local unit, unitClass, unitRealm, dungeonID, keyLevel, usable, affixOne, affixTwo, affixThree
 	if find(entry, '_') then -- Character to seperate multiple entries
@@ -178,23 +178,15 @@ local function UpdateKeyList(entry)
 			end
 		end
 	else
-		wipe(messageContents)
-		while find(entry, ':') do
-			local _pos = find(entry, ':')
-			messageContents[#messageContents + 1] = sub(entry, 1, _pos -1)
-			entry = sub(entry, _pos + 1, entry:len())
-		end
-		messageContents[#messageContents + 1] = entry
+		unit, unitClass, unitRealm, dungeonID, keyLevel, isUsable, affixOne, affixTwo, affixThree, weekly10 = e.ParseMessage(entry)
 
-		local unit, unitClass, unitRealm = messageContents[1], messageContents[2], messageContents[3]
-
-		local dungeonID = tonumber(messageContents[4])
-		local keyLevel = tonumber(messageContents[5])
-		local isUsable = tonumber(messageContents[6])
-		local affixOne = tonumber(messageContents[7])
-		local affixTwo = tonumber(messageContents[8])
-		local affixThree = tonumber(messageContents[9])
-		local weekly10 = tonumber(messageContents[10])
+		dungeonID = tonumber(dungeonID)
+		keyLevel = tonumber(keyLevel)
+		isUsable = tonumber(isUsable)
+		affixOne = tonumber(affixOne)
+		affixTwo = tonumber(affixTwo)
+		affixThree = tonumber(affixThree)
+		weekly10 = tonumber(weekly10)
 
 		if not e.UnitInGuild(unit .. '-' .. unitRealm) then return end
 

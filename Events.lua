@@ -132,4 +132,3 @@ end
 
 AstralEvents:Register('CHAT_MSG_CHANNEL', abc, 'abc')
 AstralEvents:Register('CHAT_MSG_CHANNEL', def, 'TEST')
-
