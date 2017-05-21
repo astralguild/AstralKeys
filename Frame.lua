@@ -534,7 +534,7 @@ showOffline:SetPoint('TOPRIGHT', quickOptionsFrame, 'TOPRIGHT', -5, -5)
 
 showOffline:SetScript('OnClick', function (self)
 	e.SetShowOffline(self:GetChecked())
-	offset = 0
+	AstralContentFrame:ResetSlider()
 	e.UpdateFrames()
 end)
 
@@ -815,20 +815,20 @@ characterContent:SetScript('OnLeave', function()
 ----------------------------------------------------------------
 
 local contentFrame = CreateFrame('FRAME', 'AstralContentFrame', AstralKeyFrame)
-contentFrame:SetSize(375, 390)
+contentFrame:SetSize(385, 390)
 contentFrame:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 255, -95)
 contentFrame:EnableMouseWheel(true)
 
 contentFrame.slider = contentFrame:CreateTexture('BACKGROUND')
 contentFrame.slider:SetColorTexture(0.2, 0.2, 0.2)
 contentFrame.slider:SetSize(8, 8)
-contentFrame.slider:SetPoint('TOPLEFT', contentFrame, 'TOPRIGHT')
+contentFrame.slider:SetPoint('TOPRIGHT', contentFrame, 'TOPRIGHT')
 contentFrame.slider:SetAlpha(0.2)
 
 
 function contentFrame:ResetSlider()
 	offset = 0
-	contentFrame.slider:SetPoint('TOPLEFT', contentFrame, 'TOPRIGHT')
+	self.slider:SetPoint('TOPRIGHT', self, 'TOPRIGHT')
 end
 
 contentFrame:SetScript('OnMouseWheel', function(self, delta)
@@ -847,7 +847,7 @@ contentFrame:SetScript('OnMouseWheel', function(self, delta)
 	end  
 
 	contentFrame.slider:ClearAllPoints()
-	contentFrame.slider:SetPoint('TOPLEFT', contentFrame, 'TOPRIGHT', 0, -offset/(#sortedTable - 25) * 365)
+	contentFrame.slider:SetPoint('TOPRIGHT', contentFrame, 'TOPRIGHT', 0, -offset/(#sortedTable - 25) * 365)
 
 	end)
 
@@ -859,7 +859,7 @@ contentFrame:SetScript('OnLeave', function()
 	contentFrame.slider:SetAlpha(0.2)
 	end)
 
-local keyButton = CreateButton(contentFrame, 'keyButton', 75, 20, 'Level', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT)
+local keyButton = CreateButton(contentFrame, 'keyButton', 55, 20, 'Level', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT) --75
 keyButton:SetPoint('BOTTOMLEFT', contentFrame, 'TOPLEFT')
 keyButton:SetScript('OnClick', function()
 	contentFrame:ResetSlider()
