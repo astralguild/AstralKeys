@@ -56,7 +56,7 @@ e.RegisterEvent('PLAYER_LOGIN', function()
 		e.FindKeyStone(true, false)
 	end
 
-	if d.wday == 3 and d.hour < 16 + hourOffset and region ~= 3 then
+	if d.wday == 3 and d.hour < (16 + hourOffset) and region ~= 3 then
 		local frame = CreateFrame('FRAME')
 		frame.elapsed = 0
 		frame.first = true
@@ -85,7 +85,7 @@ e.RegisterEvent('PLAYER_LOGIN', function()
 				self.elapsed = 0
 			end
 			end)
-	elseif d.wday == 4 and d.hour < 7 and region == 3 then
+	elseif d.wday == 4 and d.hour < (7 + hourOffset) and region == 3 then
 		local frame = CreateFrame('FRAME')
 		frame.elapsed = 0
 		frame.first = true

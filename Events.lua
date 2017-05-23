@@ -33,7 +33,7 @@ AstralEvents.dtbl = {}
 -- @param name Name for the function for identification
 -- @return Event object with method to be called on event fire
 
-function AstralEvents:NewEvent(f, name)
+function AstralEvents:NewObject(f, name)
 	local obj = {}
 
 	obj.name = name or 'nil'
@@ -49,13 +49,14 @@ end
 
 function AstralEvents:Register(event, f, name)
 	if self:IsRegistered(event, name) then return end
-	local obj = self:NewEvent(f, name)
+	local obj = self:NewObject(f, name)
 
 	if not self.dtbl[event] then 
 		self.dtbl[event] = {}
 		AstralEvents:RegisterEvent(event)
 	end
-	table.insert(self.dtbl[event], obj)
+	self.dtbl[event][name] = obj
+	--table.insert(self.dtbl[event], obj)
 end
 
 -- Unregisters function from being called on event
@@ -65,12 +66,7 @@ end
 function AstralEvents:Unregister(event, name)
 	local objs = self.dtbl[event]
 	if not objs then return end
-	for id, obj in pairs(objs) do
-		if obj.name == name then
-			objs[id] = nil
-			break
-		end
-	end
+	objs[name] = nil
 end
 
 -- Checks to see if an object is registered for an event
@@ -82,13 +78,11 @@ function AstralEvents:IsRegistered(event, name)
 	local objs = self.dtbl[event]
 	if not objs then return false end
 
-	for key, obj in pairs(objs) do
-		if obj.name == name then
-			return true
-		end
+	if objs[name] then
+		return true
+	else
+		return false
 	end
-
-	return false
 end
 
 -- On event handler
@@ -97,6 +91,9 @@ end
 
 function AstralEvents:OnEvent(event, ...)
 	local objs = self.dtbl[event]
+	for k,v in pairs(objs) do
+		print(k, v)
+	end
 	if not objs then return end
 	for k, obj in pairs(objs) do
 		obj.method(...)
@@ -104,31 +101,3 @@ function AstralEvents:OnEvent(event, ...)
 end
 
 AstralEvents:SetScript('OnEvent', AstralEvents.OnEvent)
-
---[[ Mixin the contents from Event's to AstralEvents
-for k,v in pairs(Events) do
-	if type(v) == 'function' and AstralEvents[k] == nil then
-		AstralEvents[k] = v
-	end
-end]]
-
--- Simple test stuff
-local function abc( ... )
-	local chan = select(9, ...)
-	if chan ~= 'bittieTest' then return end
-	print('abc', ...)
-	AstralEvents:Unregister('CHAT_MSG_CHANNEL', 'abc')
-end
-
-local function def(...)
-	local chan = select(9, ...)
-	if chan ~= 'bittieTest' then return end
-	print('def')
-	if not AstralEvents:IsRegistered('CHAT_MSG_CHANNEL', 'abc') then
-		print('not registered')
-		AstralEvents:Register('CHAT_MSG_SAY', abc, 'abc')
-	end
-end
-
-AstralEvents:Register('CHAT_MSG_CHANNEL', abc, 'abc')
-AstralEvents:Register('CHAT_MSG_CHANNEL', def, 'TEST')

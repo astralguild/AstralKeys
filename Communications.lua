@@ -237,6 +237,7 @@ local function UpdateWeekly10(...)
 	local id = e.GetUnitID(sender)
 	if id then
 		AstralKeys[id].weeklyCache = tonumber(weekly)
+		e.UpdateFrames()
 	end
 end
 AstralComs:RegisterPrefix('GUILD', 'updateWeekly', UpdateWeekly10)

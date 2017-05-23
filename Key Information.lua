@@ -13,7 +13,7 @@ local PURPLE = 'ffa335ee'
 local function Weekly10()
 	e.GetBestClear()
 	if AstralCharacters[e.CharacterID()].level >= 10 then
-		SendAddonMessage('AstralKeys', 'updateWeekly 1')
+		SendAddonMessage('AstralKeys', 'updateWeekly 1', 'GUILD')
 	end
 	e.UpdateCharacterFrames()
 end
