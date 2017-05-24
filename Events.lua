@@ -91,9 +91,6 @@ end
 
 function AstralEvents:OnEvent(event, ...)
 	local objs = self.dtbl[event]
-	for k,v in pairs(objs) do
-		print(k, v)
-	end
 	if not objs then return end
 	for k, obj in pairs(objs) do
 		obj.method(...)
