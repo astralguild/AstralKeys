@@ -23,10 +23,13 @@ DUNGEON_TABLE[210] = {}
 DUNGEON_TABLE[210]['name'] = 'Court of Stars'
 DUNGEON_TABLE[227] = {}
 DUNGEON_TABLE[227]['name'] = 'Return to Karazhan: Lower'
+DUNGEON_TABLE[227]['tname'] = 'Karazhan: Lower'
 DUNGEON_TABLE[233] = {}
 DUNGEON_TABLE[233]['name'] = 'Cathedral of Eternal Night'
+DUNGEON_TABLE[233]['tname'] = 'Cathedral'
 DUNGEON_TABLE[234] = {}
 DUNGEON_TABLE[234]['name'] = 'Return to Karazhan: Upper'
+DUNGEON_TABLE[234]['tname'] = 'Karazhan: Upper'
 
 --[[ 
 Times
@@ -95,8 +98,12 @@ function e.BuildMapTable()
 	end
 end
 
-function e.GetMapName(mapID)
-	return DUNGEON_TABLE[tonumber(mapID)]['name']
+function e.GetMapName(mapID, truncate)
+	if not truncate then
+		return DUNGEON_TABLE[tonumber(mapID)]['name']
+	else
+		return DUNGEON_TABLE[tonumber(mapID)]['tname'] or DUNGEON_TABLE[tonumber(mapID)]['name']
+	end
 end
 
 local function GetMapTime(mapID, chestCount)

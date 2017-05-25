@@ -22,3 +22,4 @@ AstralKeys.lua
 Frame Functions.lua
 Frame.lua
 MinimapButton.lua
+Options.lua

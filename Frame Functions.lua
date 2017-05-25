@@ -1,12 +1,12 @@
 local _, e = ...
 
-local BACKDROP = {
+e.BACKDROP = {
 bgFile = "Interface/Tooltips/UI-Tooltip-Background",
 edgeFile = nil, tile = true, tileSize = 16, edgeSize = 16,
 insets = {left = 0, right = 0, top = 0, bottom = 0}
 }
 
-local BACKDROPBUTTON = {
+e.BACKDROPBUTTON = {
 bgFile = nil,
 edgeFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 16, edgeSize = 1,
 insets = {left = 0, right = 0, top = 0, bottom = 0}
@@ -19,6 +19,8 @@ e.FONT_SIZE = 13
 local FONT_HEADER = e.FONT_HEADER
 local FONT_CONTENT = e.FONT_CONTENT
 local FONT_SIZE = e.FONT_SIZE
+local BACKDROP = e.BACKDROP
+local BACKDROPBUTTON = e.BACKDROPBUTTON
 
 local FONT_OBJECT_EDITBOX = CreateFont("FONTOBJECT_EDITBOX")
 FONTOBJECT_EDITBOX:SetFont(FONT_CONTENT, FONT_SIZE - 1)
@@ -30,6 +32,11 @@ FONT_OBJECT_RIGHT:SetFont(FONT_CONTENT, FONT_SIZE)
 FONT_OBJECT_RIGHT:SetJustifyH('RIGHT')
 FONT_OBJECT_RIGHT:SetTextColor(1, 1, 1)
 
+local FONT_OBJECT_LEFT = CreateFont("FONT_OBJECT_LEFT")
+FONT_OBJECT_LEFT:SetFont(FONT_CONTENT, FONT_SIZE)
+FONT_OBJECT_LEFT:SetJustifyH('LEFT')
+FONT_OBJECT_LEFT:SetTextColor(1, 1, 1)
+
 local FONT_OBJECT_CENTRE = CreateFont("FONT_OBJECT_CENTRE")
 FONT_OBJECT_CENTRE:SetFont(FONT_CONTENT, FONT_SIZE)
 FONT_OBJECT_CENTRE:SetJustifyH('CENTER')
@@ -40,13 +47,41 @@ FONT_OBJECT_HIGHLIGHT:SetFont(FONT_CONTENT, FONT_SIZE)
 FONT_OBJECT_HIGHLIGHT:SetJustifyH('CENTER')
 FONT_OBJECT_HIGHLIGHT:SetTextColor(192/255, 192/255, 192/255)
 
+local FONT_OBJECT_DISABLED = CreateFont("FONT_OBJECT_DISABLED")
+FONT_OBJECT_DISABLED:SetFont(FONT_CONTENT, FONT_SIZE)
+FONT_OBJECT_DISABLED:SetJustifyH('CENTER')
+FONT_OBJECT_DISABLED:SetTextColor(122/255, 122/255, 122/255)
+
+function e.CreateFrame(name, parent, width, height)
+	local frame = CreateFrame('FRAME', name, parent)
+	frame:SetSize(width, height)
+
+	return frame
+end
+
+function e.CreateButton(name, parent, width, height, text, texture)
+	local button = CreateFrame('BUTTON', name, parent)
+	button:SetSize(width, height)
+	button:SetNormalFontObject(FONT_OBJECT_CENTRE)
+	button:SetHighlightFontObject(FONT_OBJECT_HIGHLIGHT)
+
+	if text then
+		button:SetText(text)
+	end
+
+	if texture then
+		button:SetNormalTexture(texture)
+	end
+
+	return button
+end
 
 function e.CreateLabel(parent, text, pos)
 	local label = parent:CreateFontString('ARTWORK')
 	label:SetFont(FONT_CONTENT, FONT_SIZE)
-	if pos == 'left' then
+	if pos == 'LEFT' then
 		label:SetPoint('RIGHT', parent, 'LEFT', -5, 0)
-	elseif pos == 'right' then
+	elseif pos == 'RIGHT' then
 		label:SetPoint('LEFT', parent, 'RIGHT', 5, 0)
 	end
 	label:SetText(text)
@@ -55,7 +90,7 @@ function e.CreateLabel(parent, text, pos)
 
 end
 
-function e.CreateEditBox(parent, name, width, label, minValue, maxValue)
+function e.CreateEditBox(parent, type, width, label, minValue, maxValue, labelPos)
 	local editBox = CreateFrame('EditBox', nil, parent)
 	editBox.maxValue = maxValue
 	editBox.minValue = minValue
@@ -74,12 +109,21 @@ function e.CreateEditBox(parent, name, width, label, minValue, maxValue)
 		end)
 
 	if label then
-		editBox.label = e.CreateLabel(editBox, label, 'left')
+		editBox.label = e.CreateLabel(editBox, label, labelPos)
 	end
 
 	function editBox:SetValue(value)
 		self:SetNumber(value)
 	end
+
+	editBox:SetScript('OnDisable', function(self)
+		self.label:SetTextColor(122/255, 122/255, 122/255)
+		end)
+
+	editBox:SetScript('OnEnable', function(self)
+		self.label:SetTextColor(1, 1, 1)
+		end)
+
 
 	editBox:SetScript("OnEditFocusLost", function(self)
 		if self:GetNumber() < minValue then
@@ -94,25 +138,55 @@ function e.CreateEditBox(parent, name, width, label, minValue, maxValue)
 
 end
 
-function e.CreateHeader(self, parent, name, width, height, text, fontAdjust)
-	self = CreateFrame('FRAME', 'header_' .. name, parent)
-	self:SetSize(width, height)
+function e.CreateHeader(parent, name, width, height, text, fontAdjust)
+	local frame = CreateFrame('FRAME', 'header_' .. name, parent)
+	frame:SetSize(width, height)
 
-	self.s = self:CreateFontString('BACKGROUND')
-	self.s:SetFont(FONT_HEADER, FONT_SIZE + fontAdjust)
-	self.s:SetPoint('BOTTOMLEFT', self, 'BOTTOMLEFT')
-	self.s:SetText(text)
+	frame.s = frame:CreateFontString('BACKGROUND')
+	frame.s:SetFont(FONT_HEADER, FONT_SIZE + fontAdjust)
+	frame.s:SetPoint('BOTTOMLEFT', frame, 'BOTTOMLEFT')
+	frame.s:SetText(text)
 
-	self.t = self:CreateTexture('BACKGROUND')
-	self.t:SetPoint('BOTTOMLEFT', self, 'BOTTOMLEFT')
-	self.t:SetSize(width, 1)
-	self.t:SetColorTexture(1, 1, 1)
-	self.t:SetGradientAlpha('HORIZONTAL', 1, 1, 1, 0.8, 0, 0 , 0, 0)
+	frame.t = frame:CreateTexture('BACKGROUND')
+	frame.t:SetPoint('BOTTOMLEFT', frame, 'BOTTOMLEFT')
+	frame.t:SetSize(width, 1)
+	frame.t:SetColorTexture(1, 1, 1)
+	frame.t:SetGradientAlpha('HORIZONTAL', 1, 1, 1, 0.8, 0, 0 , 0, 0)
 
-	function self:SetText(text)
+	function frame:SetText(text)
 		self.s:SetText(text)
 	end
 
-	return self
+	return frame
 
+end
+
+function e.CreateCheckBox(parent, label, textPos)
+	local checkbox = CreateFrame('CheckButton', nil, parent)
+	checkbox:SetSize(12, 12)
+	checkbox:SetBackdrop(BACKDROPBUTTON)
+	checkbox:SetBackdropBorderColor(85/255, 85/255, 85/255)
+	checkbox:SetText(label)
+
+	checkbox:SetNormalTexture(nil)
+	checkbox:SetBackdropColor(0, 0, 0)
+	if textPos == 'LEFT' then
+		checkbox:SetNormalFontObject(FONT_OBJECT_RIGHT)
+		checkbox:GetFontString():SetPoint('RIGHT', checkbox, 'LEFT', -5, 0)
+	else
+		checkbox:SetNormalFontObject(FONT_OBJECT_LEFT)
+		checkbox:GetFontString():SetPoint('LEFT', checkbox, 'RIGHT', 5, 0)
+	end
+
+	checkbox:SetPushedTextOffset(0,0)
+
+	checkbox.t = checkbox:CreateTexture('PUSHEDTEXTURE', 'BACKGROUND')
+	checkbox.t:SetSize(6, 6)
+	checkbox.t:SetPoint('TOPLEFT', checkbox, 'TOPLEFT', 3, -3)
+	checkbox.t:SetColorTexture(.9, .9, .9)
+	checkbox:SetCheckedTexture(checkbox.t)
+
+	checkbox:SetDisabledFontObject(FONT_OBJECT_DISABLED)
+
+	return checkbox
 end

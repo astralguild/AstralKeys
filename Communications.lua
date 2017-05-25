@@ -90,6 +90,44 @@ function e.ParseMessage(message)
 	return unpack(messageContents)
 end
 
+local function ReceiveKey(entry)
+
+	local unit, unitClass, unitRealm, dungeonID, keyLevel, usable, affixOne, affixTwo, affixThree = e.ParseMessage(entry)
+	dungeonID = tonumber(dungeonID)
+	keyLevel = tonumber(keyLevel)
+	isUsable = tonumber(isUsable)
+	affixOne = tonumber(affixOne)
+	affixTwo = tonumber(affixTwo)
+	affixThree = tonumber(affixThree)
+	weekly10 = tonumber(weekly10)
+
+	local id = e.GetUnitID(unit .. '-' ..  unitRealm)
+
+	if id then
+		AstralKeys[id].weeklyCache = weekly10
+
+		if AstralKeys[id].level < keyLevel or AstralKeys[id].usable ~= isUsable then
+			AstralKeys[id].map = dungeonID
+			AstralKeys[id].level = keyLevel
+			AstralKeys[id].usable = isUsable
+			e.UpdateFrames()
+		end
+	else
+		table.insert(AstralKeys, {name = unit, class = unitClass, realm = unitRealm, map = dungeonID, level = keyLevel, usable = isUsable, a1 = affixOne, a2 = affixTwo, a3 = affixThree, weeklyCache = weekly10})
+		e.SetUnitID(unit .. '-' .. unitRealm, #AstralKeys)
+		e.UpdateFrames()
+		if unit == e.PlayerName() and unitRealm == e.PlayerRealm() then
+			e.SetPlayerID()
+		end
+	end
+	if unit == e.PlayerName() and unitRealm == e.PlayerRealm() then
+		e.UpdateCharacterFrames()
+	end
+end
+
+AstralComs:RegisterPrefix('akPushed1', ReceiveKey, 'akKeyPushed')
+
+
 
 local function UpdateKeyList(entry, ...)
 	local messageReceived = {}

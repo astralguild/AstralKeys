@@ -50,26 +50,26 @@ local sortedTable = {}
 local characters = {}
 local characterTable = {}
 
-local function CreateHeader(self, parent, name, width, height, text, fontAdjust)
-	self = CreateFrame('FRAME', 'header_' .. name, parent)
-	self:SetSize(width, height)
+local function CreateHeader(parent, name, width, height, text, fontAdjust)
+	local frame = CreateFrame('FRAME', 'header_' .. name, parent)
+	frame:SetSize(width, height)
 
-	self.s = self:CreateFontString('BACKGROUND')
-	self.s:SetFont(FONT_HEADER, FONT_SIZE + fontAdjust)
-	self.s:SetPoint('BOTTOMLEFT', self, 'BOTTOMLEFT')
-	self.s:SetText(text)
+	frame.s = frame:CreateFontString('BACKGROUND')
+	frame.s:SetFont(FONT_HEADER, FONT_SIZE + fontAdjust)
+	frame.s:SetPoint('BOTTOMLEFT', frame, 'BOTTOMLEFT')
+	frame.s:SetText(text)
 
-	self.t = self:CreateTexture('BACKGROUND')
-	self.t:SetPoint('BOTTOMLEFT', self, 'BOTTOMLEFT')
-	self.t:SetSize(width, 1)
-	self.t:SetColorTexture(1, 1, 1)
-	self.t:SetGradientAlpha('HORIZONTAL', 1, 1, 1, 0.8, 0, 0 , 0, 0)
+	frame.t = frame:CreateTexture('BACKGROUND')
+	frame.t:SetPoint('BOTTOMLEFT', frame, 'BOTTOMLEFT')
+	frame.t:SetSize(width, 1)
+	frame.t:SetColorTexture(1, 1, 1)
+	frame.t:SetGradientAlpha('HORIZONTAL', 1, 1, 1, 0.8, 0, 0 , 0, 0)
 
-	function self:SetText(text)
+	function frame:SetText(text)
 		self.s:SetText(text)
 	end
 
-	return self
+	return frame
 
 end
 
@@ -104,27 +104,6 @@ local function CreateButton(parent, btnID, width, height, text, fontobject, high
 		end)
 
 	return button
-end
-
-local function CreateCheckBox(parent, cbID, label)
-	local checkbox = CreateFrame('CheckButton', nil, parent)
-	checkbox:SetSize(12, 12)
-	checkbox:SetBackdrop(BACKDROPBUTTON)
-	checkbox:SetBackdropBorderColor(85/255, 85/255, 85/255)
-	checkbox:SetNormalFontObject(FONT_OBJECT_RIGHT)
-	checkbox:SetText(label)
-
-	checkbox:SetNormalTexture(nil)
-	checkbox:SetBackdropColor(0, 0, 0)
-	checkbox:GetFontString():SetPoint('RIGHT', checkbox, 'LEFT', -5, 0)
-
-	checkbox.t = checkbox:CreateTexture('PUSHEDTEXTURE', 'BACKGROUND')
-	checkbox.t:SetSize(6, 6)
-	checkbox.t:SetPoint('TOPLEFT', checkbox, 'TOPLEFT', 3, -3)
-	checkbox.t:SetColorTexture(.9, .9, .9)
-	checkbox:SetCheckedTexture(checkbox.t)
-
-	return checkbox
 end
 
 local function CreateCharacterFrame(parent, frameName, unitName, bestKey, createDivider)
@@ -466,7 +445,7 @@ logo:SetSize(64, 64)
 logo:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\Astral.tga')
 logo:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 10, -10)
 
-local title = e.CreateHeader(self, AstralKeyFrame, 'title', 220, 20, 'Astral Keys', 26)
+local title = e.CreateHeader(AstralKeyFrame, 'title', 220, 20, 'Astral Keys', 26)
 title:SetPoint('LEFT', logo, 'RIGHT', 10, -10)
 
 AstralKeyFrame.centreDivider = AstralKeyFrame:CreateTexture('BACKGROUND')
@@ -529,7 +508,7 @@ quickOptionsFrame:SetFrameLevel(10)
 quickOptionsFrame:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', -10, - 28)
 quickOptionsFrame:Hide()
 
-local showOffline = CreateCheckBox(quickOptionsFrame, 'showOffline', 'Show offline')
+local showOffline = e.CreateCheckBox(quickOptionsFrame, 'Show offline', 'LEFT')
 showOffline:SetPoint('TOPRIGHT', quickOptionsFrame, 'TOPRIGHT', -5, -5)
 
 showOffline:SetScript('OnClick', function (self)
@@ -667,7 +646,7 @@ local affixFrame = CreateFrame('FRAME', 'affixFrame', AstralKeyFrame)
 affixFrame:SetSize(200, 70)
 affixFrame:SetPoint('TOPLEFT', logo, 'BOTTOMLEFT', 5, -10)
 
-local affixHeader = e.CreateHeader(self, affixFrame, 'affixHeader', 175, 20, 'Affixes', 12)
+local affixHeader = e.CreateHeader(affixFrame, 'affixHeader', 175, 20, 'Affixes', 12)
 affixHeader:SetPoint('TOPLEFT', affixFrame, 'TOPLEFT')
 
 local affixOne = CreateFrame('FRAME', 'AstralAffixOne', affixFrame)
@@ -793,7 +772,7 @@ local characterFrame = CreateFrame('FRAME', 'astralCharacterFrame', AstralKeyFra
 characterFrame:SetSize(215, 320)
 characterFrame:SetPoint('TOPLEFT', affixFrame, 'BOTTOMLEFT', 0, -10)
 
-local characterHeader = e.CreateHeader(self, characterFrame, 'affixHeader', 175, 20, 'Characters', 10)
+local characterHeader = e.CreateHeader(characterFrame, 'affixHeader', 175, 20, 'Characters', 10)
 characterHeader:SetPoint('TOPLEFT', characterFrame, 'TOPLEFT')
 
 local characterContent = CreateFrame('FRAME', 'AstralCharacterContent', characterFrame)
