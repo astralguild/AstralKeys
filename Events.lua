@@ -1,4 +1,4 @@
-local _, e = ...
+local ADDON, e = ...
 
 local akEvents = CreateFrame('FRAME')
 local next = next
@@ -83,6 +83,22 @@ function AstralEvents:IsRegistered(event, name)
 		return true
 	else
 		return false
+	end
+end
+
+-- Gets function bound to event
+-- @param event Event to be queried
+-- @param callback Object name to be retrieved
+-- @return Function
+
+function AstralEvents:GetRegisteredFunction(event, callback)
+	local objs = self.dtbl[event]
+	if not objs then return end
+
+	if objs[callback] then
+		return objs[callback].method
+	else
+		return nil
 	end
 end
 
