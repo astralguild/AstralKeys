@@ -8,33 +8,26 @@ function e.DataResetTime()
 	local serverTime = GetServerTime()
 	local d = date('*t', serverTime)
 	local hourOffset, minOffset = math.modf(difftime(time(), time(date('!*t'))))/3600
+	minOffset = minOffset or 0
 	local hours
 	local days
 
-	if region ~= 3 then
-		hours = 15 + (d.isdst and 1 or 0)
+	if region ~= 3 then -- Not EU
+		hours = 15 + (d.isdst and 1 or 0) + hourOffset
 		if d.wday > 2 then
 			if d.wday == 3 then
-				if d.hour < 15 + (d.isdst and 1 or 0) + hourOffset then
-					days = 0
-				else
-					days = 7
-				end
+				days = (d.hour < hours and 0 or 7)
 			else
 				days = 10 - d.wday
 			end
 		else
 			days = 3 - d.wday
 		end
-	else
-		hours = 7 + (d.isdst and 1 or 0)
+	else -- EU
+		hours = 7 + (d.isdst and 1 or 0) + hourOffset
 		if d.wday > 3 then
 			if d.wday == 4 then
-				if d.hour < 7 + (d.isdst and 1 or 0) + hourOffset then
-					days = 0
-				else
-					days = 7
-				end
+				days = (d.hour < hours and 0 or 7)				
 			else
 				days = 10 - d.wday
 			end
@@ -43,7 +36,7 @@ function e.DataResetTime()
 		end
 	end
 
-	local time = (((days * 24 + hours + hourOffset) * 60) * 60) + serverTime - d.hour*3600 - d.min*60 - d.sec
+	local time = (((days * 24 + hours) * 60 + minOffset) * 60) + serverTime - d.hour*3600 - d.min*60 - d.sec
 
 	return time
 end
