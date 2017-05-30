@@ -1,4 +1,4 @@
-local _, e = ...
+local ADDON, e = ...
 
 local versionList = {}
 local messageStack = {}
@@ -194,7 +194,7 @@ local function UpdateKeyList(entry, ...)
 			local id = e.GetUnitID(unit .. '-' .. unitRealm)
 
 			if id then
-				if AstralKeys[id].weeklyCache ~= weekly10 then AstralKeys[id].weeklyCache = weekly10 end
+				if weekly10 == 1 then AstralKeys[id].weeklyCache = weekly10 end
 
 				if AstralKeys[id].level < keyLevel or AstralKeys[id].usable ~= isUsable then
 					AstralKeys[id].map = dungeonID
@@ -226,6 +226,9 @@ local function UpdateKeyList(entry, ...)
 		affixThree = tonumber(affixThree)
 		weekly10 = tonumber(weekly10)
 
+		--Console:AddLine('AK', entry)
+		--Console:AddLine('AK', 'weekly: ' .. weekly10)
+
 		if not e.UnitInGuild(unit .. '-' .. unitRealm) then return end
 
 		if affixOne ~= 0 then
@@ -243,7 +246,7 @@ local function UpdateKeyList(entry, ...)
 		local id = e.GetUnitID(unit .. '-' .. unitRealm)
 
 		if id then
-			if AstralKeys[id].weeklyCache ~= weekly10 then AstralKeys[id].weeklyCache = weekly10 end
+			if weekly10 == 1 then AstralKeys[id].weeklyCache = weekly10 end
 
 			if AstralKeys[id].level < keyLevel or AstralKeys[id].usable ~= isUsable then
 				AstralKeys[id].map = dungeonID

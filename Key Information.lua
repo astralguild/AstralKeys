@@ -23,7 +23,7 @@ local function InitData()
 	e.GetBestClear()
 	e.SetCharacterID()
 	e.UpdateGuildList()
-	e.FindKeyStone(true, false, true)
+	e.FindKeyStone(true, false)
 	e.BuildMapTable()
 	SendAddonMessage('AstralKeys', 'request', 'GUILD')
 
@@ -102,7 +102,8 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 				link = GetContainerItemLink(bag, slot)
 				mapID, keyLevel, usable, a1, a2, a3 = e.ParseLink(link)
 				s = 'updateV4 ' .. e.PlayerName() .. ':' .. e.PlayerClass() .. ':' .. e.PlayerRealm() ..':' .. mapID .. ':' .. keyLevel .. ':' .. usable .. ':' .. a1 .. ':' .. a2 .. ':' .. a3 .. ':' .. Completed10()
-				--s = 'updateV4 CHARACTERSAZ:DEMONHUNTER:Bleeding Hollow:201:22:1:13:13:10:16:1'				
+				--s = 'updateV4 CHARACTERSAZ:DEMONHUNTER:Bleeding Hollow:201:22:1:13:13:10:16:1'
+				--Console:AddLine('AK', 'send text ' .. s)
 			end
 		end
 	end
@@ -126,7 +127,6 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 	end
 
 	local oldMap, oldLevel, oldUsable = e.GetUnitKeyByID(e.PlayerID())
-	if tonumber(oldMap) == tonumber(mapID) and tonumber(oldLevel) == tonumber(keyLevel) and tonumber(oldUsable) == tonumber(usable) then return end
 
 	if link and e.IsEventRegistered('BAG_UPDATE') then
 		e.UnregisterEvent('BAG_UPDATE')
@@ -167,6 +167,9 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 			end
 		end
 	end
+
+	if tonumber(oldMap) == tonumber(mapID) and tonumber(oldLevel) == tonumber(keyLevel) and tonumber(oldUsable) == tonumber(usable) then return end
+
 	if anounceKey and tonumber(usable) == 1 then
 		e.AnnounceNewKey(link, keyLevel)
 	end
