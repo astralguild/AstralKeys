@@ -51,7 +51,7 @@ function e.PlayerRealm()
 end
 
 function e.SetPlayerRealm()
-	playerRealm = GetRealmName()
+	playerRealm = GetRealmName():gsub("%s+", "")
 end
 
 function e.SetPlayerClass()

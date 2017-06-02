@@ -1,4 +1,5 @@
 local _, e = ...
+local DEBUG = false
 
 -- Reset time 15:00 UTC AMERICAS
 -- 07:00 UTC EU
@@ -169,4 +170,13 @@ end
 
 function e.AnnounceKey()
 	return AstralKeysSettings.options.announceKey
+end
+
+function e.debug(addon, text, ...)
+	if not DEBUG then return end
+	if IsAddonLoaded('Astral') then
+		Console:AddLine(addon, text, ...)
+	else
+		print('[AK]Debug: ', text, ...)
+	end
 end
