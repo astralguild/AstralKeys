@@ -18,23 +18,27 @@ end
 -- Checks to see if a unit is in the player's guild
 -- @param unit Unit name and server
 
-function e.UnitInGuild(unit)
-	return guildList[unit]
+function e.UnitInGuild(unit, realm)
+	return guildList[string.format('%s-%s', unit, realm)]
 end
 
 -- Sets a number to a unit for quicker access to table
 -- @param unit  Unit name and server
 -- @param unitID integer value
 
-function e.SetUnitID(unit, unitID)
-	unitList[unit] = unitID
+function e.SetUnitID(unit, realm, unitID)
+	unitList[string.format('%s-%s', unit, realm)] = unitID
 end
 
 -- Retrieves ID number for associated unit
 -- @param unit Unit name and server
 
-function e.GetUnitID(unit)
-	return unitList[unit]
+function e.GetUnitID(unit, realm)
+	if realm then
+		return unitList[string.format('%s-%s', unit, realm)]
+	else
+		return unitList[unit]
+	end
 end
 
 -- Clears unit list
