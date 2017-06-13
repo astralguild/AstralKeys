@@ -27,7 +27,9 @@ end
 -- @param unitID integer value
 
 function e.SetUnitID(unit, realm, unitID)
-	unitList[string.format('%s-%s', unit, realm)] = unitID
+	Console:AddLine('AK', unit .. realm)
+	local string = string.format('%s-%s', unit, realm)
+	unitList[string] = unitID
 end
 
 -- Retrieves ID number for associated unit
