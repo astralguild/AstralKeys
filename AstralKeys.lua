@@ -119,7 +119,7 @@ e.RegisterEvent('PLAYER_LOGIN', function()
 	RegisterAddonMessagePrefix('AstralKeys')
 
 	for i = 1, #AstralKeys do
-		e.SetUnitID(AstralKeys[i].name, AstralKeys[i].realm, i)
+		e.SetUnitID(AstralKeys[i].name .. '-' ..  AstralKeys[i].realm, i)
 	end
 	e.SetPlayerID()
 

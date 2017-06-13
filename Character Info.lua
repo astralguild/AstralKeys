@@ -7,11 +7,11 @@ function e.CharacterID()
 end
 
 function e.SetCharacterID()
-	characterID = e.GetCharacterID(e.PlayerName(), e.PlayerRealm())
+	characterID = e.GetCharacterID(e.PlayerName() .. '-' .. e.PlayerRealm())
 end
 
 function e.SetPlayerID()
-	playerID = e.GetUnitID(e.PlayerName() .. '-' .. e.PlayerRealm())
+	playerID = e.GetUnitID(e.PlayerName(), e.PlayerRealm())
 end
 
 function e.CharacterAK(id)

@@ -1,4 +1,4 @@
-local _, e = ...
+local ADDON, e = ...
 
 if not AstralAffixes then 
 	AstralAffixes = {}
@@ -155,7 +155,7 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 				['a2'] = tonumber(a2),
 				['a3'] = tonumber(a3),
 				}
-				e.SetUnitID(e.PlayerName(), e.PlayerRealm(), #AstralKeys)
+				e.SetUnitID(e.PlayerName() .. '-' ..  e.PlayerRealm(), #AstralKeys)
 			end
 		end
 	end
