@@ -15,7 +15,7 @@ local POSITIONS = {
 local offset = 0
 local characterOffset = 0
 
-local name, keyLevel, mapID, class, usable, realm, indexEnd
+local name, keyLevel, mapID, class, realm, indexEnd
 
 local currentSort = {}
 currentSort['section'] = 'key'
@@ -246,34 +246,23 @@ local function CreateNameFrame(parent, unitName, unitClass, unitRealm)
 
 end
 
-local function CreateMapFrame(parent, mapID, isUsable, keyLevel)
+local function CreateMapFrame(parent, mapID, keyLevel)
 	local frame = CreateFrame('FRAME', nil, parent)
 	frame:SetSize(170, 15)
 	frame.map = tonumber(mapID)
-	frame.usable = tonumber(isUsable)
 	frame.level = tonumber(keyLevel)
 
 	frame.string = frame:CreateFontString('ARTWORK')
 	frame.string:SetFont(FONT_CONTENT, FONT_SIZE)
 	frame.string:SetPoint('TOPLEFT', frame, 'TOPLEFT')
 
-	if tonumber(frame.usable) ~= 1 then 
-		frame.string:SetText(WrapTextInColorCode(e.GetMapName(frame.map), 'ff9d9d9d'))
-	else
-		frame.string:SetText(e.GetMapName(frame.map))
-	end
+	frame.string:SetText(e.GetMapName(frame.map))
 
-	function frame.SetMapInfo(self, mapID, isUsable, keyLevel)
+	function frame.SetMapInfo(self, mapID,  keyLevel)
 		if mapID ~= -1 then
 			self.map = tonumber(mapID)
-			self.usable = tonumber(isUsable)
 			self.level = tonumber(keyLevel)
-
-			if tonumber(self.usable) ~= 1 then 
-				self.string:SetText(WrapTextInColorCode(e.GetMapName(self.map), 'ff9d9d9d'))
-			else
-				self.string:SetText(e.GetMapName(self.map))
-			end
+			self.string:SetText(e.GetMapName(self.map))
 		else
 			self.map = -1
 			self.string:SetText('')
@@ -285,7 +274,7 @@ local function CreateMapFrame(parent, mapID, isUsable, keyLevel)
 			if self.map ~= -1 then
 				astralMouseOver:ClearAllPoints()
 				astralMouseOver:SetPoint('TOPLEFT', self, 'CENTER', 35, 0)
-				astralMouseOver:SetText(e.MapApText(self.map, self.level, self.usable))
+				astralMouseOver:SetText(e.MapApText(self.map, self.level))
 				astralMouseOver:AdjustSize()
 				astralMouseOver:Show()
 				AstralContentFrame.slider:SetAlpha(1)
@@ -880,7 +869,7 @@ nameButton:SetScript('OnClick', function()
 
 	end)
 
-local completeButton = CreateButton(contentFrame, 'completeButton', 30, 20, '10+', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT)
+local completeButton = CreateButton(contentFrame, 'completeButton', 30, 20, '15+', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT)
 completeButton:SetPoint('LEFT', nameButton, 'RIGHT')
 completeButton:SetScript('OnClick', function()
 	contentFrame:ResetSlider()
@@ -1028,11 +1017,11 @@ local function InitializeFrame()
 	end
 
 	for i = 1, indexEnd do
-		name, keyLevel, mapID, class, usable, realm, completed = sortedTable[i].name, sortedTable[i].level, sortedTable[i].map, sortedTable[i].class, sortedTable[i].usable, sortedTable[i].realm, sortedTable[i].weeklyCache
+		name, keyLevel, mapID, class, realm, completed = sortedTable[i].name, sortedTable[i].level, sortedTable[i].map, sortedTable[i].class, sortedTable[i].realm, sortedTable[i].weeklyCache
 
 		nameFrames[i] = CreateNameFrame(contentFrame, name, class, realm)		
 		keyFrames[i] = CreateKeyFrame(contentFrame, keyLevel)
-		mapFrames[i] = CreateMapFrame(contentFrame, mapID, usable, keyLevel)
+		mapFrames[i] = CreateMapFrame(contentFrame, mapID, keyLevel)
 		completedFrames[i] = CreateCompleteFrame(contentFrame, completed)
 
 
@@ -1068,7 +1057,7 @@ end
 function e.UpdateFrames()
 	if not init then return end
 
-	local name, keyLevel, mapID, class, usable, realm, index, completed
+	local name, keyLevel, mapID, class, realm, index, completed
 
 	sortedTable = e.UpdateTables(sortedTable)
 
@@ -1089,31 +1078,31 @@ function e.UpdateFrames()
 	if #sortedTable < #nameFrames then
 		for i = 1, indexEnd do
 			index = i + offset
-			name, keyLevel, mapID, class, usable, realm, completed = sortedTable[index].name, sortedTable[index].level, sortedTable[index].map, sortedTable[index].class, sortedTable[index].usable, sortedTable[index].realm, sortedTable[index].weeklyCache
+			name, keyLevel, mapID, class, realm, completed = sortedTable[index].name, sortedTable[index].level, sortedTable[index].map, sortedTable[index].class, sortedTable[index].realm, sortedTable[index].weeklyCache
 			nameFrames[i]:SetNameInfo(name, class, realm)
 			keyFrames[i]:SetKeyInfo(keyLevel)
-			mapFrames[i]:SetMapInfo(mapID, usable, keyLevel)
+			mapFrames[i]:SetMapInfo(mapID, keyLevel)
 			completedFrames[i]:SetCompletedInfo(completed)
 		end
 		for i = indexEnd + 1, #nameFrames do
 			nameFrames[i]:SetNameInfo('', nil, nil)
 			keyFrames[i]:SetKeyInfo(-1)
-			mapFrames[i]:SetMapInfo(-1, nil, nil)
+			mapFrames[i]:SetMapInfo(-1, nil)
 			completedFrames[i]:SetCompletedInfo(0)
 		end
 	else
 		for i = 1, indexEnd do
 			index = i + offset
-			name, keyLevel, mapID, class, usable, realm, completed = sortedTable[index].name, sortedTable[index].level, sortedTable[index].map, sortedTable[index].class, sortedTable[index].usable, sortedTable[index].realm, sortedTable[index].weeklyCache
+			name, keyLevel, mapID, class, realm, completed = sortedTable[index].name, sortedTable[index].level, sortedTable[index].map, sortedTable[index].class, sortedTable[index].realm, sortedTable[index].weeklyCache
 			if nameFrames[i] then
 				nameFrames[i]:SetNameInfo(name, class, realm)
 				keyFrames[i]:SetKeyInfo(keyLevel)
-				mapFrames[i]:SetMapInfo(mapID, usable, keyLevel)
+				mapFrames[i]:SetMapInfo(mapID, keyLevel)
 				completedFrames[i]:SetCompletedInfo(completed)
 			else
 				nameFrames[i] = CreateNameFrame(AstralContentFrame, name, class, realm)
 				keyFrames[i] = CreateKeyFrame(AstralContentFrame, keyLevel)
-				mapFrames[i] = CreateMapFrame(AstralContentFrame, mapID, usable, keyLevel)
+				mapFrames[i] = CreateMapFrame(AstralContentFrame, mapID, keyLevel)
 				completedFrames[i] = CreateCompleteFrame(contentFrame, completed)
 
 				keyFrames[i]:SetPoint('TOPLEFT', keyButton, 'BOTTOMLEFT', 5, (i-1) * -15 - 3)

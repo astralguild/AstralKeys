@@ -73,7 +73,7 @@ function e.AnnounceNewKey(keyLink, level)
 end
 
 local function AddonMessage(index)	
-	return AstralKeys[index].name .. ":" .. AstralKeys[index].class .. ':' .. AstralKeys[index].realm .. ':' .. AstralKeys[index].map .. ':' .. AstralKeys[index].level .. ':' .. AstralKeys[index].usable .. ':' .. AstralKeys[index].a1 .. ':' .. AstralKeys[index].a2 .. ':' .. AstralKeys[index].a3 .. ':' .. AstralKeys[index].weeklyCache
+	return AstralKeys[index].name .. ":" .. AstralKeys[index].class .. ':' .. AstralKeys[index].realm .. ':' .. AstralKeys[index].map .. ':' .. AstralKeys[index].level .. ':' .. AstralKeys[index].a1 .. ':' .. AstralKeys[index].a2 .. ':' .. AstralKeys[index].a3 .. ':' .. AstralKeys[index].weeklyCache
 end
 
 function e.ParseMessage(message)
@@ -92,10 +92,9 @@ end
 
 local function ReceiveKey(entry)
 
-	local unit, unitClass, unitRealm, dungeonID, keyLevel, usable, affixOne, affixTwo, affixThree = e.ParseMessage(entry)
+	local unit, unitClass, unitRealm, dungeonID, keyLevel, affixOne, affixTwo, affixThree = e.ParseMessage(entry)
 	dungeonID = tonumber(dungeonID)
 	keyLevel = tonumber(keyLevel)
-	isUsable = tonumber(isUsable)
 	affixOne = tonumber(affixOne)
 	affixTwo = tonumber(affixTwo)
 	affixThree = tonumber(affixThree)
@@ -106,14 +105,13 @@ local function ReceiveKey(entry)
 	if id then
 		AstralKeys[id].weeklyCache = weekly10
 
-		if AstralKeys[id].level < keyLevel or AstralKeys[id].usable ~= isUsable then
+		if AstralKeys[id].level < keyLevel then
 			AstralKeys[id].map = dungeonID
 			AstralKeys[id].level = keyLevel
-			AstralKeys[id].usable = isUsable
 			e.UpdateFrames()
 		end
 	else
-		table.insert(AstralKeys, {name = unit, class = unitClass, realm = unitRealm, map = dungeonID, level = keyLevel, usable = isUsable, a1 = affixOne, a2 = affixTwo, a3 = affixThree, weeklyCache = weekly10})
+		table.insert(AstralKeys, {name = unit, class = unitClass, realm = unitRealm, map = dungeonID, level = keyLevel, a1 = affixOne, a2 = affixTwo, a3 = affixThree, weeklyCache = weekly10})
 		e.SetUnitID(unit, unitRealm, #AstralKeys)
 		e.UpdateFrames()
 		if unit == e.PlayerName() and unitRealm == e.PlayerRealm() then
@@ -131,7 +129,7 @@ AstralComs:RegisterPrefix('akPushed1', ReceiveKey, 'akKeyPushed')
 
 local function UpdateKeyList(entry, ...)
 	local messageReceived = {}
-	local unit, unitClass, unitRealm, dungeonID, keyLevel, usable, affixOne, affixTwo, affixThree
+	local unit, unitClass, unitRealm, dungeonID, keyLevel, affixOne, affixTwo, affixThree
 	if find(entry, '_') then -- Character to seperate multiple entries
 		while find(entry, '_') do
 			local _pos = find(entry, '_')
@@ -162,16 +160,14 @@ local function UpdateKeyList(entry, ...)
 
 			local dungeonID = tonumber(messageContents[4])
 			local keyLevel = tonumber(messageContents[5])
-			local isUsable = tonumber(messageContents[6])
 			local affixOne = tonumber(messageContents[7])
 			local affixTwo = tonumber(messageContents[8])
 			local affixThree = tonumber(messageContents[9])
 			local weekly10 = tonumber(messageContents[10])
 ]]
-			unit, unitClass, unitRealm, dungeonID, keyLevel, isUsable, affixOne, affixTwo, affixThree, weekly10 = e.ParseMessage(messageReceived[i])
+			unit, unitClass, unitRealm, dungeonID, keyLevel, affixOne, affixTwo, affixThree, weekly10 = e.ParseMessage(messageReceived[i])
 			dungeonID = tonumber(dungeonID)
 			keyLevel = tonumber(keyLevel)
-			isUsable = tonumber(isUsable)
 			affixOne = tonumber(affixOne)
 			affixTwo = tonumber(affixTwo)
 			affixThree = tonumber(affixThree)
@@ -196,14 +192,13 @@ local function UpdateKeyList(entry, ...)
 			if id then
 				if weekly10 == 1 then AstralKeys[id].weeklyCache = weekly10 end
 
-				if AstralKeys[id].level < keyLevel or AstralKeys[id].usable ~= isUsable then
+				if AstralKeys[id].level < keyLevel then
 					AstralKeys[id].map = dungeonID
 					AstralKeys[id].level = keyLevel
-					AstralKeys[id].usable = isUsable
 					e.UpdateFrames()
 				end
 			else
-				table.insert(AstralKeys, {name = unit, class = unitClass, realm = unitRealm, map = dungeonID, level = keyLevel, usable = isUsable, a1 = affixOne, a2 = affixTwo, a3 = affixThree, weeklyCache = weekly10})
+				table.insert(AstralKeys, {name = unit, class = unitClass, realm = unitRealm, map = dungeonID, level = keyLevel, a1 = affixOne, a2 = affixTwo, a3 = affixThree, weeklyCache = weekly10})
 				e.SetUnitID(unit, unitRealm, #AstralKeys)
 				if unit == e.PlayerName() and unitRealm == e.PlayerRealm() then
 					e.SetPlayerID()
@@ -216,11 +211,10 @@ local function UpdateKeyList(entry, ...)
 			end
 		end
 	else
-		unit, unitClass, unitRealm, dungeonID, keyLevel, isUsable, affixOne, affixTwo, affixThree, weekly10 = e.ParseMessage(entry)
+		unit, unitClass, unitRealm, dungeonID, keyLevel, affixOne, affixTwo, affixThree, weekly10 = e.ParseMessage(entry)
 
 		dungeonID = tonumber(dungeonID)
 		keyLevel = tonumber(keyLevel)
-		isUsable = tonumber(isUsable)
 		affixOne = tonumber(affixOne)
 		affixTwo = tonumber(affixTwo)
 		affixThree = tonumber(affixThree)
@@ -245,14 +239,13 @@ local function UpdateKeyList(entry, ...)
 		if id then
 			if weekly10 == 1 then AstralKeys[id].weeklyCache = weekly10 end
 
-			if AstralKeys[id].level < keyLevel or AstralKeys[id].usable ~= isUsable then
+			if AstralKeys[id].level < keyLevel then
 				AstralKeys[id].map = dungeonID
 				AstralKeys[id].level = keyLevel
-				AstralKeys[id].usable = isUsable
 				e.UpdateFrames()
 			end
 		else
-			table.insert(AstralKeys, {name = unit, class = unitClass, realm = unitRealm, map = dungeonID, level = keyLevel, usable = isUsable, a1 = affixOne, a2 = affixTwo, a3 = affixThree, weeklyCache = weekly10})
+			table.insert(AstralKeys, {name = unit, class = unitClass, realm = unitRealm, map = dungeonID, level = keyLevel, a1 = affixOne, a2 = affixTwo, a3 = affixThree, weeklyCache = weekly10})
 			e.SetUnitID(unit, unitRealm, #AstralKeys)
 			e.UpdateFrames()
 			if unit == e.PlayerName() and unitRealm == e.PlayerRealm() then
@@ -269,11 +262,10 @@ end
 AstralComs:RegisterPrefix('GUILD', 'updateV4', UpdateKeyList)
 
 local function UpdateUnitKey(msg)
-	local unit, unitClass, unitRealm, dungeonID, keyLevel, isUsable, affixOne, affixTwo, affixThree, weekly10 = e.ParseMessage(entry)
+	local unit, unitClass, unitRealm, dungeonID, keyLevel, affixOne, affixTwo, affixThree, weekly10 = e.ParseMessage(entry)
 
 	dungeonID = tonumber(dungeonID)
 	keyLevel = tonumber(keyLevel)
-	isUsable = tonumber(isUsable)
 	affixOne = tonumber(affixOne)
 	affixTwo = tonumber(affixTwo)
 	affixThree = tonumber(affixThree)
@@ -298,14 +290,13 @@ local function UpdateUnitKey(msg)
 	if id then
 		if weekly10 == 1 then AstralKeys[id].weeklyCache = weekly10 end
 
-		if AstralKeys[id].level < keyLevel or AstralKeys[id].usable ~= isUsable then
+		if AstralKeys[id].level < keyLevel then
 			AstralKeys[id].map = dungeonID
 			AstralKeys[id].level = keyLevel
-			AstralKeys[id].usable = isUsable
 			e.UpdateFrames()
 		end
 	else
-		table.insert(AstralKeys, {name = unit, class = unitClass, realm = unitRealm, map = dungeonID, level = keyLevel, usable = isUsable, a1 = affixOne, a2 = affixTwo, a3 = affixThree, weeklyCache = weekly10})
+		table.insert(AstralKeys, {name = unit, class = unitClass, realm = unitRealm, map = dungeonID, level = keyLevel, a1 = affixOne, a2 = affixTwo, a3 = affixThree, weeklyCache = weekly10})
 		e.SetUnitID(unit, unitRealm, #AstralKeys)
 		e.UpdateFrames()
 		if unit == e.PlayerName() and unitRealm == e.PlayerRealm() then

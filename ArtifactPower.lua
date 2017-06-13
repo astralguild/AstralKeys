@@ -164,8 +164,7 @@ function e.GetWeeklyAP(keyLevel)
 	return WEEKLY_AP[keyLevel] or WEEKLY_AP[#WEEKLY_AP]
 end
 
-function e.MapApText(mapID, keyLevel, isUsable)
-	if isUsable == 0 then return 'Depleted key.' end
+function e.MapApText(mapID, keyLevel)
 
 	local amount = e.GetMapAP(mapID, keyLevel) * e.GetAKBonus(e.ParseAKLevel())
 	local s = ''
