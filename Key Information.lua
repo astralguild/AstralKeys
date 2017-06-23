@@ -47,10 +47,15 @@ e.RegisterEvent('CHALLENGE_MODE_COMPLETED', function()
 	C_Timer.After(3, function() e.FindKeyStone(true, true) end)
 end)
 
+-- Check for keys after CM starts
+e.RegisterEvent('CHALLENGE_MODE_START', function()
+	C_Timer.After(3, function() e.FindKeyStone(true, false) end)
+end)
+
 local function Completed10()
 	if not e.CharacterID() then return 0 end
 	if AstralCharacters[e.CharacterID()]['level'] then
-	 if AstralCharacters[e.CharacterID()].level >= 10 then
+	 if AstralCharacters[e.CharacterID()].level >= 15 then
 			return 1
 		else
 			return 0
@@ -95,7 +100,7 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 			if (itemID and itemID == 138019) then
 				link = GetContainerItemLink(bag, slot)
 				mapID, keyLevel, a1, a2, a3 = e.ParseLink(link)
-				s = 'updateV4 ' .. e.PlayerName() .. ':' .. e.PlayerClass() .. ':' .. e.PlayerRealm() ..':' .. mapID .. ':' .. keyLevel .. ':' .. a1 .. ':' .. a2 .. ':' .. a3 .. ':' .. Completed10()
+				s = 'updateV5 ' .. e.PlayerName() .. ':' .. e.PlayerClass() .. ':' .. e.PlayerRealm() ..':' .. mapID .. ':' .. keyLevel .. ':' .. a1 .. ':' .. a2 .. ':' .. a3 .. ':' .. Completed10()
 				--s = 'updateV4 CHARACTERSAZ:DEMONHUNTER:Bleeding Hollow:201:22:1:13:13:10:16:1'
 				--Console:AddLine('AK', 'send text ' .. s)
 			end

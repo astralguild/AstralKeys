@@ -1,13 +1,13 @@
 local _, e = ...
 
-local playerClass, playerName, numArtifacts, characterID, playerID, playerRealm
+local playerClass, playerName, characterID, playerID, playerRealm
 
 function e.CharacterID()
 	return characterID
 end
 
 function e.SetCharacterID()
-	characterID = e.GetCharacterID(e.PlayerName() .. '-' .. e.PlayerRealm())
+	characterID = e.GetCharacterID(e.PlayerName(), e.PlayerRealm())
 end
 
 function e.SetPlayerID()

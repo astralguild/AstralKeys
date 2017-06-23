@@ -195,10 +195,10 @@ local function UpdateKeyList(entry, ...)
 	end
 	e.UpdateAffixes()
 end
-AstralComs:RegisterPrefix('GUILD', 'updateV4', UpdateKeyList)
+--AstralComs:RegisterPrefix('GUILD', 'updateV4', UpdateKeyList)
 
 local function UpdateUnitKey(msg)
-	local unit, unitClass, unitRealm, dungeonID, keyLevel, affixOne, affixTwo, affixThree, weekly10 = e.ParseMessage(entry)
+	local unit, unitClass, unitRealm, dungeonID, keyLevel, affixOne, affixTwo, affixThree, weekly10 = e.ParseMessage(msg)
 
 	dungeonID = tonumber(dungeonID)
 	keyLevel = tonumber(keyLevel)
@@ -244,7 +244,67 @@ local function UpdateUnitKey(msg)
 		e.UpdateCharacterFrames()
 	end
 end
+AstralComs:RegisterPrefix('GUILD', 'updateV5', UpdateUnitKey)
 
+local function SyncReceive(entry)
+	local messageReceived = {}
+	local unit, unitClass, unitRealm, dungeonID, keyLevel, affixOne, affixTwo, affixThree
+
+	while find(entry, '_') do
+			local _pos = find(entry, '_')
+			messageReceived[#messageReceived + 1] = sub(entry, 1, _pos - 1)
+			entry = sub(entry, _pos + 1, entry:len())
+	end
+
+	for i = 1, #messageReceived do
+
+		unit, unitClass, unitRealm, dungeonID, keyLevel, affixOne, affixTwo, affixThree, weekly10 = e.ParseMessage(messageReceived[i])
+		dungeonID = tonumber(dungeonID)
+		keyLevel = tonumber(keyLevel)
+		affixOne = tonumber(affixOne)
+		affixTwo = tonumber(affixTwo)
+		affixThree = tonumber(affixThree)
+		weekly10 = tonumber(weekly10)
+
+		if not e.UnitInGuild(unit .. '-' .. unitRealm) then return end
+
+		if affixOne ~= 0 then
+			e.SetAffix(1, affixOne)
+		end
+
+		if affixTwo ~= 0 then
+			e.SetAffix(2, affixTwo)
+		end
+
+		if affixThree ~= 0 then
+			e.SetAffix(3, affixThree)
+		end
+
+		local id = e.GetUnitID(unit .. '-' .. unitRealm)
+
+		if id then
+			if weekly10 == 1 then AstralKeys[id].weeklyCache = weekly10 end
+
+			if AstralKeys[id].level < keyLevel then
+				AstralKeys[id].map = dungeonID
+				AstralKeys[id].level = keyLevel
+				e.UpdateFrames()
+			end
+		else
+			table.insert(AstralKeys, {name = unit, class = unitClass, realm = unitRealm, map = dungeonID, level = keyLevel, a1 = affixOne, a2 = affixTwo, a3 = affixThree, weeklyCache = weekly10})
+			e.SetUnitID(unit .. '-' .. unitRealm, #AstralKeys)
+			if unit == e.PlayerName() and unitRealm == e.PlayerRealm() then
+				e.SetPlayerID()
+			end
+			e.UpdateFrames()
+		end
+
+		if unit == e.PlayerName() and unitRealm == e.PlayerRealm() then
+			e.UpdateCharacterFrames()
+		end
+	end
+end
+AstralComs:RegisterPrefix('GUILD', 'sync1', SyncReceive)
 
 local function UpdateWeekly10(...)
 	local weekly = ...
@@ -288,7 +348,7 @@ local function PushKeyList(...)
 	local function SendEntries()
 		for i = 1, 5 do
 			if messageQueue[1] and messageQueue[1] ~= '' then
-				SendAddonMessage('AstralKeys', 'updateV4 ' .. messageQueue[1], 'GUILD')
+				SendAddonMessage('AstralKeys', 'sync1 ' .. messageQueue[1], 'GUILD')
 				table.remove(messageQueue, 1)
 			else
 				break
