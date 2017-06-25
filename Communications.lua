@@ -226,11 +226,9 @@ local function UpdateUnitKey(msg)
 	if id then
 		if weekly10 == 1 then AstralKeys[id].weeklyCache = weekly10 end
 
-		if AstralKeys[id].level < keyLevel then
-			AstralKeys[id].map = dungeonID
-			AstralKeys[id].level = keyLevel
-			e.UpdateFrames()
-		end
+		AstralKeys[id].map = dungeonID
+		AstralKeys[id].level = keyLevel
+		e.UpdateFrames()
 	else
 		table.insert(AstralKeys, {name = unit, class = unitClass, realm = unitRealm, map = dungeonID, level = keyLevel, a1 = affixOne, a2 = affixTwo, a3 = affixThree, weeklyCache = weekly10})
 		e.SetUnitID(unit .. '-' .. unitRealm, #AstralKeys)
