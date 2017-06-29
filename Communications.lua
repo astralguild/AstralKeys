@@ -198,6 +198,7 @@ end
 --AstralComs:RegisterPrefix('GUILD', 'updateV4', UpdateKeyList)
 
 local function UpdateUnitKey(msg)
+	Console:AddLine(ADDON, msg)
 	local unit, unitClass, unitRealm, dungeonID, keyLevel, affixOne, affixTwo, affixThree, weekly10 = e.ParseMessage(msg)
 
 	dungeonID = tonumber(dungeonID)
