@@ -302,7 +302,7 @@ local function SyncReceive(entry)
 		end
 	end
 end
-AstralComs:RegisterPrefix('GUILD', 'sync1', SyncReceive)
+AstralComs:RegisterPrefix('GUILD', 'sync2', SyncReceive)
 
 local function UpdateWeekly10(...)
 	local weekly = ...
@@ -346,7 +346,7 @@ local function PushKeyList(...)
 	local function SendEntries()
 		for i = 1, 5 do
 			if messageQueue[1] and messageQueue[1] ~= '' then
-				SendAddonMessage('AstralKeys', 'sync1 ' .. messageQueue[1], 'GUILD')
+				SendAddonMessage('AstralKeys', 'sync2 ' .. messageQueue[1], 'GUILD')
 				table.remove(messageQueue, 1)
 			else
 				break
