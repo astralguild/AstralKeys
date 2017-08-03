@@ -168,7 +168,7 @@ local function CreateCharacterFrame(parent, frameName, unitName, bestKey, create
 			else
 				self.name.string:SetText(WrapTextInColorCode(name, select(4, GetClassColor(self.unitClass))))
 			end
-			self.keystone.string:SetText(e.GetCharacterKey(self.unit))
+			self.keystone.string:SetText(e.GetCharacterKey(self.unit .. '-' .. self.realm))
 		else
 			self.name.string:SetText('')
 			self.keystone.string:SetText('')
@@ -207,34 +207,36 @@ local keyFrames = {}
 local mapFrames = {}
 local completedFrames = {}
 
-local function CreateNameFrame(parent, unitName, unitClass, unitRealm)
+local function CreateNameFrame(parent, unitName, unitClass)
 	local frame = CreateFrame('FRAME', nil, parent)
-	frame:SetSize(100, 15)
+	frame:SetSize(110, 15)
 	frame.name = unitName
 	frame.class = unitClass
-	frame.realm = unitRealm
+	frame.realm = unitName:match('%a+', unitName:find('-'))
 
 	frame.string = frame:CreateFontString('ARTWORK')
 	frame.string:SetFont(FONT_CONTENT, FONT_SIZE)
 	frame.string:SetPoint('TOPLEFT', frame, 'TOPLEFT')
-	frame.string:SetWidth(100)
+	frame.string:SetWidth(110)
 	frame.string:SetJustifyH('LEFT')
 	frame.string:SetJustifyV('TOP')
-	if frame.realm == e.PlayerRealm() then
-		frame.string:SetText(WrapTextInColorCode(frame.name, select(4, GetClassColor(frame.class))))
-	else
-		frame.string:SetText(WrapTextInColorCode(frame.name .. '(*)', select(4, GetClassColor(frame.class))))
+	if unitName ~= '' then
+		if frame.realm == e.PlayerRealm() then
+			frame.string:SetText(WrapTextInColorCode(frame.name, select(4, GetClassColor(frame.class))))
+		else
+			frame.string:SetText(WrapTextInColorCode(frame.name .. '(*)', select(4, GetClassColor(frame.class))))
+		end
 	end
 
-	function frame.SetNameInfo(self, unitName, unitClass, unitRealm)
+	function frame.SetNameInfo(self, unitName, unitClass)
 		if unitName ~= '' then
-			self.name = unitName
+			self.name = unitName:match('%a+')
 			self.class = unitClass
-			self.realm = unitRealm
+			self.realm = unitName:match('%a+', unitName:find('-'))
 			if self.realm == e.PlayerRealm() then
 				self.string:SetText(WrapTextInColorCode(self.name, select(4, GetClassColor(self.class))))
 			else
-				self.string:SetText(WrapTextInColorCode(self.name .. '(*)', select(4, GetClassColor(self.class))))
+				self.string:SetText(WrapTextInColorCode(string.format('%s (*)', self.name), select(4, GetClassColor(self.class))))
 			end
 		else
 			self.string:SetText('')
@@ -256,7 +258,9 @@ local function CreateMapFrame(parent, mapID, keyLevel)
 	frame.string:SetFont(FONT_CONTENT, FONT_SIZE)
 	frame.string:SetPoint('TOPLEFT', frame, 'TOPLEFT')
 
-	frame.string:SetText(e.GetMapName(frame.map))
+	if mapID ~= -1 then
+		frame.string:SetText(e.GetMapName(frame.map))
+	end
 
 	function frame.SetMapInfo(self, mapID,  keyLevel)
 		if mapID ~= -1 then
@@ -299,7 +303,9 @@ local function CreateKeyFrame(parent, keyLevel)
 	frame.string = frame:CreateFontString('ARTWORK')
 	frame.string:SetFont(FONT_CONTENT, FONT_SIZE)
 	frame.string:SetPoint('TOPLEFT', frame, 'TOPLEFT')
-	frame.string:SetText(keyLevel)
+	if keyLevel ~= -1 then
+		frame.string:SetText(keyLevel)
+	end
 
 	function frame.SetKeyInfo(self, keyLevel)
 		if keyLevel ~= -1 then
@@ -503,6 +509,7 @@ showOffline:SetPoint('TOPRIGHT', quickOptionsFrame, 'TOPRIGHT', -5, -5)
 showOffline:SetScript('OnClick', function (self)
 	e.SetShowOffline(self:GetChecked())
 	AstralContentFrame:ResetSlider()
+	--e.UpdateLines()
 	e.UpdateFrames()
 end)
 
@@ -562,7 +569,7 @@ partyAnnounce:GetFontString():SetTextColor(76/255, 144/255, 255/255, 1)
 partyAnnounce:SetPoint('LEFT', announceFrame.announce, 'RIGHT', 5, 0)
 
 partyAnnounce:SetScript('OnClick', function()
-	e.AnounceCharacterKeys('PARTY')
+	e.AnnounceCharacterKeys('PARTY')
 	end)
 
 local guildAnnounce = CreateFrame('BUTTON', nil, announceFrame)
@@ -575,7 +582,7 @@ guildAnnounce:GetFontString():SetTextColor(38/255, 214/255, 25/255, 1)
 guildAnnounce:SetPoint('LEFT', partyAnnounce, 'RIGHT')
 
 guildAnnounce:SetScript('OnClick', function()
-	e.AnounceCharacterKeys('GUILD')
+	e.AnnounceCharacterKeys('GUILD')
 	end)
 
 quickOptionsFrame:SetScript('OnShow', function(self)
@@ -591,7 +598,6 @@ quickOptionsFrame:SetScript('OnHide', function(self)
 -- Tooltip AstralKeyFrame
 -----------------------------------------------------
 
---local mouseOverFrame = CreateFrame('FRAME', 'astralMouseOver', AstralKeyFrame)
 local mouseOverFrame = CreateFrame('FRAME', 'astralMouseOver', UIParent)
 mouseOverFrame:SetSize(156, 200)
 mouseOverFrame:SetFrameStrata('TOOLTIP')
@@ -653,14 +659,9 @@ affixOne.texture:SetPoint('LEFT', affixOne, 'LEFT')
 affixOne.texture:SetTexture(nil)
 
 function affixOne:UpdateInfo()
-	self.aid = e.GetAffix(1)
-	if self.aid ~= 0 and self.aid then
-		self.string:SetText(C_ChallengeMode.GetAffixInfo(self.aid))
-		self.texture:SetTexture(select(3, C_ChallengeMode.GetAffixInfo(self.aid)))
-	else
-		self.string:SetText('')
-		self.texture:SetTexture('')
-	end
+	self.aid = e.AffixOne()
+	self.string:SetText(C_ChallengeMode.GetAffixInfo(self.aid))
+	self.texture:SetTexture(select(3, C_ChallengeMode.GetAffixInfo(self.aid)))
 end
 
 affixOne:SetScript('OnEnter', function(self)
@@ -692,14 +693,9 @@ affixTwo.texture:SetPoint('LEFT', affixTwo, 'LEFT')
 affixTwo.texture:SetTexture(nil)
 
 function affixTwo:UpdateInfo()
-	self.aid = e.GetAffix(2)
-	if self.aid ~= 0 and self.aid then
-		self.string:SetText(C_ChallengeMode.GetAffixInfo(self.aid))
-		self.texture:SetTexture(select(3, C_ChallengeMode.GetAffixInfo(self.aid)))
-	else
-		self.string:SetText('')
-		self.texture:SetTexture('')
-	end
+	self.aid = e.AffixTwo()
+	self.string:SetText(C_ChallengeMode.GetAffixInfo(self.aid))
+	self.texture:SetTexture(select(3, C_ChallengeMode.GetAffixInfo(self.aid)))
 end
 
 affixTwo:SetScript('OnEnter', function(self)
@@ -731,14 +727,9 @@ affixThree.texture:SetPoint('LEFT', affixThree, 'LEFT')
 affixThree.texture:SetTexture(nil)
 
 function affixThree:UpdateInfo()
-	self.aid = e.GetAffix(3)
-	if self.aid ~= 0 and self.aid then
-		self.string:SetText(C_ChallengeMode.GetAffixInfo(self.aid))
-		self.texture:SetTexture(select(3, C_ChallengeMode.GetAffixInfo(self.aid)))
-	else
-		self.string:SetText('')
-		self.texture:SetTexture('')
-	end
+	self.aid = e.AffixThree()
+	self.string:SetText(C_ChallengeMode.GetAffixInfo(self.aid))
+	self.texture:SetTexture(select(3, C_ChallengeMode.GetAffixInfo(self.aid)))
 end
 
 affixThree:SetScript('OnEnter', function(self) 
@@ -790,13 +781,13 @@ contentFrame:EnableMouseWheel(true)
 contentFrame.slider = contentFrame:CreateTexture('BACKGROUND')
 contentFrame.slider:SetColorTexture(0.2, 0.2, 0.2)
 contentFrame.slider:SetSize(8, 8)
-contentFrame.slider:SetPoint('TOPRIGHT', contentFrame, 'TOPRIGHT')
+contentFrame.slider:SetPoint('TOPLEFT', contentFrame, 'TOPRIGHT')
 contentFrame.slider:SetAlpha(0.2)
 
 
 function contentFrame:ResetSlider()
 	offset = 0
-	self.slider:SetPoint('TOPRIGHT', self, 'TOPRIGHT')
+	self.slider:SetPoint('TOPLEFT', self, 'TOPRIGHT')
 end
 
 contentFrame:SetScript('OnMouseWheel', function(self, delta)
@@ -805,17 +796,17 @@ contentFrame:SetScript('OnMouseWheel', function(self, delta)
 	if delta < 0 then -- Scroll down
 		if (#sortedTable - offset) > 25 then
 			offset = offset - delta
-			e.UpdateFrames()
+			e.UpdateLines()
 		end			
 	else
 		if offset > 0 then -- Scroll up
 			offset = offset - delta
-			e.UpdateFrames()
+			e.UpdateLines()
 		end
 	end  
 
 	contentFrame.slider:ClearAllPoints()
-	contentFrame.slider:SetPoint('TOPRIGHT', contentFrame, 'TOPRIGHT', 0, -offset/(#sortedTable - 25) * 365)
+	contentFrame.slider:SetPoint('TOPLEFT', contentFrame, 'TOPRIGHT', 0, -offset/(#sortedTable - 25) * 365)
 
 	end)
 
@@ -827,17 +818,18 @@ contentFrame:SetScript('OnLeave', function()
 	contentFrame.slider:SetAlpha(0.2)
 	end)
 
-local keyButton = CreateButton(contentFrame, 'keyButton', 55, 20, 'Level', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT) --75
+local keyButton = CreateButton(contentFrame, 'keyButton', 50, 20, 'Level', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT) --75
 keyButton:SetPoint('BOTTOMLEFT', contentFrame, 'TOPLEFT')
 keyButton:SetScript('OnClick', function()
 	contentFrame:ResetSlider()
-	if e.GetSortMethod() ~= 'level' then
+	if e.GetSortMethod() ~= 4 then
 		e.SetOrientation(0)
 	else
 		e.SetOrientation(1 - e.GetOrientation())
 	end
-	e.SetSortMethod('level')
-	e.UpdateFrames()
+	e.SetSortMethod(4)
+	e.SortTable(sortedTable, e.GetSortMethod())
+	e.UpdateLines()
 
 	end)
 
@@ -845,27 +837,29 @@ local mapButton = CreateButton(contentFrame, 'mapButton', 190, 20, 'Dungeon', FO
 mapButton:SetPoint('LEFT', keyButton, 'RIGHT')
 mapButton:SetScript('OnClick', function()
 	contentFrame:ResetSlider()
-	if e.GetSortMethod() ~= 'map' then
+	if e.GetSortMethod() ~= 3 then
 		e.SetOrientation(0)
 	else
 		e.SetOrientation(1 - e.GetOrientation())
 	end
-	e.SetSortMethod('map')
-	e.UpdateFrames()
+	e.SetSortMethod(3)
+	e.SortTable(sortedTable, e.GetSortMethod())
+	e.UpdateLines()
 
 	end)
 
-local nameButton = CreateButton(contentFrame, 'nameButton', 100, 20, 'Player', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT)
+local nameButton = CreateButton(contentFrame, 'nameButton', 110, 20, 'Player', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT)
 nameButton:SetPoint('LEFT', mapButton, 'RIGHT')
 nameButton:SetScript('OnClick', function()
 	contentFrame:ResetSlider()
-	if e.GetSortMethod() ~= 'name' then
+	if e.GetSortMethod() ~= 1 then
 		e.SetOrientation(0)
 	else
 		e.SetOrientation(1 - e.GetOrientation())
 	end
-	e.SetSortMethod('name')
-	e.UpdateFrames()
+	e.SetSortMethod(1)
+	e.SortTable(sortedTable, e.GetSortMethod())
+	e.UpdateLines()
 
 	end)
 
@@ -873,13 +867,14 @@ local completeButton = CreateButton(contentFrame, 'completeButton', 30, 20, '15+
 completeButton:SetPoint('LEFT', nameButton, 'RIGHT')
 completeButton:SetScript('OnClick', function()
 	contentFrame:ResetSlider()
-	if e.GetSortMethod() ~= 'weeklyCache' then
+	if e.GetSortMethod() ~= 5 then
 		e.SetOrientation(0)
 	else
 		e.SetOrientation(1 - e.GetOrientation())
 	end
-	e.SetSortMethod('weeklyCache')
-	e.UpdateFrames()
+	e.SetSortMethod(5)
+	e.SortTable(sortedTable, e.GetSortMethod())
+	e.UpdateLines()
 
 	end)
 
@@ -892,9 +887,6 @@ AstralKeyFrame:SetScript('OnKeyDown', function(self, key)
 
 AstralKeyFrame:SetScript('OnShow', function(self)
 	self:SetPropagateKeyboardInput(true)
-	affixOne:UpdateInfo()
-	affixTwo:UpdateInfo()
-	affixThree:UpdateInfo()
 	end)
 
 AstralKeyFrame:SetScript('OnDragStart', function(self)
@@ -909,20 +901,14 @@ local init = false
 local function InitializeFrame()
 	init = true
 
+	AstralAffixOne:UpdateInfo()
+	AstralAffixTwo:UpdateInfo()
+	AstralAffixThree:UpdateInfo()
+
 	showOffline:SetChecked(e.GetShowOffline())
 	minKeyLevel:SetValue(e.GetMinKeyLevel())
 
 	characterTable = e.DeepCopy(AstralCharacters)
-	sortedTable = e.DeepCopy(AstralKeys)
-
-	e.UpdateTables(sortedTable)
-	e.SortTable(sortedTable, e.GetSortMethod())
-
-	if #sortedTable > 26 then
-		contentFrame.slider:Show()
-	else
-		contentFrame.slider:Hide()
-	end
 
 	if e.AnnounceKey() then
 		announceFrame.announce:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\speaker.tga')
@@ -1009,21 +995,11 @@ local function InitializeFrame()
 
 		end)
 
-	-- MAX 25
-	if #sortedTable < 26 then
-		indexEnd = #sortedTable
-	else
-		indexEnd = 25
-	end
-
-	for i = 1, indexEnd do
-		name, keyLevel, mapID, class, realm, completed = sortedTable[i].name, sortedTable[i].level, sortedTable[i].map, sortedTable[i].class, sortedTable[i].realm, sortedTable[i].weeklyCache
-
-		nameFrames[i] = CreateNameFrame(contentFrame, name, class, realm)		
-		keyFrames[i] = CreateKeyFrame(contentFrame, keyLevel)
-		mapFrames[i] = CreateMapFrame(contentFrame, mapID, keyLevel)
-		completedFrames[i] = CreateCompleteFrame(contentFrame, completed)
-
+	for i = 1, 25 do
+		nameFrames[i] = CreateNameFrame(AstralContentFrame, '')
+		keyFrames[i] = CreateKeyFrame(AstralContentFrame, -1)
+		mapFrames[i] = CreateMapFrame(AstralContentFrame, -1)
+		completedFrames[i] = CreateCompleteFrame(AstralContentFrame, nil)
 
 		keyFrames[i]:SetPoint('TOPLEFT', keyButton, 'BOTTOMLEFT', 5, (i-1) * -15 - 3)
 		mapFrames[i]:SetPoint('TOPLEFT', mapButton, 'BOTTOMLEFT', 5, (i-1) * -15 - 3)
@@ -1054,10 +1030,30 @@ function e.WipeFrames()
 	characterOffset = 0
 end
 
+function e.UpdateLines()
+	if not init then return end
+	local indexEnd = math.min(25, #sortedTable)
+
+	for i = 1, indexEnd do
+		nameFrames[i]:SetNameInfo(sortedTable[i + offset][1], sortedTable[i + offset][2])
+		keyFrames[i]:SetKeyInfo(sortedTable[i + offset][4])
+		mapFrames[i]:SetMapInfo(sortedTable[i + offset][3], sortedTable[i + offset][4])
+		completedFrames[i]:SetCompletedInfo(sortedTable[i + offset][5])
+	end
+	for i = indexEnd + 1, 25 do
+		nameFrames[i]:SetNameInfo('', nil, nil)
+		keyFrames[i]:SetKeyInfo(-1)
+		mapFrames[i]:SetMapInfo(-1, nil)
+		completedFrames[i]:SetCompletedInfo(0)
+	end
+end
+
+
+
 function e.UpdateFrames()
 	if not init then return end
 
-	local name, keyLevel, mapID, class, realm, index, completed
+	--local name, keyLevel, mapID, class, realm, index, completed
 
 	sortedTable = e.UpdateTables(sortedTable)
 
@@ -1068,7 +1064,8 @@ function e.UpdateFrames()
 	else
 		AstralContentFrame.slider:Hide()
 	end
-
+	e.UpdateLines()
+--[[
 	if #sortedTable < 26 then
 		indexEnd = #sortedTable
 	else
@@ -1077,12 +1074,12 @@ function e.UpdateFrames()
 
 	if #sortedTable < #nameFrames then
 		for i = 1, indexEnd do
-			index = i + offset
-			name, keyLevel, mapID, class, realm, completed = sortedTable[index].name, sortedTable[index].level, sortedTable[index].map, sortedTable[index].class, sortedTable[index].realm, sortedTable[index].weeklyCache
-			nameFrames[i]:SetNameInfo(name, class, realm)
-			keyFrames[i]:SetKeyInfo(keyLevel)
-			mapFrames[i]:SetMapInfo(mapID, keyLevel)
-			completedFrames[i]:SetCompletedInfo(completed)
+			--index = i + offset
+			--name, keyLevel, mapID, class, realm, completed = sortedTable[i + offset].name, sortedTable[i + offset].level, sortedTable[i + offset].map, sortedTable[i + offset].class, sortedTable[i + offset].realm, sortedTable[i + offset].weeklyCache
+			nameFrames[i]:SetNameInfo(sortedTable[i + offset].name, sortedTable[i + offset].class, sortedTable[i + offset].realm)
+			keyFrames[i]:SetKeyInfo(sortedTable[i + offset].level)
+			mapFrames[i]:SetMapInfo(sortedTable[i + offset].map, sortedTable[i + offset].level)
+			completedFrames[i]:SetCompletedInfo(sortedTable[i + offset].weeklyCache)
 		end
 		for i = indexEnd + 1, #nameFrames do
 			nameFrames[i]:SetNameInfo('', nil, nil)
@@ -1111,8 +1108,7 @@ function e.UpdateFrames()
 				completedFrames[i]:SetPoint('TOPLEFT', completeButton, 'BOTTOMLEFT', 5, (i-1) * -15 - 3)
 			end
 		end
-	end
-
+	end]]
 end
 
 function e.UpdateCharacterFrames()
@@ -1156,4 +1152,3 @@ end
 
 SlashCmdList['ASTRALKEYS'] = handler;
 SlashCmdList['ASTRALKEYSV'] = function(msg) e.VersionCheck() end
---SlashCmdList['AK'] = handler;

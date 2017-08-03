@@ -11,7 +11,7 @@ function e.SetCharacterID()
 end
 
 function e.SetPlayerID()
-	playerID = e.GetUnitID(e.PlayerName() .. '-' .. e.PlayerRealm())
+	playerID = e.UnitID(string.format('%s-%s', e.PlayerName(), e.PlayerRealm()))
 end
 
 function e.CharacterAK(id)

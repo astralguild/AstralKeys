@@ -1,7 +1,10 @@
 local a, e = ...
-local REGION_RESET_US = 288000
 if not AstralKeys then AstralKeys = {} end
 if not AstralCharacters then AstralCharacters = {} end
+
+local initializeTime = {} 
+initializeTime[1]= 1500390000 -- US Tuesday at reset
+initializeTime[2]= 1500447600 -- EU Wednesday at reset
 
 local SI = {}
 SI[0] = ''
@@ -35,15 +38,37 @@ function e.ConvertToSI(quantity)
 	end
 end
 
-e.RegisterEvent('PLAYER_LOGIN', function()
+function e.WeekTime()
+	local region = GetCurrentRegion()
+
+	if region ~= 3 then
+		return GetServerTime() - initializeTime[1] - 604800 * e.Week
+	else
+		return GetServerTime() - initializeTime[2] - 604800 * e.Week
+	end
+end
+
+AstralEvents:Register('PLAYER_LOGIN', function()
+	local region = GetCurrentRegion()
 	local d = date('*t')
-	local currentTime = time(d)
-	local hourOffset, minOffset = math.modf(difftime(time(), time(date('!*t'))))/3600
+	local currentTime = GetServerTime()
+	local hourOffset, minOffset = math.modf(difftime(currentTime, time(date('!*t', currentTime))))/3600
+
+	if regeion ~= 3 then
+		e.Week = math.floor((GetServerTime() - initializeTime[1]) / 604800)
+	else
+		e.Week = math.floor((GetServerTime() - initializeTime[3]) / 604800)
+	end
+
+	for i, unit in pairs(AstralKeys) do
+		if tonumber(unit[6]) < e.Week then
+			table.remove(AstralKeys, i)
+		end
+	end
+
 	e.SetPlayerName()
 	e.SetPlayerClass()
 	e.SetPlayerRealm()
-
-	local region = GetCurrentRegion()
 
 	if currentTime > AstralKeysSettings.initTime then
 		wipe(AstralCharacters)
@@ -119,18 +144,21 @@ e.RegisterEvent('PLAYER_LOGIN', function()
 	RegisterAddonMessagePrefix('AstralKeys')
 
 	for i = 1, #AstralKeys do
-		e.SetUnitID(AstralKeys[i].name .. '-' ..  AstralKeys[i].realm, i)
+		if tonumber(AstralKeys[i][6]) < e.Week then
+			-- remove the thingy
+		end
+		e.SetUnitID(AstralKeys[i][1], i)
 	end
 	e.SetPlayerID()
 
-	e.RegisterEvent('CURRENCY_DISPLAY_UPDATE', function(...)
+	AstralEvents:Register('CURRENCY_DISPLAY_UPDATE', function(...)
 	for i = 1, #AstralCharacters do
 		if AstralCharacters[i].name == e.PlayerName() then
 			AstralCharacters[i].knowledge = e.GetAKBonus(e.ParseAKLevel())
 		end
 	end
-	end)
+	end, 'currenyUpdate')
 
 	C_ChallengeMode.RequestMapInfo()
 
-end)
+end, 'login')

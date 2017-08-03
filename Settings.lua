@@ -1,6 +1,6 @@
 local _, e = ...
 local DEBUG = false
-
+local ADDON_VERSION = 15500
 -- Reset time 15:00 UTC AMERICAS
 -- 07:00 UTC EU
 
@@ -8,7 +8,7 @@ function e.DataResetTime()
 	local region = GetCurrentRegion()
 	local serverTime = GetServerTime()
 	local d = date('*t', serverTime)
-	local hourOffset, minOffset = math.modf(difftime(time(), time(date('!*t'))))/3600
+	local hourOffset, minOffset = math.modf(difftime(serverTime, time(date('!*t', serverTime))))/3600
 	minOffset = minOffset or 0
 	local hours
 	local days
@@ -73,12 +73,12 @@ end]]
 
 if not AstralKeysSettings then
 	AstralKeysSettings = {
-		['resetVersion'] = 15010,
+		['resetVersion'] = ADDON_VERSION,
 		['reset'] = true,
 		['initTime'] = e.DataResetTime(),
 		['frameOptions'] = {
 			['orientation'] = 0,
-			['sortMethod'] = 'level',
+			['sortMethod'] = 1,
 			['quickOptions'] = {
 				['showOffline'] = 0,
 				['minKeyLevel'] = 1,
@@ -97,19 +97,19 @@ frame:SetScript('OnEvent', function(self, event, ...)
 	local addon = ...
 	if addon == 'AstralKeys' then
 		_G['AstralEngine'] = e
-		if not AstralKeysSettings['reset'] or not AstralKeysSettings['resetVersion'] or AstralKeysSettings['resetVersion'] ~= 15010 then
+		if not AstralKeysSettings['reset'] or not AstralKeysSettings['resetVersion'] or AstralKeysSettings['resetVersion'] ~= ADDON_VERSION then
 			wipe(AstralKeys)
 			wipe(AstralCharacters)
 			AstralAffixes[1] = 0
 			AstralAffixes[2] = 0
 			AstralAffixes[3] = 0
 			AstralKeysSettings = {
-				['resetVersion'] = 15010,
+				['resetVersion'] = ADDON_VERSION,
 				['reset'] = true,
 				['initTime'] = e.DataResetTime(),
 				['frameOptions'] = {
 					['orientation'] = 0,
-					['sortMethod'] = 'level',
+					['sortMethod'] = 1,
 					['quickOptions'] = {
 						['showOffline'] = 0,
 						['minKeyLevel'] = 1,
@@ -136,8 +136,8 @@ function e.GetSortMethod()
 	return AstralKeysSettings.frameOptions.sortMethod
 end
 
-function e.SetSortMethod(string)
-	AstralKeysSettings.frameOptions.sortMethod = string
+function e.SetSortMethod(int)
+	AstralKeysSettings.frameOptions.sortMethod = int
 end
 
 function e.GetShowOffline()

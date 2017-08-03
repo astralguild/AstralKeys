@@ -7,10 +7,15 @@ local WEEKLY_AP = {}
 RUSSIAN
 Upper Kara   Верхний Каражан
 Lowre Kara   Нижний Каражан
-
-
 ]]
 DUNGEON_TABLE[197] = {}
+--DUNGEON_TABLE[197]['enUS'] 
+--DUNGEON_TABLE[197]['ptBR'] 
+--DUNGEON_TABLE[197]['deDE'] 
+--DUNGEON_TABLE[197]['frFR']
+--DUNGEON_TABLE[197]['esMX']
+--DUNGEON_TABLE[197]['ruRU']
+
 DUNGEON_TABLE[197]['name'] = 'Eye of Azshara'
 DUNGEON_TABLE[198] = {}
 DUNGEON_TABLE[198]['name'] = 'Darkheart Thicket'
@@ -30,13 +35,13 @@ DUNGEON_TABLE[210] = {}
 DUNGEON_TABLE[210]['name'] = 'Court of Stars'
 DUNGEON_TABLE[227] = {}
 DUNGEON_TABLE[227]['name'] = 'Return to Karazhan: Lower'
-DUNGEON_TABLE[227]['tname'] = 'Karazhan: Lower'
+DUNGEON_TABLE[227]['tname'] = 'Lower Karazhan'
 DUNGEON_TABLE[233] = {}
 DUNGEON_TABLE[233]['name'] = 'Cathedral of Eternal Night'
 DUNGEON_TABLE[233]['tname'] = 'Cathedral'
 DUNGEON_TABLE[234] = {}
 DUNGEON_TABLE[234]['name'] = 'Return to Karazhan: Upper'
-DUNGEON_TABLE[234]['tname'] = 'Karazhan: Upper'
+DUNGEON_TABLE[234]['tname'] = 'Upper Karazhan'
 
 --[[ 
 Times
@@ -144,7 +149,7 @@ WEEKLY_AP[5] = 1925
 WEEKLY_AP[6] = 1925
 WEEKLY_AP[7] = 2150
 WEEKLY_AP[8] = 2150
-WEEKLY_AP[9] = 2150  --UPDATE NEEDED, COULD NOT FIND PROPER VALUE
+WEEKLY_AP[9] = 2150 
 WEEKLY_AP[10] = 3125
 WEEKLY_AP[11] = 3525
 WEEKLY_AP[12] = 3925

@@ -14,8 +14,7 @@ local function ParseOnlineUnits(A)
 	end
 
 	for k, v in pairs(A) do
-		local key = v.name .. '-' .. v.realm
-		if units[key] then
+		if units[v[1]] then
 			tbl[#tbl+1] = v
 		end
 	end
@@ -33,7 +32,7 @@ function e.UpdateTables(table)
 end
 
 function e.SortTable(A, v)
-	if v == 'map' then
+	if v == 3 then
 	    for j = 2, #A do
 	        --Select item to sort
 	        key = A[j]
@@ -70,11 +69,12 @@ function e.SortTable(A, v)
 	end
 end
 
+
 function e.DeepCopy(orig)
     local orig_type = type(orig)
     local copy
     if orig_type == 'table' then
-        copy = {}
+    	copy = {}
         for orig_key, orig_value in next, orig, nil do
             copy[e.DeepCopy(orig_key)] = e.DeepCopy(orig_value)
         end

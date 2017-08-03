@@ -5,7 +5,7 @@ local guildList = {}
 
 -- Puts all guild member's into a table for checking if unit in guild
 
-function e.UpdateGuildList()
+local function UpdateGuildList()
 	wipe(guildList)
 	local name
 	for i = 1, GetNumGuildMembers() do
@@ -17,7 +17,6 @@ end
 
 -- Checks to see if a unit is in the player's guild
 -- @param unit Unit name and server
-
 function e.UnitInGuild(unit)
 	return guildList[unit]
 end
@@ -25,42 +24,34 @@ end
 -- Sets a number to a unit for quicker access to table
 -- @param unit  Unit name and server
 -- @param unitID integer value
-
 function e.SetUnitID(unit, unitID)
 	unitList[unit] = unitID
 end
 
 -- Retrieves ID number for associated unit
 -- @param unit Unit name and server
-
-function e.GetUnitID(unit)
+function e.UnitID(unit)
 	return unitList[unit]
 end
 
 -- Clears unit list
-
 function e.WipeUnitList()
 	wipe(unitList)
 end
 
 -- Retrieves unit's realm
 -- @param unit id
-
 function e.UnitRealm(id)
-	return AstralKeys[id].realm
+	return AstralKeys[id][1]:match('%a+', unitName:find('-'))
 end
 
 function e.UnitName(index)
-	return AstralKeys[index].name
+	return Ambiguate(AstralKeys[index][1], 'GUILD')
 end
 
 --Gets unit class from saved variables
 function e.UnitClass(id)
-	return AstralCharacters[id].class
+	return AstralKeys[id][2]
 end
 
-function e.GetColoredClassText(index)
-	return WrapTextInColor(AstralKeys[index].name , GetClassColor(AstralKeys[index].class))
-end
-
-e.RegisterEvent('GUILD_ROSTER_UPDATE', function() e.UpdateGuildList() end)
+AstralEvents:Register('GUILD_ROSTER_UPDATE', UpdateGuildList, 'guildUpdate')

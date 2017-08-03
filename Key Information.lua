@@ -1,16 +1,10 @@
 local ADDON, e = ...
-
-if not AstralAffixes then 
-	AstralAffixes = {}
-	AstralAffixes[1] = 0
-	AstralAffixes[2] = 0
-	AstralAffixes[3] = 0
-end
+local strformat = string.format
 
 local GRAY = 'ff9d9d9d'
 local PURPLE = 'ffa335ee'
 
-local function Weekly10()
+local function Weekly()
 	e.GetBestClear()
 	if AstralCharacters[e.CharacterID()].level >= 15 then
 		SendAddonMessage('AstralKeys', 'updateWeekly 1', 'GUILD')
@@ -22,37 +16,33 @@ local function InitData()
 	if UnitLevel('player') ~= 110 then return end
 	e.GetBestClear()
 	e.SetCharacterID()
-	e.UpdateGuildList()
 	e.FindKeyStone(true, false)
 	e.BuildMapTable()
 	SendAddonMessage('AstralKeys', 'request', 'GUILD')
 
-	e.UnregisterEvent('CHALLENGE_MODE_MAPS_UPDATE')
-	e.RegisterEvent('CHALLENGE_MODE_MAPS_UPDATE', Weekly10)
+	AstralEvents:Unregister('CHALLENGE_MODE_MAPS_UPDATE', 'initData')
+	AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', Weekly, 'weeklyCheck')
 end
-e.RegisterEvent('CHALLENGE_MODE_MAPS_UPDATE', InitData)
+AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', InitData, 'initData')
 
 
 function e.CreateKeyLink(index)
-	local s = '|c'
-	local mapID, keyLevel, a1, a2, a3 = AstralKeys[index].map, AstralKeys[index].level, AstralKeys[index].a1, AstralKeys[index].a2, AstralKeys[index].a3
-	s = s .. PURPLE
-	s = s .. '|Hkeystone:' .. mapID .. ':' .. keyLevel .. ':' .. a1 .. ':' .. a2 .. ':' .. a3 .. '|h[Keystone: ' .. e.GetMapName(mapID) .. ']|h|r'
+	local s = strformat('|cffa335ee|Hkeystone:%d:%d:%d:%d:%d|h[Keystone: %s]|h|r', AstralKeys[index][3], AstralKeys[index][4], e.AffixOne(), e.AffixTwo(), e.AffixThree(), e.GetMapName(AstralKeys[index][3]))
 	s = s:gsub('\124\124', '\124')
 
-	return s, keyLevel
+	return s, AstralKeys[index][4]
 end
 
-e.RegisterEvent('CHALLENGE_MODE_COMPLETED', function()
+AstralEvents:Register('CHALLENGE_MODE_COMPLETED', function()
 	C_Timer.After(3, function() e.FindKeyStone(true, true) end)
-end)
+end, 'dungeonCompleted')
 
 -- Check for keys after CM starts
-e.RegisterEvent('CHALLENGE_MODE_START', function()
-	C_Timer.After(3, function() e.FindKeyStone(true, false) end)
-end)
+--AstralEvents:Register('CHALLENGE_MODE_START', function()
+--	C_Timer.After(3, function() e.FindKeyStone(true, false) end)
+--end, 'dungeonStarted')
 
-local function Completed10()
+local function CompletedWeekly()
 	if not e.CharacterID() then return 0 end
 	if AstralCharacters[e.CharacterID()]['level'] then
 	 if AstralCharacters[e.CharacterID()].level >= 15 then
@@ -63,14 +53,6 @@ local function Completed10()
 	else
 		return 0
 	end
-end
-
-function e.SetAffix(affixNumber, affixID)
-	AstralAffixes[affixNumber] = affixID
-end
-
-function e.GetAffix(affixNumber)
-	return AstralAffixes[affixNumber]
 end
 
 function e.GetKeyInfo()
@@ -93,6 +75,7 @@ end
 function e.FindKeyStone(sendUpdate, anounceKey)
 	local mapID, keyLevel, a1, a2, a3, s, itemID, delink, link
 	local s = ''
+	local s2 = ''
 
 	for bag = 0, NUM_BAG_SLOTS + 1 do
 		for slot = 1, GetContainerNumSlots(bag) do
@@ -100,65 +83,58 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 			if (itemID and itemID == 138019) then
 				link = GetContainerItemLink(bag, slot)
 				mapID, keyLevel, a1, a2, a3 = e.ParseLink(link)
-				s = 'updateV5 ' .. e.PlayerName() .. ':' .. e.PlayerClass() .. ':' .. e.PlayerRealm() ..':' .. mapID .. ':' .. keyLevel .. ':' .. a1 .. ':' .. a2 .. ':' .. a3 .. ':' .. Completed10()
-				--s = 'updateV4 CHARACTERSAZ:DEMONHUNTER:Bleeding Hollow:201:22:1:13:13:10:16:1'
-				--Console:AddLine('AK', 'send text ' .. s)
+				s = string.format('%s %s:%d:%d:%d:%d', e.UPDATE_VERSION, e.PlayerClass(), mapID, keyLevel, CompletedWeekly(), e.Week)
 			end
 		end
 	end
 
 	if not link then
-		if not e.IsEventRegistered('CHAT_MSG_LOOT') then
-			e.RegisterEvent('CHAT_MSG_LOOT', function(...)
+		if not AstralEvents:IsRegistered('CHAT_MSG_LOOT', 'keyLoot') then
+			AstralEvents:Register('CHAT_MSG_LOOT', function(...)
 				local msg = ...
 				local sender = select(5, ...)
 				if not sender == e.PlayerName() then return end
 
 				if string.lower(msg):find('keystone') then
-					e.RegisterEvent('BAG_UPDATE', function()
+					AstralEvents:Register('BAG_UPDATE', function()
 						e.FindKeyStone(true, true)
-						e.UnregisterEvent('BAG_UPDATE')
-						e.UnregisterEvent('CHAT_MSG_LOOT')
-						end)
+						AstralEvents:Unregister('BAG_UPDATE', 'bagUpdate')
+						AstralEvents:Unregister('CHAT_MSG_LOOT', 'keyLoot')
+						end, 'bagUpdate')
 				end
-			end)
+			end, 'keyLoot')
 		end
 	end
 
 	local oldMap, oldLevel = e.GetUnitKeyByID(e.PlayerID())
 
-	if link and e.IsEventRegistered('BAG_UPDATE') then
-		e.UnregisterEvent('BAG_UPDATE')
+	if link and AstralEvents:IsRegistered('BAG_UPDATE', 'bagUpdate') then
+		AstralEvents:Unregister('BAG_UPDATE', 'bagUpdate')
 	end
 
 	if sendUpdate  and s ~= '' then
 		if IsInGuild() then
 			SendAddonMessage('AstralKeys', s, 'GUILD')
+			SendAddonMessage('AstralKeys', s2, 'GUILD')
 		else
 			local foundPlayer = false
 			for i = 1, #AstralKeys do
-				if AstralKeys[i].name == e.PlayerName() then
+				if AstralKeys[i][1] == string.format('%s-%s',e.PlayerName(), e.PlayerRealm()) then
 					foundPlayer = true
-					if AstralKeys[i].level < tonumber(keyLevel) then
-						AstralKeys[i].map = tonumber(mapID)
-						AstralKeys[i].level = tonumber(keyLevel)
-						AstralKeys[i].a1 = tonumber(a1)
-						AstralKeys[i].a2 = tonumber(a2)
-						AstralKeys[i].a3 = tonumber(a3)
-					end
+					AstralKeys[i][3] = tonumber(mapID)
+					AstralKeys[i][4] = tonumber(keyLevel)
 				end
 			end
 
 			if not foundPlayer then
 				AstralKeys[#AstralKeys + 1] = {
-				['name'] = e.PlayerName(),
-				['class'] = e.PlayerClass(),
-				['realm'] = e.PlayerRealm(),
-				['map'] = tonumber(mapID),
-				['level'] = tonumber(keyLevel),
-				['a1'] = tonumber(a1),
-				['a2'] = tonumber(a2),
-				['a3'] = tonumber(a3),
+				string.format('%s-%s',e.PlayerName(), e.PlayerRealm()),
+				e.PlayerClass(),
+				tonumber(mapID),
+				tonumber(keyLevel),
+				CompletedWeekly(),
+				e.Week,
+				e.WeekTime()
 				}
 				e.SetUnitID(e.PlayerName() .. '-' ..  e.PlayerRealm(), #AstralKeys)
 			end
@@ -197,8 +173,8 @@ function e.GetCharacterKey(unit)
 	if not unit then return '' end
 
 	for i = 1, #AstralKeys do
-		if AstralKeys[i].name == unit then
-			return CreateKeyText(AstralKeys[i].map, AstralKeys[i].level)
+		if AstralKeys[i][1] == unit then
+			return CreateKeyText(AstralKeys[i][3], AstralKeys[i][4])
 		end
 	end
 
@@ -255,4 +231,20 @@ function e.GetBestClear()
 	if index == -1 then
 		table.insert(AstralCharacters, {name = e.PlayerName(), class = e.PlayerClass(), realm = e.PlayerRealm(), map = bestMap, level = bestLevel, knowledge = e.GetAKBonus(e.ParseAKLevel())})
 	end
+end
+
+-- Deprecated
+if not AstralAffixes then 
+	AstralAffixes = {}
+	AstralAffixes[1] = 0
+	AstralAffixes[2] = 0
+	AstralAffixes[3] = 0
+end
+
+function e.SetAffix(affixNumber, affixID)
+	AstralAffixes[affixNumber] = affixID
+end
+
+function e.GetAffix(affixNumber)
+	return AstralAffixes[affixNumber]
 end

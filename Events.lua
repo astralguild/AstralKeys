@@ -1,31 +1,5 @@
 local ADDON, e = ...
 
-local akEvents = CreateFrame('FRAME')
-local next = next
-
-akEvents:SetScript("OnEvent", function(self, event, ...)
-		akEvents[event](...)
-end)
-
-function e.RegisterEvent(event, func)
-	akEvents:RegisterEvent(event)
-	akEvents[event] = function(...)
-	func(...)
-	end
-end
-
-function e.UnregisterEvent(event)
-	akEvents:UnregisterEvent(event)
-	akEvents[event] = nil
-end
-
-function e.IsEventRegistered(event)
-	if akEvents[event] then return true
-	else
-		return false
-	end
-end
-
 AstralEvents = CreateFrame('FRAME', 'AstralEvents')
 AstralEvents.dtbl = {}
 
@@ -66,7 +40,7 @@ function AstralEvents:Unregister(event, name)
 	if not objs then return end
 	objs[name] = nil
 	if next(objs) == nil then
-		objs = nil
+		self.dtbl[event] = nil
 		self:UnregisterEvent(event)
 	end
 end
@@ -108,7 +82,7 @@ end
 function AstralEvents:OnEvent(event, ...)
 	local objs = self.dtbl[event]
 	if not objs then return end
-	for k, obj in pairs(objs) do
+	for _, obj in pairs(objs) do
 		obj.method(...)
 	end
 end
