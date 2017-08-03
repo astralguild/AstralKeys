@@ -50,8 +50,8 @@ end
 
 AstralEvents:Register('PLAYER_LOGIN', function()
 	local region = GetCurrentRegion()
-	local d = date('*t')
 	local currentTime = GetServerTime()
+	local d = date('*t', currentTime)
 	local hourOffset, minOffset = math.modf(difftime(currentTime, time(date('!*t', currentTime))))/3600
 
 	if regeion ~= 3 then
@@ -81,7 +81,7 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 		e.FindKeyStone(true, false)
 	end
 
-	if d.wday == 3 and d.hour < (16 + hourOffset) and region ~= 3 then
+	if d.wday == 3 and d.hour < (16 + hourOffset + (d.isdst and 1 or 0)) and region ~= 3 then
 		local frame = CreateFrame('FRAME')
 		frame.elapsed = 0
 		frame.first = true
@@ -110,7 +110,7 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 				self.elapsed = 0
 			end
 			end)
-	elseif d.wday == 4 and d.hour < (7 + hourOffset) and region == 3 then
+	elseif d.wday == 4 and d.hour < (7 + hourOffset + (d.isdst and 1 or 0)) and region == 3 then
 		local frame = CreateFrame('FRAME')
 		frame.elapsed = 0
 		frame.first = true

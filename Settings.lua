@@ -30,7 +30,7 @@ function e.DataResetTime()
 			if d.wday == 4 then
 				days = (d.hour < hours and 0 or 7)				
 			else
-				days = 10 - d.wday
+				days = 11 - d.wday
 			end
 		else
 			days = 4 - d.wday
@@ -41,35 +41,6 @@ function e.DataResetTime()
 
 	return time
 end
-
---[[
-function e.DataResetTime()
-	local serverTime = GetServerTime()
-	local d = date('*t', serverTime)
-	local secs = 60 - d.sec
-	local mins = math.floor(59 - d.min + d.sec/100)
-	local hours = math.floor(23 - d.hour + d.min/100)
-	local days
-	local hourOffset, minOffset = math.modf(difftime(time(), time(date('!*t'))))/3600
-	minOffset = minOffset or 0
-	if d.wday > 2 then 
-		days = math.floor(7 - d.wday + d.hour/100) + 2
-	else
-		days = math.floor(2 - d.wday + d.hour/100)
-	end
-
-	local region = GetCurrentRegion()
-
-	if region == 3 then 
-		hourOffset = hourOffset + 7 + 24
-	else
-		hourOffset = hourOffset + 16
-	end
-
-	local time = (((days * 24 + hours + hourOffset) * 60 + mins + minOffset) * 60 + secs) + serverTime
-
-	return time
-end]]
 
 if not AstralKeysSettings then
 	AstralKeysSettings = {
