@@ -212,7 +212,11 @@ local function CreateNameFrame(parent, unitName, unitClass)
 	frame:SetSize(110, 15)
 	frame.name = unitName
 	frame.class = unitClass
-	frame.realm = unitName:sub(unitName:find('-') + 1)
+	if unitName ~= '' then
+		frame.realm = unitName:sub(unitName:find('-') + 1)
+	else
+		frame.realm = ''
+	end
 
 	frame.string = frame:CreateFontString('ARTWORK')
 	frame.string:SetFont(FONT_CONTENT, FONT_SIZE)
@@ -232,7 +236,11 @@ local function CreateNameFrame(parent, unitName, unitClass)
 		if unitName ~= '' then
 			self.name = unitName:match('%a+')
 			self.class = unitClass
-			self.realm = unitName:sub(unitName:find('-') + 1)
+			if unitName ~= '' then
+				self.realm = unitName:sub(unitName:find('-') + 1)
+			else
+				self.realm = ''
+			end
 			if self.realm == e.PlayerRealm() then
 				self.string:SetText(WrapTextInColorCode(self.name, select(4, GetClassColor(self.class))))
 			else

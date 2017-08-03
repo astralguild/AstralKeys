@@ -42,6 +42,8 @@ DUNGEON_TABLE[233]['tname'] = 'Cathedral'
 DUNGEON_TABLE[234] = {}
 DUNGEON_TABLE[234]['name'] = 'Return to Karazhan: Upper'
 DUNGEON_TABLE[234]['tname'] = 'Upper Karazhan'
+--DUNGEON_TABLE[239] = {}
+--wwwDUNGEON_TABLE[239]['name'] = 'Seat of the Triumvirate'
 
 --[[ 
 Times
