@@ -1,4 +1,4 @@
- local _, e = ...
+local _, e = ...
 
 local BACKDROP = {
 bgFile = "Interface/Tooltips/UI-Tooltip-Background",
@@ -212,7 +212,7 @@ local function CreateNameFrame(parent, unitName, unitClass)
 	frame:SetSize(110, 15)
 	frame.name = unitName
 	frame.class = unitClass
-	frame.realm = unitName:match('%a+', unitName:find('-'))
+	frame.realm = unitName:sub(unitName:find('-') + 1)
 
 	frame.string = frame:CreateFontString('ARTWORK')
 	frame.string:SetFont(FONT_CONTENT, FONT_SIZE)
@@ -232,7 +232,7 @@ local function CreateNameFrame(parent, unitName, unitClass)
 		if unitName ~= '' then
 			self.name = unitName:match('%a+')
 			self.class = unitClass
-			self.realm = unitName:match('%a+', unitName:find('-'))
+			self.realm = unitName:sub(unitName:find('-') + 1)
 			if self.realm == e.PlayerRealm() then
 				self.string:SetText(WrapTextInColorCode(self.name, select(4, GetClassColor(self.class))))
 			else
@@ -1053,8 +1053,6 @@ end
 function e.UpdateFrames()
 	if not init then return end
 
-	--local name, keyLevel, mapID, class, realm, index, completed
-
 	sortedTable = e.UpdateTables(sortedTable)
 
 	e.SortTable(sortedTable, e.GetSortMethod())
@@ -1065,50 +1063,6 @@ function e.UpdateFrames()
 		AstralContentFrame.slider:Hide()
 	end
 	e.UpdateLines()
---[[
-	if #sortedTable < 26 then
-		indexEnd = #sortedTable
-	else
-		indexEnd = 25
-	end
-
-	if #sortedTable < #nameFrames then
-		for i = 1, indexEnd do
-			--index = i + offset
-			--name, keyLevel, mapID, class, realm, completed = sortedTable[i + offset].name, sortedTable[i + offset].level, sortedTable[i + offset].map, sortedTable[i + offset].class, sortedTable[i + offset].realm, sortedTable[i + offset].weeklyCache
-			nameFrames[i]:SetNameInfo(sortedTable[i + offset].name, sortedTable[i + offset].class, sortedTable[i + offset].realm)
-			keyFrames[i]:SetKeyInfo(sortedTable[i + offset].level)
-			mapFrames[i]:SetMapInfo(sortedTable[i + offset].map, sortedTable[i + offset].level)
-			completedFrames[i]:SetCompletedInfo(sortedTable[i + offset].weeklyCache)
-		end
-		for i = indexEnd + 1, #nameFrames do
-			nameFrames[i]:SetNameInfo('', nil, nil)
-			keyFrames[i]:SetKeyInfo(-1)
-			mapFrames[i]:SetMapInfo(-1, nil)
-			completedFrames[i]:SetCompletedInfo(0)
-		end
-	else
-		for i = 1, indexEnd do
-			index = i + offset
-			name, keyLevel, mapID, class, realm, completed = sortedTable[index].name, sortedTable[index].level, sortedTable[index].map, sortedTable[index].class, sortedTable[index].realm, sortedTable[index].weeklyCache
-			if nameFrames[i] then
-				nameFrames[i]:SetNameInfo(name, class, realm)
-				keyFrames[i]:SetKeyInfo(keyLevel)
-				mapFrames[i]:SetMapInfo(mapID, keyLevel)
-				completedFrames[i]:SetCompletedInfo(completed)
-			else
-				nameFrames[i] = CreateNameFrame(AstralContentFrame, name, class, realm)
-				keyFrames[i] = CreateKeyFrame(AstralContentFrame, keyLevel)
-				mapFrames[i] = CreateMapFrame(AstralContentFrame, mapID, keyLevel)
-				completedFrames[i] = CreateCompleteFrame(contentFrame, completed)
-
-				keyFrames[i]:SetPoint('TOPLEFT', keyButton, 'BOTTOMLEFT', 5, (i-1) * -15 - 3)
-				mapFrames[i]:SetPoint('TOPLEFT', mapButton, 'BOTTOMLEFT', 5, (i-1) * -15 - 3)
-				nameFrames[i]:SetPoint('TOPLEFT', nameButton, 'BOTTOMLEFT', 5, (i-1) * -15 - 3)
-				completedFrames[i]:SetPoint('TOPLEFT', completeButton, 'BOTTOMLEFT', 5, (i-1) * -15 - 3)
-			end
-		end
-	end]]
 end
 
 function e.UpdateCharacterFrames()

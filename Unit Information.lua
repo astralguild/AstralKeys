@@ -42,7 +42,7 @@ end
 -- Retrieves unit's realm
 -- @param unit id
 function e.UnitRealm(id)
-	return AstralKeys[id][1]:match('%a+', unitName:find('-'))
+	return AstralKeys[id][1]:sub(AstralKeys[id][1]:find('-') + 1)
 end
 
 function e.UnitName(index)
