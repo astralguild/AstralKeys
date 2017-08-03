@@ -1,6 +1,6 @@
 local _, e = ...
 local DEBUG = false
-local ADDON_VERSION = 15500
+local RESET_VERSION = 15500
 -- Reset time 15:00 UTC AMERICAS
 -- 07:00 UTC EU
 
@@ -44,7 +44,7 @@ end
 
 if not AstralKeysSettings then
 	AstralKeysSettings = {
-		['resetVersion'] = ADDON_VERSION,
+		['resetVersion'] = RESET_VERSION,
 		['reset'] = true,
 		['initTime'] = e.DataResetTime(),
 		['frameOptions'] = {
@@ -68,14 +68,14 @@ frame:SetScript('OnEvent', function(self, event, ...)
 	local addon = ...
 	if addon == 'AstralKeys' then
 		_G['AstralEngine'] = e
-		if not AstralKeysSettings['reset'] or not AstralKeysSettings['resetVersion'] or AstralKeysSettings['resetVersion'] ~= ADDON_VERSION then
+		if not AstralKeysSettings['reset'] or not AstralKeysSettings['resetVersion'] or AstralKeysSettings['resetVersion'] ~= RESET_VERSION then
 			wipe(AstralKeys)
 			wipe(AstralCharacters)
 			AstralAffixes[1] = 0
 			AstralAffixes[2] = 0
 			AstralAffixes[3] = 0
 			AstralKeysSettings = {
-				['resetVersion'] = ADDON_VERSION,
+				['resetVersion'] = RESET_VERSION,
 				['reset'] = true,
 				['initTime'] = e.DataResetTime(),
 				['frameOptions'] = {
