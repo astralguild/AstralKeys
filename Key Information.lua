@@ -166,7 +166,7 @@ end
 function e.GetUnitKeyByID(id)
 	if not id or (id < 1 ) then return end
 
-	return AstralKeys[id]['map'], AstralKeys[id]['level']
+	return AstralKeys[id][3], AstralKeys[id][4]
 end
 
 function e.GetCharacterKey(unit)

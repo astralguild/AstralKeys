@@ -17,10 +17,6 @@ local characterOffset = 0
 
 local name, keyLevel, mapID, class, realm, indexEnd
 
-local currentSort = {}
-currentSort['section'] = 'key'
-currentSort['orientation'] = 0
-
 local BACKDROPBUTTON = {
 bgFile = nil,
 edgeFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 16, edgeSize = 1,

@@ -1,5 +1,65 @@
 local ADDON, e = ...
 
+local BACKDROP = {
+bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+edgeFile = nil, tile = true, tileSize = 16, edgeSize = 16,
+insets = {left = 0, right = 0, top = 0, bottom = 0}
+}
+
+local POSITIONS = {
+	[1] = 'LEFT',
+	[2] = 'CENTER',
+	[3] = 'RIGHT',
+}
+
+local BACKDROPBUTTON = {
+bgFile = nil,
+edgeFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 16, edgeSize = 1,
+insets = {left = 0, right = 0, top = 0, bottom = 0}
+}
+
+local FONT_HEADER = "Interface\\AddOns\\AstralKeys\\Media\\big_noodle_titling.TTF"
+local FONT_CONTENT = "Interface\\AddOns\\AstralKeys\\Media\\Lato-Regular.TTF"
+local FONT_SIZE = 13
+
+local FONT_OBJECT_RIGHT = CreateFont("FONT_OBJECT_RIGHT")
+FONT_OBJECT_RIGHT:SetFont(FONT_CONTENT, FONT_SIZE)
+FONT_OBJECT_RIGHT:SetJustifyH('RIGHT')
+FONT_OBJECT_RIGHT:SetTextColor(1, 1, 1)
+
+local FONT_OBJECT_CENTRE = CreateFont("FONT_OBJECT_CENTRE")
+FONT_OBJECT_CENTRE:SetFont(FONT_CONTENT, FONT_SIZE)
+FONT_OBJECT_CENTRE:SetJustifyH('CENTER')
+FONT_OBJECT_CENTRE:SetTextColor(1, 1, 1)
+
+local FONT_OBJECT_HIGHLIGHT = CreateFont("FONT_OBJECT_HIGHLIGHT")
+FONT_OBJECT_HIGHLIGHT:SetFont(FONT_CONTENT, FONT_SIZE)
+FONT_OBJECT_HIGHLIGHT:SetJustifyH('CENTER')
+FONT_OBJECT_HIGHLIGHT:SetTextColor(192/255, 192/255, 192/255)
+
+local function CreateButton(parent, btnID, width, height, text, fontobject, highlightfont)
+	local button = CreateFrame('BUTTON', btnID, parent)
+	button.ID = btnID
+	button.sort = 0
+	button:SetSize(width, height)
+
+	button.t = button:CreateTexture('BACKGROUND')
+	button.t:SetPoint('BOTTOMLEFT', button, 'BOTTOMLEFT', 5, 0)
+	button.t:SetSize(width - 10, 1)
+	button.t:SetColorTexture(.3, .3, .3)
+
+	if fontobject then
+		button:SetNormalFontObject(fontobject)
+		button:SetHighlightFontObject(highlightfont)
+		button:SetText(text)
+	end
+
+	button:EnableMouse(true)
+
+	return button
+end
+
+
 local frame = CreateFrame('FRAME', 'AstralOptionsFrame', UIParent)
 frame:SetFrameStrata('DIALOG')
 frame:SetFrameLevel(5)
@@ -32,3 +92,8 @@ closeButton:SetScript('OnClick', function()
 	AstralOptionsFrame:Hide()
 end)
 
+local generalButton = CreateButton(frame, 'akGeneral', 125, 20, 'General Options', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT)
+generalButton:SetPoint('TOPLEFT', logo, 'BOTTOMLEFT', 0, -10)
+
+local mapButton = CreateButton(frame, 'akmapButton', 200, 20, 'Map Names', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT)
+mapButton:SetPoint('LEFT', generalButton, 'RIGHT', 10, 0)
