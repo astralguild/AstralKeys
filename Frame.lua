@@ -206,12 +206,13 @@ local completedFrames = {}
 local function CreateNameFrame(parent, unitName, unitClass)
 	local frame = CreateFrame('FRAME', nil, parent)
 	frame:SetSize(110, 15)
-	frame.name = unitName
 	frame.class = unitClass
 	if unitName ~= '' then
 		frame.realm = unitName:sub(unitName:find('-') + 1)
+		frame.name = unitName:sub(0, unitName:find('-') - 1)
 	else
 		frame.realm = ''
+		frame.name = ''
 	end
 
 	frame.string = frame:CreateFontString('ARTWORK')
@@ -230,13 +231,9 @@ local function CreateNameFrame(parent, unitName, unitClass)
 
 	function frame.SetNameInfo(self, unitName, unitClass)
 		if unitName ~= '' then
-			self.name = unitName:match('%a+')
+			self.name = unitName:sub(0, unitName:find('-') - 1)
 			self.class = unitClass
-			if unitName ~= '' then
-				self.realm = unitName:sub(unitName:find('-') + 1)
-			else
-				self.realm = ''
-			end
+			self.realm = unitName:sub(unitName:find('-') + 1)
 			if self.realm == e.PlayerRealm() then
 				self.string:SetText(WrapTextInColorCode(self.name, select(4, GetClassColor(self.class))))
 			else
@@ -245,7 +242,6 @@ local function CreateNameFrame(parent, unitName, unitClass)
 		else
 			self.string:SetText('')
 		end
-
 	end
 
 	return frame
@@ -262,7 +258,7 @@ local function CreateMapFrame(parent, mapID, keyLevel)
 	frame.string:SetFont(FONT_CONTENT, FONT_SIZE)
 	frame.string:SetPoint('TOPLEFT', frame, 'TOPLEFT')
 
-	if mapID ~= -1 then
+	if mapID ~= -1 then -- -1 is used to denote no mapID
 		frame.string:SetText(e.GetMapName(frame.map))
 	end
 
@@ -649,7 +645,7 @@ local affixHeader = e.CreateHeader(affixFrame, 'affixHeader', 175, 20, 'Affixes'
 affixHeader:SetPoint('TOPLEFT', affixFrame, 'TOPLEFT')
 
 local affixOne = CreateFrame('FRAME', 'AstralAffixOne', affixFrame)
-affixOne.aid = e.GetAffix(1)
+--affixOne.aid = e.GetAffix(1)
 
 affixOne:SetSize(100, 20)
 affixOne:SetPoint('TOPLEFT', affixHeader, 'BOTTOMLEFT', 10, -5)
@@ -683,7 +679,7 @@ affixOne:SetScript('OnLeave', function()
 	end)
 
 local affixTwo = CreateFrame('FRAME', 'AstralAffixTwo', affixFrame)
-affixTwo.aid = e.GetAffix(2)
+--affixTwo.aid = e.GetAffix(2)
 
 affixTwo:SetSize(100, 20)
 affixTwo:SetPoint('TOPLEFT', affixOne, 'BOTTOMLEFT', 0, -5)
@@ -717,7 +713,7 @@ affixTwo:SetScript('OnLeave', function()
 	end)
 
 local affixThree = CreateFrame('FRAME', 'AstralAffixThree', affixFrame)
-affixThree.aid = e.GetAffix(3)
+--affixThree.aid = e.GetAffix(3)
 
 affixThree:SetSize(100, 20)
 affixThree:SetPoint('TOPLEFT', affixOne, 'TOPRIGHT', 10, 0)

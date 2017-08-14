@@ -65,7 +65,6 @@ function AstralComs:OnEvent(event, ...)
 			obj.method(content, ...)
 		end
 	end
-
 end
 AstralComs:SetScript('OnEvent', AstralComs.OnEvent)
 
@@ -76,6 +75,7 @@ function e.AnnounceNewKey(keyLink, level)
 end
 
 local function UpdateUnitKey(msg, ...)
+
 	local timeStamp = e.WeekTime()
 	local unit = select(4, ...)
 	local class, dungeonID, keyLevel, weekly, week = msg:match('(%a+):(%d+):(%d+):(%d+):(%d+)')
@@ -97,14 +97,12 @@ local function UpdateUnitKey(msg, ...)
 	else
 		AstralKeys[#AstralKeys + 1] = {unit, class, dungeonID, keyLevel, weekly, week, timeStamp}
 		e.SetUnitID(unit, #AstralKeys)
-
-		if unit == strformat('%s-%s', e.PlayerName(), e.PlayerRealm()) then
-			e.SetPlayerID()
-		end
 	end
+
 	e.UpdateFrames()
 	
 	if unit == strformat('%s-%s', e.PlayerName(), e.PlayerRealm()) then
+		e.SetPlayerID()
 		e.UpdateCharacterFrames()
 	end
 end
@@ -116,10 +114,11 @@ local function SyncReceive(entry)
 	if updateTicker['_remainingIterations'] and updateTicker['_remainingIterations'] > 0 then updateTicker:Cancel() end
 	updateTicker = C_Timer.NewTicker(.75, e.UpdateFrames, 1)
 
-	local _pos = 1
+	local _pos = 0
 	while find(entry, '_', _pos) do
 		
-		unit, class, dungeonID, keyLevel, weekly, week, timeStamp = entry:match('(%a+%-%a+):(%a+):(%d+):(%d+):(%d+):(%d+):(%d)', _pos)
+		class, dungeonID, keyLevel, weekly, week, timeStamp = entry:match(':(%a+):(%d+):(%d+):(%d+):(%d+):(%d)', entry:find(':', _pos))
+		unit = entry:sub(_pos, entry:find(':', _pos) - 1)
 		
 		_pos = find(entry, '_', _pos) + 1
 

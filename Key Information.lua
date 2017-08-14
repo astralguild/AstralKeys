@@ -4,9 +4,11 @@ local strformat = string.format
 local GRAY = 'ff9d9d9d'
 local PURPLE = 'ffa335ee'
 
+local WEEKLY_LEVEL = 15
+
 local function Weekly()
 	e.GetBestClear()
-	if AstralCharacters[e.CharacterID()].level >= 15 then
+	if AstralCharacters[e.CharacterID()].level >= WEEKLY_LEVEL then
 		SendAddonMessage('AstralKeys', 'updateWeekly 1', 'GUILD')
 	end
 	e.UpdateCharacterFrames()
@@ -37,19 +39,10 @@ AstralEvents:Register('CHALLENGE_MODE_COMPLETED', function()
 	C_Timer.After(3, function() e.FindKeyStone(true, true) end)
 end, 'dungeonCompleted')
 
--- Check for keys after CM starts
---AstralEvents:Register('CHALLENGE_MODE_START', function()
---	C_Timer.After(3, function() e.FindKeyStone(true, false) end)
---end, 'dungeonStarted')
-
 local function CompletedWeekly()
 	if not e.CharacterID() then return 0 end
-	if AstralCharacters[e.CharacterID()]['level'] then
-	 if AstralCharacters[e.CharacterID()].level >= 15 then
-			return 1
-		else
-			return 0
-		end
+	if AstralCharacters[e.CharacterID()]['level'] and AstralCharacters[e.CharacterID()].level >= WEEKLY_LEVEL then
+		return 1
 	else
 		return 0
 	end
@@ -75,7 +68,6 @@ end
 function e.FindKeyStone(sendUpdate, anounceKey)
 	local mapID, keyLevel, a1, a2, a3, s, itemID, delink, link
 	local s = ''
-	local s2 = ''
 
 	for bag = 0, NUM_BAG_SLOTS + 1 do
 		for slot = 1, GetContainerNumSlots(bag) do
@@ -92,8 +84,8 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 		if not AstralEvents:IsRegistered('CHAT_MSG_LOOT', 'keyLoot') then
 			AstralEvents:Register('CHAT_MSG_LOOT', function(...)
 				local msg = ...
-				local sender = select(5, ...)
-				if not sender == e.PlayerName() then return end
+				local unit = select(5, ...)
+				if not unit == e.PlayerName() then return end
 
 				if string.lower(msg):find('keystone') then
 					AstralEvents:Register('BAG_UPDATE', function()
@@ -115,7 +107,6 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 	if sendUpdate  and s ~= '' then
 		if IsInGuild() then
 			SendAddonMessage('AstralKeys', s, 'GUILD')
-			SendAddonMessage('AstralKeys', s2, 'GUILD')
 		else
 			local foundPlayer = false
 			for i = 1, #AstralKeys do
@@ -234,6 +225,7 @@ function e.GetBestClear()
 end
 
 -- Deprecated
+--[[
 if not AstralAffixes then 
 	AstralAffixes = {}
 	AstralAffixes[1] = 0
@@ -248,3 +240,4 @@ end
 function e.GetAffix(affixNumber)
 	return AstralAffixes[affixNumber]
 end
+]]
