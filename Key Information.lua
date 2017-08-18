@@ -75,7 +75,7 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 			if (itemID and itemID == 138019) then
 				link = GetContainerItemLink(bag, slot)
 				mapID, keyLevel, a1, a2, a3 = e.ParseLink(link)
-				s = string.format('%s %s:%d:%d:%d:%d', e.UPDATE_VERSION, e.PlayerClass(), mapID, keyLevel, CompletedWeekly(), e.Week)
+				s = string.format('%s %s-%s:%s:%d:%d:%d:%d', e.UPDATE_VERSION, e.PlayerName(), e.PlayerRealm(), e.PlayerClass(), mapID, keyLevel, CompletedWeekly(), e.Week)
 			end
 		end
 	end
@@ -108,26 +108,16 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 		if IsInGuild() then
 			SendAddonMessage('AstralKeys', s, 'GUILD')
 		else
-			local foundPlayer = false
-			for i = 1, #AstralKeys do
-				if AstralKeys[i][1] == string.format('%s-%s',e.PlayerName(), e.PlayerRealm()) then
-					foundPlayer = true
-					AstralKeys[i][3] = tonumber(mapID)
-					AstralKeys[i][4] = tonumber(keyLevel)
-				end
-			end
+			local id = e.UnitID(string.format('%s-%s', e.PlayerName(), e.PlayerRealm()))
 
-			if not foundPlayer then
-				AstralKeys[#AstralKeys + 1] = {
-				string.format('%s-%s',e.PlayerName(), e.PlayerRealm()),
-				e.PlayerClass(),
-				tonumber(mapID),
-				tonumber(keyLevel),
-				CompletedWeekly(),
-				e.Week,
-				e.WeekTime()
-				}
-				e.SetUnitID(e.PlayerName() .. '-' ..  e.PlayerRealm(), #AstralKeys)
+			if id then
+				AstralKeys[id][3] = tonumber(mapID)
+				AstralKeys[id][4] = tonumber(keyLevel)
+				AstralKeys[id][6] = e.Week
+				AstralKeys[id][7] = e.WeekTime()
+			else
+				AstralKeys[#AstralKeys + 1] = {string.format('%s-%s', e.PlayerName(), e.PlayerRealm()), e.PlayerClass(), tonumber(mapID), tonumber(keyLevel), e.Week, e.WeekTime()}
+				e.SetUnitID(string.format('%s-%s', e.PlayerName(), e.PlayerRealm()), #AstralKeys)
 			end
 		end
 	end

@@ -1,7 +1,7 @@
 local ADDON, e = ...
 
 local SYNC_VERSION = 'sync4'
-e.UPDATE_VERSION = 'updateV6'
+e.UPDATE_VERSION = 'updateV7'
 
 local versionList = {}
 local messageStack = {}
@@ -74,11 +74,10 @@ function e.AnnounceNewKey(keyLink, level)
 	SendChatMessage(strformat(ANNOUNCE_MESSAGE, keyLink, level), 'PARTY')
 end
 
-local function UpdateUnitKey(msg, ...)
-
+local function UpdateUnitKey(msg)
 	local timeStamp = e.WeekTime()
-	local unit = select(4, ...)
-	local class, dungeonID, keyLevel, weekly, week = msg:match('(%a+):(%d+):(%d+):(%d+):(%d+)')
+	local unit = msg:sub(0, msg:find(':') - 1)
+	local class, dungeonID, keyLevel, weekly, week = msg:match('(%a+):(%d+):(%d+):(%d+):(%d+)', msg:find(':'))
 	
 	dungeonID = tonumber(dungeonID)
 	keyLevel = tonumber(keyLevel)
