@@ -4,11 +4,11 @@ local strformat = string.format
 local GRAY = 'ff9d9d9d'
 local PURPLE = 'ffa335ee'
 
-local WEEKLY_LEVEL = 15
+e.CACHE_LEVEL = 10
 
 local function Weekly()
 	e.GetBestClear()
-	if AstralCharacters[e.CharacterID()].level >= WEEKLY_LEVEL then
+	if AstralCharacters[e.CharacterID()].level >= e.CACHE_LEVEL then
 		SendAddonMessage('AstralKeys', 'updateWeekly 1', 'GUILD')
 	end
 	e.UpdateCharacterFrames()
@@ -41,7 +41,7 @@ end, 'dungeonCompleted')
 
 local function CompletedWeekly()
 	if not e.CharacterID() then return 0 end
-	if AstralCharacters[e.CharacterID()]['level'] and AstralCharacters[e.CharacterID()].level >= WEEKLY_LEVEL then
+	if AstralCharacters[e.CharacterID()]['level'] and AstralCharacters[e.CharacterID()].level >= e.CACHE_LEVEL then
 		return 1
 	else
 		return 0

@@ -863,7 +863,7 @@ nameButton:SetScript('OnClick', function()
 
 	end)
 
-local completeButton = CreateButton(contentFrame, 'completeButton', 30, 20, '15+', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT)
+local completeButton = CreateButton(contentFrame, 'completeButton', 30, 20, e.CACHE_LEVEL .. '+', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT)
 completeButton:SetPoint('LEFT', nameButton, 'RIGHT')
 completeButton:SetScript('OnClick', function()
 	contentFrame:ResetSlider()
