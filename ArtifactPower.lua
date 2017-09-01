@@ -42,8 +42,8 @@ DUNGEON_TABLE[233]['tname'] = 'Cathedral'
 DUNGEON_TABLE[234] = {}
 DUNGEON_TABLE[234]['name'] = 'Return to Karazhan: Upper'
 DUNGEON_TABLE[234]['tname'] = 'Upper Karazhan'
---DUNGEON_TABLE[239] = {}
---wwwDUNGEON_TABLE[239]['name'] = 'Seat of the Triumvirate'
+DUNGEON_TABLE[239] = {}
+DUNGEON_TABLE[239]['name'] = 'Seat of the Triumvirate'
 
 --[[ 
 Times
@@ -87,21 +87,21 @@ function e.BuildMapTable()
 		DUNGEON_TABLE[map].chestTimes[3] = c
 		DUNGEON_TABLE[map]['apTier'] = {}
 		if runTime == 1440 then
-			DUNGEON_TABLE[map].apTier[1] = 175
-			DUNGEON_TABLE[map].apTier[2] = 290
-			DUNGEON_TABLE[map].apTier[3] = 325
-			DUNGEON_TABLE[map].apTier[4] = 465
-			DUNGEON_TABLE[map].apTier[5] = 725
-			DUNGEON_TABLE[map].apTier[6] = 1025
+			DUNGEON_TABLE[map].apTier[1] = 175 -- 2-3
+			DUNGEON_TABLE[map].apTier[2] = 290 -- 4-6
+			DUNGEON_TABLE[map].apTier[3] = 325 -- 7-9
+			DUNGEON_TABLE[map].apTier[4] = 465 -- 10-14
+			DUNGEON_TABLE[map].apTier[5] = 725 -- 15-19
+			DUNGEON_TABLE[map].apTier[6] = 1025 --20-25
 		elseif runTime > 1440 and runTime < 2700 then
-			DUNGEON_TABLE[map].apTier[1] = 300
+			DUNGEON_TABLE[map].apTier[1] = 300 
 			DUNGEON_TABLE[map].apTier[2] = 475
 			DUNGEON_TABLE[map].apTier[3] = 540
 			DUNGEON_TABLE[map].apTier[4] = 775
 			DUNGEON_TABLE[map].apTier[5] = 1200
 			DUNGEON_TABLE[map].apTier[6] = 1700
 		elseif runTime == 2700 then
-			DUNGEON_TABLE[map].apTier[1] = 375
+			DUNGEON_TABLE[map].apTier[1] = 375 
 			DUNGEON_TABLE[map].apTier[2] = 600
 			DUNGEON_TABLE[map].apTier[3] = 675
 			DUNGEON_TABLE[map].apTier[4] = 1000

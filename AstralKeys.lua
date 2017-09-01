@@ -61,7 +61,7 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 	end
 
 	for i, unit in pairs(AstralKeys) do
-		if tonumber(unit[6]) < e.Week then
+		if unit[6] and tonumber(unit[6]) < e.Week then
 			table.remove(AstralKeys, i)
 		end
 	end
