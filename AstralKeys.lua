@@ -60,12 +60,6 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 		e.Week = math.floor((GetServerTime() - initializeTime[3]) / 604800)
 	end
 
-	for i, unit in pairs(AstralKeys) do
-		if unit[6] and tonumber(unit[6]) < e.Week then
-			table.remove(AstralKeys, i)
-		end
-	end
-
 	e.SetPlayerName()
 	e.SetPlayerClass()
 	e.SetPlayerRealm()
@@ -73,10 +67,10 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 	if currentTime > AstralKeysSettings.initTime then
 		wipe(AstralCharacters)
 		wipe(AstralKeys)
-		AstralAffixes = {}
-		AstralAffixes[1] = 0
-		AstralAffixes[2] = 0
-		AstralAffixes[3] = 0
+		--AstralAffixes = {}
+		--AstralAffixes[1] = 0
+		--AstralAffixes[2] = 0
+		--AstralAffixes[3] = 0
 		AstralKeysSettings.initTime = e.DataResetTime()
 		e.FindKeyStone(true, false)
 	end
@@ -144,9 +138,6 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 	RegisterAddonMessagePrefix('AstralKeys')
 
 	for i = 1, #AstralKeys do
-		if tonumber(AstralKeys[i][6]) < e.Week then
-			-- remove the thingy
-		end
 		e.SetUnitID(AstralKeys[i][1], i)
 	end
 	e.SetPlayerID()

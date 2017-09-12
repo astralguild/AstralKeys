@@ -127,14 +127,14 @@ local function SyncReceive(entry)
 		week = tonumber(week)
 		timeStamp = tonumber(timeStamp)
 
-		if not e.UnitInGuild(unit) then return end
+		if week < e.Week or not e.UnitInGuild(unit) then return end
 
 		local id = e.UnitID(unit)
 
 		if id then
-			if weekly == 1 then AstralKeys[id][5] = weekly end
-
 			if AstralKeys[id][7] < timeStamp then
+				if weekly == 1 then AstralKeys[id][5] = weekly end
+
 				AstralKeys[id][3] = dungeonID
 				AstralKeys[id][4] = keyLevel
 				AstralKeys[id][6] = week
