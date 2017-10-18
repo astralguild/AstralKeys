@@ -67,6 +67,5 @@ end
 
 --Gets Artifact Knowledge level
 function e.ParseAKLevel()
-	local amount = select(2, GetCurrencyInfo(1171))
-	return amount
+	return math.min(e.Week + 35, #AK_BONUS)
 end

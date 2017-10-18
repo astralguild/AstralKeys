@@ -18,7 +18,7 @@ end
 -- Checks to see if a unit is in the player's guild
 -- @param unit Unit name and server
 function e.UnitInGuild(unit)
-	return guildList[unit]
+	return guildList[unit] or false
 end
 
 -- Sets a number to a unit for quicker access to table

@@ -32,9 +32,9 @@ function e.ConvertToSI(quantity)
 	end
 
 	if amount < 10 then
-		return string.format('%.2f', amount) .. ' ' .. SI[index]
+		return string.format('%.2f', amount) .. ' ' .. IMP[index]
 	else
-		return math.floor(amount) .. ' ' .. SI[index]
+		return math.floor(amount) .. ' ' .. IMP[index]
 	end
 end
 
