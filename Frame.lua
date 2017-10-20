@@ -513,7 +513,7 @@ showOffline:SetScript('OnClick', function (self)
 	e.UpdateFrames()
 end)
 
-local minKeyLevel = e.CreateEditBox(quickOptionsFrame, 'minKeyLevel', 25, 'Min announce level', 1, 100)
+local minKeyLevel = e.CreateEditBox(quickOptionsFrame, 'minKeyLevel', 25, 'Min announce level', 1, 100, 'LEFT')
 minKeyLevel:SetPoint('TOPRIGHT', showOffline, 'BOTTOMRIGHT', 0, -5)
 minKeyLevel:SetScript('OnEditFocusLost', function(self)
 	e.SetMinKeyLevel(self:GetNumber())

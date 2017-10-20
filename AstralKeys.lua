@@ -1,4 +1,5 @@
 local a, e = ...
+
 if not AstralKeys then AstralKeys = {} end
 if not AstralCharacters then AstralCharacters = {} end
 
@@ -54,10 +55,10 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 	local d = date('*t', currentTime)
 	local hourOffset, minOffset = math.modf(difftime(currentTime, time(date('!*t', currentTime))))/3600
 
-	if regeion ~= 3 then
+	if region ~= 3 then
 		e.Week = math.floor((GetServerTime() - initializeTime[1]) / 604800)
 	else
-		e.Week = math.floor((GetServerTime() - initializeTime[3]) / 604800)
+		e.Week = math.floor((GetServerTime() - initializeTime[2]) / 604800)
 	end
 
 	e.SetPlayerName()
