@@ -90,7 +90,7 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 					self.first = false
 				end
 
-				if time(date('*t')) > AstralKeysSettings.initTime then
+				if time(date('*t', GetServerTime())) > AstralKeysSettings.initTime then
 					AstralCharacters = {}
 					AstralKeys = {}
 					AstralAffixes = {}
@@ -119,7 +119,7 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 					self.first = false
 				end
 
-				if time(date('*t')) > AstralKeysSettings.initTime then
+				if time(date('*t', GetServerTime())) > AstralKeysSettings.initTime then
 					AstralCharacters = {}
 					AstralKeys = {}
 					AstralAffixes = {}
