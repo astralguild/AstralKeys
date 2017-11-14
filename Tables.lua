@@ -1,11 +1,8 @@
 local _, e = ...
 
-local units = {}
-local tbl = {}
-
 local function ParseOnlineUnits(A)
-	wipe(tbl)
-	wipe(units)
+	local tbl = {}
+	local units = {}
 	local guildName
 	local numOnline = select(2, GetNumGuildMembers())
 	for i = 1, numOnline do
@@ -32,11 +29,11 @@ function e.UpdateTables(table)
 end
 
 function e.SortTable(A, v)
-	if v == 3 then
+	if v == 3 then -- Map Name
 	    for j = 2, #A do
 	        --Select item to sort
-	        key = A[j]
-	        i = j - 1
+	        local key = A[j]
+	        local i = j - 1
 	        while (i > 0) and (e.GetMapName(A[i][v]) > e.GetMapName(key[v])) do
 	            --Move placement index back
 	            A[i + 1] = A[i]
@@ -52,8 +49,8 @@ function e.SortTable(A, v)
 	else
 	    for j = 2, #A do
 	        --Select item to sort
-	        key = A[j]
-	        i = j - 1
+	        local key = A[j]
+	        local i = j - 1
 	        while (i > 0) and (A[i][v] > key[v]) do
 	            --Move placement index back
 	            A[i + 1] = A[i]
@@ -84,6 +81,7 @@ function e.DeepCopy(orig)
     end
     return copy
 end
+
 --[[
 local ended = false
 

@@ -15,7 +15,7 @@ local function Weekly()
 end
 
 local function InitData()
-	if UnitLevel('player') ~= 110 then return end
+	if UnitLevel('player') ~= 110 then return end -- Character isn't max level, anything from them is useless
 	e.GetBestClear()
 	e.SetCharacterID()
 	e.FindKeyStone(true, false)
@@ -72,7 +72,7 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 	for bag = 0, NUM_BAG_SLOTS + 1 do
 		for slot = 1, GetContainerNumSlots(bag) do
 			itemID = GetContainerItemID(bag, slot)
-			if (itemID and itemID == 138019) then
+			if (itemID and itemID == 138019) then -- Keystone itemID
 				link = GetContainerItemLink(bag, slot)
 				mapID, keyLevel, a1, a2, a3 = e.ParseLink(link)
 				s = string.format('%s %s-%s:%s:%d:%d:%d:%d', e.UPDATE_VERSION, e.PlayerName(), e.PlayerRealm(), e.PlayerClass(), mapID, keyLevel, CompletedWeekly(), e.Week)
@@ -80,6 +80,7 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 		end
 	end
 
+	-- item not found, register a function to loot event to check for keystone
 	if not link then
 		if not AstralEvents:IsRegistered('CHAT_MSG_LOOT', 'keyLoot') then
 			AstralEvents:Register('CHAT_MSG_LOOT', function(...)
@@ -100,6 +101,7 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 
 	local oldMap, oldLevel = e.GetUnitKeyByID(e.PlayerID())
 
+	-- Key found, unregister function, no longer needed
 	if link and AstralEvents:IsRegistered('BAG_UPDATE', 'bagUpdate') then
 		AstralEvents:Unregister('BAG_UPDATE', 'bagUpdate')
 	end
@@ -147,7 +149,7 @@ end
 function e.GetUnitKeyByID(id)
 	if not id or (id < 1 ) then return end
 
-	return AstralKeys[id][3], AstralKeys[id][4]
+	return AstralKeys[id][3], AstralKeys[id][4] -- mapID, key level
 end
 
 function e.GetCharacterKey(unit)

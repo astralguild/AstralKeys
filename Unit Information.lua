@@ -39,12 +39,15 @@ function e.WipeUnitList()
 	wipe(unitList)
 end
 
--- Retrieves unit's realm
--- @param unit id
+-- Retrieves unit's realm from unit string
+-- @param id Integer for unit
 function e.UnitRealm(id)
 	return AstralKeys[id][1]:sub(AstralKeys[id][1]:find('-') + 1)
 end
 
+-- Returns Character name with server name removed
+-- @param id for unit
+-- @return Unit name with server name removed
 function e.UnitName(index)
 	return Ambiguate(AstralKeys[index][1], 'GUILD')
 end

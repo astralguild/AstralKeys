@@ -39,6 +39,8 @@ function e.DataResetTime()
 
 	local time = (((days * 24 + hours) * 60 + minOffset) * 60) + serverTime - d.hour*3600 - d.min*60 - d.sec
 
+	-- TODO
+	-- ADD DST Check for time before returning!!!
 	return time
 end
 
