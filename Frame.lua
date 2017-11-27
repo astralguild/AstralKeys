@@ -108,7 +108,6 @@ local function CreateCharacterFrame(parent, frameName, unitName, bestKey, create
 	frame:SetSize(210, 31)
 	frame:SetFrameLevel(5)
 
-	frame.tid = ''
 	frame.unit = unitName
 	frame.bestKey = ''
 	frame.currentKey = ''
@@ -143,43 +142,48 @@ local function CreateCharacterFrame(parent, frameName, unitName, bestKey, create
 
 	end
 
-	function frame:UpdateInformation(unit, realm)
-		if unit ~= '' and unit then
-			self.unit = unit
-			self.tid = e.GetCharacterID(unit, realm)
-			self.unitClass = e.CharacterClass(self.tid)
-			self.bestKey = e.GetBestKey(self.tid)
-			self.bestMap = e.GetBestMap(self.unit)
-			self.weeklyAP = e.GetWeeklyAP(self.bestKey)
-			self.realm = realm
+	function frame:UpdateBestDungeon(characterID)
+		if not characterID then return end
+		self.bestKey = e.GetCharacterBestMap(characterID)
+		self.bestMap = e.GetCharacterBestMap(characterID)
 
-			local name = self.unit
+		self.name.string:SetText(WrapTextInColorCode(self.unit, select(4, GetClassColor(self.unitClass))) .. ' - ' .. self.bestKey)
+	end
+
+	function frame:UpdateInformation(characterID)
+		if characterID then 
+			self.cid = characterID
+			self.unit = e.CharacterName(characterID)
+			self.realm = e.CharacterRealm(characterID)
+			self.unitClass = e.GetCharacterClass(characterID)
+			self.bestKey = e.GetCharacterBestLevel(characterID)
+			self.bestMap = e.GetCharacterBestMap(characterID)
+			self.weeklyAP = e.GetWeeklyAP(self.bestKey)
+
+			self.keystone.string:SetText(e.GetCharacterKey(self.unit .. '-' .. self.realm))
 
 			if self.realm ~= e.PlayerRealm() then
-				name = name .. '(*)'
+				self.unit = self.unit .. ' (*)'
 			end
 
 			if self.bestKey ~= 0 then
-				self.name.string:SetText(WrapTextInColorCode(name, select(4, GetClassColor(self.unitClass))) .. ' - ' .. self.bestKey)
+				self.name.string:SetText(WrapTextInColorCode(self.unit, select(4, GetClassColor(self.unitClass))) .. ' - ' .. self.bestKey)
 			else
-				self.name.string:SetText(WrapTextInColorCode(name, select(4, GetClassColor(self.unitClass))))
+				self.name.string:SetText(WrapTextInColorCode(self.unit, select(4, GetClassColor(self.unitClass))))
 			end
-			self.keystone.string:SetText(e.GetCharacterKey(self.unit .. '-' .. self.realm))
 		else
 			self.name.string:SetText('')
 			self.keystone.string:SetText('')
-			self.tid = nil
+			self.cid = -1
 		end
-
 	end
 
 	frame:SetScript('OnEnter', function(self)
-		if not self.tid then return end
 
 		if self.weeklyAP > 0 then
-			astralMouseOver:SetText(self.bestMap .. '\n- ' .. e.ConvertToSI(self.weeklyAP * e.CharacterAK(self.tid)) .. ' AP')
+			astralMouseOver:SetText(e.GetMapName(self.bestMap) .. '\n- ' .. e.ConvertToSI(self.weeklyAP * e.GetAKBonus()) .. ' AP in cache')
 		else
-			astralMouseOver:SetText(self.bestMap)
+			astralMouseOver:SetText('No mythic+ ran this week.')
 		end
 
 		astralMouseOver:AdjustSize()
@@ -202,6 +206,24 @@ local nameFrames = {}
 local keyFrames = {}
 local mapFrames = {}
 local completedFrames = {}
+
+local function CreateUnitFrame(parent, unitID)
+	local frame = CreateFrame('FRAME', nil, UIParent)
+	frame:SetSize(500, 15)
+
+	local unitID = unitID
+
+	local name = e.UnitName(unitID)
+	local server = e.UnitServer(unitID)
+	local class = e.UnitClass(unitID)
+	
+
+
+
+
+
+
+end
 
 local function CreateNameFrame(parent, unitName, unitClass)
 	local frame = CreateFrame('FRAME', nil, parent)
@@ -245,7 +267,6 @@ local function CreateNameFrame(parent, unitName, unitClass)
 	end
 
 	return frame
-
 end
 
 local function CreateMapFrame(parent, mapID, keyLevel)
@@ -292,7 +313,6 @@ local function CreateMapFrame(parent, mapID, keyLevel)
  		end)
 
 	return frame
-
 end
 
 local function CreateKeyFrame(parent, keyLevel)
@@ -317,7 +337,6 @@ local function CreateKeyFrame(parent, keyLevel)
 	end
 
 	return frame
-
 end
 
 local function CreateCompleteFrame(parent, completed)
@@ -496,7 +515,7 @@ end)
 closeButton:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', -10, -10)
 
 local quickOptionsFrame = CreateFrame('FRAME', 'quickOptionsFrame', AstralKeyFrame)
-quickOptionsFrame:SetSize(160, 45)
+quickOptionsFrame:SetSize(170, 45)
 quickOptionsFrame:SetBackdrop(BACKDROP)
 quickOptionsFrame:SetBackdropColor(0, 0, 0, 1)
 quickOptionsFrame:SetFrameLevel(10)
@@ -513,6 +532,17 @@ showOffline:SetScript('OnClick', function (self)
 	e.UpdateFrames()
 end)
 
+local showMinimapButton = e.CreateCheckBox(quickOptionsFrame, 'Show Minimap Button', 'LEFT')
+showMinimapButton:SetPoint('TOPRIGHT', showOffline, 'BOTTOMRIGHT', 0, -5)
+showMinimapButton:SetScript('OnClick', function(self)
+	e.SetShowMinimapButton(self:GetChecked())
+	if e.ShowMinimapButton() then
+		e.icon:Show('AstralKeys')
+	else
+		e.icon:Hide('AstralKeys')
+	end
+end)
+--[[
 local minKeyLevel = e.CreateEditBox(quickOptionsFrame, 'minKeyLevel', 25, 'Min announce level', 1, 100, 'LEFT')
 minKeyLevel:SetPoint('TOPRIGHT', showOffline, 'BOTTOMRIGHT', 0, -5)
 minKeyLevel:SetScript('OnEditFocusLost', function(self)
@@ -527,7 +557,7 @@ minKeyLevel:SetScript('OnMouseWheel', function(self, delta)
 		e.SetMinKeyLevel(self:GetNumber())
 	end
 	end)
-
+]]
 local quickOptions = CreateFrame('BUTTON', nil, AstralKeyFrame)
 quickOptions:SetSize(16, 16)
 quickOptions:SetPoint('TOPRIGHT', toggleButton, 'TOPLEFT', -5, 0)
@@ -881,7 +911,7 @@ completeButton:SetScript('OnClick', function()
 AstralKeyFrame:SetScript('OnKeyDown', function(self, key)
 	if key == 'ESCAPE' then
 		self:SetPropagateKeyboardInput(false)
-		self:Hide()
+		AstralKeyFrame:Hide()
 	end
 	end)
 
@@ -907,7 +937,8 @@ local function InitializeFrame()
 	AstralAffixThree:UpdateInfo()
 
 	showOffline:SetChecked(e.GetShowOffline())
-	minKeyLevel:SetValue(e.GetMinKeyLevel())
+	--minKeyLevel:SetValue(e.GetMinKeyLevel())
+	showMinimapButton:SetChecked(e.ShowMinimapButton())
 
 	characterTable = e.DeepCopy(AstralCharacters)
 
@@ -928,12 +959,11 @@ local function InitializeFrame()
 		toggleButton:SetHighlightTexture('Interface\\AddOns\\AstralKeys\\Media\\menu_highlight.tga', 'BLEND')
 	end
 
-	local id = e.CharacterID()
-	local endIndex
+	local id = e.GetCharacterID(e.Player())
 
-	if id then
-
-		characters[1] = CreateCharacterFrame(characterFrame, nil, characterTable[id].name, nil, false)
+	-- Only create 9 character frames in total, first is reserved for current logged in character if 
+	if id then -- We are logged into a character that has a key
+		characters[1] = CreateCharacterFrame(characterFrame, nil, characterTable[id].unit, nil, false)
 		characters[1]:SetPoint('TOPLEFT', characterHeader, 'BOTTOMLEFT', 0, -5)
 
 		characterContent:SetSize(215, 260)
@@ -941,28 +971,16 @@ local function InitializeFrame()
 
 		table.remove(characterTable, id)
 
-		if #characterTable < 9 then
-			endIndex = #characterTable
-		else
-			endIndex = 8
-		end
-
-		for i = 1, endIndex do
-			characters[i+1] = CreateCharacterFrame(characterFrame, nil, characterTable[i].name, nil, false)
+		for i = 1, math.min(#characterTable, 8) do -- Only 8 left character slots to make
+			characters[i+1] = CreateCharacterFrame(characterFrame, nil, characterTable[i].unit, nil, false)
 			characters[i+1]:SetPoint('TOPLEFT', characterContent, 'TOPLEFT', 0, -34*(i - 1) - 4)
 		end
-	else
+	else -- No key on said character, make 9 slots for characters
 		characterContent:SetSize(215, 290)
 		characterContent:SetPoint('TOPLEFT', characterHeader, 'BOTTOMLEFT', 0, -5)
 
-		if #characterTable < 10 then
-			endIndex = #characterTable
-		else
-			endIndex = 9
-		end
-
-		for i = 1, endIndex do
-			characters[i] = CreateCharacterFrame(characterFrame, nil, characterTable[i].name, nil, false)
+		for i = 1, math.min(#characterTable, 9) do
+			characters[i] = CreateCharacterFrame(characterFrame, nil, characterTable[i].unit, nil, false)
 			characters[i]:SetPoint('TOPLEFT', characterContent, 'TOPLEFT', 0, -34*(i-1) - 4)
 		end
 	end
@@ -976,7 +994,7 @@ local function InitializeFrame()
 	end
 
 	characterContent:SetScript('OnMouseWheel', function(self, delta)
-		if #characterTable < 9 then return end
+		if #characterTable < 9 then return end -- There aren't more characters than frames, no need to scroll
 
 		if delta < 0 then -- Scroll down
 			if (#characterTable - characterOffset) > 8 then
@@ -1049,8 +1067,6 @@ function e.UpdateLines()
 	end
 end
 
-
-
 function e.UpdateFrames()
 	if not init or not AstralKeyFrame:IsShown() then return end
 
@@ -1070,12 +1086,12 @@ function e.UpdateCharacterFrames()
 	if not init then return end
 	characterTable = e.DeepCopy(AstralCharacters)
 
-	if e.CharacterID() then
-		characters[1]:UpdateInformation(e.PlayerName(), e.PlayerRealm())
-		table.remove(characterTable, e.CharacterID())
+	if e.GetCharacterID(e.Player()) then
+		characters[1]:UpdateInformation(e.GetCharacterID(e.Player()))
+		table.remove(characterTable, e.GetCharacterID(e.Player()))
 		for i = 2, #characters do
 			if characterTable[i-1] then
-				characters[i]:UpdateInformation(characterTable[i + characterOffset - 1]['name'], characterTable[i + characterOffset - 1]['realm'])
+				characters[i]:UpdateInformation(e.GetCharacterID(characterTable[i + characterOffset - 1].unit))
 			else
 				characters[i]:UpdateInformation('')
 			end	
@@ -1083,7 +1099,7 @@ function e.UpdateCharacterFrames()
 	else
 		for i = 1, #characters do
 			if characterTable[i] then
-				characters[i]:UpdateInformation(characterTable[i + characterOffset]['name'], characterTable[i + characterOffset]['realm'])
+				characters[i]:UpdateInformation(e.GetCharacterID(characterTable[i + characterOffset].unit))
 			else
 				characters[i]:UpdateInformation('')
 			end

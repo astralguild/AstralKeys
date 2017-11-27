@@ -1,71 +1,102 @@
 local _, e = ...
 
-local playerClass, playerName, characterID, playerID, playerRealm
+local playerClass, playerNameRealm, characterID
+local characterList = {}
 
-function e.CharacterID()
-	return characterID
+function e.SetCharacterID(unit, unitID)
+	characterList[unit] = unitID
 end
 
-function e.SetCharacterID()
-	characterID = e.GetCharacterID(e.PlayerName(), e.PlayerRealm())
-end
-
-function e.SetPlayerID()
-	playerID = e.UnitID(string.format('%s-%s', e.PlayerName(), e.PlayerRealm()))
-end
-
-function e.CharacterAK(id)
-	return AstralCharacters[id].knowledge
-end
-
+-- Retrieves character's realm
+-- @return string Realm name for character
 function e.CharacterRealm(id)
-	return AstralCharacters[id].realm
+	return AstralCharacters[id].unit:sub(AstralCharacters[id].unit:find('-') + 1)
 end
 
+-- Retrieves character's name
+-- @return string Character's name
 function e.CharacterName(id)
-	return AstralCharacters[id].name
+	return AstralCharacters[id].unit:sub(1, AstralCharacters[id].unit:find('-') - 1)
 end
 
-function e.GetCharacterID(unit, realm)
-	for i = 1, #AstralCharacters do
-		if AstralCharacters[i].name == unit and AstralCharacters[i].realm == realm then
-			return i
-		end
-	end
+-- Retrieves character ID
+-- unit string Character name
+-- @return int Returns id number or false if character isn't indexed
+function e.GetCharacterID(unit)
+	return characterList[unit] or false
 end
 
-function e.CharacterClass(id)
+-- Retrieves character class
+-- id int ID for character
+-- @return string Non-localized class name, used for text colouring
+function e.GetCharacterClass(id)
 	return AstralCharacters[id].class
 end
 
-function e.PlayerID()
-	return playerID
+-- Retrieves character's highest run Mythic+
+-- @param id int ID for character
+-- @return int Highest mythic+ ran for the week
+-- @return int 0 implies no key run for the week
+function e.GetCharacterBestLevel(id)
+	return AstralCharacters[id].level or 0
 end
 
-function e.SetPlayerName()
-	playerName = UnitName('player')
+-- Retrieves character's mapID for highest ran mythic+ for the week
+-- @param id int ID for the character
+-- @return int mapID for the highest ran mythic+ for the week
+-- @return int 0 implies no key run for the week
+function e.GetCharacterBestMap(id)
+	return AstralCharacters[id].map 
 end
 
+-- Retrieves faction for character
+-- @param id int ID for the character
+-- @return string Non-localized faction name
+function e.GetCharacterFaction(id)
+	return AstralCharacters[id].faction
+end
+
+-- Sets player name variable
+function e.SetPlayerNameRealm()
+	playerNameRealm = UnitName('player') .. '-' .. GetRealmName():gsub("%s+", "")
+end
+
+-- Retrieves player's realm
+-- @return string Realm name for player
 function e.PlayerRealm()
-	return playerRealm
+	return playerNameRealm:sub(playerNameRealm:find('-') + 1)
 end
 
+-- Sets player realm variable
 function e.SetPlayerRealm()
 	playerRealm = GetRealmName():gsub("%s+", "")
 end
 
+-- Player's name
+-- @return string Player's current logged in character's name without guild attached
+function e.PlayerName()
+	return Ambiguate(playerNameRealm, 'GUILD')
+end
+
+-- Sets player class variable
 function e.SetPlayerClass()
 	playerClass = select(2, UnitClass('player'))
 end
 
+-- Retrieves player's class
+-- @return string Non-localized class name, used for text colouring
 function e.PlayerClass()
 	return playerClass
 end
 
-function e.PlayerName()
-	return playerName
+-- Retrieves player's name for logged in character
+-- @return string Name of player
+function e.Player()
+	return playerNameRealm
 end
 
+-- Retrieves player's artifact knowledge
+-- @return int Artifact knowledge multiplier for player
 function e.PlayerAK()
 	return AstralCharacters[characterID].knowledge
 end

@@ -66,7 +66,6 @@ function e.SortTable(A, v)
 	end
 end
 
-
 function e.DeepCopy(orig)
     local orig_type = type(orig)
     local copy
@@ -81,22 +80,3 @@ function e.DeepCopy(orig)
     end
     return copy
 end
-
---[[
-local ended = false
-
-function e.RemoveEntries(A, key, value)
-	if ended then return end  -- Stops recurrsion
-
-	for i = 1, #A do
-		if (A[i][key] < value) then
-			table.remove(A, i)
-			break -- breaks loop to stop out of index errors
-		end
-		if i == #A then -- flags ended as true if on last entry
-			ended = true
-		end
-	end
-	if not ended then e.RemoveEntries(A, key, value) end
-end
-]]

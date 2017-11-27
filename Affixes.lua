@@ -82,26 +82,30 @@ AFFIXES[12][3] = 9
 
 -- Retrieves weekly affixes from table based on current week from start day
 -- @return integer First, second, and third affix for the week
-function e.WeeklyAffixes()
-	local week = e.Week % 12
+function e.WeeklyAffixes(weekOffSet)
+	local offSet = weekOffSet or 0
+	local week = (e.Week + offSet) % 12
 	if week == 0 then week = 12 end
 	return unpack(AFFIXES[week])
 end
 
-function e.AffixOne()
-	local week = e.Week % 12
+function e.AffixOne(weekOffSet)
+	local offSet = weekOffSet or 0
+	local week = (e.Week + offSet) % 12
 	if week == 0 then week = 12 end
 	return AFFIXES[week][1]
 end
 
-function e.AffixTwo()
-	local week = e.Week % 12
+function e.AffixTwo(weekOffSet)
+	local offSet = weekOffSet or 0
+	local week = (e.Week + offSet) % 12
 	if week == 0 then week = 12 end
 	return AFFIXES[week][2]
 end
 
-function e.AffixThree()
-	local week = e.Week % 12
+function e.AffixThree(weekOffSet)
+	local offSet = weekOffSet or 0
+	local week = (e.Week + offSet) % 12
 	if week == 0 then week = 12 end
 	return AFFIXES[week][3]
 end

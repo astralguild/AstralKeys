@@ -4,11 +4,11 @@ local strformat = string.format
 local GRAY = 'ff9d9d9d'
 local PURPLE = 'ffa335ee'
 
-e.CACHE_LEVEL = 10
+e.CACHE_LEVEL = 15 -- Weekly M+ requirement for class hall cache
 
 local function Weekly()
 	e.GetBestClear()
-	if AstralCharacters[e.CharacterID()].level >= e.CACHE_LEVEL then
+	if AstralCharacters[e.GetCharacterID(e.Player())].level >= e.CACHE_LEVEL then
 		SendAddonMessage('AstralKeys', 'updateWeekly 1', 'GUILD')
 	end
 	e.UpdateCharacterFrames()
@@ -17,7 +17,6 @@ end
 local function InitData()
 	if UnitLevel('player') ~= 110 then return end -- Character isn't max level, anything from them is useless
 	e.GetBestClear()
-	e.SetCharacterID()
 	e.FindKeyStone(true, false)
 	e.BuildMapTable()
 	SendAddonMessage('AstralKeys', 'request', 'GUILD')
@@ -40,8 +39,9 @@ AstralEvents:Register('CHALLENGE_MODE_COMPLETED', function()
 end, 'dungeonCompleted')
 
 local function CompletedWeekly()
-	if not e.CharacterID() then return 0 end
-	if AstralCharacters[e.CharacterID()]['level'] and AstralCharacters[e.CharacterID()].level >= e.CACHE_LEVEL then
+	local id = e.GetCharacterID(e.Player())
+	if not id then return 0 end
+	if AstralCharacters[id]['level'] and AstralCharacters[id].level >= e.CACHE_LEVEL then
 		return 1
 	else
 		return 0
@@ -62,7 +62,6 @@ function e.GetKeyInfo()
 	end
 
 	return mapID, keyLevel, a1, a2, a3
-
 end
 
 function e.FindKeyStone(sendUpdate, anounceKey)
@@ -99,7 +98,7 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 		end
 	end
 
-	local oldMap, oldLevel = e.GetUnitKeyByID(e.PlayerID())
+	local oldMap, oldLevel = e.GetUnitKeyByID(e.UnitID(e.Player()))
 
 	-- Key found, unregister function, no longer needed
 	if link and AstralEvents:IsRegistered('BAG_UPDATE', 'bagUpdate') then
@@ -131,19 +130,16 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 	end
 end
 
-local function CreateKeyText(mapID, level)
-		return level .. ' ' .. C_ChallengeMode.GetMapInfo(mapID)
-end
-
 -- Parses item link to get mapID, key level, affix1, affix2, affix3
 -- @param link Item Link for keystone
 -- return mapID, keyLevel, affix1, affix2, affix3 Integer values
 
 function e.ParseLink(link)
-	if not link:find('keystone') then return end -- Not a keystone link, don't do anything
+	if not link:find('keystone') then return end -- Not a keystone link, don't do anything, also something went wrong shouldn't be here if not keystone link
 	local delink = link:gsub('\124', '\124\124')
-	local mapID, keyLevel, affix1, affix2, affix3 = delink:match(':(%d+):(%d+):(%d+):(%d+):(%d+)')
-	return mapID, keyLevel, affix1, affix2, affix3
+	--local mapID, keyLevel, affix1, affix2, affix3 = delink:match(':(%d+):(%d+):(%d+):(%d+):(%d+)')
+	--return mapID, keyLevel, affix1, affix2, affix3
+	return delink:match(':(%d+):(%d+):(%d+):(%d+):(%d+)')
 end
 
 function e.GetUnitKeyByID(id)
@@ -155,35 +151,17 @@ end
 function e.GetCharacterKey(unit)
 	if not unit then return '' end
 
-	for i = 1, #AstralKeys do
-		if AstralKeys[i][1] == unit then
-			return CreateKeyText(AstralKeys[i][3], AstralKeys[i][4])
-		end
-	end
-
-	return WrapTextInColorCode('No key found.', 'ff9d9d9d')
-
-end
-
-function e.GetBestKey(id)
-	return AstralCharacters[id].level
-end
-
-function e.GetBestMap(unit)
-
-	for i = 1, #AstralCharacters do
-		if AstralCharacters[i].name == unit then
-			if AstralCharacters[i].map ~= 0 then
-				return e.GetMapName(AstralCharacters[i].map)
-			end
-		end
-	end
+	local id = e.UnitID(unit)
 	
-	return 'No mythic+ ran this week.'
+	if id then 
+		return AstralKeys[id][4] .. ' ' .. C_ChallengeMode.GetMapInfo(AstralKeys[id][3]) -- 4:: key level 3:: mapID
+	else
+		return WrapTextInColorCode('No key found.', 'ff9d9d9d')
+	end
 end
 
---Returns map ID and keystone level run for current week
-
+-- Finds best map clear fothe week for logged on character. If character already is in database
+-- updates the information, else creates new entry for character
 function e.GetBestClear()
 	if UnitLevel('player') ~= 110 then return end
 	local bestLevel = 0
@@ -198,21 +176,13 @@ function e.GetBestClear()
 		end
 	end
 
-	if #AstralCharacters == 0 then
-		table.insert(AstralCharacters, {name = e.PlayerName(), class = e.PlayerClass(), realm = e.PlayerRealm(), map = bestMap, level = bestLevel, knowledge = e.GetAKBonus(e.ParseAKLevel())})
-	end
-
-	local index = -1
-	for i = 1, #AstralCharacters do
-		if AstralCharacters[i]['name'] == e.PlayerName() and AstralCharacters[i].realm == e.PlayerRealm() then
-			AstralCharacters[i].map = bestMap
-			AstralCharacters[i].level = bestLevel
-			index = i
-		end
-	end
-
-	if index == -1 then
-		table.insert(AstralCharacters, {name = e.PlayerName(), class = e.PlayerClass(), realm = e.PlayerRealm(), map = bestMap, level = bestLevel, knowledge = e.GetAKBonus(e.ParseAKLevel())})
+	local id = e.GetCharacterID(e.Player())
+	if id then
+		AstralCharacters[id].map = bestMap
+		AstralCharacters[id].level = bestLevel
+	else
+		table.insert(AstralCharacters, {unit = e.Player(), class = e.PlayerClass(), map = bestMap, level = bestLevel, faction = UnitFactionGroup('player')})
+		e.SetCharacterID(e.Player(), #AstralCharacters)
 	end
 end
 

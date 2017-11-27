@@ -1,22 +1,43 @@
 local ADDON, e = ...
 
+local find, sub, strformat = string.find, string.sub, string.format
+local SendAddonMessage = SendAddonMessage
+
+-- Variables for syncing information
+-- Will only accept information from other clients with same version settings
 local SYNC_VERSION = 'sync4'
 e.UPDATE_VERSION = 'updateV7'
 
 local versionList = {}
+local highestVersion = 0
+
 local messageStack = {}
 local messageQueue = {}
 local messageContents = {}
-local highestVersion = 0
-local find, sub, strformat = string.find, string.sub, string.format
+
+-- New key announce message
+-- TODO: add option to change message to something else
 local ANNOUNCE_MESSAGE = 'Astral Keys: New key %s + %d'
 
-AstralComs = CreateFrame('FRAME')
+-- Interval times for syncing keys between clients
+-- Two different time settings for in a raid or otherwise
+-- Creates a random variance between +- [.200, .500] to help prevent
+-- disconnects from too many addon messages
+local send_variance = ((-1)^math.random(1,2)) * math.modf( math.random(200, 500))/ 10^3 -- random number to space out messages being sent between clients
+local SEND_INTERVAL = {}
+SEND_INTERVAL[1] = 0.6 + send_variance
+SEND_INTERVAL[2] = 4 + send_variance
+
+-- Current setting to be used
+-- Changes when player enters a raid instance or not
+local SEND_INTERVAL_SETTING = 1 -- What intervel to use for sending key information
+
+AstralComs = CreateFrame('FRAME', 'AstralComs')
 AstralComs:RegisterEvent('CHAT_MSG_ADDON')
 AstralComs.dtbl = {}
 
 function AstralComs:RegisterPrefix(channel, prefix, f)
-	if not channel then channel = 'GUILD' end
+	if not channel then channel = 'GUILD' end -- Default to guild as channel if none is specified
 	if self:IsPrefixRegistered(channel, prefix) then return end
 
 	if not self.dtbl[channel] then self.dtbl[channel] = {} end
@@ -33,8 +54,8 @@ function AstralComs:UnregisterPrefix(channel, prefix)
 	if not objs then return end
 	for id, obj in pairs(objs) do
 		if obj.prefix == prefix then
-			table.remove(objs, id)
-			--objs[id] = nil
+			--table.remove(objs, id)
+			objs[id] = nil
 			break
 		end
 	end
@@ -75,7 +96,7 @@ function e.AnnounceNewKey(keyLink, level)
 end
 
 local function UpdateUnitKey(msg)
-	local timeStamp = e.WeekTime()
+	local timeStamp = e.WeekTime() -- part of the week we got this key update, used to determine if a key got de-leveled or not
 	local unit = msg:sub(0, msg:find(':') - 1)
 	local class, dungeonID, keyLevel, weekly, week = msg:match('(%a+):(%d+):(%d+):(%d+):(%d+)', msg:find(':'))
 	
@@ -100,8 +121,7 @@ local function UpdateUnitKey(msg)
 
 	e.UpdateFrames()
 	
-	if unit == strformat('%s-%s', e.PlayerName(), e.PlayerRealm()) then
-		e.SetPlayerID()
+	if unit == e.Player() then
 		e.UpdateCharacterFrames()
 	end
 end
@@ -110,7 +130,9 @@ AstralComs:RegisterPrefix('GUILD', e.UPDATE_VERSION, UpdateUnitKey)
 local updateTicker = {}
 local function SyncReceive(entry)
 	local unit, class, dungeonID, keyLevel, weekly, week, timeStamp
-	if updateTicker['_remainingIterations'] and updateTicker['_remainingIterations'] > 0 then updateTicker:Cancel() end
+	if AstralKeyFrame:IsShown() then
+		if updateTicker['_remainingIterations'] and updateTicker['_remainingIterations'] > 0 then updateTicker:Cancel() end
+	end
 	updateTicker = C_Timer.NewTicker(.75, e.UpdateFrames, 1)
 
 	local _pos = 0
@@ -142,9 +164,6 @@ local function SyncReceive(entry)
 			else
 				AstralKeys[#AstralKeys + 1] = {unit, class, dungeonID, keyLevel, weekly, week, timeStamp}
 				e.SetUnitID(unit, #AstralKeys)
-				if unit == strformat('%s-%s', e.PlayerName(), e.PlayerRealm()) then
-					e.SetPlayerID()
-				end
 			end
 		end
 	end
@@ -167,11 +186,11 @@ local ticker = {}
 local function PushKeyList(...)
 	if ticker['_remainingIterations'] and ticker['_remainingIterations'] > 0 then ticker:Cancel() end
 	local sender = select(5, ...)
-	if sender == string.format('%s-%s', e.PlayerName(), e.PlayerRealm()) then return end
+	if sender == e.Player() then return end
 	wipe(messageStack)
 	wipe(messageQueue)
 	for i = 1, #AstralKeys do
-		if e.UnitInGuild(AstralKeys[i][1]) then
+		if e.UnitInGuild(AstralKeys[i][1]) then -- Only send current guild keys, who wants keys from a different guild?
 			messageStack[#messageStack + 1] = strformat('%s_', strformat('%s:%s:%d:%d:%d:%d:%d', AstralKeys[i][1], AstralKeys[i][2], AstralKeys[i][3], AstralKeys[i][4], AstralKeys[i][5], AstralKeys[i][6], AstralKeys[i][7]))
 		end
 	end
@@ -181,7 +200,7 @@ local function PushKeyList(...)
 	messageQueue[index] = ''
 	while messageStack[1] do		
 		local nextMessage = strformat('%s%s', messageQueue[index], messageStack[1])
-		if nextMessage:len() < 245 then
+		if nextMessage:len() < 244 then
 			messageQueue[index] = nextMessage
 			table.remove(messageStack, 1)
 		else
@@ -191,18 +210,14 @@ local function PushKeyList(...)
 	end
 
 	local function SendEntries()
-		for i = 1, 5 do
-			if messageQueue[1] and messageQueue[1] ~= '' then
-				SendAddonMessage('AstralKeys', strformat('%s %s', SYNC_VERSION, messageQueue[1]), 'GUILD')
-				table.remove(messageQueue, 1)
-			else
-				break
-			end
+		if messageQueue[1] and messageQueue[1] ~= '' then
+			SendAddonMessage('AstralKeys', strformat('%s %s', SYNC_VERSION, messageQueue[1]), 'GUILD')
+			table.remove(messageQueue, 1)
 		end
 	end
 
-	local tickerIterations = math.ceil(#messageQueue/5)
-	ticker = C_Timer.NewTicker(1, SendEntries, tickerIterations)
+	local tickerIterations = #messageQueue
+	ticker = C_Timer.NewTicker(SEND_INTERVAL[SEND_INTERVAL_SETTING], SendEntries, tickerIterations)
 end
 
 AstralComs:RegisterPrefix('GUILD', 'request', PushKeyList)
@@ -227,9 +242,7 @@ local function ResetAK()
 	AstralKeysSettings['reset'] = false
 	e.WipeUnitList()
 	e.WipeFrames()
-	e.SetPlayerID()
 	e.FindKeyStone(true)
-	e.SetCharacterID()
 	e.UpdateAffixes()
 	C_Timer.After(.75, function()
 		e.UpdateCharacterFrames()
@@ -282,7 +295,7 @@ local timer
 function e.VersionCheck()
 	if not IsInGuild() then return end
 	if not AstralComs:IsPrefixRegistered('GUILD', 'versionPush') then
-		AstralComs:RegisterPrefix('GUILD', 'versionPush', VersionPush)
+		AstralComs:RegisterPrefix('GUILD', 'versionPush', VersionPush) -- lazy way to do this,
 	end
 
 	highestVersion = 0
@@ -291,3 +304,26 @@ function e.VersionCheck()
 	if timer then timer:Cancel() end
 	timer =  C_Timer.NewTicker(3, function() PrintVersion() AstralComs:UnregisterPrefix('GUILD', 'versionPush') end, 1)
 end
+
+-- Let's just disable sending information if we are doing a boss fight
+-- but keep updating individual keys if we receive them
+-- keep the addon channel overhead low
+AstralEvents:Register('ENCOUNTER_START', function()
+	AstralComs:UnregisterPrefix('GUILD', 'request')
+	end, 'encStart')
+
+-- Boss is over, let's send informatino once again
+AstralEvents:Register('ENCOUNTER_STOP', function()
+	AstralComs:RegisterPrefix('GUID', 'request', PushKeyList)
+	end, 'encStop')
+
+-- Checks to see if we zone into a raid instance,
+-- Let's increase the send interval if we are raiding, client sync can wait, dc's can't
+AstralEvents:Register('PLAYER_ENTERING_WORLD', function()
+	local inInstance, instanceType = IsInInstance()
+	if inInstance and instanceType == 'raid' then
+		SEND_INTERVAL_SETTING = 2
+	else
+		SEND_INTERVAL_SETTING = 1
+	end
+	end, 'entering_world')
