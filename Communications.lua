@@ -105,22 +105,22 @@ local function UpdateUnitKey(msg)
 	weekly = tonumber(weekly)
 	week = tonumber(week)
 
-	local id = e.UnitID(unit)
+	local id = e.UnitID(unit) -- Is this unit in the db already?
 
-	if id then
-		if weekly == 1 then AstralKeys[id][5] = weekly end
-
+	if id then -- Yep, just change the values then
 		AstralKeys[id][3] = dungeonID
 		AstralKeys[id][4] = keyLevel
+		AstralKeys[id][5] = weekly
 		AstralKeys[id][6] = week
 		AstralKeys[id][7] = timeStamp
-	else
+	else -- Nope, let's add them to the DB and index their position
 		AstralKeys[#AstralKeys + 1] = {unit, class, dungeonID, keyLevel, weekly, week, timeStamp}
 		e.SetUnitID(unit, #AstralKeys)
 	end
 
 	e.UpdateFrames()
 	
+	-- Update character frames if we received our own key
 	if unit == e.Player() then
 		e.UpdateCharacterFrames()
 	end
@@ -170,7 +170,7 @@ local function SyncReceive(entry)
 end
 AstralComs:RegisterPrefix('GUILD', SYNC_VERSION, SyncReceive)
 
-local function UpdateWeekly10(...)
+local function UpdateWeekly(...)
 	local weekly = ...
 	local sender = select(5, ...)
 
@@ -180,7 +180,7 @@ local function UpdateWeekly10(...)
 		e.UpdateFrames()
 	end
 end
-AstralComs:RegisterPrefix('GUILD', 'updateWeekly', UpdateWeekly10)
+AstralComs:RegisterPrefix('GUILD', 'updateWeekly', UpdateWeekly)
 
 local ticker = {}
 local function PushKeyList(...)
@@ -200,7 +200,7 @@ local function PushKeyList(...)
 	messageQueue[index] = ''
 	while messageStack[1] do		
 		local nextMessage = strformat('%s%s', messageQueue[index], messageStack[1])
-		if nextMessage:len() < 244 then
+		if nextMessage:len() < 244 then -- Keep the message length less than 255 or player will disconnect
 			messageQueue[index] = nextMessage
 			table.remove(messageStack, 1)
 		else
