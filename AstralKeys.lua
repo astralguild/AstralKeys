@@ -25,17 +25,17 @@ IMP[5] = 'Q'
 
 function e.ConvertToSI(quantity)
 	local amount = quantity
-	local index = 0
+	local power = 0
 
 	while amount > 1000 do
-		index = index + 1
+		power = power + 1
 		amount = amount /1000
 	end
 
 	if amount < 10 then
-		return string.format('%.2f', amount) .. ' ' .. IMP[index]
+		return string.format('%.2f', amount) .. ' ' .. IMP[power]
 	else
-		return math.floor(amount) .. ' ' .. IMP[index]
+		return math.floor(amount) .. ' ' .. IMP[power]
 	end
 end
 
@@ -47,11 +47,6 @@ function e.WeekTime()
 	else
 		return GetServerTime() - initializeTime[2] - 604800 * e.Week
 	end
-end
-
-local function WeeklyUpdateCheck(region)
-
-
 end
 
 AstralEvents:Register('PLAYER_LOGIN', function()

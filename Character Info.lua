@@ -56,7 +56,7 @@ function e.GetCharacterFaction(id)
 	return AstralCharacters[id].faction
 end
 
--- Sets player name variable
+-- Sets player name-realm
 function e.SetPlayerNameRealm()
 	playerNameRealm = UnitName('player') .. '-' .. GetRealmName():gsub("%s+", "")
 end
@@ -90,13 +90,7 @@ function e.PlayerClass()
 end
 
 -- Retrieves player's name for logged in character
--- @return string Name of player
+-- @return string Name of player with realm attached
 function e.Player()
 	return playerNameRealm
-end
-
--- Retrieves player's artifact knowledge
--- @return int Artifact knowledge multiplier for player
-function e.PlayerAK()
-	return AstralCharacters[characterID].knowledge
 end

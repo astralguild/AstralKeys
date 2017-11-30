@@ -522,7 +522,7 @@ quickOptionsFrame:SetFrameLevel(10)
 quickOptionsFrame:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', -10, - 28)
 quickOptionsFrame:Hide()
 
-local showOffline = e.CreateCheckBox(quickOptionsFrame, 'Show offline', 'LEFT')
+local showOffline = e.CreateCheckBox(quickOptionsFrame, 'Show offline', 150)
 showOffline:SetPoint('TOPRIGHT', quickOptionsFrame, 'TOPRIGHT', -5, -5)
 
 showOffline:SetScript('OnClick', function (self)
@@ -532,7 +532,7 @@ showOffline:SetScript('OnClick', function (self)
 	e.UpdateFrames()
 end)
 
-local showMinimapButton = e.CreateCheckBox(quickOptionsFrame, 'Show Minimap Button', 'LEFT')
+local showMinimapButton = e.CreateCheckBox(quickOptionsFrame, 'Show Minimap Button', 150)
 showMinimapButton:SetPoint('TOPRIGHT', showOffline, 'BOTTOMRIGHT', 0, -5)
 showMinimapButton:SetScript('OnClick', function(self)
 	e.SetShowMinimapButton(self:GetChecked())

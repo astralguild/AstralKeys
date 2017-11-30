@@ -52,13 +52,6 @@ FONT_OBJECT_DISABLED:SetFont(FONT_CONTENT, FONT_SIZE)
 FONT_OBJECT_DISABLED:SetJustifyH('CENTER')
 FONT_OBJECT_DISABLED:SetTextColor(122/255, 122/255, 122/255)
 
-function e.CreateFrame(name, parent, width, height)
-	local frame = CreateFrame('FRAME', name, parent)
-	frame:SetSize(width, height)
-
-	return frame
-end
-
 function e.CreateButton(name, parent, width, height, text, texture)
 	local button = CreateFrame('BUTTON', name, parent)
 	button:SetSize(width, height)
@@ -161,6 +154,27 @@ function e.CreateHeader(parent, name, width, height, text, fontAdjust)
 
 end
 
+function e.CreateCheckButton(parent, text)
+	local self = CreateFrame('BUTTON', nil, parent)
+	self:SetSize(140, 20)
+	self:SetNormalFontObject(FONT_OBJECT_LEFT)
+	self:SetBackdropBorderColor(0, 0, 0)
+	self:SetBackdropColor(85/255, 85/255, 85/255, .6)
+	self:SetText(text)
+
+	self.checkbox = CreateFrame('CheckButton', nil, parent)
+	self.checkbox:SetSize(12, 12)
+	self:SetBackdrop(BACKDROPBUTTON)
+	self:SetBackdropBorderColor(85/255, 85/255, 85/255)
+	--self:SetText(label)
+	self.checkbox:SetNormalTexture(nil)
+	self.checkbox:SetBackdropColor(0, 0, 0)
+
+
+
+	return self
+end
+--[[
 function e.CreateCheckBox(parent, label, textPos)
 	local checkbox = CreateFrame('CheckButton', nil, parent)
 	checkbox:SetSize(12, 12)
@@ -189,4 +203,55 @@ function e.CreateCheckBox(parent, label, textPos)
 	checkbox:SetDisabledFontObject(FONT_OBJECT_DISABLED)
 
 	return checkbox
+end]]
+
+
+function e.CreateCheckBox(parent, label, width)
+	local checkbox = CreateFrame('CheckButton', nil, parent)
+	checkbox:SetSize(width or 200, 20)
+	checkbox:SetBackdrop(nil)
+	checkbox:SetBackdropBorderColor(85/255, 85/255, 85/255)
+	checkbox:SetNormalFontObject(FONT_OBJECT_LEFT)
+	checkbox:SetText(label)
+
+	checkbox:SetNormalTexture(nil)
+	checkbox:SetBackdropColor(0, 0, 0)
+
+	checkbox:SetPushedTextOffset(1,-1)
+
+	local tex = checkbox:CreateTexture('PUSHED_TEXTURE_BOX', 'BACKGROUND')
+	tex:SetSize(14, 14)
+	tex:SetPoint('RIGHT', checkbox, 'RIGHT', -2, 0)
+	tex:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\box2.tga')
+	tex:SetVertexColor(0.3, 0.3, 0.3)
+
+	checkbox.t = checkbox:CreateTexture('PUSHEDTEXTURE', 'BACKGROUND')
+	checkbox.t:SetSize(8, 8)
+	checkbox.t:SetPoint('CENTER', tex, 'CENTER', 0, 0)
+	checkbox.t:SetColorTexture(.9, .9, .9)
+	checkbox:SetCheckedTexture(checkbox.t)
+
+	checkbox:SetDisabledFontObject(FONT_OBJECT_DISABLED)
+
+	return checkbox
+end
+
+-- Creates a skinned button for Astral Keys options
+-- Backdrop highlight: yes
+-- Font highlight: no
+-- Border: no
+function e.CreateOptionButton(parent)
+	local self = CreateFrame('BUTTON', nil, parent)
+	self:SetSize(140, 20)
+	self:SetNormalFontObject(FONT_OBJECT_LEFT)
+	self:SetBackdropBorderColor(0, 0, 0)
+	self:SetBackdropColor(85/255, 85/255, 85/255, .6)
+
+	local texture = self:CreateTexture()
+	texture:SetColorTexture(1, 1, 1, .1)
+	texture:SetPoint('TOPLEFT', 1, -1)
+	texture:SetPoint('BOTTOMRIGHT', -1, 1)
+	self:SetHighlightTexture(texture)
+
+	return self
 end

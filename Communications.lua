@@ -23,7 +23,7 @@ local ANNOUNCE_MESSAGE = 'Astral Keys: New key %s + %d'
 -- Two different time settings for in a raid or otherwise
 -- Creates a random variance between +- [.200, .500] to help prevent
 -- disconnects from too many addon messages
-local send_variance = ((-1)^math.random(1,2)) * math.modf( math.random(200, 500))/ 10^3 -- random number to space out messages being sent between clients
+local send_variance = ((-1)^math.random(1,2)) * math.random(200, 500)/ 10^3 -- random number to space out messages being sent between clients
 local SEND_INTERVAL = {}
 SEND_INTERVAL[1] = 0.6 + send_variance
 SEND_INTERVAL[2] = 4 + send_variance
@@ -132,8 +132,8 @@ local function SyncReceive(entry)
 	local unit, class, dungeonID, keyLevel, weekly, week, timeStamp
 	if AstralKeyFrame:IsShown() then
 		if updateTicker['_remainingIterations'] and updateTicker['_remainingIterations'] > 0 then updateTicker:Cancel() end
+		updateTicker = C_Timer.NewTicker(.75, e.UpdateFrames, 1)
 	end
-	updateTicker = C_Timer.NewTicker(.75, e.UpdateFrames, 1)
 
 	local _pos = 0
 	while find(entry, '_', _pos) do
@@ -167,6 +167,7 @@ local function SyncReceive(entry)
 			end
 		end
 	end
+	unit, class, dungeonID, keyLevel, weekly, week, timeStamp = nil, nil, nil, nil, nil, nil, nil
 end
 AstralComs:RegisterPrefix('GUILD', SYNC_VERSION, SyncReceive)
 

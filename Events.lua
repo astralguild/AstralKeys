@@ -21,7 +21,7 @@ end
 -- @param f Function to be called when event is fired
 -- @param name Name of function, used as an identifier
 function AstralEvents:Register(event, f, name)
-	if self:IsRegistered(event, name) then return end
+	if self:IsRegistered(event, name) then return end -- Event already registered with same name, bail out
 	local obj = self:NewObject(f, name)
 
 	if not self.dtbl[event] then 

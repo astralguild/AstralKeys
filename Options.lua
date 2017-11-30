@@ -20,7 +20,7 @@ local POSITIONS = {
 
 local BACKDROPBUTTON = {
 bgFile = nil,
-edgeFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 16, edgeSize = 1,
+edgeFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 0, edgeSize = 1,
 insets = {left = 0, right = 0, top = 0, bottom = 0}
 }
 
@@ -48,28 +48,21 @@ FONT_OBJECT_HIGHLIGHT:SetFont(FONT_CONTENT, FONT_SIZE)
 FONT_OBJECT_HIGHLIGHT:SetJustifyH('CENTER')
 FONT_OBJECT_HIGHLIGHT:SetTextColor(192/255, 192/255, 192/255)
 
-local function CreateButton(parent, btnID, width, height, text, fontobject, highlightfont)
-	local button = CreateFrame('BUTTON', btnID, parent)
-	button.ID = btnID
-	button.sort = 0
-	button:SetSize(width, height)
+-- Re-write old CreateHeader to use this one instead!!!
+local function CreateHeader(parent, name, width, height, text, fontAdjust)
+	local fontString = parent:CreateFontString('BACKGROUND')
+	fontString:SetFont(FONT_HEADER, FONT_SIZE + fontAdjust)
+	fontString:SetText(text)
 
-	button.t = button:CreateTexture('BACKGROUND')
-	button.t:SetPoint('BOTTOMLEFT', button, 'BOTTOMLEFT', 5, 0)
-	button.t:SetSize(width - 10, 1)
-	button.t:SetColorTexture(.3, .3, .3)
- 
-	if fontobject then
-		button:SetNormalFontObject(fontobject)
-		button:SetHighlightFontObject(highlightfont)
-		button:SetText(text)
-	end
+	local t = parent:CreateTexture('BACKGROUND')
+	t:SetPoint('BOTTOMLEFT', fontString, 'BOTTOMLEFT')
+	t:SetSize(width, 1)
+	t:SetColorTexture(1, 1, 1)
+	t:SetGradientAlpha('HORIZONTAL', 1, 1, 1, 0.8, 0, 0 , 0, 0)
 
-	button:EnableMouse(true)
+	return fontString
 
-	return button
 end
-
 
 local frame = CreateFrame('FRAME', 'AstralOptionsFrame', UIParent)
 frame:SetFrameStrata('DIALOG')
@@ -80,10 +73,20 @@ frame:SetPoint('CENTER', UIParent, 'CENTER')
 frame:SetBackdrop(BACKDROP)
 frame:SetBackdropColor(0, 0, 0, 1)
 frame:SetMovable(true)
+frame:EnableMouse(true)
+frame:RegisterForDrag('LeftButton')
 frame:EnableKeyboard(true)
 frame:SetPropagateKeyboardInput(true)
 frame:SetClampedToScreen(true)
-frame:Hide()
+--frame:Hide()
+
+frame:SetScript('OnDragStart', function(self)
+	self:StartMoving()
+	end)
+
+frame:SetScript('OnDragStop', function(self)
+	self:StopMovingOrSizing()
+	end)
 
 local logo = frame:CreateTexture('ARTWORK')
 logo:SetSize(64, 64)
@@ -109,32 +112,56 @@ closeButton:SetScript('OnClick', function()
 	AstralOptionsFrame:Hide()
 end)
 
-local function CreateOptionButton()
-
-	local button = CreateFrame('BUTTON', nil, frame)
-	button:SetSize(140, 20)
-	button:SetNormalFontObject(FONT_OBJECT_LEFT)
-	button:SetBackdropBorderColor(0, 0, 0)
-	button:SetBackdropColor(85/255, 85/255, 85/255, .6)
-
-	local texture = button:CreateTexture()
-	texture:SetColorTexture(1, 1, 1, .1)
-	texture:SetPoint('TOPLEFT', 1, -1)
-	texture:SetPoint('BOTTOMRIGHT', -1, 1)
-	button:SetHighlightTexture(texture)
-
-	return button
-end
-
-local generalButton = CreateOptionButton()
+local generalButton = e.CreateOptionButton(AstralOptionsFrame)
 generalButton:SetText('General Options')
 generalButton:SetPoint('TOPLEFT', logo, 'BOTTOMLEFT', 0, -10)
 
-local reportButton = CreateOptionButton()
+local reportButton = e.CreateOptionButton(AstralOptionsFrame)
 reportButton:SetText('Report options')
-reportButton:SetPoint('TOPLEFT', generalButton, 'BOTTOMLEFT')
+reportButton:SetPoint('TOPLEFT', generalButton, 'BOTTOMLEFT', 0, -1)
 
 
-local mapButton = CreateOptionButton()
+local mapButton = e.CreateOptionButton(AstralOptionsFrame)
 mapButton:SetText('Map Names')
-mapButton:SetPoint('TOPLEFT', reportButton, 'BOTTOMLEFT', 0, 0)
+mapButton:SetPoint('TOPLEFT', reportButton, 'BOTTOMLEFT', 0, -1)
+
+
+-- Content frame to anchor all option panels
+-- 
+local contentFrame = CreateFrame('FRAME', 'AstralFrame_OptionContent', frame)
+contentFrame:SetPoint('TOPLEFT', frame.centreDivider, 'TOPLEFT', 5, 0)
+contentFrame:SetBackdrop(BACKDROP)
+contentFrame:SetBackdropColor(1, 0, 1)
+contentFrame:SetSize(630, 500)
+
+-- Content frame header, tells user what options they are looking at
+-- 
+contentFrame.header = CreateHeader(contentFrame, 'content_header', 150, 20, 'General Options', 10)
+contentFrame.header:SetPoint('TOPLEFT', contentFrame, 'TOPLEFT', 5, 0)
+
+local cf3 =CreateFrame('FRAME', nil, frame)
+cf3:SetPoint('TOPLEFT', frame.centreDivider, 'TOPLEFT', 5, 0)
+cf3:SetBackdrop(BACKDROP)
+cf3:SetBackdropColor(1, 1, 0)
+cf3:SetSize(210, 500)
+
+local cf4 =CreateFrame('FRAME', nil, frame)
+cf4:SetPoint('TOPLEFT', cf3, 'TOPRIGHT', 0, 0)
+cf4:SetBackdrop(BACKDROP)
+cf4:SetBackdropColor(0, 1, 0)
+cf4:SetSize(210, 500)
+
+local cf2 =CreateFrame('FRAME', nil, frame)
+cf2:SetPoint('TOPLEFT', frame.centreDivider, 'TOPLEFT', 5, 0)
+cf2:SetBackdrop(BACKDROP)
+cf2:SetBackdropColor(0, 1, 1)
+cf2:SetSize(315, 500)
+
+local showOffLine = e.CreateCheckBox(contentFrame, 'Show offline guild members')
+showOffLine:SetPoint('TOPLEFT', contentFrame.header, 'BOTTOMLEFT', 0, -10)
+
+local test1 = e.CreateCheckBox(contentFrame, 'Show minimap button')
+test1:SetPoint('LEFT', showOffLine, 'RIGHT', 10, 0)
+
+local test2 = e.CreateCheckBox(contentFrame, '')
+test2:SetPoint('TOPLEFT', contentFrame.header, 'BOTTOMLEFT', 420, -10)
