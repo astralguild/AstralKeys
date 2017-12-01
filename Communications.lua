@@ -34,11 +34,12 @@ local SEND_INTERVAL_SETTING = 1 -- What intervel to use for sending key informat
 
 AstralComs = CreateFrame('FRAME', 'AstralComs')
 AstralComs:RegisterEvent('CHAT_MSG_ADDON')
+AstralComs:RegisterEvent('BN_CHAT_MSG_ADDON')
 AstralComs.dtbl = {}
 
 function AstralComs:RegisterPrefix(channel, prefix, f)
 	if not channel then channel = 'GUILD' end -- Default to guild as channel if none is specified
-	if self:IsPrefixRegistered(channel, prefix) then return end
+	if self:IsPrefixRegistered(channel, prefix) then return end -- Did we register something to the same channel with the same name?
 
 	if not self.dtbl[channel] then self.dtbl[channel] = {} end
 	
@@ -75,6 +76,7 @@ end
 function AstralComs:OnEvent(event, ...)
 	local prefix, msg, channel = ...
 	if not (prefix == 'AstralKeys') then return end
+	if event == 'BN_CHAT_MSG_ADDON' then channel = 'BNET' end
 
 	local objs = self.dtbl[channel]
 	if not objs then return end
@@ -88,6 +90,7 @@ function AstralComs:OnEvent(event, ...)
 	end
 end
 AstralComs:SetScript('OnEvent', AstralComs.OnEvent)
+
 
 function e.AnnounceNewKey(keyLink, level)
 	if not IsInGroup() then return end
@@ -192,7 +195,8 @@ local function PushKeyList(...)
 	wipe(messageQueue)
 	for i = 1, #AstralKeys do
 		if e.UnitInGuild(AstralKeys[i][1]) then -- Only send current guild keys, who wants keys from a different guild?
-			messageStack[#messageStack + 1] = strformat('%s_', strformat('%s:%s:%d:%d:%d:%d:%d', AstralKeys[i][1], AstralKeys[i][2], AstralKeys[i][3], AstralKeys[i][4], AstralKeys[i][5], AstralKeys[i][6], AstralKeys[i][7]))
+			--messageStack[#messageStack + 1] = strformat('%s_', strformat('%s:%s:%d:%d:%d:%d:%d', AstralKeys[i][1], AstralKeys[i][2], AstralKeys[i][3], AstralKeys[i][4], AstralKeys[i][5], AstralKeys[i][6], AstralKeys[i][7]))
+			messageStack[#messageStack + 1] = strformat('%s_', table.concat(AstralKeys[i], ':'))
 		end
 	end
  
@@ -216,7 +220,7 @@ local function PushKeyList(...)
 			table.remove(messageQueue, 1)
 		end
 	end
-
+	-- Re-write this to use OnUpdate for Com frame
 	local tickerIterations = #messageQueue
 	ticker = C_Timer.NewTicker(SEND_INTERVAL[SEND_INTERVAL_SETTING], SendEntries, tickerIterations)
 end

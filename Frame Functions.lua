@@ -240,17 +240,17 @@ end
 -- Backdrop highlight: yes
 -- Font highlight: no
 -- Border: no
-function e.CreateOptionButton(parent)
+function e.CreateOptionButton(parent, width)
 	local self = CreateFrame('BUTTON', nil, parent)
-	self:SetSize(140, 20)
+	self:SetSize(width or 140, 20)
 	self:SetNormalFontObject(FONT_OBJECT_LEFT)
 	self:SetBackdropBorderColor(0, 0, 0)
 	self:SetBackdropColor(85/255, 85/255, 85/255, .6)
 
 	local texture = self:CreateTexture()
 	texture:SetColorTexture(1, 1, 1, .1)
-	texture:SetPoint('TOPLEFT', 1, -1)
-	texture:SetPoint('BOTTOMRIGHT', -1, 1)
+	texture:SetPoint('TOPLEFT')
+	texture:SetPoint('BOTTOMRIGHT')
 	self:SetHighlightTexture(texture)
 
 	return self

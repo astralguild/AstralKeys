@@ -460,7 +460,40 @@ logo:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\Astral.tga')
 logo:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 10, -10)
 
 local title = e.CreateHeader(AstralKeyFrame, 'title', 220, 20, 'Astral Keys', 26)
-title:SetPoint('LEFT', logo, 'RIGHT', 10, -10)
+--title:SetPoint('LEFT', logo, 'RIGHT', 10, -10) -- ORIGINAL
+title:SetPoint('LEFT', logo, 'RIGHT', 10, 0) 
+
+--------------------
+---- UI TEST STUFF FOR FRIENDS GUILD LIST START
+-------------------
+
+local guildButton = e.CreateOptionButton(AstralKeyFrame, 75)
+guildButton:SetHeight(16)
+guildButton:SetNormalFontObject(FONT_OBJECT_CENTRE)
+guildButton:SetNormalTexture(guildButton:GetHighlightTexture())
+guildButton:SetPoint('TOPLEFT', title, 'BOTTOMLEFT', 0, -3)
+guildButton:SetText('Guild list')
+
+local friendButton = e.CreateOptionButton(AstralKeyFrame, 75)
+friendButton:SetHeight(16)
+friendButton:SetPoint('LEFT', guildButton, 'RIGHT')
+friendButton:SetNormalFontObject(FONT_OBJECT_CENTRE)
+friendButton:SetText(WrapTextInColorCode('Friend list', 'ff9d9d9d'))
+--{r=0.510, g=0.773, b=1.0} -- BN FRIEND COLOR CODE
+--friendButton:SetText(WrapTextInColorCode('Friend list', 'ff82c5ff'))
+
+
+
+
+
+
+
+
+
+
+-------------------------------
+------- UI FRIENDS GUILDS LIST END
+---------------------------------
 
 AstralKeyFrame.centreDivider = AstralKeyFrame:CreateTexture('BACKGROUND')
 AstralKeyFrame.centreDivider:SetSize(1, 325)

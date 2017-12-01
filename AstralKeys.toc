@@ -15,6 +15,7 @@ Affixes.lua
 Key Information.lua
 Unit Information.lua
 Character Info.lua
+BNFriends.lua
 ArtifactPower.lua
 ArtifactKnowledge.lua
 

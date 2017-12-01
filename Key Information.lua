@@ -1,5 +1,6 @@
 local ADDON, e = ...
 local strformat = string.format
+local SendAddonMessage = SendAddonMessage
 
 local GRAY = 'ff9d9d9d'
 local PURPLE = 'ffa335ee'
@@ -84,7 +85,7 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 		msg = string.format('%s %s:%s:%d:%d:%d:%d', e.UPDATE_VERSION, e.Player(), e.PlayerClass(), mapID, keyLevel, CompletedWeekly(), e.Week)
 	end
 
-	if not mapID and not AstralEvents:IsRegistered('CHAT_MSG_LOOT', 'loot_msg_parse') then
+	if not mapID and not AstralEvents:IsRegistered('CHAT_MSG_LOOT', 'loot_msg_parse') then -- No key found or event registered, let's look for those keys
 		AstralEvents:Register('CHAT_MSG_LOOT', ParseLootMsgForKey, 'loot_msg_parse')
 	end
 
@@ -131,7 +132,7 @@ function e.ParseLink(link)
 end
 
 function e.GetUnitKeyByID(id)
-	if not id or (id < 1 ) then return end
+	if not id or (id < 1 ) then return end -- Id out of ranged, or not supplied, who does this?
 
 	return AstralKeys[id][3], AstralKeys[id][4] -- mapID, key level
 end
