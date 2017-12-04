@@ -2,6 +2,7 @@ local a, e = ...
 
 if not AstralKeys then AstralKeys = {} end
 if not AstralCharacters then AstralCharacters = {} end
+if not AstralFriends then AstralFriends = {} end
 
 local initializeTime = {} 
 initializeTime[1]= 1500390000 -- US Tuesday at reset

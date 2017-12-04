@@ -1,7 +1,7 @@
 local ADDON, e = ...
 
 local find, sub, strformat = string.find, string.sub, string.format
-local SendAddonMessage = SendAddonMessage
+local SendAddonMessage, BNSendGameData = SendAddonMessage, BNSendGameData
 
 -- Variables for syncing information
 -- Will only accept information from other clients with same version settings
@@ -12,8 +12,8 @@ local versionList = {}
 local highestVersion = 0
 
 local messageStack = {}
-local messageQueue = {}
-local messageContents = {}
+
+local PrintVersion, CheckInstanceType
 
 -- New key announce message
 -- TODO: add option to change message to something else
@@ -23,19 +23,17 @@ local ANNOUNCE_MESSAGE = 'Astral Keys: New key %s + %d'
 -- Two different time settings for in a raid or otherwise
 -- Creates a random variance between +- [.200, .500] to help prevent
 -- disconnects from too many addon messages
-local send_variance = ((-1)^math.random(1,2)) * math.random(200, 500)/ 10^3 -- random number to space out messages being sent between clients
+local send_variance = ((-1)^math.random(1,2)) * math.random(1, 100)/ 10^3 -- random number to space out messages being sent between clients
 local SEND_INTERVAL = {}
-SEND_INTERVAL[1] = 0.6 + send_variance
-SEND_INTERVAL[2] = 4 + send_variance
+SEND_INTERVAL[1] = 0.2 + send_variance -- Normal operations
+SEND_INTERVAL[2] = 4 + send_variance -- Used when in a raiding environment
+SEND_INTERVAL[3] = 2 -- Used for version checks
 
 -- Current setting to be used
 -- Changes when player enters a raid instance or not
 local SEND_INTERVAL_SETTING = 1 -- What intervel to use for sending key information
 
 AstralComs = CreateFrame('FRAME', 'AstralComs')
-AstralComs:RegisterEvent('CHAT_MSG_ADDON')
-AstralComs:RegisterEvent('BN_CHAT_MSG_ADDON')
-AstralComs.dtbl = {}
 
 function AstralComs:RegisterPrefix(channel, prefix, f)
 	if not channel then channel = 'GUILD' end -- Default to guild as channel if none is specified
@@ -73,24 +71,103 @@ function AstralComs:IsPrefixRegistered(channel, prefix)
 	return false
 end
 
-function AstralComs:OnEvent(event, ...)
-	local prefix, msg, channel = ...
+function AstralComs:OnEvent(event, prefix, msg, channel, sender)
+	if event == 'BN_CHAT_MSG_ADDON' then  end
 	if not (prefix == 'AstralKeys') then return end
-	if event == 'BN_CHAT_MSG_ADDON' then channel = 'BNET' end
 
-	local objs = self.dtbl[channel]
+	if event == 'BN_CHAT_MSG_ADDON' then channel = 'BNET' end -- To handle BNET addon messages, they are actually WHISPER but I like to keep them seperate
+
+	local objs = AstralComs.dtbl[channel]
 	if not objs then return end
 
 	local arg, content = msg:match("^(%S*)%s*(.-)$")
 
 	for _, obj in pairs(objs) do
 		if obj.prefix == arg then
-			obj.method(content, ...)
+			obj.method(content, sender, msg)
 		end
 	end
 end
-AstralComs:SetScript('OnEvent', AstralComs.OnEvent)
 
+function AstralComs:NewMessage(prefix, text, channel, target)
+	local msg = {}
+
+	if channel == 'BNET' then
+		msg.method = BNSendGameData
+		msg[1] = target
+		msg[2] = prefix
+		msg[3] = text
+	else
+		msg.method = SendAddonMessage
+		msg[1] = prefix
+		msg[2] = text
+		msg[3] = channel
+		msg[4] = channel == 'WHISPER' and target or ''
+	end
+
+	--Let's add it to queue
+	self.queue[#self.queue + 1] = msg
+
+	if not self:IsShown() then
+		self:Show()
+	end
+end
+
+function AstralComs:SendMessage()
+	local msg = table.remove(self.queue, 1)
+	if msg[3] == 'BNET' then
+		if select(3, BNGetGameAccountInfo(msg[4])) == 'WoW' and BNConnected() then -- Are they logged into WoW and are we connected to BNET?
+			msg.method(unpack(msg, 1, #msg))
+		end
+	elseif msg[3] == 'WHISPER' then
+		if e.IsFriendOnline(msg[4]) then -- Are they still logged into that toon
+			msg.method(unpack(msg, 1, #msg))
+		end
+	else -- Guild/raid message, just send it
+		msg.method(unpack(msg, 1, #msg))
+		msg[2] = nil
+	end
+end
+
+function AstralComs:OnUpdate(elapsed)
+	self.delay = self.delay + elapsed
+
+	if self.delay < SEND_INTERVAL[SEND_INTERVAL_SETTING] then
+		return
+	end
+
+	if self.versionPrint then
+		CheckInstanceType()
+		self.versionPrint = false
+		PrintVersion()
+	end
+
+	self.delay = 0
+
+	if #self.queue < 1 then -- Don't have any messages to send
+		self:Hide()
+		return
+	end
+
+	self:SendMessage()
+end
+
+function AstralComs:Init()
+	self:RegisterEvent('CHAT_MSG_ADDON')
+	self:RegisterEvent('BN_CHAT_MSG_ADDON')
+
+	self:SetScript('OnEvent', self.OnEvent)
+	self:SetScript('OnUpdate', self.OnUpdate)
+
+	self.dtbl = {}
+	self.queue = {}
+
+	self:Hide()
+	self.delay = 0
+	self.versionPrint = false
+end
+
+AstralComs:Init()
 
 function e.AnnounceNewKey(keyLink, level)
 	if not IsInGroup() then return end
@@ -130,12 +207,11 @@ local function UpdateUnitKey(msg)
 end
 AstralComs:RegisterPrefix('GUILD', e.UPDATE_VERSION, UpdateUnitKey)
 
-local updateTicker = {}
-local function SyncReceive(entry)
+local function SyncReceive(entry, sender)
 	local unit, class, dungeonID, keyLevel, weekly, week, timeStamp
 	if AstralKeyFrame:IsShown() then
-		if updateTicker['_remainingIterations'] and updateTicker['_remainingIterations'] > 0 then updateTicker:Cancel() end
-		updateTicker = C_Timer.NewTicker(.75, e.UpdateFrames, 1)
+		AstralKeyFrame:SetScript('OnUpdate', AstralKeyFrame.OnUpdate)
+		AstralKeyFrame.updateDelay = 0
 	end
 
 	local _pos = 0
@@ -174,10 +250,7 @@ local function SyncReceive(entry)
 end
 AstralComs:RegisterPrefix('GUILD', SYNC_VERSION, SyncReceive)
 
-local function UpdateWeekly(...)
-	local weekly = ...
-	local sender = select(5, ...)
-
+local function UpdateWeekly(weekly, sender)
 	local id = e.UnitID(sender)
 	if id then
 		AstralKeys[id][5] = tonumber(weekly)
@@ -186,13 +259,10 @@ local function UpdateWeekly(...)
 end
 AstralComs:RegisterPrefix('GUILD', 'updateWeekly', UpdateWeekly)
 
-local ticker = {}
-local function PushKeyList(...)
-	if ticker['_remainingIterations'] and ticker['_remainingIterations'] > 0 then ticker:Cancel() end
-	local sender = select(5, ...)
+local function PushKeyList(msg, sender)
 	if sender == e.Player() then return end
+
 	wipe(messageStack)
-	wipe(messageQueue)
 	for i = 1, #AstralKeys do
 		if e.UnitInGuild(AstralKeys[i][1]) then -- Only send current guild keys, who wants keys from a different guild?
 			--messageStack[#messageStack + 1] = strformat('%s_', strformat('%s:%s:%d:%d:%d:%d:%d', AstralKeys[i][1], AstralKeys[i][2], AstralKeys[i][3], AstralKeys[i][4], AstralKeys[i][5], AstralKeys[i][6], AstralKeys[i][7]))
@@ -200,29 +270,16 @@ local function PushKeyList(...)
 		end
 	end
  
-	-- Keep 10 characters for prefix length, extra incase version goes into double digits
-	local index = 1
-	messageQueue[index] = ''
-	while messageStack[1] do		
-		local nextMessage = strformat('%s%s', messageQueue[index], messageStack[1])
-		if nextMessage:len() < 244 then -- Keep the message length less than 255 or player will disconnect
-			messageQueue[index] = nextMessage
+	local msg = ''
+	while messageStack[1] do
+		msg = strformat('%s%s', msg, messageStack[1])
+		if msg:len() < 235 then -- Keep the message length less than 255 or player will disconnect
 			table.remove(messageStack, 1)
 		else
-			index = index + 1
-			messageQueue[index] = ''
+			AstralComs:NewMessage('AstralKeys', strformat('%s %s', SYNC_VERSION, msg), 'GUILD')
+			msg = ''
 		end
 	end
-
-	local function SendEntries()
-		if messageQueue[1] and messageQueue[1] ~= '' then
-			SendAddonMessage('AstralKeys', strformat('%s %s', SYNC_VERSION, messageQueue[1]), 'GUILD')
-			table.remove(messageQueue, 1)
-		end
-	end
-	-- Re-write this to use OnUpdate for Com frame
-	local tickerIterations = #messageQueue
-	ticker = C_Timer.NewTicker(SEND_INTERVAL[SEND_INTERVAL_SETTING], SendEntries, tickerIterations)
 end
 
 AstralComs:RegisterPrefix('GUILD', 'request', PushKeyList)
@@ -230,48 +287,20 @@ AstralComs:RegisterPrefix('GUILD', 'request', PushKeyList)
 local function VersionRequest()
 	local version = GetAddOnMetadata('AstralKeys', 'version')
 	version = version:gsub('[%a%p]', '')
-	SendAddonMessage('AstralKeys', 'versionPush ' .. version .. ':' .. e.PlayerClass(), 'GUILD')
+	SendAddonMessage('AstralKeys', 'versionPush ' .. version .. ':' .. e.PlayerClass(), 'GUILD') -- Bypass the queue, shouldn't cause any issues, very little data is being pushed
 end
 AstralComs:RegisterPrefix('GUILD', 'versionRequest', VersionRequest)
 
-local function VersionPush(msg, ...)
-	local sender = select(4, ...)
+local function VersionPush(msg, sender)
 	local version, class = msg:match('(%d+):(%a+)')
 	if tonumber(version) > highestVersion then
 		highestVersion = tonumber(version)
 	end
 	versionList[sender] = {version = version, class = class}
 end
+AstralComs:RegisterPrefix('GUILD', 'versionPush', VersionPush)
 
-local function ResetAK()
-	AstralKeysSettings['reset'] = false
-	e.WipeUnitList()
-	e.WipeFrames()
-	e.FindKeyStone(true)
-	e.UpdateAffixes()
-	C_Timer.After(.75, function()
-		e.UpdateCharacterFrames()
-		e.UpdateFrames()
-	end)
-end
-AstralComs:RegisterPrefix('GUILD', 'resetAK', ResetAK)
---SendAddonMessage('AstralKeys', 'resetAK', 'GUILD')
-
-function e.AnnounceCharacterKeys(channel)
-	for i = 1, #AstralCharacters do
-		local id = e.UnitID(strformat('%s-%s', e.CharacterName(i), e.CharacterRealm(i)))
-
-		if id then
-			local link, keyLevel = e.CreateKeyLink(id)
-			if keyLevel >= e.GetMinKeyLevel() then
-				if channel == 'PARTY' and not IsInGroup() then return end
-				SendChatMessage(strformat('%s %s +%d',e.CharacterName(i), link, keyLevel), channel)
-			end
-		end
-	end
-end
-
-local function PrintVersion()
+PrintVersion = function()
 	local outOfDate = 'Out of date: '
 	local upToDate = 'Up to date: '
 	local notInstalled = 'Not installed: '
@@ -296,18 +325,16 @@ local function PrintVersion()
 	ChatFrame1:AddMessage(notInstalled)
 end
 
-local timer
 function e.VersionCheck()
 	if not IsInGuild() then return end
-	if not AstralComs:IsPrefixRegistered('GUILD', 'versionPush') then
-		AstralComs:RegisterPrefix('GUILD', 'versionPush', VersionPush) -- lazy way to do this,
-	end
 
 	highestVersion = 0
 	wipe(versionList)
-	SendAddonMessage('AstralKeys', 'versionRequest', 'GUILD')
-	if timer then timer:Cancel() end
-	timer =  C_Timer.NewTicker(3, function() PrintVersion() AstralComs:UnregisterPrefix('GUILD', 'versionPush') end, 1)
+	SendAddonMessage('AstralKeys', 'versionRequest', 'GUILD') -- Bypass the queue, very little data is being pushed, shouldn't cause any issues.
+	AstralComs.versionPrint = true
+	SEND_INTERVAL_SETTING = 3
+	AstralComs.delay = 0
+	AstralComs:Show()
 end
 
 -- Let's just disable sending information if we are doing a boss fight
@@ -324,11 +351,42 @@ AstralEvents:Register('ENCOUNTER_STOP', function()
 
 -- Checks to see if we zone into a raid instance,
 -- Let's increase the send interval if we are raiding, client sync can wait, dc's can't
-AstralEvents:Register('PLAYER_ENTERING_WORLD', function()
+CheckInstanceType = function()
 	local inInstance, instanceType = IsInInstance()
 	if inInstance and instanceType == 'raid' then
 		SEND_INTERVAL_SETTING = 2
 	else
 		SEND_INTERVAL_SETTING = 1
 	end
-	end, 'entering_world')
+end
+AstralEvents:Register('PLAYER_ENTERING_WORLD', CheckInstanceType, 'entering_world')
+
+
+local function ResetAK()
+	AstralKeysSettings['reset'] = false
+	e.WipeUnitList()
+	e.WipeFrames()
+	e.FindKeyStone(true)
+	e.UpdateAffixes()
+	C_Timer.After(.75, function()
+		e.UpdateCharacterFrames()
+		e.UpdateFrames()
+	end)
+end
+AstralComs:RegisterPrefix('GUILD', 'resetAK', ResetAK)
+--SendAddonMessage('AstralKeys', 'resetAK', 'GUILD')
+
+
+function e.AnnounceCharacterKeys(channel)
+	for i = 1, #AstralCharacters do
+		local id = e.UnitID(strformat('%s-%s', e.CharacterName(i), e.CharacterRealm(i)))
+
+		if id then
+			local link, keyLevel = e.CreateKeyLink(id)
+			if keyLevel >= e.GetMinKeyLevel() then
+				if channel == 'PARTY' and not IsInGroup() then return end
+				SendChatMessage(strformat('%s %s +%d',e.CharacterName(i), link, keyLevel), channel)
+			end
+		end
+	end
+end

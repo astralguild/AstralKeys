@@ -37,9 +37,6 @@ end
 -- Clears unit list
 function e.WipeUnitList()
 	wipe(UNIT_LIST)
-	UNIT_LIST['GUILD'] = {}
-	UNIT_LIST['BNET'] = {}
-	UNIT_LIST['FRIEND'] = {}
 end
 
 -- Retrieves unit from database

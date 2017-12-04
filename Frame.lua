@@ -1,3 +1,9 @@
+--------------
+--- TODO
+-- Start whisper on unit click
+
+
+
 local _, e = ...
 
 local BACKDROP = {
@@ -59,7 +65,7 @@ local function CreateHeader(parent, name, width, height, text, fontAdjust)
 	frame.t:SetPoint('BOTTOMLEFT', frame, 'BOTTOMLEFT')
 	frame.t:SetSize(width, 1)
 	frame.t:SetColorTexture(1, 1, 1)
-	frame.t:SetGradientAlpha('HORIZONTAL', 1, 1, 1, 0.8, 0, 0 , 0, 0)
+	frame.t:SetGradientAlpha('HORIZONTAL', 1, 1, 1, 0.8, 0, 0, 0, 0)
 
 	function frame:SetText(text)
 		self.s:SetText(text)
@@ -382,6 +388,7 @@ AstralKeyFrame:EnableKeyboard(true)
 AstralKeyFrame:SetPropagateKeyboardInput(true)
 AstralKeyFrame:SetClampedToScreen(true)
 AstralKeyFrame:Hide()
+AstralKeyFrame.updateDelay = 0
 
 local guildInfo = CreateFrame('FRAME', nil, AstralKeyFrame)
 guildInfo:SetSize(125, 13)
@@ -940,6 +947,18 @@ completeButton:SetScript('OnClick', function()
 	e.UpdateLines()
 
 	end)
+
+function AstralKeyFrame:OnUpdate(elapsed)
+	self.updateDelay = self.updateDelay + elapsed
+
+	if self.updateDelay < 0.75 then
+		return
+	end
+	self:SetScript('OnUpdate', nil)
+	self.updateDelay = 0
+	e.UpdateFrames()
+end
+
 
 AstralKeyFrame:SetScript('OnKeyDown', function(self, key)
 	if key == 'ESCAPE' then

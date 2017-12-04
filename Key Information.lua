@@ -1,6 +1,5 @@
 local ADDON, e = ...
 local strformat = string.format
-local SendAddonMessage = SendAddonMessage
 
 local GRAY = 'ff9d9d9d'
 local PURPLE = 'ffa335ee'
@@ -10,7 +9,8 @@ e.CACHE_LEVEL = 15 -- Weekly M+ requirement for class hall cache
 local function Weekly()
 	e.GetBestClear()
 	if AstralCharacters[e.GetCharacterID(e.Player())].level >= e.CACHE_LEVEL then
-		SendAddonMessage('AstralKeys', 'updateWeekly 1', 'GUILD')
+		AstralComs:NewMessage('AstralKeys', 'updateWeekly 1', 'GUILD')
+		--SendAddonMessage('AstralKeys', 'updateWeekly 1', 'GUILD')
 	end
 	e.UpdateCharacterFrames()
 end
@@ -20,7 +20,8 @@ local function InitData()
 	e.GetBestClear()
 	e.FindKeyStone(true, false)
 	e.BuildMapTable()
-	SendAddonMessage('AstralKeys', 'request', 'GUILD')
+	AstralComs:NewMessage('AstralKeys', 'request', 'GUILD')
+	--SendAddonMessage('AstralKeys', 'request', 'GUILD')
 
 	AstralEvents:Unregister('CHALLENGE_MODE_MAPS_UPDATE', 'initData')
 	AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', Weekly, 'weeklyCheck')
@@ -99,7 +100,8 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 
 	if sendUpdate  and msg ~= '' then
 		if IsInGuild() then
-			SendAddonMessage('AstralKeys', msg, 'GUILD')
+			AstralComs:NewMessage('AstralKeys', msg, 'GUILD')
+			--SendAddonMessage('AstralKeys', msg, 'GUILD')
 		else -- Not in a guild, who are you people? Whatever, gotta make it work for them aswell
 			local id = e.UnitID(e.Player()) -- Are we in the DB already? 
 			if id then -- Yep, ok just update those values

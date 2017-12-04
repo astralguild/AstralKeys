@@ -61,10 +61,14 @@ if not AstralKeysSettings then
 		['options'] = {
 			['announceKey'] = true,
 			['showMiniMapButton'] = true,
+			['friends'] = {
+				['GetMinFriendSyncLevel'] = 2
+				},
 			},
 		}
 end
 
+--return AstralKeysSettings.options.friends.GetMinFriendSyncLevel
 local frame = CreateFrame('FRAME')
 frame:RegisterEvent('ADDON_LOADED')
 frame:SetScript('OnEvent', function(self, event, ...)
@@ -97,6 +101,7 @@ frame:SetScript('OnEvent', function(self, event, ...)
 				}
 		end
 		end
+		frame:UnregisterEvent('ADDON_LOADED')
 	end)
 
 function e.GetOrientation()
@@ -162,4 +167,8 @@ function e.debug(addon, text, ...)
 	else
 		print('[AK]Debug: ', text, ...)
 	end
+end
+
+function e.GetMinFriendSyncLevel()
+	return AstralKeysSettings.options.friends.GetMinFriendSyncLevel
 end
