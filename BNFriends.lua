@@ -1,8 +1,11 @@
 local ADDON, e = ...
 Console:AddLine(ADDON, 'BN friends loaded')
 
-local strformat = string.format
-local find = string.find
+local SYNC_VERSION = 'sync1'
+
+local strformat, find = string.format, string.find
+local tremove = table.remove
+
 
 ----------------------------------------------------
 ----------------------------------------------------
@@ -58,28 +61,33 @@ function e.BNFriendUpdate(index)
 
 	if not gaID then return end -- No game pressence ID, can't talk to them then
 	if not BNFriendList[gaID] then
-		local presID, _, battleTag, _, toonName, gaID, client = BNGetFriendInfo(index)
-		if gaID then
-			BNFriendList[gaID] = {tonnName = toonName, presID = presID, client = client, battleTag = battleTag}
-		end
+		local toonName = select(5, BNGetFriendInfo(index))
+		BNFriendList[gaID] = {toonName = toonName, presID = presID, client = client, battleTag = battleTag}
 	else
-		-- Store last client, if the client hasn't changed don't send any information
-		local lastClient = BNFriendList[gaID].client
-
 		BNFriendList[gaID].client = client --Update client, did they log off WoW?
 		BNFriendList[gaID].presID = presID or 0 -- If they have a presID force an update, else set to 0. Used for all API needing a pressence ID
 		BNFriendList[gaID].battleTag = battleTag -- Might as well keep it up to date
 	end
-
-	if lastClient ~= client and client == 'WoW' then -- They either switched toons or are logging in for the first time.
-		-- Going to be dirty, but let's send them the informatino either way. Maybe they disconnected and lost the data?
-		--Let's send them our key information!
-		--for gaID in pairs(BNFriendList) do SendCharacterKeys(gaID) end
-		--4000 bits seem to be safe, let's limit this shit to 1000 to be on the safe side tho
-		--Don't know if aother addons are going to be using this shit or not.
-	end
 end
 AstralEvents:Register('BN_FRIEND_INFO_CHANGED', e.BNFriendUpdate, 'update_BNFriend')
+
+-- Let's find out which friends are using Astral Keys, no need to spam every friend, just the ones using Astral keys
+local function PingFriendsForAstralKeys()
+	for gaID, player in pairs(BNFriendList) do
+	if tbl.client == 'WoW' then
+		if not e.IsFriendUsingAK(e.GetBNTag(gaID)) then -- We already know this friend is using AK, no need to check again.
+			AstralComs:NewMessage('AstralKeys', 'BNet_ping', 'BNET', gaID)
+		end
+	end
+end
+AstralEvents:Register('PLAYER_LOGIN', PingFriendsForAstralKeys, 'pingFriends')
+
+local function PingResponse(msg, sender)
+	AstralKeysSettings.friends.using[msg] = true
+	AstralComs:NewMessage('AstralKeys', 'BNet_ping', 'BNET', sender) -- Need to double check if we get the gaID or pressenceID from the event
+end
+AstralComs:RegisterPrefix('BNET', 'BNet_ping', PingResponse)
+
 
 ----------------------------------------------------
 ----------------------------------------------------
@@ -127,6 +135,10 @@ function e.FriendKeyLevel(id)
 	return AstralFriends[id][5]
 end
 
+function e.IsFriendUsingAK(battleTag)
+	return AstralKeysSettings.friends.using[battleTag]
+end
+
 ----------------------------------------------------
 ----------------------------------------------------
 ---- Non BNet Friend stuff
@@ -147,14 +159,12 @@ local function UpdateNonBNetFriendList()
 end
 AstralEvents:Register('FRIENDLIST_UPDATE', UpdateNonBNetFriendList, 'update_non_bnet_list')
 
-local function RecieveKey(msg, ...)
-	local sender = select(4, ...)
-
+local function RecieveKey(msg, sender)
 	local btag = e.GetBNTag(sender)
 	if not btag then return end -- How the hell did this happen? Will have to do some testing...
 
 	local timeStamp = e.WeekTime()
-	local name, _, realm _, _, faction, _, class = select(2, BNGetGameAccountInfo(sender))
+	local name, _, realm _, _, faction = select(2, BNGetGameAccountInfo(sender))
 	local unit = format('%s-%s', name, realm)
 	local class, dungeonID, keyLevel, week = msg:match('(%a+):(%d+):(%d+):(%d+)') -- Screw getting class from API, just send it, we have the bandwidth.
 
@@ -179,9 +189,7 @@ local function RecieveKey(msg, ...)
 end
 AstralComs:RegisterPrefix('BNET', 'updateKey', RecieveKey)
 
-local function SyncFriendUpdate(entry, ...)
-	local sender = select(4, ...)
-
+local function SyncFriendUpdate(entry, sender)
 	print(sender)
 	print(entry)
 
@@ -224,16 +232,16 @@ AstralComs:RegisterPrefix('BNET', 'sync1', SyncFriendUpdate)
 local messageStack = {}
 local messageQueue = {}
 
-function PushKeysToFriends()
-	local msg = 'sync1 '
+function e.PushKeysToFriends()
+	wipe(messageStack)
+	wipe(messageQueue)
+
 	for i = 1, #AstralCharacters do
 		local id = e.UnitID(AstralCharacters[i].unit)
 		if id then -- We have a key for this character, let's get the message and queue it up
 			local map, level = e.GetUnitKeyByID(id)
 			if level >= e.GetMinFriendSyncLevel() then
-				msg = strformat('%s:%s:%d:%d:%d:%d', e.Unit(id), e.UnitClass(id), map, level, e.Week, AstralKeys[id][7]) -- name-server:class:mapID:keyLevel:week#:weekTime
-				msg = strformat('%s_', msg)
-				messageStack[#messageStack + 1] = msg
+				messageStack[#messageStack + 1] = strformat('%s_', strformat('%s:%s:%d:%d:%d:%d', e.Unit(id), e.UnitClass(id), map, level, e.Week, AstralKeys[id][7])) -- name-server:class:mapID:keyLevel:week#:weekTime
 			end
 		end
 	end
@@ -251,16 +259,24 @@ function PushKeysToFriends()
 		end
 	end
 
+	
+end
+
+-- Sends data to BNeT friends and Non-BNet friends
+-- @param data table Sync data that includes all keys for all of person's characters
+-- @param data string Update string including only logged in person's characters
+function e.PushKeyDataToFriends(data)
 	for gaID, tbl in pairs(BNFriendList) do
 		if tbl.client == 'WoW' then -- Only send if they are in WoW
-			for i = 1, #messageQueue do
-			AstralComs:NewMessage('AstralKeys', messageQueue[i], 'BNET', gaID)
+			if type(data) == 'table' then
+				for i = 1, #messageQueue do
+				AstralComs:NewMessage('AstralKeys', messageQueue[i], 'BNET', gaID)
 			end
+		else
+			AstralComs:NewMessage('AstralKeys', data, 'BNET', gaID)
 		end
 	end
 end
-
-
 ------------------------------------------------------
 ------- TESTNG STUFF
 ------------------------------------------------------
