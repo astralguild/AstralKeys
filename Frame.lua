@@ -248,7 +248,7 @@ function UnitFrame:NewFrame(parent)
 	self.nameString = self:CreateFontString('ARTWORK')
 	self.nameString:SetFont(FONT_CONTENT, FONT_SIZE)
 	self.nameString:SetJustifyH('LEFT')
-	self.nameString:SetSize(165, 15)
+	self.nameString:SetSize(135, 15)
 	self.nameString:SetPoint('LEFT', self.dungeonString, 'RIGHT')
 
 	self.weeklyTexture = self:CreateTexture('BACKGROUND')
@@ -289,11 +289,13 @@ end
 
 function UnitFrame:SetUnit(unit)
 	if e.FrameListShown() == 'guild' then
+		self.nameString:SetWidth(135)
 		self.unitID = e.UnitID(unit)
 		self.levelString:SetText(e.UnitKeyLevel(self.unitID))
 		self.dungeonString:SetText(e.GetMapName(e.UnitMapID(self.unitID)))
 		self.nameString:SetText(WrapTextInColorCode(e.UnitName(self.unitID), select(4, GetClassColor(e.UnitClass(self.unitID)))))
 	else
+		self.nameString:SetWidth(165)
 		self.unitID = e.FriendID(unit)
 		self.levelString:SetText(e.FriendKeyLevel(self.unitID))
 		self.dungeonString:SetText(e.GetMapName(e.FriendMapID(self.unitID)))
@@ -524,14 +526,14 @@ end)
 closeButton:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', -10, -10)
 
 local quickOptionsFrame = CreateFrame('FRAME', 'quickOptionsFrame', AstralKeyFrame)
-quickOptionsFrame:SetSize(170, 45)
+quickOptionsFrame:SetSize(170, 50)
 quickOptionsFrame:SetBackdrop(BACKDROP)
 quickOptionsFrame:SetBackdropColor(0, 0, 0, 1)
 quickOptionsFrame:SetFrameLevel(10)
 quickOptionsFrame:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', -10, - 28)
 quickOptionsFrame:Hide()
 
-local showOffline = e.CreateCheckBox(quickOptionsFrame, 'Show offline', 150)
+local showOffline = e.CreateCheckBox(quickOptionsFrame, 'Show offline', 160)
 showOffline:SetPoint('TOPRIGHT', quickOptionsFrame, 'TOPRIGHT', -5, -5)
 
 showOffline:SetScript('OnClick', function (self)
@@ -541,7 +543,7 @@ showOffline:SetScript('OnClick', function (self)
 	e.UpdateFrames()
 end)
 
-local showMinimapButton = e.CreateCheckBox(quickOptionsFrame, 'Show Minimap Button', 150)
+local showMinimapButton = e.CreateCheckBox(quickOptionsFrame, 'Show Minimap Button', 160)
 showMinimapButton:SetPoint('TOPRIGHT', showOffline, 'BOTTOMRIGHT', 0, -5)
 showMinimapButton:SetScript('OnClick', function(self)
 	e.SetShowMinimapButton(self:GetChecked())
