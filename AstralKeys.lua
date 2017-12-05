@@ -68,6 +68,7 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 	if currentTime > AstralKeysSettings.initTime then
 		wipe(AstralCharacters)
 		wipe(AstralKeys)
+		wipe(AstralFriends)
 		--AstralAffixes = {}
 		--AstralAffixes[1] = 0
 		--AstralAffixes[2] = 0

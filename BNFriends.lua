@@ -89,6 +89,7 @@ local function PingResponse(msg, sender)
 	BNFriendList[sender].usingAK = true
 	if msg == 'ping' then
 		AstralComs:NewMessage('AstralKeys', 'BNet_query response', 'BNET', sender) -- Need to double check if we get the gaID or pressenceID from the event
+		e.PushKeysToFriends(sender)
 	end
 end
 AstralComs:RegisterPrefix('BNET', 'BNet_query', PingResponse)
@@ -237,9 +238,11 @@ AstralComs:RegisterPrefix('BNET', 'sync1', SyncFriendUpdate)
 local messageStack = {}
 local messageQueue = {}
 
-function e.PushKeysToFriends()
-	wipe(messageStack)
-	wipe(messageQueue)
+function e.PushKeysToFriends(target)
+	--wipe(messageStack)
+	--wipe(messageQueue)
+	local messageStack = {}
+	local messageQueue = {}
 
 	for i = 1, #AstralCharacters do
 		local id = e.UnitID(AstralCharacters[i].unit)
@@ -264,22 +267,43 @@ function e.PushKeysToFriends()
 		end
 	end
 
-	e.PushKeyDataToFriends(messageQueue)
+	e.PushKeyDataToFriends(messageQueue, target)
 end
+AstralEvents:Register('PLAYER_LOGIN', e.PushKeysToFriends, 'push_friends_keys')
 
 -- Sends data to BNeT friends and Non-BNet friends
 -- @param data table Sync data that includes all keys for all of person's characters
 -- @param data string Update string including only logged in person's characters
-function e.PushKeyDataToFriends(data)
-	for gaID, tbl in pairs(BNFriendList) do
-		if tbl.client == 'WoW' and tbl.usingAK then -- Only send if they are in WoW
+function e.PushKeyDataToFriends(data, target)
+	if not target then
+		for gaID, tbl in pairs(BNFriendList) do
+			if tbl.client == 'WoW' and tbl.usingAK then -- Only send if they are in WoW
+				if type(data) == 'table' then
+					for i = 1, #data do
+						AstralComs:NewMessage('AstralKeys', data[i], 'BNET', gaID)
+					end
+				else
+					AstralComs:NewMessage('AstralKeys', data, 'BNET', gaID)
+				end
+			end
+		end
+
+		for player in pairs(NonBNFriend_List) do
 			if type(data) == 'table' then
-				for i = 1, #messageQueue do
-					AstralComs:NewMessage('AstralKeys', messageQueue[i], 'BNET', gaID)
+				for i = 1, #data do
+					AstralComs:NewMessage('AstralKeys', data[i], 'WHISPER', player)
 				end
 			else
-				AstralComs:NewMessage('AstralKeys', data, 'BNET', gaID)
+				AstralComs:NewMessage('AstralKeys', data, 'WHISPER', player)
 			end
+		end
+	else
+		if type(data) == 'table' then
+			for i = 1, #data do
+				AstralComs:NewMessage('AstralKeys', data[i], 'BNET', target)
+			end
+		else
+			AstralComs:NewMessage('AstralKeys', data, 'BNET', target)
 		end
 	end
 end

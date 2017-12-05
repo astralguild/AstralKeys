@@ -163,8 +163,6 @@ function e.CreateCheckButton(parent, text)
 	self.checkbox:SetNormalTexture(nil)
 	self.checkbox:SetBackdropColor(0, 0, 0)
 
-
-
 	return self
 end
 --[[

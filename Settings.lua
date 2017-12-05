@@ -1,6 +1,6 @@
 local _, e = ...
 local DEBUG = false
-local RESET_VERSION = 15800
+local RESET_VERSION = 15900
 -- Reset time 15:00 UTC AMERICAS
 -- 07:00 UTC EU
 
@@ -63,7 +63,7 @@ if not AstralKeysSettings then
 			['announceKey'] = true,
 			['showMiniMapButton'] = true,
 			['friends'] = {
-				['GetMinFriendSyncLevel'] = 2
+				['GetMinFriendSyncLevel'] = 2,
 				},
 			},
 		}
@@ -79,6 +79,7 @@ frame:SetScript('OnEvent', function(self, event, ...)
 		if not AstralKeysSettings['reset'] or not AstralKeysSettings['resetVersion'] or AstralKeysSettings['resetVersion'] ~= RESET_VERSION then
 			wipe(AstralKeys)
 			wipe(AstralCharacters)
+			wipe(AstralFriends)
 			--AstralAffixes[1] = 0
 			--AstralAffixes[2] = 0
 			--AstralAffixes[3] = 0
@@ -99,6 +100,9 @@ frame:SetScript('OnEvent', function(self, event, ...)
 				['options'] = {
 					['announceKey'] = true,
 					['showMiniMapButton'] = true,
+					['friends'] = {
+						['GetMinFriendSyncLevel'] = 2,
+						},
 					},
 				}
 		end

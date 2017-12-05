@@ -1,9 +1,3 @@
---------------
---- TODO
--- Start whisper on unit click
-
-
-
 local _, e = ...
 
 local BACKDROP = {
@@ -60,29 +54,6 @@ local function MixIn(D, T)
 	end
 end
 
-local function CreateHeader(parent, name, width, height, text, fontAdjust)
-	local frame = CreateFrame('FRAME', 'header_' .. name, parent)
-	frame:SetSize(width, height)
-
-	frame.s = frame:CreateFontString('BACKGROUND')
-	frame.s:SetFont(FONT_HEADER, FONT_SIZE + fontAdjust)
-	frame.s:SetPoint('BOTTOMLEFT', frame, 'BOTTOMLEFT')
-	frame.s:SetText(text)
-
-	frame.t = frame:CreateTexture('BACKGROUND')
-	frame.t:SetPoint('BOTTOMLEFT', frame, 'BOTTOMLEFT')
-	frame.t:SetSize(width, 1)
-	frame.t:SetColorTexture(1, 1, 1)
-	frame.t:SetGradientAlpha('HORIZONTAL', 1, 1, 1, 0.8, 0, 0, 0, 0)
-
-	function frame:SetText(text)
-		self.s:SetText(text)
-	end
-
-	return frame
-
-end
-
 local function CreateButton(parent, btnID, width, height, text, fontobject, highlightfont)
 	local button = CreateFrame('BUTTON', btnID, parent)
 	button.ID = btnID
@@ -135,21 +106,17 @@ local function CreateCharacterFrame(parent, frameName, unitName, bestKey, create
 	frame.weeklyAP = 0
 	frame.realm = ''
 
-	frame.name = CreateFrame('FRAME', nil, frame)
+	frame.name = frame:CreateFontString('ARTWORK')
+	frame.name:SetJustifyH('LEFT')
 	frame.name:SetSize(175, 15)
+	frame.name:SetFont(FONT_CONTENT, FONT_SIZE)
 	frame.name:SetPoint('TOPLEFT', frame, 'TOPLEFT')
 
-	frame.name.string = frame.name:CreateFontString('ARTWORK')
-	frame.name.string:SetFont(FONT_CONTENT, FONT_SIZE)
-	frame.name.string:SetPoint('TOPLEFT', frame.name, 'TOPLEFT')
-
-	frame.keystone = CreateFrame('FRAME', nil, frame)
+	frame.keystone = frame:CreateFontString('ARTWORK')
+	frame.keystone:SetJustifyH('LEFT')
 	frame.keystone:SetSize(200, 15)
+	frame.keystone:SetFont(FONT_CONTENT, FONT_SIZE)
 	frame.keystone:SetPoint('BOTTOMLEFT', frame, 'BOTTOMLEFT', 10, 0)
-
-	frame.keystone.string = frame.keystone:CreateFontString('ARTWORK')
-	frame.keystone.string:SetFont(FONT_CONTENT, FONT_SIZE)
-	frame.keystone.string:SetPoint('BOTTOMLEFT', frame.keystone, 'BOTTOMLEFT')
 
 	if createDivider then
 
@@ -165,7 +132,7 @@ local function CreateCharacterFrame(parent, frameName, unitName, bestKey, create
 		self.bestKey = e.GetCharacterBestMap(characterID)
 		self.bestMap = e.GetCharacterBestMap(characterID)
 
-		self.name.string:SetText(WrapTextInColorCode(self.unit, select(4, GetClassColor(self.unitClass))) .. ' - ' .. self.bestKey)
+		self.name:SetText(WrapTextInColorCode(self.unit, select(4, GetClassColor(self.unitClass))) .. ' - ' .. self.bestKey)
 	end
 
 	function frame:UpdateInformation(characterID)
@@ -178,20 +145,20 @@ local function CreateCharacterFrame(parent, frameName, unitName, bestKey, create
 			self.bestMap = e.GetCharacterBestMap(characterID)
 			self.weeklyAP = e.GetWeeklyAP(self.bestKey)
 
-			self.keystone.string:SetText(e.GetCharacterKey(self.unit .. '-' .. self.realm))
+			self.keystone:SetText(e.GetCharacterKey(self.unit .. '-' .. self.realm))
 
 			if self.realm ~= e.PlayerRealm() then
 				self.unit = self.unit .. ' (*)'
 			end
 
 			if self.bestKey ~= 0 then
-				self.name.string:SetText(WrapTextInColorCode(self.unit, select(4, GetClassColor(self.unitClass))) .. ' - ' .. self.bestKey)
+				self.name:SetText(WrapTextInColorCode(self.unit, select(4, GetClassColor(self.unitClass))) .. ' - ' .. self.bestKey)
 			else
-				self.name.string:SetText(WrapTextInColorCode(self.unit, select(4, GetClassColor(self.unitClass))))
+				self.name:SetText(WrapTextInColorCode(self.unit, select(4, GetClassColor(self.unitClass))))
 			end
 		else
-			self.name.string:SetText('')
-			self.keystone.string:SetText('')
+			self.name:SetText('')
+			self.keystone:SetText('')
 			self.cid = -1
 		end
 	end
@@ -430,7 +397,7 @@ logo:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 10, -10)
 
 local title = e.CreateHeader(AstralKeyFrame, 'title', 220, 20, 'Astral Keys', 26)
 --title:SetPoint('LEFT', logo, 'RIGHT', 10, -10) -- ORIGINAL
-title:SetPoint('LEFT', logo, 'RIGHT', 10, 0) 
+title:SetPoint('LEFT', logo, 'RIGHT', 10, 7) 
 
 -----------------------------------
 ---- Guild/Friend List buttons
@@ -441,13 +408,11 @@ guildButton:SetNormalFontObject(FONT_OBJECT_CENTRE)
 guildButton:SetPoint('TOPLEFT', title, 'BOTTOMLEFT', 0, -3)
 guildButton:SetText('Guild list')
 
-
 local friendButton = e.CreateOptionButton(AstralKeyFrame, 75)
 friendButton:SetHeight(15)
 friendButton:SetPoint('LEFT', guildButton, 'RIGHT')
 friendButton:SetNormalFontObject(FONT_OBJECT_CENTRE)
 friendButton:SetText(WrapTextInColorCode('Friend list', 'ff9d9d9d'))
-
 
 guildButton:SetScript('OnClick', function()
 	if e.FrameListShown() == 'friends' then
@@ -553,22 +518,7 @@ showMinimapButton:SetScript('OnClick', function(self)
 		e.icon:Hide('AstralKeys')
 	end
 end)
---[[
-local minKeyLevel = e.CreateEditBox(quickOptionsFrame, 'minKeyLevel', 25, 'Min announce level', 1, 100, 'LEFT')
-minKeyLevel:SetPoint('TOPRIGHT', showOffline, 'BOTTOMRIGHT', 0, -5)
-minKeyLevel:SetScript('OnEditFocusLost', function(self)
-	e.SetMinKeyLevel(self:GetNumber())
-		end)
-minKeyLevel:EnableMouseWheel(true)
-minKeyLevel:SetScript('OnMouseWheel', function(self, delta)
-	if self:GetNumber() + delta < self.minValue or self:GetNumber() + delta > self.maxValue then
-		return
-	else
-		self:SetNumber(self:GetNumber() + delta)
-		e.SetMinKeyLevel(self:GetNumber())
-	end
-	end)
-]]
+
 local quickOptions = CreateFrame('BUTTON', nil, AstralKeyFrame)
 quickOptions:SetSize(16, 16)
 quickOptions:SetPoint('TOPRIGHT', toggleButton, 'TOPLEFT', -5, 0)
@@ -1104,7 +1054,6 @@ end
 
 function e.UpdateLines()
 	if not init then return end
-	--local indexEnd = math.min(25, #sortedTable)
 	for i = 1, math.min(25, #sortedTable) do
 		unit_frames[i]:SetUnit(sortedTable[i + offset][1])
 		unit_frames[i]:UpdateWeekly(sortedTable[i + offset][1])
