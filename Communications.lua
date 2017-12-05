@@ -126,6 +126,7 @@ function AstralComs:SendMessage()
 	else -- Guild/raid message, just send it
 		msg.method(unpack(msg, 1, #msg))
 		msg[2] = nil
+		msg = nil
 	end
 end
 

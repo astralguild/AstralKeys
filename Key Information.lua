@@ -101,6 +101,7 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 	if sendUpdate  and msg ~= '' then
 		if IsInGuild() then
 			AstralComs:NewMessage('AstralKeys', msg, 'GUILD')
+			e.PushKeyDataToFriends(msg)
 			--SendAddonMessage('AstralKeys', msg, 'GUILD')
 		else -- Not in a guild, who are you people? Whatever, gotta make it work for them aswell
 			local id = e.UnitID(e.Player()) -- Are we in the DB already? 
@@ -115,7 +116,7 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 			end
 		end
 	end
-
+	msg = nil
 	-- Ok, time to check if we need to announce a new key or not
 	if tonumber(oldMap) == tonumber(mapID) and tonumber(oldLevel) == tonumber(keyLevel) then return end
 
@@ -137,6 +138,22 @@ function e.GetUnitKeyByID(id)
 	if not id or (id < 1 ) then return end -- Id out of ranged, or not supplied, who does this?
 
 	return AstralKeys[id][3], AstralKeys[id][4] -- mapID, key level
+end
+
+function e.UnitKeyLevel(id)
+	return AstralKeys[id][4]
+end
+
+function e.UnitMapID(id)
+	return AstralKeys[id][3]
+end
+
+function e.UnitCompletedWeekly(id)
+	if AstralKeys[id][5] == 1 then
+		return true
+	else
+		return false
+	end
 end
 
 function e.GetCharacterKey(unit)

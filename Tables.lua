@@ -3,11 +3,22 @@ local _, e = ...
 local function ParseOnlineUnits(A)
 	local tbl = {}
 	local units = {}
-	local guildName
-	local numOnline = select(2, GetNumGuildMembers())
-	for i = 1, numOnline do
-		guildName = GetGuildRosterInfo(i)
-		units[guildName] = true
+	local name
+	if e.FrameListShown() == 'guild' then
+		local numOnline = select(2, GetNumGuildMembers())
+		for i = 1, numOnline do
+			name = GetGuildRosterInfo(i)
+			units[name] = true
+		end
+	else
+		for i = 1, BNGetNumFriends() do
+			local name, gaID = select(5, BNGetFriendInfo(i))
+			if name then
+				local server = select(4, BNGetGameAccountInfo(gaID))
+				name = string.format('%s-%s', name, server)
+				units[name] = true
+			end
+		end
 	end
 
 	for k, v in pairs(A) do
@@ -19,8 +30,8 @@ local function ParseOnlineUnits(A)
 	return tbl
 end
 
-function e.UpdateTables(table)
-	table = e.DeepCopy(AstralKeys)
+function e.UpdateTables(table, A)
+	table = e.DeepCopy(A)
 	if not e.GetShowOffline() then
 		table = ParseOnlineUnits(table)
 	end
@@ -30,6 +41,7 @@ end
 
 function e.SortTable(A, v)
 	if v == 3 then -- Map Name
+		if e.FrameListShown() == 'friends' then v = v + 1 end
 	    for j = 2, #A do
 	        --Select item to sort
 	        local key = A[j]
@@ -47,6 +59,7 @@ function e.SortTable(A, v)
 	    	table.sort(A, function(a, b) return e.GetMapName(a[v]) > e.GetMapName(b[v]) end)
 	    end
 	else
+		if e.FrameListShown() == 'friends' then v = v + 1 end
 	    for j = 2, #A do
 	        --Select item to sort
 	        local key = A[j]

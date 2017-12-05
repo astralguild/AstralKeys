@@ -146,6 +146,10 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 		e.SetCharacterID(AstralCharacters[i].unit, i)
 	end	
 
+	for i = 1, #AstralFriends do
+		e.SetFriendID(AstralFriends[i][1], i)
+	end
+
 	RegisterAddonMessagePrefix('AstralKeys')
 
 	C_ChallengeMode.RequestMapInfo()

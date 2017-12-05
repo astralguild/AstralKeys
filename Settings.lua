@@ -57,6 +57,7 @@ if not AstralKeysSettings then
 				['minKeyLevel'] = 1,
 				},
 			['viewMode'] = 0,
+			['list'] = 'guild',
 			},
 		['options'] = {
 			['announceKey'] = true,
@@ -93,6 +94,7 @@ frame:SetScript('OnEvent', function(self, event, ...)
 						['minKeyLevel'] = 1,
 						},
 					['viewMode'] = 0,
+					['list'] = 'guild',
 					},
 				['options'] = {
 					['announceKey'] = true,
@@ -158,6 +160,14 @@ end
 
 function e.SetShowMinimapButton(bool)
 	AstralKeysSettings.options.showMiniMapButton = bool
+end
+
+function e.FrameListShown()
+	return AstralKeysSettings.frameOptions.list
+end
+
+function e.SetFrameListShown(data)
+	AstralKeysSettings.frameOptions.list = data
 end
 
 function e.debug(addon, text, ...)
