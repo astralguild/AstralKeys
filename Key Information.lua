@@ -102,7 +102,6 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 		if IsInGuild() then
 			AstralComs:NewMessage('AstralKeys', msg, 'GUILD')
 			e.PushKeyDataToFriends(msg)
-			--SendAddonMessage('AstralKeys', msg, 'GUILD')
 		else -- Not in a guild, who are you people? Whatever, gotta make it work for them aswell
 			local id = e.UnitID(e.Player()) -- Are we in the DB already? 
 			if id then -- Yep, ok just update those values

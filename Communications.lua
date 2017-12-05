@@ -133,9 +133,11 @@ end
 function AstralComs:OnUpdate(elapsed)
 	self.delay = self.delay + elapsed
 
-	if self.delay < SEND_INTERVAL[SEND_INTERVAL_SETTING] then
+	if self.delay < SEND_INTERVAL[SEND_INTERVAL_SETTING] + self.loadDelay then
 		return
 	end
+
+	self.loadDelay = 0
 
 	if self.versionPrint then
 		CheckInstanceType()
@@ -165,9 +167,9 @@ function AstralComs:Init()
 
 	self:Hide()
 	self.delay = 0
+	self.loadDelay = 0
 	self.versionPrint = false
 end
-
 AstralComs:Init()
 
 function e.AnnounceNewKey(keyLink, level)
@@ -353,6 +355,7 @@ AstralEvents:Register('ENCOUNTER_STOP', function()
 -- Checks to see if we zone into a raid instance,
 -- Let's increase the send interval if we are raiding, client sync can wait, dc's can't
 CheckInstanceType = function()
+	AstralComs.loadDelay = 3
 	local inInstance, instanceType = IsInInstance()
 	if inInstance and instanceType == 'raid' then
 		SEND_INTERVAL_SETTING = 2
