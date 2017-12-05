@@ -330,7 +330,7 @@ end
 
 function UnitFrame:OnClick()
 	if not UnitAffectingCombat('player') then
-		ChatFrame_SendTell(e.Unit(self.unitID))
+		--ChatFrame_SendTell(e.Unit(self.unitID))
 	end
 end
 
@@ -857,7 +857,7 @@ contentFrame:SetScript('OnLeave', function()
 	contentFrame.slider:SetAlpha(0.2)
 	end)
 
-local keyButton = CreateButton(contentFrame, 'keyButton', 40, 20, 'Level', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT) --75
+local keyButton = CreateButton(contentFrame, 'keyButton', 45, 20, 'Level', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT) --75
 keyButton:SetPoint('BOTTOMLEFT', contentFrame, 'TOPLEFT')
 keyButton:SetScript('OnClick', function()
 	contentFrame:ResetSlider()
@@ -991,6 +991,8 @@ local function InitializeFrame()
 		guildButton:SetNormalTexture(guildButton:GetHighlightTexture())
 	else
 		friendButton:SetNormalTexture(friendButton:GetHighlightTexture())
+		completeButton:Hide()
+		nameButton:SetW(180)
 	end
 
 	AstralAffixOne:UpdateInfo()
