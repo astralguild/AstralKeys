@@ -15,11 +15,12 @@ Affixes.lua
 Key Information.lua
 Unit Information.lua
 Character Info.lua
-BNFriends.lua
 ArtifactPower.lua
 ArtifactKnowledge.lua
 
 AstralKeys.lua
+
+BNFriends.lua
 
 Frame Functions.lua
 Frame.lua

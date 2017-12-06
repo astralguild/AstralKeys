@@ -64,22 +64,3 @@ end
 function e.UnitClass(id)
 	return AstralKeys[id][2]
 end
-
--- TEST LATER
-function e.AddUnitKey(...)
-	if not AstralKeys[list] then AstralKeys[list] = {} end
-	table.insert(AstralKeys[list], {...})
-end
-
-function e.UpdateUnitKey(list, btag, id, dungeonID, keyLevel, weekly, week, timeStamp)
-	if week >= e.Week then -- Does the key belong to this week or last's?
-		if AstralKeys[list][id][7] < timeStamp then
-			AstralKeys[list][id][3] = dungeonID
-			AstralKeys[list][id][4] = keyLevel
-			AstralKeys[list][id][6] = week
-			AstralKeys[list][id][7] = timeStamp
-		end
-	else
-		AstralKeys[list][id] = nil
-	end
-end

@@ -245,7 +245,7 @@ function UnitFrame:NewFrame(parent)
 
 	self:SetScript('OnMouseDown', function(self, button)
 		if button == 'LeftButton' then
-			ChatFrame_SendTell(e.Unit(self.unitID))
+			--ChatFrame_SendTell(e.Unit(self.unitID))
 		end
 		end)
 
@@ -294,12 +294,6 @@ function UnitFrame:UpdateWeekly(unit)
 		self.weeklyTexture:SetShown(e.UnitCompletedWeekly(e.UnitID(unit)))
 	else
 		self.weeklyTexture:Hide()
-	end
-end
-
-function UnitFrame:OnClick()
-	if not UnitAffectingCombat('player') then
-		--ChatFrame_SendTell(e.Unit(self.unitID))
 	end
 end
 
@@ -396,7 +390,6 @@ logo:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\Astral.tga')
 logo:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 10, -10)
 
 local title = e.CreateHeader(AstralKeyFrame, 'title', 220, 20, 'Astral Keys', 26)
---title:SetPoint('LEFT', logo, 'RIGHT', 10, -10) -- ORIGINAL
 title:SetPoint('LEFT', logo, 'RIGHT', 10, 7) 
 
 -----------------------------------

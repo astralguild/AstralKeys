@@ -172,12 +172,6 @@ function AstralComs:Init()
 end
 AstralComs:Init()
 
-function e.AnnounceNewKey(keyLink, level)
-	if not IsInGroup() then return end
-	if not e.AnnounceKey() then return end
-	SendChatMessage(strformat(ANNOUNCE_MESSAGE, keyLink, level), 'PARTY')
-end
-
 local function UpdateUnitKey(msg)
 	local timeStamp = e.WeekTime() -- part of the week we got this key update, used to determine if a key got de-leveled or not
 	local unit = msg:sub(0, msg:find(':') - 1)
@@ -365,7 +359,6 @@ CheckInstanceType = function()
 end
 AstralEvents:Register('PLAYER_ENTERING_WORLD', CheckInstanceType, 'entering_world')
 
-
 local function ResetAK()
 	AstralKeysSettings['reset'] = false
 	e.WipeUnitList()
@@ -380,7 +373,6 @@ end
 AstralComs:RegisterPrefix('GUILD', 'resetAK', ResetAK)
 --SendAddonMessage('AstralKeys', 'resetAK', 'GUILD')
 
-
 function e.AnnounceCharacterKeys(channel)
 	for i = 1, #AstralCharacters do
 		local id = e.UnitID(strformat('%s-%s', e.CharacterName(i), e.CharacterRealm(i)))
@@ -393,4 +385,10 @@ function e.AnnounceCharacterKeys(channel)
 			end
 		end
 	end
+end
+
+function e.AnnounceNewKey(keyLink, level)
+	if not IsInGroup() then return end
+	if not e.AnnounceKey() then return end
+	SendChatMessage(strformat(ANNOUNCE_MESSAGE, keyLink, level), 'PARTY')
 end

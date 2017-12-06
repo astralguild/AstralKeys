@@ -1,6 +1,7 @@
 local ADDON, e = ...
 
 local SYNC_VERSION = 'sync1'
+local UPDATE_VERSION = 'update1'
 
 local strformat, find = string.format, string.find
 local tremove = table.remove
@@ -14,7 +15,6 @@ local tremove = table.remove
 local BNGetFriendInfo = BNGetFriendInfo
 local BNGetGameAccountInfo = BNGetGameAccountInfo
 
--- /script for i =1, select(2, BNGetNumFriends()) do charName, bnetID = select(5, BNGetFriendInfo(i)) if charName == 'Phrik' then print(bnetID) BNSendGameData(bnetID, 'akTest', 'Testing') break end end
 local BNFriendList = {}
 
 -- BNGetNumFOF(BNetID) -- Seems to take first return value from BNGetFriendInfo
@@ -74,26 +74,6 @@ function e.BNFriendUpdate(index)
 	end
 end
 AstralEvents:Register('BN_FRIEND_INFO_CHANGED', e.BNFriendUpdate, 'update_BNFriend')
-
--- Let's find out which friends are using Astral Keys, no need to spam every friend, just the ones using Astral keys
-local function PingFriendsForAstralKeys()
-	for gaID, player in pairs(BNFriendList) do
-		if player.client == 'WoW' then
-			AstralComs:NewMessage('AstralKeys', 'BNet_query ping', 'BNET', gaID)
-		end
-	end
-end
-AstralEvents:Register('PLAYER_LOGIN', PingFriendsForAstralKeys, 'pingFriends')
-
-local function PingResponse(msg, sender)
-	BNFriendList[sender].usingAK = true
-	if msg == 'ping' then
-		AstralComs:NewMessage('AstralKeys', 'BNet_query response', 'BNET', sender) -- Need to double check if we get the gaID or pressenceID from the event
-		e.PushKeysToFriends(sender)
-	end
-end
-AstralComs:RegisterPrefix('BNET', 'BNet_query', PingResponse)
-
 
 ----------------------------------------------------
 ----------------------------------------------------
@@ -189,7 +169,7 @@ local function RecieveKey(msg, sender)
 
 	if e.FrameListShown() == 'friends' then e.UpdateFrames() end
 end
-AstralComs:RegisterPrefix('BNET', 'updateKey', RecieveKey)
+AstralComs:RegisterPrefix('BNET', 'update1', RecieveKey)
 
 local function SyncFriendUpdate(entry, sender)
 	local btag = e.GetBNTag(sender)
@@ -238,11 +218,9 @@ AstralComs:RegisterPrefix('BNET', 'sync1', SyncFriendUpdate)
 local messageStack = {}
 local messageQueue = {}
 
-function e.PushKeysToFriends(target)
-	--wipe(messageStack)
-	--wipe(messageQueue)
-	local messageStack = {}
-	local messageQueue = {}
+local function PushKeysToFriends(target)
+	wipe(messageStack)
+	wipe(messageQueue)
 
 	for i = 1, #AstralCharacters do
 		local id = e.UnitID(AstralCharacters[i].unit)
@@ -269,7 +247,6 @@ function e.PushKeysToFriends(target)
 
 	e.PushKeyDataToFriends(messageQueue, target)
 end
-AstralEvents:Register('PLAYER_LOGIN', e.PushKeysToFriends, 'push_friends_keys')
 
 -- Sends data to BNeT friends and Non-BNet friends
 -- @param data table Sync data that includes all keys for all of person's characters
@@ -277,13 +254,13 @@ AstralEvents:Register('PLAYER_LOGIN', e.PushKeysToFriends, 'push_friends_keys')
 function e.PushKeyDataToFriends(data, target)
 	if not target then
 		for gaID, tbl in pairs(BNFriendList) do
-			if tbl.client == 'WoW' and tbl.usingAK then -- Only send if they are in WoW
+			if tbl.client == 'WoW' then -- Only send if they are in WoW
 				if type(data) == 'table' then
 					for i = 1, #data do
-						AstralComs:NewMessage('AstralKeys', data[i], 'BNET', gaID)
+						AstralComs:NewMessage('AstralKeys', strformat('%s %s', SYNC_VERSION, data[i]), 'BNET', gaID)
 					end
 				else
-					AstralComs:NewMessage('AstralKeys', data, 'BNET', gaID)
+					AstralComs:NewMessage('AstralKeys', strformat('%s %s', UPDATE_VERSION, data), 'BNET', gaID)
 				end
 			end
 		end
@@ -291,19 +268,39 @@ function e.PushKeyDataToFriends(data, target)
 		for player in pairs(NonBNFriend_List) do
 			if type(data) == 'table' then
 				for i = 1, #data do
-					AstralComs:NewMessage('AstralKeys', data[i], 'WHISPER', player)
+					AstralComs:NewMessage('AstralKeys', strformat('%s %s', SYNC_VERSION, data[i]), 'WHISPER', player)
 				end
 			else
-				AstralComs:NewMessage('AstralKeys', data, 'WHISPER', player)
+				AstralComs:NewMessage('AstralKeys', strformat('%s %s', UPDATE_VERSION, data), 'WHISPER', player)
 			end
 		end
 	else
 		if type(data) == 'table' then
 			for i = 1, #data do
-				AstralComs:NewMessage('AstralKeys', data[i], 'BNET', target)
+				AstralComs:NewMessage('AstralKeys', strformat('%s %s', SYNC_VERSION, data[i]), 'BNET', target)
 			end
 		else
-			AstralComs:NewMessage('AstralKeys', data, 'BNET', target)
+			AstralComs:NewMessage('AstralKeys',  strformat('%s %s', UPDATE_VERSION, data), 'BNET', target)
 		end
 	end
 end
+
+
+-- Let's find out which friends are using Astral Keys, no need to spam every friend, just the ones using Astral keys
+local function PingFriendsForAstralKeys()
+	for gaID, player in pairs(BNFriendList) do
+		if player.client == 'WoW' then
+			AstralComs:NewMessage('AstralKeys', 'BNet_query ping', 'BNET', gaID)
+		end
+	end
+end
+AstralEvents:Register('PLAYER_LOGIN', PingFriendsForAstralKeys, 'pingFriends')
+
+local function PingResponse(msg, sender)
+	BNFriendList[sender].usingAK = true
+	if msg == 'ping' then
+		AstralComs:NewMessage('AstralKeys', 'BNet_query response', 'BNET', sender) -- Need to double check if we get the gaID or pressenceID from the event
+	end
+	PushKeysToFriends(sender)
+end
+AstralComs:RegisterPrefix('BNET', 'BNet_query', PingResponse)
