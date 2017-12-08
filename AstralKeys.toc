@@ -12,11 +12,11 @@ Tables.lua
 
 Communications.lua
 Affixes.lua
-Key Information.lua
 Unit Information.lua
 Character Info.lua
 ArtifactPower.lua
 ArtifactKnowledge.lua
+Key Information.lua
 
 AstralKeys.lua
 

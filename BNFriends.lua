@@ -21,16 +21,6 @@ local BNFriendList = {}
 
 local isConnected = BNConnected() -- Determine if connected to BNet, if not disable all comms, check for BN_CONNECTED to re-enable communications, BN_DISCONNECTED disable communications on this event
 
-local function ParseBNetFriends()
-	for i = 1, BNGetNumFriends() do
-		local presID, _, battleTag, _, toonName, gaID, client = BNGetFriendInfo(i)
-		if gaID then
-			BNFriendList[gaID] = {tonnName = toonName, presID = presID, client = client, battleTag = battleTag, usingAK = false}
-		end
-	end
-end
-AstralEvents:Register('PLAYER_LOGIN', ParseBNetFriends, 'parse_friends')
-
 -- Retrieves Battle.Net BattleTag
 -- @param gaID int Game pressence ID
 -- @return string BattleTag corresponding to the game pressnce ID ex. Phrike#1141
@@ -138,15 +128,17 @@ local function UpdateNonBNetFriendList()
 	wipe(NonBNFriend_List)
 
 	for i = 1, select(2, GetNumFriends()) do -- Only parse over online friends
-		local name = GetFriendInfo(i)
+		local name = strformat('%s-%s', GetFriendInfo(i), e.PlayerRealm())
 		NonBNFriend_List[name] = true
 	end
 end
 AstralEvents:Register('FRIENDLIST_UPDATE', UpdateNonBNetFriendList, 'update_non_bnet_list')
 
 local function RecieveKey(msg, sender)
-	local btag = e.GetBNTag(sender)
-	if not btag then return end -- How the hell did this happen? Will have to do some testing...
+	local btag
+	if type(sender) == 'number' then
+		btag = e.GetBNTag(sender)
+	end
 
 	local timeStamp = e.WeekTime()
 	local unit = msg:sub(0, msg:find(':') - 1)
@@ -170,11 +162,15 @@ local function RecieveKey(msg, sender)
 
 	if e.FrameListShown() == 'friends' then e.UpdateFrames() end
 end
-AstralComs:RegisterPrefix('BNET', 'update1', RecieveKey)
+AstralComs:RegisterPrefix('BNET', UPDATE_VERSION, RecieveKey)
+AstralComs:RegisterPrefix('WHISPER', UPDATE_VERSION, RecieveKey)
 
 local function SyncFriendUpdate(entry, sender)
-	local btag = e.GetBNTag(sender)
-	if not btag then return end -- I like checks and balances
+	local btag
+	if type(sender) == 'number' then
+		btag = e.GetBNTag(sender)
+	end
+	--if not btag then return end -- I like checks and balances
 
 	if AstralKeyFrame:IsShown() then
 		AstralKeyFrame:SetScript('OnUpdate', AstralKeyFrame.OnUpdate)
@@ -215,6 +211,7 @@ local function SyncFriendUpdate(entry, sender)
 	if e.FrameListShown() == 'friends' then e.UpdateFrames() end
 end
 AstralComs:RegisterPrefix('BNET', SYNC_VERSION, SyncFriendUpdate)
+AstralComs:RegisterPrefix('WHISPER', SYNC_VERSION, SyncFriendUpdate)
 
 local messageStack = {}
 local messageQueue = {}
@@ -226,9 +223,9 @@ local function PushKeysToFriends(target)
 	for i = 1, #AstralCharacters do
 		local id = e.UnitID(AstralCharacters[i].unit)
 		if id then -- We have a key for this character, let's get the message and queue it up
-			local map, level = e.GetUnitKeyByID(id)
+			local map, level = e.UnitMapID(id), e.UnitKeyLevel(id)
 			if level >= e.GetMinFriendSyncLevel() then
-				messageStack[#messageStack + 1] = strformat('%s_', strformat('%s:%s:%d:%d:%d:%d', e.Unit(id), e.UnitClass(id), map, level, e.Week, AstralKeys[id][7])) -- name-server:class:mapID:keyLevel:week#:weekTime
+				messageStack[#messageStack + 1] = strformat('%s_', strformat('%s:%s:%d:%d:%d:%d', AstralCharacters[i].unit, e.UnitClass(id), map, level, e.Week, AstralKeys[id][7])) -- name-server:class:mapID:keyLevel:week#:weekTime
 			end
 		end
 	end
@@ -278,18 +275,10 @@ function e.PushKeyDataToFriends(data, target)
 	else
 		if type(data) == 'table' then
 			for i = 1, #data do
-				if type(target) == 'number' then
-					AstralComs:NewMessage('AstralKeys', strformat('%s %s', SYNC_VERSION, data[i]), 'BNET', target)
-				else
-					AstralComs:NewMessage('AstralKeys', strformat('%s %s', SYNC_VERSION, data[i]), 'WHISPER', target)
-				end
+				AstralComs:NewMessage('AstralKeys', strformat('%s %s', SYNC_VERSION, data[i]), tonumber(target) and 'BNET' or 'WHISPER', target)
 			end
 		else
-			if type(target) == 'number' then
-				AstralComs:NewMessage('AstralKeys',  strformat('%s %s', UPDATE_VERSION, data), 'BNET', target)
-			else
-				AstralComs:NewMessage('AstralKeys',  strformat('%s %s', UPDATE_VERSION, data), 'WHISPER', target)
-			end
+			AstralComs:NewMessage('AstralKeys',  strformat('%s %s', UPDATE_VERSION, data), tonumber(target) and 'BNET' or 'WHISPER', target)
 		end
 	end
 end
@@ -297,11 +286,25 @@ end
 
 -- Let's find out which friends are using Astral Keys, no need to spam every friend, just the ones using Astral keys
 local function PingFriendsForAstralKeys()
+
+	for i = 1, BNGetNumFriends() do
+		local presID, _, battleTag, _, toonName, gaID, client = BNGetFriendInfo(i)
+		if gaID then
+			BNFriendList[gaID] = {tonnName = toonName, presID = presID, client = client, battleTag = battleTag, usingAK = false}
+		end
+	end
+
+	for i = 1, select(2, GetNumFriends()) do -- Only parse over online friends
+		local name = strformat('%s-%s', GetFriendInfo(i), e.PlayerRealm())
+		NonBNFriend_List[name] = true
+	end
+
 	for gaID, player in pairs(BNFriendList) do
 		if player.client == 'WoW' then
 			AstralComs:NewMessage('AstralKeys', 'BNet_query ping', 'BNET', gaID)
 		end
 	end
+
 	for player in pairs(NonBNFriend_List) do
 		AstralComs:NewMessage('AstralKeys', 'BNet_query ping', 'WHISPER', player)
 	end
@@ -309,12 +312,14 @@ end
 AstralEvents:Register('PLAYER_LOGIN', PingFriendsForAstralKeys, 'pingFriends')
 
 local function PingResponse(msg, sender)
-	if type(sender) == number then
+	if type(sender) == 'number' then
 		BNFriendList[sender].usingAK = true
 	end
-	if msg == 'ping' then
-		AstralComs:NewMessage('AstralKeys', 'BNet_query response', 'BNET', sender) -- Need to double check if we get the gaID or pressenceID from the event
+
+	if msg:find('ping') then
+		AstralComs:NewMessage('AstralKeys', 'BNet_query response', type(sender) == 'number' and 'BNET' or 'WHISPER', sender) -- Need to double check if we get the gaID or pressenceID from the event
 	end
 	PushKeysToFriends(sender)
 end
+AstralComs:RegisterPrefix('WHISPER', 'BNet_query', PingResponse)
 AstralComs:RegisterPrefix('BNET', 'BNet_query', PingResponse)

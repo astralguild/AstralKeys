@@ -62,5 +62,24 @@ end
 --Gets unit class from saved variables
 -- @param id int ID number for the unit
 function e.UnitClass(id)
+	if not id then return nil end
 	return AstralKeys[id][2]
+end
+
+function e.UnitKeyLevel(id)
+	if not id then return nil end
+	return AstralKeys[id][4]
+end
+
+function e.UnitMapID(id)
+	if not id then return nil end
+	return AstralKeys[id][3]
+end
+
+function e.UnitCompletedWeekly(id)
+	if AstralKeys[id][5] == 1 then
+		return true
+	else
+		return false
+	end
 end

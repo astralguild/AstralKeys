@@ -409,6 +409,7 @@ friendButton:SetText(WrapTextInColorCode('Friend list', 'ff9d9d9d'))
 
 guildButton:SetScript('OnClick', function()
 	if e.FrameListShown() == 'friends' then
+		offset = 0
 		friendButton:SetNormalTexture(nil)		
 		friendButton:SetText(WrapTextInColorCode('Friend list', 'ff9d9d9d'))
 		
@@ -421,6 +422,7 @@ guildButton:SetScript('OnClick', function()
 
 friendButton:SetScript('OnClick', function()
 	if e.FrameListShown() == 'guild' then
+		offset = 0
 		guildButton:SetText(WrapTextInColorCode('Guild list', 'ff9d9d9d'))
 		guildButton:SetNormalTexture(nil)
 

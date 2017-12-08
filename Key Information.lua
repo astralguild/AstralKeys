@@ -15,10 +15,10 @@ local function Weekly()
 end
 
 local function InitData()
+	e.BuildMapTable()
 	if UnitLevel('player') ~= 110 then return end -- Character isn't max level, anything from them is useless
 	e.GetBestClear()
 	e.FindKeyStone(true, false)
-	e.BuildMapTable()
 	AstralComs:NewMessage('AstralKeys', 'request', 'GUILD')
 
 	AstralEvents:Unregister('CHALLENGE_MODE_MAPS_UPDATE', 'initData')
@@ -88,7 +88,7 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 	end
 
 	-- Get the current key information the db to check for new key announcement
-	local oldMap, oldLevel = e.GetUnitKeyByID(e.UnitID(e.Player()))
+	local oldMap, oldLevel = e.UnitMapID(e.UnitID(e.Player())), e.UnitKeyLevel(e.UnitID(e.Player()))
 
 	-- Key found, unregister function, no longer needed
 	if link and AstralEvents:IsRegistered('BAG_UPDATE', 'bagUpdate') then
@@ -113,7 +113,7 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 		end
 	end
 	msg = nil
-	
+
 	-- Ok, time to check if we need to announce a new key or not
 	if tonumber(oldMap) == tonumber(mapID) and tonumber(oldLevel) == tonumber(keyLevel) then return end
 
@@ -129,40 +129,6 @@ end
 function e.ParseLink(link)
 	if not link:find('keystone') then return end -- Not a keystone link, don't do anything, also something went wrong shouldn't be here if not keystone link
 	return link:gsub('\124', '\124\124'):match(':(%d+):(%d+):(%d+):(%d+):(%d+)')
-end
-
-function e.GetUnitKeyByID(id)
-	if not id or (id < 1 ) then return end -- Id out of ranged, or not supplied, who does this?
-
-	return AstralKeys[id][3], AstralKeys[id][4] -- mapID, key level
-end
-
-function e.UnitKeyLevel(id)
-	return AstralKeys[id][4]
-end
-
-function e.UnitMapID(id)
-	return AstralKeys[id][3]
-end
-
-function e.UnitCompletedWeekly(id)
-	if AstralKeys[id][5] == 1 then
-		return true
-	else
-		return false
-	end
-end
-
-function e.GetCharacterKey(unit)
-	if not unit then return '' end
-
-	local id = e.UnitID(unit)
-	
-	if id then 
-		return AstralKeys[id][4] .. ' ' .. C_ChallengeMode.GetMapInfo(AstralKeys[id][3]) -- 4:: key level 3:: mapID
-	else
-		return WrapTextInColorCode('No key found.', 'ff9d9d9d')
-	end
 end
 
 -- Finds best map clear fothe week for logged on character. If character already is in database

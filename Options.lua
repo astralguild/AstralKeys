@@ -78,7 +78,7 @@ frame:RegisterForDrag('LeftButton')
 frame:EnableKeyboard(true)
 frame:SetPropagateKeyboardInput(true)
 frame:SetClampedToScreen(true)
-frame:Hide()
+--frame:Hide()
 
 frame:SetScript('OnDragStart', function(self)
 	self:StartMoving()
@@ -136,7 +136,7 @@ contentFrame:SetSize(630, 500)
 
 -- Content frame header, tells user what options they are looking at
 -- 
-contentFrame.header = CreateHeader(contentFrame, 'content_header', 150, 20, 'General Options', 10)
+contentFrame.header = e.CreateHeader(contentFrame, 'general_header', 200, 20, 'General Options', 10)
 contentFrame.header:SetPoint('TOPLEFT', contentFrame, 'TOPLEFT', 5, 0)
 
 local cf3 =CreateFrame('FRAME', nil, frame)
@@ -160,8 +160,28 @@ cf2:SetSize(315, 500)
 local showOffLine = e.CreateCheckBox(contentFrame, 'Show offline guild members')
 showOffLine:SetPoint('TOPLEFT', contentFrame.header, 'BOTTOMLEFT', 0, -10)
 
-local test1 = e.CreateCheckBox(contentFrame, 'Show minimap button')
-test1:SetPoint('LEFT', showOffLine, 'RIGHT', 10, 0)
+local showMinimap = e.CreateCheckBox(contentFrame, 'Show Minimap button')
+showMinimap:SetPoint('LEFT', showOffLine, 'RIGHT', 10, 0)
 
-local test2 = e.CreateCheckBox(contentFrame, '')
-test2:SetPoint('TOPLEFT', contentFrame.header, 'BOTTOMLEFT', 420, -10)
+local whisperClick = e.CreateCheckBox(contentFrame, 'Click to initiate whisper')
+whisperClick:SetPoint('LEFT', showMinimap, 'RIGHT', 10, 0)
+
+local announceKeys = e.CreateCheckBox(contentFrame, 'Announce new keys to party')
+announceKeys:SetPoint('TOPLEFT', showOffLine, 'BOTTOMLEFT', 0, -10)
+
+contentFrame.syncHeader = e.CreateHeader(contentFrame, 'sync_header', 200, 20, 'Syncing Options', 10)
+contentFrame.syncHeader:SetPoint('TOPLEFT', announceKeys, 'BOTTOMLEFT', 0, -20)
+
+local syncFriends = e.CreateCheckBox(contentFrame, 'Sync with friends')
+syncFriends:SetPoint('TOPLEFT', contentFrame.syncHeader, 'BOTTOMLEFT', 0, -10)
+
+-- function e.CreateEditBox(parent, type, width, label, minValue, maxValue, labelPos)
+local minFriendSync = e.CreateEditBox(contentFrame, 25, 'Minimum key level to sync with friends', 2, 99, 'RIGHT')
+minFriendSync:SetPoint('LEFT', syncFriends, 'RIGHT', 10, 0)
+minFriendSync:SetScript('OnEditFocusLost', function(self)
+	--Save to savedvariables here
+	end)
+
+local syncAccnts = e.CreateCheckBox(contentFrame, 'Sync with another account')
+syncAccnts:SetPoint('TOPLEFT', syncFriends, 'BOTTOMLEFT', 0, -10)
+

@@ -83,7 +83,7 @@ function e.CreateLabel(parent, text, pos)
 
 end
 
-function e.CreateEditBox(parent, type, width, label, minValue, maxValue, labelPos)
+function e.CreateEditBox(parent, width, label, minValue, maxValue, labelPos)
 	local editBox = CreateFrame('EditBox', nil, parent)
 	editBox.maxValue = maxValue
 	editBox.minValue = minValue

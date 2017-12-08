@@ -71,7 +71,6 @@ function AstralComs:IsPrefixRegistered(channel, prefix)
 end
 
 function AstralComs:OnEvent(event, prefix, msg, channel, sender)
-	if event == 'BN_CHAT_MSG_ADDON' then  end
 	if not (prefix == 'AstralKeys') then return end
 
 	if event == 'BN_CHAT_MSG_ADDON' then channel = 'BNET' end -- To handle BNET addon messages, they are actually WHISPER but I like to keep them seperate

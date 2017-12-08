@@ -94,3 +94,15 @@ end
 function e.Player()
 	return playerNameRealm
 end
+
+function e.GetCharacterKey(unit)
+	if not unit then return '' end
+
+	local id = e.UnitID(unit)
+	
+	if id then 
+		return AstralKeys[id][4] .. ' ' .. C_ChallengeMode.GetMapInfo(AstralKeys[id][3]) -- 4:: key level 3:: mapID
+	else
+		return WrapTextInColorCode('No key found.', 'ff9d9d9d')
+	end
+end
