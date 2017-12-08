@@ -21,12 +21,15 @@ local BNFriendList = {}
 
 local isConnected = BNConnected() -- Determine if connected to BNet, if not disable all comms, check for BN_CONNECTED to re-enable communications, BN_DISCONNECTED disable communications on this event
 
-for i = 1, BNGetNumFriends() do
-	local presID, _, battleTag, _, toonName, gaID, client = BNGetFriendInfo(i)
-	if gaID then
-		BNFriendList[gaID] = {tonnName = toonName, presID = presID, client = client, battleTag = battleTag, usingAK = false}
+local function ParseBNetFriends()
+	for i = 1, BNGetNumFriends() do
+		local presID, _, battleTag, _, toonName, gaID, client = BNGetFriendInfo(i)
+		if gaID then
+			BNFriendList[gaID] = {tonnName = toonName, presID = presID, client = client, battleTag = battleTag, usingAK = false}
+		end
 	end
 end
+AstralEvents:Register('PLAYER_LOGIN', ParseBNetFriends, 'parse_friends')
 
 -- Retrieves Battle.Net BattleTag
 -- @param gaID int Game pressence ID
@@ -146,10 +149,8 @@ local function RecieveKey(msg, sender)
 	if not btag then return end -- How the hell did this happen? Will have to do some testing...
 
 	local timeStamp = e.WeekTime()
-	local name, _, realm _, _, faction = select(2, BNGetGameAccountInfo(sender))
-	local unit = format('%s-%s', name, realm)
-	local class, dungeonID, keyLevel, week = msg:match('(%a+):(%d+):(%d+):(%d+)') -- Screw getting class from API, just send it, we have the bandwidth.
-
+	local unit = msg:sub(0, msg:find(':') - 1)
+	local class, dungeonID, keyLevel, _, week = msg:match('(%a+):(%d+):(%d+):(%d+):(%d+)', msg:find(':')) -- Screw getting class from API, just send it, we have the bandwidth.
 
 	dungeonID = tonumber(dungeonID)
 	keyLevel = tonumber(keyLevel)
@@ -213,7 +214,7 @@ local function SyncFriendUpdate(entry, sender)
 	end
 	if e.FrameListShown() == 'friends' then e.UpdateFrames() end
 end
-AstralComs:RegisterPrefix('BNET', 'sync1', SyncFriendUpdate)
+AstralComs:RegisterPrefix('BNET', SYNC_VERSION, SyncFriendUpdate)
 
 local messageStack = {}
 local messageQueue = {}
@@ -277,10 +278,18 @@ function e.PushKeyDataToFriends(data, target)
 	else
 		if type(data) == 'table' then
 			for i = 1, #data do
-				AstralComs:NewMessage('AstralKeys', strformat('%s %s', SYNC_VERSION, data[i]), 'BNET', target)
+				if type(target) == 'number' then
+					AstralComs:NewMessage('AstralKeys', strformat('%s %s', SYNC_VERSION, data[i]), 'BNET', target)
+				else
+					AstralComs:NewMessage('AstralKeys', strformat('%s %s', SYNC_VERSION, data[i]), 'WHISPER', target)
+				end
 			end
 		else
-			AstralComs:NewMessage('AstralKeys',  strformat('%s %s', UPDATE_VERSION, data), 'BNET', target)
+			if type(target) == 'number' then
+				AstralComs:NewMessage('AstralKeys',  strformat('%s %s', UPDATE_VERSION, data), 'BNET', target)
+			else
+				AstralComs:NewMessage('AstralKeys',  strformat('%s %s', UPDATE_VERSION, data), 'WHISPER', target)
+			end
 		end
 	end
 end
@@ -293,11 +302,16 @@ local function PingFriendsForAstralKeys()
 			AstralComs:NewMessage('AstralKeys', 'BNet_query ping', 'BNET', gaID)
 		end
 	end
+	for player in pairs(NonBNFriend_List) do
+		AstralComs:NewMessage('AstralKeys', 'BNet_query ping', 'WHISPER', player)
+	end
 end
 AstralEvents:Register('PLAYER_LOGIN', PingFriendsForAstralKeys, 'pingFriends')
 
 local function PingResponse(msg, sender)
-	BNFriendList[sender].usingAK = true
+	if type(sender) == number then
+		BNFriendList[sender].usingAK = true
+	end
 	if msg == 'ping' then
 		AstralComs:NewMessage('AstralKeys', 'BNet_query response', 'BNET', sender) -- Need to double check if we get the gaID or pressenceID from the event
 	end

@@ -53,7 +53,6 @@ function AstralComs:UnregisterPrefix(channel, prefix)
 	if not objs then return end
 	for id, obj in pairs(objs) do
 		if obj.prefix == prefix then
-			--table.remove(objs, id)
 			objs[id] = nil
 			break
 		end
@@ -89,8 +88,25 @@ function AstralComs:OnEvent(event, prefix, msg, channel, sender)
 	end
 end
 
+local msgs = setmetatable({}, {__mode='k'})
+
+local function newMsg()
+	local msg = next(msgs)
+	if msg then
+		msgs[msg] = nil
+		return msg
+	end
+	return {}
+end
+
+local function delMsg(msg)
+	msg[1] = nil
+	msgs[msg] = true
+end
+
+
 function AstralComs:NewMessage(prefix, text, channel, target)
-	local msg = {}
+	local msg = newMsg()
 
 	if channel == 'BNET' then
 		msg.method = BNSendGameData
@@ -125,8 +141,7 @@ function AstralComs:SendMessage()
 		end
 	else -- Guild/raid message, just send it
 		msg.method(unpack(msg, 1, #msg))
-		msg[2] = nil
-		msg = nil
+		delMsg(msg)
 	end
 end
 
@@ -378,7 +393,7 @@ function e.AnnounceCharacterKeys(channel)
 		local id = e.UnitID(strformat('%s-%s', e.CharacterName(i), e.CharacterRealm(i)))
 
 		if id then
-			local link, keyLevel = e.CreateKeyLink(id)
+			local link, keyLevel = e.CreateKeyLink(id), e.UnitKeyLevel(id)
 			if keyLevel >= e.GetMinKeyLevel() then
 				if channel == 'PARTY' and not IsInGroup() then return end
 				SendChatMessage(strformat('%s %s +%d',e.CharacterName(i), link, keyLevel), channel)

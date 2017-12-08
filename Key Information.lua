@@ -10,7 +10,6 @@ local function Weekly()
 	e.GetBestClear()
 	if AstralCharacters[e.GetCharacterID(e.Player())].level >= e.CACHE_LEVEL then
 		AstralComs:NewMessage('AstralKeys', 'updateWeekly 1', 'GUILD')
-		--SendAddonMessage('AstralKeys', 'updateWeekly 1', 'GUILD')
 	end
 	e.UpdateCharacterFrames()
 end
@@ -21,7 +20,6 @@ local function InitData()
 	e.FindKeyStone(true, false)
 	e.BuildMapTable()
 	AstralComs:NewMessage('AstralKeys', 'request', 'GUILD')
-	--SendAddonMessage('AstralKeys', 'request', 'GUILD')
 
 	AstralEvents:Unregister('CHALLENGE_MODE_MAPS_UPDATE', 'initData')
 	AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', Weekly, 'weeklyCheck')
@@ -29,10 +27,8 @@ end
 AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', InitData, 'initData')
 
 
-function e.CreateKeyLink(index)
-	local s = strformat('|cffa335ee|Hkeystone:%d:%d:%d:%d:%d|h[Keystone: %s]|h|r', AstralKeys[index][3], AstralKeys[index][4], e.AffixOne(), e.AffixTwo(), e.AffixThree(), e.GetMapName(AstralKeys[index][3])):gsub('\124\124', '\124')
-
-	return s, AstralKeys[index][4]
+function e.CreateKeyLink(mapID, keyLevel)
+	return strformat('\124cffa335ee\124Hkeystone:%d:%d:%d:%d:%d|h[Keystone: %s]\124h\124r', mapID, keyLevel, e.AffixOne(), e.AffixTwo(), e.AffixThree(), e.GetMapName(mapID))--:gsub('\124\124', '\124')
 end
 
 AstralEvents:Register('CHALLENGE_MODE_COMPLETED', function()
@@ -50,7 +46,7 @@ local function CompletedWeekly()
 end
 
 function e.GetKeyInfo()
-	local mapID, keyLevel, a1, a2, a3, s, itemID, link
+	local mapID, keyLevel, a1, a2, a3, s, itemID
 
 	for bag = 0, NUM_BAG_SLOTS + 1 do
 		for slot = 1, GetContainerNumSlots(bag) do
@@ -80,10 +76,11 @@ end
 
 function e.FindKeyStone(sendUpdate, anounceKey)
 	local mapID, keyLevel, affix1, affix2, affix3 = e.GetKeyInfo()
+
 	local msg = ''
 
 	if mapID then -- Won't have a mapID without having a
-		msg = string.format('%s %s:%s:%d:%d:%d:%d', e.UPDATE_VERSION, e.Player(), e.PlayerClass(), mapID, keyLevel, CompletedWeekly(), e.Week)
+		msg = string.format('%s:%s:%d:%d:%d:%d',e.Player(), e.PlayerClass(), mapID, keyLevel, CompletedWeekly(), e.Week)
 	end
 
 	if not mapID and not AstralEvents:IsRegistered('CHAT_MSG_LOOT', 'loot_msg_parse') then -- No key found or event registered, let's look for those keys
@@ -101,7 +98,7 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 	if sendUpdate  and msg ~= '' then
 		e.PushKeyDataToFriends(msg)
 		if IsInGuild() then
-			AstralComs:NewMessage('AstralKeys', msg, 'GUILD')
+			AstralComs:NewMessage('AstralKeys', strformat('%s %s', e.UPDATE_VERSION, msg, 'GUILD'))
 		else -- Not in a guild, who are you people? Whatever, gotta make it work for them aswell
 			local id = e.UnitID(e.Player()) -- Are we in the DB already? 
 			if id then -- Yep, ok just update those values
@@ -116,11 +113,12 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 		end
 	end
 	msg = nil
+	
 	-- Ok, time to check if we need to announce a new key or not
 	if tonumber(oldMap) == tonumber(mapID) and tonumber(oldLevel) == tonumber(keyLevel) then return end
 
 	if anounceKey then
-		e.AnnounceNewKey(link, keyLevel)
+		e.AnnounceNewKey(e.CreateKeyLink(mapID, keyLevel), keyLevel)
 	end
 end
 

@@ -78,7 +78,7 @@ frame:RegisterForDrag('LeftButton')
 frame:EnableKeyboard(true)
 frame:SetPropagateKeyboardInput(true)
 frame:SetClampedToScreen(true)
---frame:Hide()
+frame:Hide()
 
 frame:SetScript('OnDragStart', function(self)
 	self:StartMoving()

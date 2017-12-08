@@ -124,6 +124,7 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 				if time(date('*t', GetServerTime())) > AstralKeysSettings.initTime then
 					AstralCharacters = {}
 					AstralKeys = {}
+					wipe(AstralFriends)
 					AstralAffixes = {}
 					AstralAffixes[1] = 0
 					AstralAffixes[2] = 0
