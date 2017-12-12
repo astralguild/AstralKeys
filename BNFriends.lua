@@ -57,21 +57,21 @@ function e.BNFriendUpdate(index)
 	local presID, _, battleTag, _, toonName, gaID, client = BNGetFriendInfo(index) -- Let's get some fresh info, client != 'WoW' when on character list it seems
 
 	if not gaID then return end -- No game pressence ID, can't talk to them then
-	if not BNFriendList[gaID] then
-		local toonName = select(5, BNGetFriendInfo(index))
-		BNFriendList[gaID] = {toonName = toonName, presID = presID, client = client, battleTag = battleTag, usingAK = false}
-	else
-		BNFriendList[gaID].client = client --Update client, did they log off WoW?
-		BNFriendList[gaID].presID = presID or 0 -- If they have a presID force an update, else set to 0. Used for all API needing a pressence ID
-		BNFriendList[gaID].battleTag = battleTag -- Might as well keep it up to date
-	end
 
-	if client == 'WoW' then
+	if client == 'WoW' and toonName then
 		local fullName = toonName .. '-' .. select(4, BNGetGameAccountInfo(gaID))			
 		if NonBNFriend_List[fullName] then
 			NonBNFriend_List[fullName].isBtag = true
 		end
 	end
+
+	if not BNFriendList[gaID] then		
+		BNFriendList[gaID] = {toonName = toonName, presID = presID, client = client, battleTag = battleTag, usingAK = false}
+	else
+		BNFriendList[gaID].client = client --Update client, did they log off WoW?
+		BNFriendList[gaID].presID = presID or 0 -- If they have a presID force an update, else set to 0. Used for all API needing a pressence ID
+		BNFriendList[gaID].battleTag = battleTag -- Might as well keep it up to date
+	end	
 end
 AstralEvents:Register('BN_FRIEND_INFO_CHANGED', e.BNFriendUpdate, 'update_BNFriend')
 

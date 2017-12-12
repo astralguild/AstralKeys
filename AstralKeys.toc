@@ -1,4 +1,4 @@
-## Interface: 70200
+## Interface: 70300
 ## Title: Astral Keys
 ## Notes: Keystone Manager for Astral Guild on Turalyon
 ## Author: Phrike, Abbychu
