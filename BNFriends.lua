@@ -54,7 +54,7 @@ end
 -- @paremt index int Friend's list index that was updated
 function e.BNFriendUpdate(index)
 	if not index then return end -- No tag, event fired from player
-	local presID, _, battleTag, _, _, gaID, client = BNGetFriendInfo(index) -- Let's get some fresh info, client != 'WoW' when on character list it seems
+	local presID, _, battleTag, _, toonName, gaID, client = BNGetFriendInfo(index) -- Let's get some fresh info, client != 'WoW' when on character list it seems
 
 	if not gaID then return end -- No game pressence ID, can't talk to them then
 	if not BNFriendList[gaID] then
@@ -64,6 +64,13 @@ function e.BNFriendUpdate(index)
 		BNFriendList[gaID].client = client --Update client, did they log off WoW?
 		BNFriendList[gaID].presID = presID or 0 -- If they have a presID force an update, else set to 0. Used for all API needing a pressence ID
 		BNFriendList[gaID].battleTag = battleTag -- Might as well keep it up to date
+	end
+
+	if client == 'WoW' then
+		local fullName = toonName .. '-' .. select(4, BNGetGameAccountInfo(gaID))			
+		if NonBNFriend_List[fullName] then
+			NonBNFriend_List[fullName].isBtag = true
+		end
 	end
 end
 AstralEvents:Register('BN_FRIEND_INFO_CHANGED', e.BNFriendUpdate, 'update_BNFriend')
@@ -129,7 +136,7 @@ local function UpdateNonBNetFriendList()
 
 	for i = 1, select(2, GetNumFriends()) do -- Only parse over online friends
 		local name = strformat('%s-%s', GetFriendInfo(i), e.PlayerRealm())
-		NonBNFriend_List[name] = true
+		NonBNFriend_List[name] = {isBtag = false}
 	end
 end
 AstralEvents:Register('FRIENDLIST_UPDATE', UpdateNonBNetFriendList, 'update_non_bnet_list')
@@ -264,12 +271,14 @@ function e.PushKeyDataToFriends(data, target)
 		end
 
 		for player in pairs(NonBNFriend_List) do
-			if type(data) == 'table' then
-				for i = 1, #data do
-					AstralComs:NewMessage('AstralKeys', strformat('%s %s', SYNC_VERSION, data[i]), 'WHISPER', player)
+			if not player.isBtag then
+				if type(data) == 'table' then
+					for i = 1, #data do
+						AstralComs:NewMessage('AstralKeys', strformat('%s %s', SYNC_VERSION, data[i]), 'WHISPER', player)
+					end
+				else
+					AstralComs:NewMessage('AstralKeys', strformat('%s %s', UPDATE_VERSION, data), 'WHISPER', player)
 				end
-			else
-				AstralComs:NewMessage('AstralKeys', strformat('%s %s', UPDATE_VERSION, data), 'WHISPER', player)
 			end
 		end
 	else
@@ -287,17 +296,23 @@ end
 -- Let's find out which friends are using Astral Keys, no need to spam every friend, just the ones using Astral keys
 local function PingFriendsForAstralKeys()
 
+	for i = 1, select(2, GetNumFriends()) do -- Only parse over online friends
+		local name = strformat('%s-%s', GetFriendInfo(i), e.PlayerRealm())
+		NonBNFriend_List[name] = {isBtag = false}
+	end
+
 	for i = 1, BNGetNumFriends() do
 		local presID, _, battleTag, _, toonName, gaID, client = BNGetFriendInfo(i)
 		if gaID then
 			BNFriendList[gaID] = {tonnName = toonName, presID = presID, client = client, battleTag = battleTag, usingAK = false}
+			if client == 'WoW' then
+				local fullName = toonName .. '-' .. select(4, BNGetGameAccountInfo(gaID))			
+				if NonBNFriend_List[fullName] then
+					NonBNFriend_List[fullName].isBtag = true
+				end
+			end
 		end
-	end
-
-	for i = 1, select(2, GetNumFriends()) do -- Only parse over online friends
-		local name = strformat('%s-%s', GetFriendInfo(i), e.PlayerRealm())
-		NonBNFriend_List[name] = true
-	end
+	end	
 
 	for gaID, player in pairs(BNFriendList) do
 		if player.client == 'WoW' then
@@ -306,10 +321,14 @@ local function PingFriendsForAstralKeys()
 	end
 
 	for player in pairs(NonBNFriend_List) do
-		AstralComs:NewMessage('AstralKeys', 'BNet_query ping', 'WHISPER', player)
+		if not player.isBtag then
+			AstralComs:NewMessage('AstralKeys', 'BNet_query ping', 'WHISPER', player)
+		end
 	end
+
+	AstralEvents:Unregister('FRIENDLIST_UPDATE', 'pingFriends')
 end
-AstralEvents:Register('PLAYER_LOGIN', PingFriendsForAstralKeys, 'pingFriends')
+AstralEvents:Register('FRIENDLIST_UPDATE', PingFriendsForAstralKeys, 'pingFriends')
 
 local function PingResponse(msg, sender)
 	if type(sender) == 'number' then
