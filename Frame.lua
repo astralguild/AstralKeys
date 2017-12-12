@@ -406,10 +406,10 @@ friendButton:SetHeight(15)
 friendButton:SetPoint('LEFT', guildButton, 'RIGHT')
 friendButton:SetNormalFontObject(FONT_OBJECT_CENTRE)
 friendButton:SetText(WrapTextInColorCode('Friend list', 'ff9d9d9d'))
-
+--[[
 guildButton:SetScript('OnClick', function()
 	if e.FrameListShown() == 'friends' then
-		offset = 0
+		AstralContentFrame:ResetSlider()
 		friendButton:SetNormalTexture(nil)		
 		friendButton:SetText(WrapTextInColorCode('Friend list', 'ff9d9d9d'))
 		
@@ -422,7 +422,7 @@ guildButton:SetScript('OnClick', function()
 
 friendButton:SetScript('OnClick', function()
 	if e.FrameListShown() == 'guild' then
-		offset = 0
+		AstralContentFrame:ResetSlider()
 		guildButton:SetText(WrapTextInColorCode('Guild list', 'ff9d9d9d'))
 		guildButton:SetNormalTexture(nil)
 
@@ -431,7 +431,7 @@ friendButton:SetScript('OnClick', function()
 		e.SetFrameListShown('friends')		
 		e.UpdateFrames()
 	end
-	end)
+	end)]]
 
 AstralKeyFrame.centreDivider = AstralKeyFrame:CreateTexture('BACKGROUND')
 AstralKeyFrame.centreDivider:SetSize(1, 325)
@@ -877,6 +877,7 @@ end
 
 guildButton:SetScript('OnClick', function()
 	if e.FrameListShown() == 'friends' then
+		AstralContentFrame:ResetSlider()
 		friendButton:SetNormalTexture(nil)		
 		friendButton:SetText(WrapTextInColorCode('Friend list', 'ff9d9d9d'))
 		
@@ -891,6 +892,7 @@ guildButton:SetScript('OnClick', function()
 
 friendButton:SetScript('OnClick', function()
 	if e.FrameListShown() == 'guild' then
+		AstralContentFrame:ResetSlider()
 		guildButton:SetText(WrapTextInColorCode('Guild list', 'ff9d9d9d'))
 		guildButton:SetNormalTexture(nil)
 

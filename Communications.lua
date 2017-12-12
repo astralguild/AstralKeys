@@ -187,6 +187,7 @@ end
 AstralComs:Init()
 
 local function UpdateUnitKey(msg)
+	--Console:AddLine('Comm', msg)
 	local timeStamp = e.WeekTime() -- part of the week we got this key update, used to determine if a key got de-leveled or not
 	local unit = msg:sub(0, msg:find(':') - 1)
 	local class, dungeonID, keyLevel, weekly, week = msg:match('(%a+):(%d+):(%d+):(%d+):(%d+)', msg:find(':'))
