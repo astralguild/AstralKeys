@@ -6,6 +6,8 @@ local UPDATE_VERSION = 'update1'
 local strformat, find = string.format, string.find
 local tremove = table.remove
 
+local NonBNFriend_List = {}
+local BNFriendList = {}
 
 ----------------------------------------------------
 ----------------------------------------------------
@@ -14,8 +16,6 @@ local tremove = table.remove
 
 local BNGetFriendInfo = BNGetFriendInfo
 local BNGetGameAccountInfo = BNGetGameAccountInfo
-
-local BNFriendList = {}
 
 -- BNGetNumFOF(BNetID) -- Seems to take first return value from BNGetFriendInfo
 
@@ -125,7 +125,7 @@ end
 ----------------------------------------------------
 ---- Non BNet Friend stuff
 
-local NonBNFriend_List = {}
+
 
 function e.IsFriendOnline(friend)
 	return NonBNFriend_List[friend]
