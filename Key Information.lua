@@ -80,7 +80,7 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 	local msg = ''
 
 	if mapID then -- Won't have a mapID without having a
-		msg = string.format('%s:%s:%d:%d:%d:%d',e.Player(), e.PlayerClass(), mapID, keyLevel, CompletedWeekly(), e.Week)
+		msg = string.format('%s:%s:%d:%d:%d:%d', e.Player(), e.PlayerClass(), mapID, keyLevel, CompletedWeekly(), e.Week)
 	end
 
 	if not mapID and not AstralEvents:IsRegistered('CHAT_MSG_LOOT', 'loot_msg_parse') then -- No key found or event registered, let's look for those keys
@@ -91,14 +91,14 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 	local oldMap, oldLevel = e.UnitMapID(e.UnitID(e.Player())), e.UnitKeyLevel(e.UnitID(e.Player()))
 
 	-- Key found, unregister function, no longer needed
-	if link and AstralEvents:IsRegistered('BAG_UPDATE', 'bagUpdate') then
+	if mapID and AstralEvents:IsRegistered('BAG_UPDATE', 'bagUpdate') then
 		AstralEvents:Unregister('BAG_UPDATE', 'bagUpdate')
 	end
 
 	if sendUpdate  and msg ~= '' then
 		e.PushKeyDataToFriends(msg)
 		if IsInGuild() then
-			AstralComs:NewMessage('AstralKeys', strformat('%s %s', e.UPDATE_VERSION, msg, 'GUILD'))
+			AstralComs:NewMessage('AstralKeys', strformat('%s %s', e.UPDATE_VERSION, msg), 'GUILD')
 		else -- Not in a guild, who are you people? Whatever, gotta make it work for them aswell
 			local id = e.UnitID(e.Player()) -- Are we in the DB already? 
 			if id then -- Yep, ok just update those values

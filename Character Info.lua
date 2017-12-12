@@ -1,6 +1,7 @@
 local _, e = ...
 
-local playerClass, playerNameRealm, characterID
+local playerClass, characterID
+local playerNameRealm = UnitName('player') .. '-' .. GetRealmName():gsub("%s+", "")
 local characterList = {}
 
 function e.SetCharacterID(unit, unitID)
