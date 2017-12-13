@@ -224,6 +224,7 @@ local messageStack = {}
 local messageQueue = {}
 
 local function PushKeysToFriends(target)
+	if not AstralKeysSettings.options.friendSync then return end
 	wipe(messageStack)
 	wipe(messageQueue)
 
@@ -259,7 +260,7 @@ end
 function e.PushKeyDataToFriends(data, target)
 	if not target then
 		for gaID, tbl in pairs(BNFriendList) do
-			if tbl.client == 'WoW' then -- Only send if they are in WoW
+			if tbl.client == 'WoW' and tbl.usingAk then -- Only send if they are in WoW
 				if type(data) == 'table' then
 					for i = 1, #data do
 						AstralComs:NewMessage('AstralKeys', strformat('%s %s', SYNC_VERSION, data[i]), 'BNET', gaID)
@@ -331,8 +332,12 @@ end
 AstralEvents:Register('FRIENDLIST_UPDATE', PingFriendsForAstralKeys, 'pingFriends')
 
 local function PingResponse(msg, sender)
-	if type(sender) == 'number' then
+	if BNFriendList[sender] then
 		BNFriendList[sender].usingAK = true
+	end
+
+	if NonBNFriend_List[sender] then
+		NonBNFriend_List[sender].usingAK = true
 	end
 
 	if msg:find('ping') then

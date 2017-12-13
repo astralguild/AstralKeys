@@ -9,7 +9,15 @@ e.CACHE_LEVEL = 15 -- Weekly M+ requirement for class hall cache
 local function Weekly()
 	e.GetBestClear()
 	if AstralCharacters[e.GetCharacterID(e.Player())].level >= e.CACHE_LEVEL then
-		AstralComs:NewMessage('AstralKeys', 'updateWeekly 1', 'GUILD')
+		if IsInGuild() then
+			AstralComs:NewMessage('AstralKeys', 'updateWeekly 1', 'GUILD')
+		else
+			local id = e.UnitID(e.Player())
+			if id then
+				AstralKeys[id][5] = 1
+				e.UpdateFrames()
+			end
+		end
 	end
 	e.UpdateCharacterFrames()
 end
@@ -95,7 +103,7 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 		AstralEvents:Unregister('BAG_UPDATE', 'bagUpdate')
 	end
 
-	if sendUpdate  and msg ~= '' then
+	if sendUpdate and msg ~= '' then
 		e.PushKeyDataToFriends(msg)
 		if IsInGuild() then
 			AstralComs:NewMessage('AstralKeys', strformat('%s %s', e.UPDATE_VERSION, msg), 'GUILD')

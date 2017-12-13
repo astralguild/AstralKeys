@@ -40,7 +40,7 @@ FONT_OBJECT_CENTRE:SetTextColor(1, 1, 1)
 local FONT_OBJECT_HIGHLIGHT = CreateFont("FONT_OBJECT_HIGHLIGHT")
 FONT_OBJECT_HIGHLIGHT:SetFont(FONT_CONTENT, FONT_SIZE)
 FONT_OBJECT_HIGHLIGHT:SetJustifyH('CENTER')
-FONT_OBJECT_HIGHLIGHT:SetTextColor(192/255, 192/255, 192/255)
+FONT_OBJECT_HIGHLIGHT:SetTextColor(126/255, 126/255, 126/255)
 
 local sortedTable = {}
 local characters = {}
@@ -59,8 +59,6 @@ local function CreateButton(parent, btnID, width, height, text, fontobject, high
 	button.ID = btnID
 	button.sort = 0
 	button:SetSize(width, height)
-	--button:SetMovable(true)
-	--button:RegisterForDrag('LeftButton')
 
 	button.t = button:CreateTexture('BACKGROUND')
 	button.t:SetPoint('BOTTOMLEFT', button, 'BOTTOMLEFT', 5, 0)
@@ -75,14 +73,6 @@ local function CreateButton(parent, btnID, width, height, text, fontobject, high
 
 	button:EnableMouse(true)
 	button:SetMovable(true)
-
-	button:SetScript('OnDragStart', function(self)
-		self:StartMoving()
-		end)
-
-	button:SetScript('OnDragStop', function(self)
-		self:StopMovingOrSizing()
-		end)
 
 	function button:SetW(width)
 		self:SetWidth(width)
@@ -229,7 +219,7 @@ function UnitFrame:NewFrame(parent)
 		if UnitLevel('player') == 110 then
 			if self.unitID ~= 0 then
 				astralMouseOver:ClearAllPoints()
-				astralMouseOver:SetPoint('TOPLEFT', self, 'CENTER', -55, 0)
+				astralMouseOver:SetPoint('TOPLEFT', self, 'CENTER', -85, 0)
 				astralMouseOver:SetText(e.MapApText(e.UnitMapID(self.unitID), e.UnitKeyLevel(self.unitID)))
 				astralMouseOver:AdjustSize()
 				astralMouseOver:Show()
@@ -244,8 +234,12 @@ function UnitFrame:NewFrame(parent)
 	end)
 
 	self:SetScript('OnMouseDown', function(self, button)
-		if button == 'LeftButton' then
-			--ChatFrame_SendTell(e.Unit(self.unitID))
+		if button == 'LeftButton' and AstralKeysSettings.options.whisperClick then
+			if AstralKeysSettings.frameOptions.list == 'guild' then
+				ChatFrame_SendTell(e.Unit(self.unitID))
+			else
+				ChatFrame_SendSmartTell(e.FriendBattleTag(self.unitID):sub(1, e.FriendBattleTag(self.unitID):find('#') - 1))
+			end
 		end
 		end)
 
@@ -271,12 +265,6 @@ function UnitFrame:SetUnit(unit)
 		else
 			self.nameString:SetText(WrapTextInColorCode(e.FriendName(self.unitID), select(4, GetClassColor(e.FriendClass(self.unitID)))))
 		end
-	end
-
-	if unit == e.Player() then
-		--self:SetBackdropColor(1, 1, 1, 0.3)
-	else
-		self:SetBackdropColor(0, 0, 0, 0)
 	end
 end
 
@@ -406,32 +394,6 @@ friendButton:SetHeight(15)
 friendButton:SetPoint('LEFT', guildButton, 'RIGHT')
 friendButton:SetNormalFontObject(FONT_OBJECT_CENTRE)
 friendButton:SetText(WrapTextInColorCode('Friend list', 'ff9d9d9d'))
---[[
-guildButton:SetScript('OnClick', function()
-	if e.FrameListShown() == 'friends' then
-		AstralContentFrame:ResetSlider()
-		friendButton:SetNormalTexture(nil)		
-		friendButton:SetText(WrapTextInColorCode('Friend list', 'ff9d9d9d'))
-		
-		guildButton:SetNormalTexture(guildButton:GetHighlightTexture())
-		guildButton:SetText('Guild list')
-		e.SetFrameListShown('guild')
-		e.UpdateFrames()
-	end
-	end)
-
-friendButton:SetScript('OnClick', function()
-	if e.FrameListShown() == 'guild' then
-		AstralContentFrame:ResetSlider()
-		guildButton:SetText(WrapTextInColorCode('Guild list', 'ff9d9d9d'))
-		guildButton:SetNormalTexture(nil)
-
-		friendButton:SetNormalTexture(friendButton:GetHighlightTexture())		
-		friendButton:SetText('Friend list')
-		e.SetFrameListShown('friends')		
-		e.UpdateFrames()
-	end
-	end)]]
 
 AstralKeyFrame.centreDivider = AstralKeyFrame:CreateTexture('BACKGROUND')
 AstralKeyFrame.centreDivider:SetSize(1, 325)
@@ -443,19 +405,27 @@ closeButton:SetSize(15, 15)
 closeButton:SetNormalFontObject(FONT_OBJECT_CENTRE)
 closeButton:SetHighlightFontObject(FONT_OBJECT_HIGHLIGHT)
 closeButton:SetText('X')
+closeButton:SetScript('OnClick', function()
+	AstralKeyFrame:Hide()
+end)
+closeButton:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', -10, -10)
 
 local toggleButton = CreateFrame('BUTTON', nil, AstralKeyFrame)
 toggleButton:SetSize(16, 16)
 toggleButton:SetPoint('TOPRIGHT', closeButton, 'TOPLEFT', - 5, 0)
 toggleButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize.tga')
-toggleButton:SetHighlightTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize_highlight.tga', 'BLEND')
+toggleButton:SetScript('OnEnter', function(self)
+	self:GetNormalTexture():SetVertexColor(126/255, 126/255, 126/255)
+	end)
+toggleButton:SetScript('OnLeave', function(self)
+	self:GetNormalTexture():SetVertexColor(1, 1, 1)
+	end)
 
 toggleButton:SetScript('OnClick', function(self)
 	local left, bottom, width = AstralKeyFrame:GetRect()
 	if e.GetViewMode() == 0 then
 		e.SetViewMode(1)
 		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\menu.tga')
-		self:SetHighlightTexture('Interface\\AddOns\\AstralKeys\\Media\\menu_highlight.tga', 'BLEND')
 		AstralKeyFrame:SetWidth(405)
 		AstralKeyFrame:ClearAllPoints()
 		AstralKeyFrame:SetPoint('BOTTOMLEFT', UIParent, 'BOTTOMLEFT', left + width - 405, bottom)
@@ -467,7 +437,6 @@ toggleButton:SetScript('OnClick', function(self)
 	else
 		e.SetViewMode(0)
 		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize.tga')
-		self:SetHighlightTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize_highlight.tga', 'BLEND')
 		AstralKeyFrame:SetWidth(655)
 		AstralKeyFrame:ClearAllPoints()
 		AstralKeyFrame:SetPoint('BOTTOMLEFT', UIParent, 'BOTTOMLEFT', left + width - 655, bottom)
@@ -479,14 +448,10 @@ toggleButton:SetScript('OnClick', function(self)
 	end
 	end)
 
-closeButton:SetScript('OnClick', function()
-	AstralKeyFrame:Hide()
-end)
 
-closeButton:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', -10, -10)
 
 local quickOptionsFrame = CreateFrame('FRAME', 'quickOptionsFrame', AstralKeyFrame)
-quickOptionsFrame:SetSize(170, 50)
+quickOptionsFrame:SetSize(170, 80)
 quickOptionsFrame:SetBackdrop(BACKDROP)
 quickOptionsFrame:SetBackdropColor(0, 0, 0, 1)
 quickOptionsFrame:SetFrameLevel(10)
@@ -494,10 +459,10 @@ quickOptionsFrame:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', -10, - 28)
 quickOptionsFrame:Hide()
 
 local showOffline = e.CreateCheckBox(quickOptionsFrame, 'Show offline', 160)
-showOffline:SetPoint('TOPRIGHT', quickOptionsFrame, 'TOPRIGHT', -5, -5)
+showOffline:SetPoint('TOPRIGHT', quickOptionsFrame, 'TOPRIGHT', 0, -5)
 
 showOffline:SetScript('OnClick', function (self)
-	e.SetShowOffline(self:GetChecked())
+	AstralKeysSettings.options.showOffline = self:GetChecked()
 	AstralContentFrame:ResetSlider()
 	--e.UpdateLines()
 	e.UpdateFrames()
@@ -506,22 +471,52 @@ end)
 local showMinimapButton = e.CreateCheckBox(quickOptionsFrame, 'Show Minimap Button', 160)
 showMinimapButton:SetPoint('TOPRIGHT', showOffline, 'BOTTOMRIGHT', 0, -5)
 showMinimapButton:SetScript('OnClick', function(self)
-	e.SetShowMinimapButton(self:GetChecked())
-	if e.ShowMinimapButton() then
+	AstralKeysSettings.options.showMinimapButton = self:GetChecked()
+	if AstralKeysSettings.options.showMinimapButton then
 		e.icon:Show('AstralKeys')
 	else
 		e.icon:Hide('AstralKeys')
 	end
 end)
 
+local filterButton = e.CreateCheckBox(quickOptionsFrame, 'Toggle Rank filters', 160)
+filterButton:SetPoint('TOPRIGHT', showMinimapButton, 'BOTTOMRIGHT', 0, -5)
+filterButton:SetScript('OnClick', function(self)
+	AstralKeysSettings.options.filterByRank = self:GetChecked()
+	if AstralKeysSettings.frameOptions.list == 'guild' then
+		e.UpdateFrames()
+	end
+	end)
+
+local optionsButton = CreateFrame('BUTTON', nil, AstralKeyFrame)
+optionsButton:SetSize(16, 16)
+optionsButton:SetPoint('TOPRIGHT', toggleButton, 'TOPLEFT', -5, 0)
+optionsButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\menu3.tga')
+optionsButton:SetScript('OnEnter', function(self)
+	self:GetNormalTexture():SetVertexColor(126/255, 126/255, 126/255)
+	end)
+optionsButton:SetScript('OnLeave', function(self)
+	self:GetNormalTexture():SetVertexColor(1, 1, 1)
+	end)
+
+optionsButton:SetScript('OnClick', function()
+	AstralOptionsFrame:SetShown( not AstralOptionsFrame:IsShown())
+	end)
+
+
 local quickOptions = CreateFrame('BUTTON', nil, AstralKeyFrame)
 quickOptions:SetSize(16, 16)
-quickOptions:SetPoint('TOPRIGHT', toggleButton, 'TOPLEFT', -5, 0)
+quickOptions:SetPoint('TOPRIGHT', optionsButton, 'TOPLEFT', -5, 0)
 quickOptions:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\folder.tga')
-quickOptions:SetHighlightTexture('Interface\\AddOns\\AstralKeys\\Media\\folder_highlight.tga', 'BLEND')
 quickOptions:SetScript('OnClick', function ()
 	quickOptionsFrame:SetShown(not quickOptionsFrame:IsShown())
 end)
+quickOptions:SetScript('OnEnter', function(self)
+	self:GetNormalTexture():SetVertexColor(126/255, 126/255, 126/255)
+	end)
+quickOptions:SetScript('OnLeave', function(self)
+	self:GetNormalTexture():SetVertexColor(1, 1, 1)
+	end)
 
 -- Announce Buttons
 -----------------------------------------------------
@@ -533,7 +528,7 @@ announceFrame.announce = CreateFrame('BUTTON', nil, announceFrame)
 announceFrame.announce:SetSize(16, 16)
 announceFrame.announce:SetPoint('LEFT', announceFrame, 'LEFT')
 announceFrame.announce:SetScript('OnClick', function(self)
-	if e.AnnounceKey() then
+	if AstralKeysSettings.options.announceKey then
 		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\speaker2.tga')
 	else
 		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\speaker.tga')
@@ -625,7 +620,20 @@ end
 
 local affixFrame = CreateFrame('FRAME', 'affixFrame', AstralKeyFrame)
 affixFrame:SetSize(200, 70)
+affixFrame:SetHitRectInsets(0, 100, 0, 50)
 affixFrame:SetPoint('TOPLEFT', logo, 'BOTTOMLEFT', 5, -10)
+
+affixFrame:SetScript('OnEnter', function(self)
+	mouseOverFrame:ClearAllPoints()
+	mouseOverFrame:SetPoint('TOPLEFT', self, 'TOPLEFT', 5, -20)
+	mouseOverFrame:SetText('Next week\'s affixes\n -' .. C_ChallengeMode.GetAffixInfo(e.AffixOne(1)) .. '\n -' .. C_ChallengeMode.GetAffixInfo(e.AffixTwo(1)) .. '\n -' .. C_ChallengeMode.GetAffixInfo(e.AffixThree(1)))
+	mouseOverFrame:AdjustSize()
+	mouseOverFrame:Show()
+	end)
+
+affixFrame:SetScript('OnLeave', function(self)
+	mouseOverFrame:Hide()
+	end)
 
 local affixHeader = e.CreateHeader(affixFrame, 'affixHeader', 175, 20, 'Affixes', 12)
 affixHeader:SetPoint('TOPLEFT', affixFrame, 'TOPLEFT')
@@ -939,7 +947,10 @@ local function InitializeFrame()
 	if e.FrameListShown() == 'guild' then
 		guildButton:SetNormalTexture(guildButton:GetHighlightTexture())
 	else
+		guildButton:SetText(WrapTextInColorCode('Guild list', 'ff9d9d9d'))
+		guildButton:SetNormalTexture(nil)
 		friendButton:SetNormalTexture(friendButton:GetHighlightTexture())
+		friendButton:SetText('Friend list')
 		completeButton:Hide()
 		nameButton:SetW(180)
 	end
@@ -948,9 +959,9 @@ local function InitializeFrame()
 	AstralAffixTwo:UpdateInfo()
 	AstralAffixThree:UpdateInfo()
 
-	showOffline:SetChecked(e.GetShowOffline())
-	--minKeyLevel:SetValue(e.GetMinKeyLevel())
-	showMinimapButton:SetChecked(e.ShowMinimapButton())
+	showOffline:SetChecked(AstralKeysSettings.options.showOffline)
+	showMinimapButton:SetChecked(AstralKeysSettings.options.showMinimapButton)
+	filterButton:SetChecked(AstralKeysSettings.options.filterByRank)
 
 	characterTable = e.DeepCopy(AstralCharacters)
 
@@ -968,7 +979,6 @@ local function InitializeFrame()
 		AstralContentFrame:ClearAllPoints()
 		AstralContentFrame:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 5, -95)
 		toggleButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\menu.tga')
-		toggleButton:SetHighlightTexture('Interface\\AddOns\\AstralKeys\\Media\\menu_highlight.tga', 'BLEND')
 	end
 
 	local id = e.GetCharacterID(e.Player())
@@ -1070,6 +1080,10 @@ function e.UpdateFrames()
 	else
 		sortedTable = e.UpdateTables(sortedTable, AstralFriends)
 		e.SortTable(sortedTable, e.GetSortMethod())
+	end
+
+	if #sortedTable + offset > #sortedTable then
+		offset = #sortedTable - 25
 	end
 
 	if #sortedTable > 25 then

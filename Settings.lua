@@ -47,23 +47,32 @@ end
 if not AstralKeysSettings then
 	AstralKeysSettings = {
 		['resetVersion'] = RESET_VERSION,
-		['reset'] = true,
 		['initTime'] = e.DataResetTime(),
 		['frameOptions'] = {
 			['orientation'] = 0,
 			['sortMethod'] = 1,
-			['quickOptions'] = {
-				['showOffline'] = 0,
-				['minKeyLevel'] = 1,
-				},
 			['viewMode'] = 0,
 			['list'] = 'guild',
 			},
 		['options'] = {
 			['announceKey'] = true,
+			['filterByRank'] = false,
+			['showOffline'] = false,
+			['whisperClick'] = false,
 			['showMiniMapButton'] = true,
-			['friends'] = {
-				['GetMinFriendSyncLevel'] = 2,
+			['friendSync'] = true,
+			['minFriendSync'] = 2,
+			['rankFilters'] = {
+				[1] = true,
+				[2] = true,
+				[3] = true,
+				[4] = true,
+				[5] = true,
+				[6] = true,
+				[7] = true,
+				[8] = true,
+				[9] = true,
+				[10] = true,
 				},
 			},
 		}
@@ -76,32 +85,38 @@ frame:SetScript('OnEvent', function(self, event, ...)
 	local addon = ...
 	if addon == 'AstralKeys' then
 		_G['AstralEngine'] = e
-		if not AstralKeysSettings['reset'] or not AstralKeysSettings['resetVersion'] or AstralKeysSettings['resetVersion'] ~= RESET_VERSION then
+		if not AstralKeysSettings['resetVersion'] or AstralKeysSettings['resetVersion'] ~= RESET_VERSION then
 			wipe(AstralKeys)
 			wipe(AstralCharacters)
 			wipe(AstralFriends)
-			--AstralAffixes[1] = 0
-			--AstralAffixes[2] = 0
-			--AstralAffixes[3] = 0
 			AstralKeysSettings = {
 				['resetVersion'] = RESET_VERSION,
-				['reset'] = true,
 				['initTime'] = e.DataResetTime(),
 				['frameOptions'] = {
 					['orientation'] = 0,
 					['sortMethod'] = 1,
-					['quickOptions'] = {
-						['showOffline'] = 0,
-						['minKeyLevel'] = 1,
-						},
 					['viewMode'] = 0,
 					['list'] = 'guild',
 					},
 				['options'] = {
 					['announceKey'] = true,
+					['filterByRank'] = false,
+					['showOffline'] = false,
+					['whisperClick'] = false,
 					['showMiniMapButton'] = true,
-					['friends'] = {
-						['GetMinFriendSyncLevel'] = 2,
+					['friendSync'] = true,
+					['minFriendSync'] = 2,
+					['rankFilters'] = {
+						[1] = true,
+						[2] = true,
+						[3] = true,
+						[4] = true,
+						[5] = true,
+						[6] = true,
+						[7] = true,
+						[8] = true,
+						[9] = true,
+						[10] = true,
 						},
 					},
 				}
@@ -127,19 +142,11 @@ function e.SetSortMethod(int)
 end
 
 function e.GetShowOffline()
-	return AstralKeysSettings.frameOptions.quickOptions.showOffline
+	return AstralKeysSettings.options.showOffline
 end
 
 function e.SetShowOffline(value)
-	AstralKeysSettings.frameOptions.quickOptions.showOffline = value
-end
-
-function e.GetMinKeyLevel()
-	return AstralKeysSettings.frameOptions.quickOptions.minKeyLevel
-end
-
-function e.SetMinKeyLevel(int)
-	AstralKeysSettings.frameOptions.quickOptions.minKeyLevel = int
+	AstralKeysSettings.options.showOffline = value
 end
 
 function e.GetViewMode()
@@ -184,5 +191,5 @@ function e.debug(addon, text, ...)
 end
 
 function e.GetMinFriendSyncLevel()
-	return AstralKeysSettings.options.friends.GetMinFriendSyncLevel
+	return AstralKeysSettings.options.minFriendSync
 end

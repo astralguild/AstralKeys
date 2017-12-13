@@ -5,8 +5,7 @@ local function ParseOnlineUnits(A)
 	local units = {}
 	local name
 	if e.FrameListShown() == 'guild' then
-		local numOnline = select(2, GetNumGuildMembers())
-		for i = 1, numOnline do
+		for i = 1, select(2, GetNumGuildMembers()) do
 			name = GetGuildRosterInfo(i)
 			units[name] = true
 		end
@@ -30,11 +29,34 @@ local function ParseOnlineUnits(A)
 	return tbl
 end
 
+local function ParseGuildRanks(A)
+	local tbl = {}
+	local units = {}
+
+	for i = 1, GetNumGuildMembers() do
+		local name, _, rankIndex = GetGuildRosterInfo(i)
+		if AstralKeysSettings.options.rankFilters[rankIndex + 1] then
+			units[name] = true
+		end
+	end
+
+	for k, v in pairs(A) do
+		if units[v[1]] then
+			tbl[#tbl + 1] = v
+		end
+	end
+
+	return tbl
+end
+
 function e.UpdateTables(table, A)
 	table = e.DeepCopy(A)
+	if AstralKeysSettings.options.filterByRank then
+		table = ParseGuildRanks(table)
+	end
 	if not e.GetShowOffline() then
 		table = ParseOnlineUnits(table)
-	end
+	end	
 
 	return table
 end

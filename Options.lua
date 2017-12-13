@@ -48,140 +48,164 @@ FONT_OBJECT_HIGHLIGHT:SetFont(FONT_CONTENT, FONT_SIZE)
 FONT_OBJECT_HIGHLIGHT:SetJustifyH('CENTER')
 FONT_OBJECT_HIGHLIGHT:SetTextColor(192/255, 192/255, 192/255)
 
--- Re-write old CreateHeader to use this one instead!!!
-local function CreateHeader(parent, name, width, height, text, fontAdjust)
-	local fontString = parent:CreateFontString('BACKGROUND')
-	fontString:SetFont(FONT_HEADER, FONT_SIZE + fontAdjust)
-	fontString:SetText(text)
+local AstralOptionsFrame = CreateFrame('FRAME', 'AstralOptionsFrame', UIParent)
+AstralOptionsFrame:SetFrameStrata('DIALOG')
+AstralOptionsFrame:SetFrameLevel(5)
+AstralOptionsFrame:SetHeight(360)
+AstralOptionsFrame:SetWidth(650)
+AstralOptionsFrame:SetPoint('CENTER', UIParent, 'CENTER')
+AstralOptionsFrame:SetBackdrop(BACKDROP)
+AstralOptionsFrame:SetBackdropColor(0, 0, 0, 1)
+AstralOptionsFrame:SetMovable(true)
+AstralOptionsFrame:EnableMouse(true)
+AstralOptionsFrame:RegisterForDrag('LeftButton')
+AstralOptionsFrame:EnableKeyboard(true)
+AstralOptionsFrame:SetPropagateKeyboardInput(true)
+AstralOptionsFrame:SetClampedToScreen(true)
+AstralOptionsFrame:Hide()
 
-	local t = parent:CreateTexture('BACKGROUND')
-	t:SetPoint('BOTTOMLEFT', fontString, 'BOTTOMLEFT')
-	t:SetSize(width, 1)
-	t:SetColorTexture(1, 1, 1)
-	t:SetGradientAlpha('HORIZONTAL', 1, 1, 1, 0.8, 0, 0 , 0, 0)
-
-	return fontString
-
-end
-
-local frame = CreateFrame('FRAME', 'AstralOptionsFrame', UIParent)
-frame:SetFrameStrata('DIALOG')
-frame:SetFrameLevel(5)
-frame:SetHeight(600)
-frame:SetWidth(800)
-frame:SetPoint('CENTER', UIParent, 'CENTER')
-frame:SetBackdrop(BACKDROP)
-frame:SetBackdropColor(0, 0, 0, 1)
-frame:SetMovable(true)
-frame:EnableMouse(true)
-frame:RegisterForDrag('LeftButton')
-frame:EnableKeyboard(true)
-frame:SetPropagateKeyboardInput(true)
-frame:SetClampedToScreen(true)
-frame:Hide()
-
-frame:SetScript('OnDragStart', function(self)
+AstralOptionsFrame:SetScript('OnDragStart', function(self)
 	self:StartMoving()
 	end)
 
-frame:SetScript('OnDragStop', function(self)
+AstralOptionsFrame:SetScript('OnDragStop', function(self)
 	self:StopMovingOrSizing()
 	end)
 
-local logo = frame:CreateTexture('ARTWORK')
+local logo = AstralOptionsFrame:CreateTexture('ARTWORK')
 logo:SetSize(64, 64)
 logo:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\Astral.tga')
-logo:SetPoint('TOPLEFT', frame, 'TOPLEFT', 10, -10)
+logo:SetPoint('TOPLEFT', AstralOptionsFrame, 'TOPLEFT', 10, -10)
 
-frame.centreDivider = frame:CreateTexture('BACKGROUND')
-frame.centreDivider:SetSize(1, 475)
-frame.centreDivider:SetPoint('TOPLEFT', logo, 'BOTTOMLEFT', 140, -10)
-frame.centreDivider:SetColorTexture(0.2, 0.2, 0.2)
-
-local title = e.CreateHeader(frame, 'title', 260, 20, 'Astral Keys Options', 26)
+local title = e.CreateHeader(AstralOptionsFrame, 'title', 260, 20, 'Astral Keys Options', 26)
 title:SetPoint('LEFT', logo, 'RIGHT', 10, -10)
 
-local closeButton = CreateFrame('BUTTON', nil, frame)
+local closeButton = CreateFrame('BUTTON', nil, AstralOptionsFrame)
 closeButton:SetSize(15, 15)
 closeButton:SetNormalFontObject(FONT_OBJECT_CENTRE)
 closeButton:SetHighlightFontObject(FONT_OBJECT_HIGHLIGHT)
 closeButton:SetText('X')
-closeButton:SetPoint('TOPRIGHT', frame, 'TOPRIGHT', -10, -10)
+closeButton:SetPoint('TOPRIGHT', AstralOptionsFrame, 'TOPRIGHT', -10, -10)
 
 closeButton:SetScript('OnClick', function()
 	AstralOptionsFrame:Hide()
 end)
 
-local generalButton = e.CreateOptionButton(AstralOptionsFrame)
-generalButton:SetText('General Options')
-generalButton:SetPoint('TOPLEFT', logo, 'BOTTOMLEFT', 0, -10)
-
-local reportButton = e.CreateOptionButton(AstralOptionsFrame)
-reportButton:SetText('Report options')
-reportButton:SetPoint('TOPLEFT', generalButton, 'BOTTOMLEFT', 0, -1)
-
-
-local mapButton = e.CreateOptionButton(AstralOptionsFrame)
-mapButton:SetText('Map Names')
-mapButton:SetPoint('TOPLEFT', reportButton, 'BOTTOMLEFT', 0, -1)
-
-
 -- Content frame to anchor all option panels
 -- 
-local contentFrame = CreateFrame('FRAME', 'AstralFrame_OptionContent', frame)
-contentFrame:SetPoint('TOPLEFT', frame.centreDivider, 'TOPLEFT', 5, 0)
-contentFrame:SetBackdrop(BACKDROP)
-contentFrame:SetBackdropColor(1, 0, 1)
-contentFrame:SetSize(630, 500)
+local contentFrame = CreateFrame('FRAME', 'AstralFrame_OptionContent', AstralOptionsFrame)
+contentFrame:SetPoint('TOPLEFT', logo, 'BOTTOMLEFT', 5, -10)
+contentFrame:SetSize(630, 350)
 
--- Content frame header, tells user what options they are looking at
--- 
 contentFrame.header = e.CreateHeader(contentFrame, 'general_header', 200, 20, 'General Options', 10)
 contentFrame.header:SetPoint('TOPLEFT', contentFrame, 'TOPLEFT', 5, 0)
 
-local cf3 =CreateFrame('FRAME', nil, frame)
-cf3:SetPoint('TOPLEFT', frame.centreDivider, 'TOPLEFT', 5, 0)
-cf3:SetBackdrop(BACKDROP)
-cf3:SetBackdropColor(1, 1, 0)
-cf3:SetSize(210, 500)
-
-local cf4 =CreateFrame('FRAME', nil, frame)
-cf4:SetPoint('TOPLEFT', cf3, 'TOPRIGHT', 0, 0)
-cf4:SetBackdrop(BACKDROP)
-cf4:SetBackdropColor(0, 1, 0)
-cf4:SetSize(210, 500)
-
-local cf2 =CreateFrame('FRAME', nil, frame)
-cf2:SetPoint('TOPLEFT', frame.centreDivider, 'TOPLEFT', 5, 0)
-cf2:SetBackdrop(BACKDROP)
-cf2:SetBackdropColor(0, 1, 1)
-cf2:SetSize(315, 500)
-
 local showOffLine = e.CreateCheckBox(contentFrame, 'Show offline guild members')
-showOffLine:SetPoint('TOPLEFT', contentFrame.header, 'BOTTOMLEFT', 0, -10)
+showOffLine:SetPoint('TOPLEFT', contentFrame.header, 'BOTTOMLEFT', 0, -5)
+showOffLine:SetScript('OnClick', function(self)
+	AstralKeysSettings.options.showOffline = self:GetChecked()
+	AstralContentFrame:ResetSlider()
+	e.UpdateFrames()
+	end)
 
 local showMinimap = e.CreateCheckBox(contentFrame, 'Show Minimap button')
 showMinimap:SetPoint('LEFT', showOffLine, 'RIGHT', 10, 0)
-
-local whisperClick = e.CreateCheckBox(contentFrame, 'Click to initiate whisper')
-whisperClick:SetPoint('LEFT', showMinimap, 'RIGHT', 10, 0)
-
-local announceKeys = e.CreateCheckBox(contentFrame, 'Announce new keys to party')
-announceKeys:SetPoint('TOPLEFT', showOffLine, 'BOTTOMLEFT', 0, -10)
-
-contentFrame.syncHeader = e.CreateHeader(contentFrame, 'sync_header', 200, 20, 'Syncing Options', 10)
-contentFrame.syncHeader:SetPoint('TOPLEFT', announceKeys, 'BOTTOMLEFT', 0, -20)
-
-local syncFriends = e.CreateCheckBox(contentFrame, 'Sync with friends')
-syncFriends:SetPoint('TOPLEFT', contentFrame.syncHeader, 'BOTTOMLEFT', 0, -10)
-
--- function e.CreateEditBox(parent, type, width, label, minValue, maxValue, labelPos)
-local minFriendSync = e.CreateEditBox(contentFrame, 25, 'Minimum key level to sync with friends', 2, 99, 'RIGHT')
-minFriendSync:SetPoint('LEFT', syncFriends, 'RIGHT', 10, 0)
-minFriendSync:SetScript('OnEditFocusLost', function(self)
-	--Save to savedvariables here
+showMinimap:SetScript('OnClick', function(self)
+	AstralKeysSettings.options.showMinimapButton = self:GetChecked()
+	if AstralKeysSettings.options.showMinimapButton then
+		e.icon:Show('AstralKeys')
+	else
+		e.icon:Hide('AstralKeys')
+	end
 	end)
 
-local syncAccnts = e.CreateCheckBox(contentFrame, 'Sync with another account')
-syncAccnts:SetPoint('TOPLEFT', syncFriends, 'BOTTOMLEFT', 0, -10)
+local whisperClick = e.CreateCheckBox(contentFrame, 'Click to whisper player')
+whisperClick:SetPoint('LEFT', showMinimap, 'RIGHT', 10, 0)
+whisperClick:SetScript('OnClick', function(self)
+	AstralKeysSettings.options.whisperClick = self:GetChecked()
+	end)
 
+local announceKeys = e.CreateCheckBox(contentFrame, 'Announce new keys to party')
+announceKeys:SetPoint('TOPLEFT', showOffLine, 'BOTTOMLEFT', 0, -5)
+announceKeys:SetScript('OnClick', function(self)
+	AstralKeysSettings.options.announceKey = self:GetChecked()
+	end)
+
+contentFrame.syncHeader = e.CreateHeader(contentFrame, 'sync_header', 200, 20, 'Syncing Options', 10)
+contentFrame.syncHeader:SetPoint('TOPLEFT', announceKeys, 'BOTTOMLEFT', 0, -10)
+
+local syncFriends = e.CreateCheckBox(contentFrame, 'Sync with friends')
+syncFriends:SetPoint('TOPLEFT', contentFrame.syncHeader, 'BOTTOMLEFT', 0, -5)
+syncFriends:SetScript('OnClick', function(self)
+	AstralKeysSettings.options.friendSync= self:GetChecked()
+	end)
+
+local minFriendSync = e.CreateEditBox(contentFrame, 25, 'Minimum key level to sync with friends', 2, 99, 'LEFT')
+minFriendSync:SetPoint('LEFT', syncFriends, 'RIGHT', 260, 0)
+minFriendSync:SetScript('OnEditFocusLost', function(self)
+	AstralKeysSettings.options.minFriendSync = self:GetNumber()
+	end)
+
+local filter_header = e.CreateHeader(contentFrame, 'filter_header', 200, 20, 'Rank filter for Guild list', 10)
+filter_header:SetPoint('TOPLEFT', syncFriends, 'BOTTOMLEFT', 0, -10)
+
+local filter_descript = contentFrame:CreateFontString('BACKGROUND')
+filter_descript:SetFont(FONT_CONTENT, FONT_SIZE)
+filter_descript:SetText('Include these ranks in the guild listing')
+filter_descript:SetJustifyH('LEFT')
+
+filter_descript:SetPoint('TOPLEFT', filter_header, 'BOTTOMLEFT', 3, -2)
+
+local _ranks = {}
+for i = 1, 10 do
+	_ranks[i] = e.CreateCheckBox(contentFrame, ' ')
+	_ranks[i].id = i
+end
+
+function InitData()
+	whisperClick:SetChecked(AstralKeysSettings.options.whisperClick)
+	showOffLine:SetChecked(AstralKeysSettings.options.showOffline)
+	showMinimap:SetChecked(AstralKeysSettings.options.showMinimapButton)
+	announceKeys:SetChecked(AstralKeysSettings.options.announceKey)
+	syncFriends:SetChecked(AstralKeysSettings.options.friendSync)
+	minFriendSync:SetNumber(AstralKeysSettings.options.minFriendSync)
+
+	for i = 1, GuildControlGetNumRanks() do
+	_ranks[i]:SetText(GuildControlGetRankName(i))
+
+	for i = GuildControlGetNumRanks() + 1, 10 do
+		_ranks[i]:Hide()
+	end
+
+	if i < 4 then
+		_ranks[i]:SetPoint('TOPLEFT', filter_descript, 'BOTTOMLEFT', (i-1)%3 * 210, -5)
+		elseif i < 7 then
+			_ranks[i]:SetPoint('TOPLEFT', filter_descript, 'BOTTOMLEFT', (i-1)%3 * 210, -25)
+		elseif i < 10 then
+			_ranks[i]:SetPoint('TOPLEFT', filter_descript, 'BOTTOMLEFT', (i-1)%3 * 210, -45)
+		else
+			_ranks[i]:SetPoint('TOPLEFT', filter_descript, 'BOTTOMLEFT', (i-1)%3 * 210, -65)
+		end
+
+		_ranks[i]:SetChecked(AstralKeysSettings.options.rankFilters[i])
+
+		_ranks[i]:SetScript('OnClick', function(self)
+			AstralKeysSettings.options.rankFilters[self.id] = self:GetChecked()
+			if AstralKeysSettings.options.filterByRank and AstralKeysSettings.frameOptions.list == 'guild' then
+				e.UpdateFrames()
+			end
+			end)
+	end
+end
+AstralEvents:Register('PLAYER_LOGIN', InitData, 'initOptions')
+
+AstralOptionsFrame:SetScript('OnKeyDown', function(self, key)
+	if key == 'ESCAPE' then
+		self:SetPropagateKeyboardInput(false)
+		AstralOptionsFrame:Hide()
+	end
+	end)
+
+AstralOptionsFrame:SetScript('OnShow', function(self)
+	self:SetPropagateKeyboardInput(true)
+	end)

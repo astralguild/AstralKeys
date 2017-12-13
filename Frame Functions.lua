@@ -212,7 +212,7 @@ function e.CreateCheckBox(parent, label, width)
 
 	local tex = checkbox:CreateTexture('PUSHED_TEXTURE_BOX', 'BACKGROUND')
 	tex:SetSize(14, 14)
-	tex:SetPoint('RIGHT', checkbox, 'RIGHT', -2, 0)
+	tex:SetPoint('LEFT', checkbox, 'LEFT', -2, 0)
 	tex:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\box2.tga')
 	tex:SetVertexColor(0.3, 0.3, 0.3)
 
@@ -223,6 +223,8 @@ function e.CreateCheckBox(parent, label, width)
 	checkbox:SetCheckedTexture(checkbox.t)
 
 	checkbox:SetDisabledFontObject(FONT_OBJECT_DISABLED)
+
+	checkbox:GetFontString():SetPoint('LEFT', tex, 'RIGHT', 5, 0)
 
 	return checkbox
 end

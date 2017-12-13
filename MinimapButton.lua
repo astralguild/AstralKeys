@@ -8,7 +8,6 @@ local astralkeysLDB = LibStub("LibDataBroker-1.1"):NewDataObject("AstralKeys", {
 	icon = "Interface\\AddOns\\AstralKeys\\Media\\Astral_minimap.tga",
 	OnClick = function() e.AstralToggle() end,
 })
---local icon = LibStub("LibDBIcon-1.0")
 
 e.icon = LibStub("LibDBIcon-1.0")
 
@@ -16,12 +15,12 @@ function addon:OnInitialize()
 	self.db = LibStub("AceDB-3.0"):New("AstralMinimap", {
 		profile = {
 			minimap = {
-				hide = not e.ShowMinimapButton(),
+				hide = not AstralKeysSettings.options.showMinimapButton,
 			},
 		},
 	})
 	e.icon:Register("AstralKeys", astralkeysLDB, self.db.profile.minimap)
-	if e.ShowMinimapButton() then
+	if AstralKeysSettings.options.showMinimapButton then
 		e.icon:Show('AstralKeys')
 	else
 		e.icon:Hide('AstralKeys')
