@@ -1,8 +1,8 @@
 ## Interface: 70300
 ## Title: Astral Keys
 ## Notes: Keystone Manager for Astral Guild on Turalyon
-## Author: Phrike, Abbychu
-## Version: 1.58.00
+## Author: Phrike
+## Version: 2.0.00
 ## SavedVariables: AstralKeys, AstralCharacters, AstralFriends, AstralKeysSettings, AstralMinimap
 
 embeds.xml

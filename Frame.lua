@@ -423,8 +423,8 @@ toggleButton:SetScript('OnLeave', function(self)
 
 toggleButton:SetScript('OnClick', function(self)
 	local left, bottom, width = AstralKeyFrame:GetRect()
-	if e.GetViewMode() == 0 then
-		e.SetViewMode(1)
+	if AstralKeysSettings.frameOptions.viewMode == 0 then
+		AstralKeysSettings.frameOptions.viewMode = 1
 		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\menu.tga')
 		AstralKeyFrame:SetWidth(405)
 		AstralKeyFrame:ClearAllPoints()
@@ -435,7 +435,7 @@ toggleButton:SetScript('OnClick', function(self)
 		AstralContentFrame:ClearAllPoints()
 		AstralContentFrame:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 5, -95)
 	else
-		e.SetViewMode(0)
+		AstralKeysSettings.frameOptions.viewMode = 0
 		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize.tga')
 		AstralKeyFrame:SetWidth(655)
 		AstralKeyFrame:ClearAllPoints()
@@ -448,8 +448,6 @@ toggleButton:SetScript('OnClick', function(self)
 	end
 	end)
 
-
-
 local quickOptionsFrame = CreateFrame('FRAME', 'quickOptionsFrame', AstralKeyFrame)
 quickOptionsFrame:SetSize(170, 80)
 quickOptionsFrame:SetBackdrop(BACKDROP)
@@ -458,7 +456,7 @@ quickOptionsFrame:SetFrameLevel(10)
 quickOptionsFrame:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', -10, - 28)
 quickOptionsFrame:Hide()
 
-local showOffline = e.CreateCheckBox(quickOptionsFrame, 'Show offline', 160)
+local showOffline = e.CreateCheckBox(quickOptionsFrame, 'Show offline players', 160)
 showOffline:SetPoint('TOPRIGHT', quickOptionsFrame, 'TOPRIGHT', 0, -5)
 
 showOffline:SetScript('OnClick', function (self)
@@ -783,21 +781,17 @@ function contentFrame:ResetSlider()
 	offset = 0
 	self.slider:SetPoint('TOPLEFT', self, 'TOPRIGHT')
 end
+local newOffset = 0
 
 contentFrame:SetScript('OnMouseWheel', function(self, delta)
 	if #sortedTable < 26 then return end
 
-	if delta < 0 then -- Scroll down
-		if (#sortedTable - offset) > 25 then
-			offset = offset - delta
-			e.UpdateLines()
-		end			
-	else
-		if offset > 0 then -- Scroll up
-			offset = offset - delta
-			e.UpdateLines()
-		end
-	end  
+	offset = offset - (delta * math.ceil(#sortedTable/25))
+	
+	offset = math.max(0, offset)
+	offset = math.min(offset, #sortedTable - 25)
+	
+	e.UpdateLines()
 
 	contentFrame.slider:ClearAllPoints()
 	contentFrame.slider:SetPoint('TOPLEFT', contentFrame, 'TOPRIGHT', 0, -offset/(#sortedTable - 25) * 365)
@@ -816,13 +810,13 @@ local keyButton = CreateButton(contentFrame, 'keyButton', 45, 20, 'Level', FONT_
 keyButton:SetPoint('BOTTOMLEFT', contentFrame, 'TOPLEFT')
 keyButton:SetScript('OnClick', function()
 	contentFrame:ResetSlider()
-	if e.GetSortMethod() ~= 4 then
-		e.SetOrientation(0)
+	if AstralKeysSettings.frameOptions.sortMethod ~= 4 then
+		AstralKeysSettings.frameOptions.orientation = 0
 	else
-		e.SetOrientation(1 - e.GetOrientation())
+		AstralKeysSettings.frameOptions.orientation = 1 - AstralKeysSettings.frameOptions.orientation
 	end
-	e.SetSortMethod(4)
-	e.SortTable(sortedTable, e.GetSortMethod())
+	AstralKeysSettings.frameOptions.sortMethod = 4
+	e.SortTable(sortedTable, AstralKeysSettings.frameOptions.sortMethod)
 	e.UpdateLines()
 
 	end)
@@ -831,13 +825,13 @@ local mapButton = CreateButton(contentFrame, 'mapButton', 170, 20, 'Dungeon', FO
 mapButton:SetPoint('LEFT', keyButton, 'RIGHT')
 mapButton:SetScript('OnClick', function()
 	contentFrame:ResetSlider()
-	if e.GetSortMethod() ~= 3 then
-		e.SetOrientation(0)
+	if AstralKeysSettings.frameOptions.sortMethod ~= 3 then
+		AstralKeysSettings.frameOptions.orientation = 0
 	else
-		e.SetOrientation(1 - e.GetOrientation())
+		AstralKeysSettings.frameOptions.orientation = 1 - AstralKeysSettings.frameOptions.orientation
 	end
-	e.SetSortMethod(3)
-	e.SortTable(sortedTable, e.GetSortMethod())
+	AstralKeysSettings.frameOptions.sortMethod = 3
+	e.SortTable(sortedTable, AstralKeysSettings.frameOptions.sortMethod)
 	e.UpdateLines()
 
 	end)
@@ -846,13 +840,13 @@ local nameButton = CreateButton(contentFrame, 'nameButton', 130, 20, 'Player', F
 nameButton:SetPoint('LEFT', mapButton, 'RIGHT')
 nameButton:SetScript('OnClick', function()
 	contentFrame:ResetSlider()
-	if e.GetSortMethod() ~= 1 then
-		e.SetOrientation(0)
+	if AstralKeysSettings.frameOptions.sortMethod ~= 1 then
+		AstralKeysSettings.frameOptions.orientation = 0
 	else
-		e.SetOrientation(1 - e.GetOrientation())
+		AstralKeysSettings.frameOptions.orientation = 1 - AstralKeysSettings.frameOptions.orientation
 	end
-	e.SetSortMethod(1)
-	e.SortTable(sortedTable, e.GetSortMethod())
+	AstralKeysSettings.frameOptions.sortMethod = 1
+	e.SortTable(sortedTable, AstralKeysSettings.frameOptions.sortMethod)
 	e.UpdateLines()
 
 	end)
@@ -861,13 +855,13 @@ local completeButton = CreateButton(contentFrame, 'completeButton', 30, 20, e.CA
 completeButton:SetPoint('LEFT', nameButton, 'RIGHT')
 completeButton:SetScript('OnClick', function()
 	contentFrame:ResetSlider()
-	if e.GetSortMethod() ~= 5 then
-		e.SetOrientation(0)
+	if AstralKeysSettings.frameOptions.sortMethod ~= 5 then
+		AstralKeysSettings.frameOptions.orientation = 0
 	else
-		e.SetOrientation(1 - e.GetOrientation())
+		AstralKeysSettings.frameOptions.orientation = 1 - AstralKeysSettings.frameOptions.orientation
 	end
-	e.SetSortMethod(5)
-	e.SortTable(sortedTable, e.GetSortMethod())
+	AstralKeysSettings.frameOptions.sortMethod = 5
+	e.SortTable(sortedTable, AstralKeysSettings.frameOptions.sortMethod)
 	e.UpdateLines()
 
 	end)
@@ -914,6 +908,27 @@ friendButton:SetScript('OnClick', function()
 	end
 	end)
 
+function AstralKeyFrame:ToggleLists()
+	if AstralKeysSettings.options.friendSync then
+		guildButton:Show()
+		friendButton:Show()
+	else
+		guildButton:Hide()
+		friendButton:Hide()
+		if e.FrameListShown() == 'friends' then
+			friendButton:SetNormalTexture(nil)	
+			friendButton:SetText(WrapTextInColorCode('Friend list', 'ff9d9d9d'))
+			
+			guildButton:SetNormalTexture(guildButton:GetHighlightTexture())
+			guildButton:SetText('Guild list')
+			e.SetFrameListShown('guild')
+			e.UpdateFrames()
+			completeButton:Show()
+			nameButton:SetW(130)
+		end
+	end
+end
+
 AstralKeyFrame:SetScript('OnKeyDown', function(self, key)
 	if key == 'ESCAPE' then
 		self:SetPropagateKeyboardInput(false)
@@ -955,6 +970,11 @@ local function InitializeFrame()
 		nameButton:SetW(180)
 	end
 
+	if not AstralKeysSettings.options.friendSync then
+		guildButton:Hide()
+		friendButton:Hide()
+	end
+
 	AstralAffixOne:UpdateInfo()
 	AstralAffixTwo:UpdateInfo()
 	AstralAffixThree:UpdateInfo()
@@ -971,7 +991,7 @@ local function InitializeFrame()
 		announceFrame.announce:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\speaker2.tga')
 	end
 
-	if e.GetViewMode() == 1 then
+	if AstralKeysSettings.frameOptions.viewMode == 1 then
 		AstralKeyFrame:SetWidth(405)
 		affixFrame:Hide()
 		astralCharacterFrame:Hide()
@@ -1076,10 +1096,10 @@ function e.UpdateFrames()
 
 	if e.FrameListShown() == 'guild' then
 		sortedTable = e.UpdateTables(sortedTable, AstralKeys)
-		e.SortTable(sortedTable, e.GetSortMethod())
+		e.SortTable(sortedTable, AstralKeysSettings.frameOptions.sortMethod)
 	else
 		sortedTable = e.UpdateTables(sortedTable, AstralFriends)
-		e.SortTable(sortedTable, e.GetSortMethod())
+		e.SortTable(sortedTable, AstralKeysSettings.frameOptions.sortMethod)
 	end
 
 	if #sortedTable + offset > #sortedTable then

@@ -6,9 +6,9 @@ local guildList = {}
 -- Puts all guild member's into a table for checking if unit in same guild, stores value as rankIndex for filtering by rank
 local function UpdateGuildList()
 	wipe(guildList)
-	local name, rankIndex
-	for i = 1, GetNumGuildMembers() do
-		name, _, rankIndex = GetGuildRosterInfo(i)
+
+	for i = 1, select(2, GetNumGuildMembers()) do
+		local name, _, rankIndex = GetGuildRosterInfo(i)
 		if not name then return end
 		guildList[name] = rankIndex
 	end

@@ -125,36 +125,8 @@ frame:SetScript('OnEvent', function(self, event, ...)
 		frame:UnregisterEvent('ADDON_LOADED')
 	end)
 
-function e.GetOrientation()
-	return AstralKeysSettings.frameOptions.orientation
-end
-
-function e.SetOrientation(int)
-	AstralKeysSettings.frameOptions.orientation = int
-end
-
-function e.GetSortMethod()
-	return AstralKeysSettings.frameOptions.sortMethod
-end
-
-function e.SetSortMethod(int)
-	AstralKeysSettings.frameOptions.sortMethod = int
-end
-
 function e.GetShowOffline()
 	return AstralKeysSettings.options.showOffline
-end
-
-function e.SetShowOffline(value)
-	AstralKeysSettings.options.showOffline = value
-end
-
-function e.GetViewMode()
-	return AstralKeysSettings.frameOptions.viewMode
-end
-
-function e.SetViewMode(int)
-	AstralKeysSettings.frameOptions.viewMode = int
 end
 
 function e.ToggleAnnounce()
@@ -167,10 +139,6 @@ end
 
 function e.ShowMinimapButton()
 	return AstralKeysSettings.options.showMiniMapButton
-end
-
-function e.SetShowMinimapButton(bool)
-	AstralKeysSettings.options.showMiniMapButton = bool
 end
 
 function e.FrameListShown()
@@ -188,8 +156,4 @@ function e.debug(addon, text, ...)
 	else
 		print('[AK]Debug: ', text, ...)
 	end
-end
-
-function e.GetMinFriendSyncLevel()
-	return AstralKeysSettings.options.minFriendSync
 end

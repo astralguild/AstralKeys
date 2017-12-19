@@ -110,7 +110,11 @@ function e.FriendClass(id)
 end
 
 function e.FriendBattleTag(id)
-	return AstralFriends[id][2]
+	if string.find(AstralFriends[id][2], '#') then
+		return AstralFriends[id][2]
+	else
+		return nil 
+	end
 end
 
 function e.FriendMapID(id)
@@ -125,10 +129,8 @@ end
 ----------------------------------------------------
 ---- Non BNet Friend stuff
 
-
-
 function e.IsFriendOnline(friend)
-	return NonBNFriend_List[friend]
+	return NonBNFriend_List[friend] 
 end
 
 local function UpdateNonBNetFriendList()
@@ -142,6 +144,7 @@ end
 AstralEvents:Register('FRIENDLIST_UPDATE', UpdateNonBNetFriendList, 'update_non_bnet_list')
 
 local function RecieveKey(msg, sender)
+	if not AstralKeysSettings.options.friendSync then return end
 	local btag
 	if type(sender) == 'number' then
 		btag = e.GetBNTag(sender)
@@ -163,7 +166,7 @@ local function RecieveKey(msg, sender)
 		AstralFriends[id][6] = week
 		AstralFriends[id][7] = timeStamp
 	else
-		AstralFriends[#AstralFriends + 1] = {unit, btag, class, dungeonID, keyLevel, week, timeStamp}
+		AstralFriends[#AstralFriends + 1] = {unit, true and btag or unit, class, dungeonID, keyLevel, week, timeStamp}
 		e.SetFriendID(unit, #AstralFriends)
 	end
 
@@ -173,11 +176,11 @@ AstralComs:RegisterPrefix('BNET', UPDATE_VERSION, RecieveKey)
 AstralComs:RegisterPrefix('WHISPER', UPDATE_VERSION, RecieveKey)
 
 local function SyncFriendUpdate(entry, sender)
+	if not AstralKeysSettings.options.friendSync then return end
 	local btag
 	if type(sender) == 'number' then
 		btag = e.GetBNTag(sender)
 	end
-	--if not btag then return end -- I like checks and balances
 
 	if AstralKeyFrame:IsShown() then
 		AstralKeyFrame:SetScript('OnUpdate', AstralKeyFrame.OnUpdate)
@@ -210,7 +213,7 @@ local function SyncFriendUpdate(entry, sender)
 					AstralFriends[id][7] = timeStamp
 				end
 			else
-				AstralFriends[#AstralFriends + 1] = {unit, btag, class, dungeonID, keyLevel, week, timeStamp}
+				AstralFriends[#AstralFriends + 1] = {unit, true and btag or unit, class, dungeonID, keyLevel, week, timeStamp}
 				e.SetFriendID(unit, #AstralFriends)
 			end
 		end
@@ -232,7 +235,7 @@ local function PushKeysToFriends(target)
 		local id = e.UnitID(AstralCharacters[i].unit)
 		if id then -- We have a key for this character, let's get the message and queue it up
 			local map, level = e.UnitMapID(id), e.UnitKeyLevel(id)
-			if level >= e.GetMinFriendSyncLevel() then
+			if level >= AstralKeysSettings.options.minFriendSync then
 				messageStack[#messageStack + 1] = strformat('%s_', strformat('%s:%s:%d:%d:%d:%d', AstralCharacters[i].unit, e.UnitClass(id), map, level, e.Week, AstralKeys[id][7])) -- name-server:class:mapID:keyLevel:week#:weekTime
 			end
 		end
@@ -296,7 +299,7 @@ end
 
 -- Let's find out which friends are using Astral Keys, no need to spam every friend, just the ones using Astral keys
 local function PingFriendsForAstralKeys()
-
+	if not AstralKeysSettings.options.friendSync then return end
 	for i = 1, select(2, GetNumFriends()) do -- Only parse over online friends
 		local name = strformat('%s-%s', GetFriendInfo(i), e.PlayerRealm())
 		NonBNFriend_List[name] = {isBtag = false}
@@ -307,7 +310,7 @@ local function PingFriendsForAstralKeys()
 		if gaID then
 			BNFriendList[gaID] = {tonnName = toonName, presID = presID, client = client, battleTag = battleTag, usingAK = false}
 			if client == 'WoW' then
-				local fullName = toonName .. '-' .. select(4, BNGetGameAccountInfo(gaID))			
+				local fullName = toonName .. '-' .. select(4, BNGetGameAccountInfo(gaID))	
 				if NonBNFriend_List[fullName] then
 					NonBNFriend_List[fullName].isBtag = true
 				end
@@ -341,9 +344,32 @@ local function PingResponse(msg, sender)
 	end
 
 	if msg:find('ping') then
-		AstralComs:NewMessage('AstralKeys', 'BNet_query response', type(sender) == 'number' and 'BNET' or 'WHISPER', sender) -- Need to double check if we get the gaID or pressenceID from the event
+		AstralComs:NewMessage('AstralKeys', 'BNet_query response', type(sender) == 'number' and 'BNET' or 'WHISPER', sender)
 	end
 	PushKeysToFriends(sender)
 end
 AstralComs:RegisterPrefix('WHISPER', 'BNet_query', PingResponse)
 AstralComs:RegisterPrefix('BNET', 'BNet_query', PingResponse)
+
+function e.ToggleFriendSync()
+	if AstralKeysSettings.options.friendSync then
+		AstralComs:RegisterPrefix('WHISPER', 'BNet_query', PingResponse)
+		AstralComs:RegisterPrefix('BNET', 'BNet_query', PingResponse)
+		AstralComs:RegisterPrefix('BNET', SYNC_VERSION, SyncFriendUpdate)
+		AstralComs:RegisterPrefix('WHISPER', SYNC_VERSION, SyncFriendUpdate)
+		AstralComs:RegisterPrefix('BNET', UPDATE_VERSION, RecieveKey)
+		AstralComs:RegisterPrefix('WHISPER', UPDATE_VERSION, RecieveKey)
+		AstralEvents:Register('FRIENDLIST_UPDATE', UpdateNonBNetFriendList, 'update_non_bnet_list')
+		AstralEvents:Register('BN_FRIEND_INFO_CHANGED', e.BNFriendUpdate, 'update_BNFriend')
+		PingFriendsForAstralKeys()
+	else
+		AstralComs:UnregisterPrefix('WHISPER', 'BNet_query', PingResponse)
+		AstralComs:UnregisterPrefix('BNET', 'BNet_query', PingResponse)
+		AstralComs:UnregisterPrefix('BNET', SYNC_VERSION, SyncFriendUpdate)
+		AstralComs:UnregisterPrefix('WHISPER', SYNC_VERSION, SyncFriendUpdate)
+		AstralComs:UnregisterPrefix('BNET', UPDATE_VERSION, RecieveKey)
+		AstralComs:UnregisterPrefix('WHISPER', UPDATE_VERSION, RecieveKey)
+		AstralEvents:Unregister('FRIENDLIST_UPDATE', UpdateNonBNetFriendList, 'update_non_bnet_list')
+		AstralEvents:Unregister('BN_FRIEND_INFO_CHANGED', e.BNFriendUpdate, 'update_BNFriend')
+	end
+end

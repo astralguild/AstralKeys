@@ -77,7 +77,7 @@ function e.SortTable(A, v)
 	        A[i + 1] = key
 	    end
 
-	    if e.GetOrientation() == 0 then
+	    if AstralKeysSettings.frameOptions.orientation == 0 then
 	    	table.sort(A, function(a, b) return e.GetMapName(a[v]) > e.GetMapName(b[v]) end)
 	    end
 	else
@@ -95,7 +95,7 @@ function e.SortTable(A, v)
 	        A[i + 1] = key
 	    end
 
-	    if e.GetOrientation() == 0 then
+	    if AstralKeysSettings.frameOptions.orientation == 0 then
 	    	table.sort(A, function(a, b) return a[v] > b[v] end)
 	    end
 	end
