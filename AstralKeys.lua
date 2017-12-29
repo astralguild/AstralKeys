@@ -51,6 +51,14 @@ function e.WeekTime()
 end
 
 AstralEvents:Register('PLAYER_LOGIN', function()
+	GuildRoster()
+
+	if UnitFactionGroup('player') == 'Alliance' then
+		e.FACTION = 0
+	else
+		e.FACTION = 1
+	end
+	
 	local region = GetCurrentRegion()
 	local currentTime = GetServerTime()
 	local d = date('*t', currentTime)
@@ -142,6 +150,7 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 
 	for i = 1, #AstralKeys do -- index guild units
 		e.SetUnitID(AstralKeys[i][1], i)
+		e.AddUnitToTable(AstralKeys[i][1], AstralKeys[i][2], nil, 'guild', AstralKeys[i][3], AstralKeys[i][4], AstralKeys[i][5])
 	end
 
 	for i = 1, #AstralCharacters do -- index player's characters
@@ -150,6 +159,7 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 
 	for i = 1, #AstralFriends do
 		e.SetFriendID(AstralFriends[i][1], i)
+		e.AddUnitToTable(AstralFriends[i][1], AstralFriends[i][3], AstralFriends[i][8], 'friend',  AstralFriends[i][4], AstralFriends[i][5], nil, AstralFriends[i][2])
 	end
 
 	RegisterAddonMessagePrefix('AstralKeys')

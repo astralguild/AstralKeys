@@ -1,6 +1,5 @@
 local _, e = ...
-local DEBUG = false
-local RESET_VERSION = 15900
+local RESET_VERSION = 20001
 -- Reset time 15:00 UTC AMERICAS
 -- 07:00 UTC EU
 
@@ -56,12 +55,12 @@ if not AstralKeysSettings then
 			},
 		['options'] = {
 			['announceKey'] = true,
-			['filterByRank'] = false,
-			['showOffline'] = false,
+			['showOffline'] = true,
 			['whisperClick'] = false,
 			['showMiniMapButton'] = true,
 			['friendSync'] = true,
 			['minFriendSync'] = 2,
+			['showOtherFaction'] = false,
 			['rankFilters'] = {
 				[1] = true,
 				[2] = true,
@@ -100,12 +99,12 @@ frame:SetScript('OnEvent', function(self, event, ...)
 					},
 				['options'] = {
 					['announceKey'] = true,
-					['filterByRank'] = false,
-					['showOffline'] = false,
+					['showOffline'] = true,
 					['whisperClick'] = false,
 					['showMiniMapButton'] = true,
 					['friendSync'] = true,
 					['minFriendSync'] = 2,
+					['showOtherFaction'] = false,
 					['rankFilters'] = {
 						[1] = true,
 						[2] = true,
@@ -125,35 +124,10 @@ frame:SetScript('OnEvent', function(self, event, ...)
 		frame:UnregisterEvent('ADDON_LOADED')
 	end)
 
-function e.GetShowOffline()
-	return AstralKeysSettings.options.showOffline
-end
-
-function e.ToggleAnnounce()
-	AstralKeysSettings.options.announceKey = not AstralKeysSettings.options.announceKey
-end
-
-function e.AnnounceKey()
-	return AstralKeysSettings.options.announceKey
-end
-
-function e.ShowMinimapButton()
-	return AstralKeysSettings.options.showMiniMapButton
-end
-
 function e.FrameListShown()
 	return AstralKeysSettings.frameOptions.list
 end
 
 function e.SetFrameListShown(data)
 	AstralKeysSettings.frameOptions.list = data
-end
-
-function e.debug(addon, text, ...)
-	if not DEBUG then return end
-	if IsAddonLoaded('Astral') then
-		Console:AddLine(addon, text, ...)
-	else
-		print('[AK]Debug: ', text, ...)
-	end
 end

@@ -1,13 +1,14 @@
 local ADDON, e = ...
 
-local SYNC_VERSION = 'sync1'
-local UPDATE_VERSION = 'update1'
+local SYNC_VERSION = 'sync2'
+local UPDATE_VERSION = 'update2'
 
 local strformat, find = string.format, string.find
 local tremove = table.remove
 
 local NonBNFriend_List = {}
 local BNFriendList = {}
+local FRIEND_LIST = {}
 
 ----------------------------------------------------
 ----------------------------------------------------
@@ -21,33 +22,9 @@ local BNGetGameAccountInfo = BNGetGameAccountInfo
 
 local isConnected = BNConnected() -- Determine if connected to BNet, if not disable all comms, check for BN_CONNECTED to re-enable communications, BN_DISCONNECTED disable communications on this event
 
--- Retrieves Battle.Net BattleTag
--- @param gaID int Game pressence ID
--- @return string BattleTag corresponding to the game pressnce ID ex. Phrike#1141
-function e.GetBNTag(gaID)
-	if not BNFriendList[gaID] then return nil end
-	return BNFriendList[gaID].battleTag
-end
-
--- Retrieves current client stored for said player
--- @param gaID int Game pressence ID
--- @return string Client string for BattleTag or blank for no client, ex. WoW
-function e.BNClient(gaID)
-	if not BNFriendList[gaID] then return nil end
-	return BNFriendList[gaID].client
-end
-
--- Retrieves pressense ID for game pressence ID
--- @param gaID int Game pressence ID
--- @return int Pressence ID
-function e.GetBNPresID(gaID)
-	if not BNFriendList[gaID] then return nil end
-	return BNFriendList[gaID].presID
-end
-
-function e.IsFriendUsingAK(gaID)
-	if not BNFriendList[gaID] then return false end
-	return BNFriendList[gaID].usingAK
+function e.GetFriendGaID(battleTag)
+	if not BNFriendList[battleTag] then return nil end
+	return BNFriendList[battleTag].gaID
 end
 
 -- Updates BNFriendList for friend update
@@ -58,20 +35,27 @@ function e.BNFriendUpdate(index)
 
 	if not gaID then return end -- No game pressence ID, can't talk to them then
 
+	local guid = select(20, BNGetGameAccountInfo(gaID))
+
 	if client == 'WoW' and toonName then
-		local fullName = toonName .. '-' .. select(4, BNGetGameAccountInfo(gaID))			
+		local fullName = toonName .. '-' .. select(4, BNGetGameAccountInfo(gaID))
+		if FRIEND_LIST[fullName] then
+			FRIEND_LIST[fullName].guid = guid
+			FRIEND_LIST[fullName].isConnected = true
+		end
 		if NonBNFriend_List[fullName] then
 			NonBNFriend_List[fullName].isBtag = true
 		end
 	end
 
-	if not BNFriendList[gaID] then		
-		BNFriendList[gaID] = {toonName = toonName, presID = presID, client = client, battleTag = battleTag, usingAK = false}
+	if not BNFriendList[battleTag] then		
+		BNFriendList[battleTag] = {toonName = toonName, client = client, gaID = gaID, usingAK = false}
 	else
-		BNFriendList[gaID].client = client --Update client, did they log off WoW?
-		BNFriendList[gaID].presID = presID or 0 -- If they have a presID force an update, else set to 0. Used for all API needing a pressence ID
-		BNFriendList[gaID].battleTag = battleTag -- Might as well keep it up to date
+		BNFriendList[battleTag].client = client --Update client, did they log off WoW?
+		BNFriendList[battleTag].presID = presID or 0 -- If they have a presID force an update, else set to 0. Used for all API needing a pressence ID
+		BNFriendList[battleTag].gaID = gaID -- Might as well keep it up to date
 	end	
+
 end
 AstralEvents:Register('BN_FRIEND_INFO_CHANGED', e.BNFriendUpdate, 'update_BNFriend')
 
@@ -79,58 +63,45 @@ AstralEvents:Register('BN_FRIEND_INFO_CHANGED', e.BNFriendUpdate, 'update_BNFrie
 ----------------------------------------------------
 -- Friend Indexing
 
-local FRIEND_LIST = {}
 
 function e.SetFriendID(unit, id)
-	FRIEND_LIST[unit] = id
+	FRIEND_LIST[unit] = {id = id, isConnected = false}
 end
 
 function e.FriendID(unit)
-	return FRIEND_LIST[unit]
+	if FRIEND_LIST[unit] then
+		return FRIEND_LIST[unit].id
+	else
+		return nil
+	end
+end
+
+function e.Friend(id)
+	return AstralFriends[id][1]
+end
+
+function e.FriendGUID(id)
+	return FRIEND_LIST[e.Friend(id)].guid
+end
+
+function e.FriendGAID(id)
+	return FRIEND_LIST[e.Friend(id)].gaID
 end
 
 function e.WipeFriendList()
 	wipe(FRIEND_LIST)
 end
 
-function e.FriendUnit(id)
-	return AstralFriends[id]
-end
-
-function e.FriendRealm(id)
-	return AstralFriends[id][1]:sub(AstralFriends[id][1]:find('-') + 1)
-end
-
-function e.FriendName(id)
-	return AstralFriends[id][1]:sub(1, AstralFriends[id][1]:find('-') - 1)
-end
-
-function e.FriendClass(id)
-	return AstralFriends[id][3]
-end
-
-function e.FriendBattleTag(id)
-	if string.find(AstralFriends[id][2], '#') then
-		return AstralFriends[id][2]
-	else
-		return nil 
-	end
-end
-
-function e.FriendMapID(id)
-	return AstralFriends[id][4]
-end
-
-function e.FriendKeyLevel(id)
-	return AstralFriends[id][5]
-end
-
 ----------------------------------------------------
 ----------------------------------------------------
 ---- Non BNet Friend stuff
 
-function e.IsFriendOnline(friend)
-	return NonBNFriend_List[friend] 
+function e.IsFriendOnline(unit)
+	if not FRIEND_LIST[unit] then 
+		return false
+	else
+		return FRIEND_LIST[unit].isConnected
+	end
 end
 
 local function UpdateNonBNetFriendList()
@@ -138,7 +109,12 @@ local function UpdateNonBNetFriendList()
 
 	for i = 1, select(2, GetNumFriends()) do -- Only parse over online friends
 		local name = strformat('%s-%s', GetFriendInfo(i), e.PlayerRealm())
+		local guid = select(9, GetFriendInfo(i))
 		NonBNFriend_List[name] = {isBtag = false}
+		if FRIEND_LIST[name] then
+			FRIEND_LIST[name].isConnected = true
+			FRIEND_LIST[name].guid = guid
+		end
 	end
 end
 AstralEvents:Register('FRIENDLIST_UPDATE', UpdateNonBNetFriendList, 'update_non_bnet_list')
@@ -147,12 +123,11 @@ local function RecieveKey(msg, sender)
 	if not AstralKeysSettings.options.friendSync then return end
 	local btag
 	if type(sender) == 'number' then
-		btag = e.GetBNTag(sender)
+		btag = select(3, BNGetFriendInfo(sender))
 	end
 
 	local timeStamp = e.WeekTime()
-	local unit = msg:sub(0, msg:find(':') - 1)
-	local class, dungeonID, keyLevel, _, week = msg:match('(%a+):(%d+):(%d+):(%d+):(%d+)', msg:find(':')) -- Screw getting class from API, just send it, we have the bandwidth.
+	local unit, class, dungeonID, keyLevel, _, week, faction = strsplit(':', msg)
 
 	dungeonID = tonumber(dungeonID)
 	keyLevel = tonumber(keyLevel)
@@ -166,9 +141,11 @@ local function RecieveKey(msg, sender)
 		AstralFriends[id][6] = week
 		AstralFriends[id][7] = timeStamp
 	else
-		AstralFriends[#AstralFriends + 1] = {unit, true and btag or unit, class, dungeonID, keyLevel, week, timeStamp}
+		AstralFriends[#AstralFriends + 1] = {unit, btag, class, dungeonID, keyLevel, week, timeStamp, faction}
 		e.SetFriendID(unit, #AstralFriends)
 	end
+
+	e.AddUnitToTable(unit, class, faction, 'friend', dungeonID, keyLevel, nil, btag)
 
 	if e.FrameListShown() == 'friends' then e.UpdateFrames() end
 end
@@ -176,10 +153,11 @@ AstralComs:RegisterPrefix('BNET', UPDATE_VERSION, RecieveKey)
 AstralComs:RegisterPrefix('WHISPER', UPDATE_VERSION, RecieveKey)
 
 local function SyncFriendUpdate(entry, sender)
-	if not AstralKeysSettings.options.friendSync then return end
+	if not AstralKeysSettings.options.friendSync then return end	
+	local bnetID = select(17, BNGetGameAccountInfo(sender))
 	local btag
 	if type(sender) == 'number' then
-		btag = e.GetBNTag(sender)
+		btag = select(3, BNGetFriendInfo(BNGetFriendIndex(bnetID)))
 	end
 
 	if AstralKeyFrame:IsShown() then
@@ -192,7 +170,7 @@ local function SyncFriendUpdate(entry, sender)
 	local _pos = 0
 	while find(entry, '_', _pos) do
 
-		class, dungeonID, keyLevel, week, timeStamp = entry:match(':(%a+):(%d+):(%d+):(%d+):(%d+)', entry:find(':', _pos))
+		class, dungeonID, keyLevel, week, timeStamp, faction = entry:match(':(%a+):(%d+):(%d+):(%d+):(%d+):(%a+)', entry:find(':', _pos))
 		unit = entry:sub(_pos, entry:find(':', _pos) - 1)
 
 		_pos = find(entry, '_', _pos) + 1
@@ -213,9 +191,10 @@ local function SyncFriendUpdate(entry, sender)
 					AstralFriends[id][7] = timeStamp
 				end
 			else
-				AstralFriends[#AstralFriends + 1] = {unit, true and btag or unit, class, dungeonID, keyLevel, week, timeStamp}
+				AstralFriends[#AstralFriends + 1] = {unit, btag, class, dungeonID, keyLevel, week, timeStamp}
 				e.SetFriendID(unit, #AstralFriends)
 			end
+			e.AddUnitToTable(unit, class, faction, 'friend', dungeonID, keyLevel, nil, btag)
 		end
 	end
 	if e.FrameListShown() == 'friends' then e.UpdateFrames() end
@@ -231,12 +210,13 @@ local function PushKeysToFriends(target)
 	wipe(messageStack)
 	wipe(messageQueue)
 
+	local minKeyLevel = AstralKeysSettings.options.minFriendSync or 2
 	for i = 1, #AstralCharacters do
 		local id = e.UnitID(AstralCharacters[i].unit)
 		if id then -- We have a key for this character, let's get the message and queue it up
 			local map, level = e.UnitMapID(id), e.UnitKeyLevel(id)
-			if level >= AstralKeysSettings.options.minFriendSync then
-				messageStack[#messageStack + 1] = strformat('%s_', strformat('%s:%s:%d:%d:%d:%d', AstralCharacters[i].unit, e.UnitClass(id), map, level, e.Week, AstralKeys[id][7])) -- name-server:class:mapID:keyLevel:week#:weekTime
+			if level >= minKeyLevel then
+				messageStack[#messageStack + 1] = strformat('%s_', strformat('%s:%s:%d:%d:%d:%d:%s', AstralCharacters[i].unit, e.UnitClass(id), map, level, e.Week, AstralKeys[id][7], AstralCharacters[i].faction)) -- name-server:class:mapID:keyLevel:week#:weekTime:faction
 			end
 		end
 	end
@@ -262,14 +242,14 @@ end
 -- @param data string Update string including only logged in person's characters
 function e.PushKeyDataToFriends(data, target)
 	if not target then
-		for gaID, tbl in pairs(BNFriendList) do
-			if tbl.client == 'WoW' and tbl.usingAk then -- Only send if they are in WoW
+		for _, unit in pairs(BNFriendList) do
+			if unit.client == 'WoW' and unit.usingAk then -- Only send if they are in WoW
 				if type(data) == 'table' then
 					for i = 1, #data do
-						AstralComs:NewMessage('AstralKeys', strformat('%s %s', SYNC_VERSION, data[i]), 'BNET', gaID)
+						AstralComs:NewMessage('AstralKeys', strformat('%s %s', SYNC_VERSION, data[i]), 'BNET', unit.gaID)
 					end
 				else
-					AstralComs:NewMessage('AstralKeys', strformat('%s %s', UPDATE_VERSION, data), 'BNET', gaID)
+					AstralComs:NewMessage('AstralKeys', strformat('%s %s', UPDATE_VERSION, data), 'BNET', unit.gaID)
 				end
 			end
 		end
@@ -308,19 +288,22 @@ local function PingFriendsForAstralKeys()
 	for i = 1, BNGetNumFriends() do
 		local presID, _, battleTag, _, toonName, gaID, client = BNGetFriendInfo(i)
 		if gaID then
-			BNFriendList[gaID] = {tonnName = toonName, presID = presID, client = client, battleTag = battleTag, usingAK = false}
+			BNFriendList[battleTag] = {toonName = toonName, client = client, gaID = gaID, usingAK = false}
 			if client == 'WoW' then
 				local fullName = toonName .. '-' .. select(4, BNGetGameAccountInfo(gaID))	
 				if NonBNFriend_List[fullName] then
-					NonBNFriend_List[fullName].isBtag = true
+					NonBNFriend_List[fullName].isBtag = true -- don't need to send people on WoW friend and bnet friend the same data.
+				end
+				if FRIEND_LIST[fullName] then
+					FRIEND_LIST[fullName].isConnected = true
 				end
 			end
 		end
 	end	
 
-	for gaID, player in pairs(BNFriendList) do
+	for _, player in pairs(BNFriendList) do
 		if player.client == 'WoW' then
-			AstralComs:NewMessage('AstralKeys', 'BNet_query ping', 'BNET', gaID)
+			AstralComs:NewMessage('AstralKeys', 'BNet_query ping', 'BNET', player.gaID)
 		end
 	end
 
@@ -332,11 +315,17 @@ local function PingFriendsForAstralKeys()
 
 	AstralEvents:Unregister('FRIENDLIST_UPDATE', 'pingFriends')
 end
-AstralEvents:Register('FRIENDLIST_UPDATE', PingFriendsForAstralKeys, 'pingFriends')
 
+-- Figures out who is using AK on friends list, sends them a response and key data
 local function PingResponse(msg, sender)
-	if BNFriendList[sender] then
-		BNFriendList[sender].usingAK = true
+	local bnetID = select(17, BNGetGameAccountInfo(sender))
+	local btag
+	if type(sender) == 'number' then
+		btag = select(3, BNGetFriendInfo(BNGetFriendIndex(bnetID)))
+	end
+
+	if BNFriendList[btag] then
+		BNFriendList[btag].usingAK = true
 	end
 
 	if NonBNFriend_List[sender] then
@@ -350,6 +339,14 @@ local function PingResponse(msg, sender)
 end
 AstralComs:RegisterPrefix('WHISPER', 'BNet_query', PingResponse)
 AstralComs:RegisterPrefix('BNET', 'BNet_query', PingResponse)
+
+local function Init()
+	ShowFriends()
+	AstralEvents:Unregister('PLAYER_ENTERING_WORLD', 'InitFriends')
+end
+AstralEvents:Register('PLAYER_ENTERING_WORLD', Init, 'InitFriends')
+
+AstralEvents:Register('FRIENDLIST_UPDATE', PingFriendsForAstralKeys, 'pingFriends')
 
 function e.ToggleFriendSync()
 	if AstralKeysSettings.options.friendSync then

@@ -117,22 +117,19 @@ showMinimap:SetScript('OnClick', function(self)
 	else
 		e.icon:Hide('AstralKeys')
 	end
-	end)
-
-local whisperClick = e.CreateCheckBox(contentFrame, 'Click to whisper player')
-whisperClick:SetPoint('LEFT', showMinimap, 'RIGHT', 10, 0)
-whisperClick:SetScript('OnClick', function(self)
-	AstralKeysSettings.options.whisperClick = self:GetChecked()
+	if IsAddOnLoaded('ElvUI_Enhanced') then
+		ElvUI[1]:GetModule('MinimapButtons'):UpdateLayout()
+	end
 	end)
 
 local announceKeys = e.CreateCheckBox(contentFrame, 'Announce new keys to party')
-announceKeys:SetPoint('TOPLEFT', showOffLine, 'BOTTOMLEFT', 0, -5)
+announceKeys:SetPoint('LEFT', showMinimap, 'RIGHT', 10, 0)
 announceKeys:SetScript('OnClick', function(self)
-	AstralKeysSettings.options.announceKey = self:GetChecked()
+	e.ToggleAnnounce()
 	end)
 
 contentFrame.syncHeader = e.CreateHeader(contentFrame, 'sync_header', 200, 20, 'Syncing Options', 10)
-contentFrame.syncHeader:SetPoint('TOPLEFT', announceKeys, 'BOTTOMLEFT', 0, -10)
+contentFrame.syncHeader:SetPoint('TOPLEFT', showOffLine, 'BOTTOMLEFT', 0, -10)
 
 local syncFriends = e.CreateCheckBox(contentFrame, 'Sync with friends')
 syncFriends:SetPoint('TOPLEFT', contentFrame.syncHeader, 'BOTTOMLEFT', 0, -5)
@@ -144,12 +141,19 @@ syncFriends:SetScript('OnClick', function(self)
 
 local minFriendSync = e.CreateEditBox(contentFrame, 25, 'Minimum key level to send to friends', 2, 99, 'LEFT')
 minFriendSync:SetPoint('LEFT', syncFriends, 'RIGHT', 260, 0)
-minFriendSync:SetScript('OnEditFocusLost', function(self)
+minFriendSync:HookScript('OnEditFocusLost', function(self)
 	AstralKeysSettings.options.minFriendSync = self:GetNumber()
 	end)
 
+local otherFaction = e.CreateCheckBox(contentFrame, 'Show other faction')
+otherFaction:SetPoint('TOPLEFT', syncFriends, 'BOTTOMLEFT', 0, -5)
+otherFaction:SetScript('OnClick', function(self)
+	AstralKeysSettings.options.showOtherFaction = self:GetChecked()
+	e.UpdateFrames()
+	end)
+
 local filter_header = e.CreateHeader(contentFrame, 'filter_header', 200, 20, 'Rank filter for Guild list', 10)
-filter_header:SetPoint('TOPLEFT', syncFriends, 'BOTTOMLEFT', 0, -10)
+filter_header:SetPoint('TOPLEFT', otherFaction, 'BOTTOMLEFT', 0, -10)
 
 local filter_descript = contentFrame:CreateFontString('BACKGROUND')
 filter_descript:SetFont(FONT_CONTENT, FONT_SIZE)
@@ -165,7 +169,7 @@ for i = 1, 10 do
 end
 
 function InitData()
-	whisperClick:SetChecked(AstralKeysSettings.options.whisperClick)
+	otherFaction:SetChecked(AstralKeysSettings.options.showOtherFaction)
 	showOffLine:SetChecked(AstralKeysSettings.options.showOffline)
 	showMinimap:SetChecked(AstralKeysSettings.options.showMinimapButton)
 	announceKeys:SetChecked(AstralKeysSettings.options.announceKey)
@@ -193,7 +197,7 @@ function InitData()
 
 		_ranks[i]:SetScript('OnClick', function(self)
 			AstralKeysSettings.options.rankFilters[self.id] = self:GetChecked()
-			if AstralKeysSettings.options.filterByRank and AstralKeysSettings.frameOptions.list == 'guild' then
+			if AstralKeysSettings.frameOptions.list == 'guild' then
 				e.UpdateFrames()
 			end
 			end)

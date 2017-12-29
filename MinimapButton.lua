@@ -12,10 +12,16 @@ local astralkeysLDB = LibStub("LibDataBroker-1.1"):NewDataObject("AstralKeys", {
 e.icon = LibStub("LibDBIcon-1.0")
 
 function addon:OnInitialize()
+	local shown
+	if not AstralKeysSettings.options.showMinimapButton then
+		shown = true
+	else
+		shown = AstralKeysSettings.options.showMinimapButton
+	end
 	self.db = LibStub("AceDB-3.0"):New("AstralMinimap", {
 		profile = {
 			minimap = {
-				hide = not AstralKeysSettings.options.showMinimapButton,
+				hide = not shown,
 			},
 		},
 	})

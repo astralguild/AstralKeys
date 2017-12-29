@@ -12,7 +12,7 @@ local POSITIONS = {
 	[3] = 'RIGHT',
 }
 
-local offset = 0
+local offset, shownOffset = 0, 0
 local characterOffset = 0
 
 local name, keyLevel, mapID, class, realm, indexEnd
@@ -43,6 +43,10 @@ FONT_OBJECT_HIGHLIGHT:SetJustifyH('CENTER')
 FONT_OBJECT_HIGHLIGHT:SetTextColor(126/255, 126/255, 126/255)
 
 local sortedTable = {}
+sortedTable.numShown = 0
+sortedTable['guild'] = {}
+sortedTable['friend'] = {}
+local numShown = 0
 local characters = {}
 local characterTable = {}
 
@@ -184,11 +188,10 @@ UnitFrame.__index = UnitFrame
 
 function UnitFrame:NewFrame(parent)
 	local self = CreateFrame('FRAME', nil, parent)
+	self.unitID = 0
 
 	self:EnableMouse(true)
 	self:SetSize(380, 15)
-	self:SetBackdrop(BACKDROP)
-	self:SetBackdropColor(0, 0, 0, 0)
 
 	self.levelString = self:CreateFontString('ARTWORK')
 	self.levelString:SetFont(FONT_CONTENT, FONT_SIZE)
@@ -215,12 +218,31 @@ function UnitFrame:NewFrame(parent)
 	self.weeklyTexture:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\check.tga')
 	self.weeklyTexture:Hide()
 
+	self.unit = CreateFrame('FRAME', nil, self)
+	self.unit:SetSize(170, 15)
+	self.unit:SetPoint('RIGHT', self, 'RIGHT')
+	self.unit:SetFrameLevel(10)
+	self.unit:EnableMouse(true)
+	self.unit:SetScript('OnMouseDown', function(self, button)
+		if button == 'RightButton' then
+			if AstralMenuFrame:IsShown() then
+				AstralMenuFrame:Hide()
+				return
+			end
+
+			AstralMenuFrame:ClearAllPoints()
+			AstralMenuFrame:SetPoint('TOPLEFT', self, 'CENTER', 5, -5)
+			AstralMenuFrame:SetUnit(self:GetParent().unitID)
+			AstralMenuFrame:Show()
+		end
+	end)
+
 	self:SetScript('OnEnter', function(self)
 		if UnitLevel('player') == 110 then
-			if self.unitID ~= 0 then
+			if self.mapID ~= 0 then
 				astralMouseOver:ClearAllPoints()
 				astralMouseOver:SetPoint('TOPLEFT', self, 'CENTER', -85, 0)
-				astralMouseOver:SetText(e.MapApText(e.UnitMapID(self.unitID), e.UnitKeyLevel(self.unitID)))
+				astralMouseOver:SetText(e.MapApText(self.mapID, self.keyLevel))
 				astralMouseOver:AdjustSize()
 				astralMouseOver:Show()
 				AstralContentFrame.slider:SetAlpha(1)
@@ -246,44 +268,120 @@ function UnitFrame:NewFrame(parent)
 	return self
 end
 
--- ff82c5ff
+-- ff82c5ff BNet 'blue'
 
-function UnitFrame:SetUnit(unit)
+function UnitFrame:SetUnit(unit, class, mapID, keyLevel, cache, faction, btag)
+	self.mapID = mapID
+	self.keyLevel = keyLevel
+	self.levelString:SetText(keyLevel)
+	self.dungeonString:SetText(e.GetMapName(mapID))
 	if e.FrameListShown() == 'guild' then
-		self.nameString:SetWidth(135)
 		self.unitID = e.UnitID(unit)
-		self.levelString:SetText(e.UnitKeyLevel(self.unitID))
-		self.dungeonString:SetText(e.GetMapName(e.UnitMapID(self.unitID)))
-		self.nameString:SetText(WrapTextInColorCode(e.UnitName(self.unitID), select(4, GetClassColor(e.UnitClass(self.unitID)))))
-	else
-		self.nameString:SetWidth(165)
+		self.nameString:SetWidth(135)
+		self.nameString:SetText(WrapTextInColorCode(Ambiguate(unit, 'GUILD') , select(4, GetClassColor(class))))
+		self.weeklyTexture:SetShown(cache == 1)
+	end
+	if e.FrameListShown() == 'friend' then
 		self.unitID = e.FriendID(unit)
-		self.levelString:SetText(e.FriendKeyLevel(self.unitID))
-		self.dungeonString:SetText(e.GetMapName(e.FriendMapID(self.unitID)))
-		if e.FriendBattleTag(self.unitID) then
-			self.nameString:SetText( string.format('%s (%s)', WrapTextInColorCode(e.FriendBattleTag(self.unitID):sub(1, e.FriendBattleTag(self.unitID):find('#') - 1), 'ff82c5ff'), WrapTextInColorCode(e.FriendName(self.unitID), select(4, GetClassColor(e.FriendClass(self.unitID))))))
+		self.nameString:SetWidth(165)
+		if btag then
+			if faction == e.FACTION then
+				self.nameString:SetText( string.format('%s (%s)', WrapTextInColorCode(btag:sub(1, btag:find('#') - 1), 'ff82c5ff'), WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), select(4, GetClassColor(class)))))
+			else
+				self.nameString:SetText( string.format('%s (%s)', WrapTextInColorCode(btag:sub(1, btag:find('#') - 1), 'ff82c5ff'), WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), 'ff9d9d9d')))
+			end
 		else
-			self.nameString:SetText(WrapTextInColorCode(e.FriendName(self.unitID), select(4, GetClassColor(e.FriendClass(self.unitID)))))
+			self.nameString:SetText(WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), select(4, GetClassColor(class))))
 		end
+		self.weeklyTexture:Hide()
 	end
 end
 
 function UnitFrame:ClearUnit()
 	self.unitID = 0
+	self.mapID = 0
+	self.keyLevel = 0
 	self.levelString:SetText('')
 	self.dungeonString:SetText('')
 	self.nameString:SetText('')
 	self.weeklyTexture:Hide()
-	self:SetBackdropColor(0, 0, 0, 0)
 end
 
-function UnitFrame:UpdateWeekly(unit)
-	if e.FrameListShown() == 'guild' then
-		self.weeklyTexture:SetShown(e.UnitCompletedWeekly(e.UnitID(unit)))
-	else
-		self.weeklyTexture:Hide()
-	end
+local function SendWhisper()
+	ChatFrame_SendTell(AstralKeys[AstralMenuFrame.unit][1])
 end
+AstralMenuFrame:AddSelection('Whisper', SendWhisper)
+
+local function Invite_OnShow(self)
+	local inviteType
+	if e.FrameListShown() == 'guild' then
+		inviteType = GetDisplayedInviteType(e.GuildMemberGuid(e.Unit(AstralMenuFrame.unit)))
+	end
+	if e.FrameListShown() == 'friend' then
+		inviteType = GetDisplayedInviteType(e.FriendGUID(e.Unit(AstralMenuFrame.unit)))
+	end
+
+	if inviteType == 'INVITE' then
+		self:SetText('Invite')
+	elseif inviteType == 'SUGGEST_INVITE' then
+		self:SetText('Suggest Invite')
+	elseif inviteType == 'REQUEST_INVITE' then
+		self:SetText('Request Invite')
+	end	
+end
+
+local function InviteUnit(self)
+	local inviteType
+	if e.FrameListShown() == 'guild' then
+		inviteType = GetDisplayedInviteType(e.GuildMemberGuid(e.Unit(AstralMenuFrame.unit)))
+		if inviteType == 'INVITE' then
+			InviteToGroup(e.Unit(AstralMenuFrame.unit))
+		elseif inviteType == 'REQUEST_INVITE' then
+			RequestInviteFromUnit(e.Unit(AstralMenuFrame.unit))
+		elseif inviteType == 'SUGGEST_INVITE' then
+			InviteToGroup(e.Unit(AstralMenuFrame.unit))
+		end
+	end
+	if e.FrameListShown() == 'friend' then
+		inviteType = GetDisplayedInviteType(e.FriendGUID(e.Unit(AstralMenuFrame.unit)))
+		if AstralFriends[AstralMenuFrame.unit][2] then -- bnet friend
+			if inviteType == 'INVITE' then
+				BNInviteFriend(e.FriendGAID(e.Friend(AstralMenuFrame.unit)))
+			elseif inviteType == 'REQUEST_INVITE' then
+				BNRequestInviteFriend(e.FriendGAID(e.Friend(AstralMenuFrame.unit)))
+			elseif inviteType == 'SUGGEST_INVITE' then
+				BNInviteFriend(e.FriendGAID(e.Friend(AstralMenuFrame.unit)))
+			end			
+		else
+			if inviteType == 'INVITE' then
+				BNInviteFriend(e.FriendGUID(e.Friend(AstralMenuFrame.unit)))
+			elseif inviteType == 'REQUEST_INVITE' then
+				BNRequestInviteFriend(e.FriendGUID(e.Friend(AstralMenuFrame.unit)))
+			elseif inviteType == 'SUGGEST_INVITE' then
+				BNInviteFriend(e.FriendGUID(e.Friend(AstralMenuFrame.unit)))
+			end			
+		end
+	end
+
+	--[[
+	REQUEST_INVITE
+	INVITE
+	SUGGEST_INVITE
+
+
+
+	]]
+
+	-- GetDisplayedInviteType(guid)
+	-- InviteToGroup(fullname)
+	-- BNInviteFriend(gaID)
+	-- RequestInviteFromUnit(fullname)
+	-- BNRequestInviteFriend(gaID)
+	-- Do stuff here
+end
+AstralMenuFrame:AddSelection('Invite', InviteUnit, Invite_OnShow)
+
+AstralMenuFrame:AddSelection('Cancel', function() return AstralMenuFrame:Hide() end)
 
 local AstralKeyFrame = CreateFrame('FRAME', 'AstralKeyFrame', UIParent)
 AstralKeyFrame:SetFrameStrata('DIALOG')
@@ -448,44 +546,6 @@ toggleButton:SetScript('OnClick', function(self)
 	end
 	end)
 
-local quickOptionsFrame = CreateFrame('FRAME', 'quickOptionsFrame', AstralKeyFrame)
-quickOptionsFrame:SetSize(170, 80)
-quickOptionsFrame:SetBackdrop(BACKDROP)
-quickOptionsFrame:SetBackdropColor(0, 0, 0, 1)
-quickOptionsFrame:SetFrameLevel(10)
-quickOptionsFrame:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', -10, - 28)
-quickOptionsFrame:Hide()
-
-local showOffline = e.CreateCheckBox(quickOptionsFrame, 'Show offline players', 160)
-showOffline:SetPoint('TOPRIGHT', quickOptionsFrame, 'TOPRIGHT', 0, -5)
-
-showOffline:SetScript('OnClick', function (self)
-	AstralKeysSettings.options.showOffline = self:GetChecked()
-	AstralContentFrame:ResetSlider()
-	--e.UpdateLines()
-	e.UpdateFrames()
-end)
-
-local showMinimapButton = e.CreateCheckBox(quickOptionsFrame, 'Show Minimap Button', 160)
-showMinimapButton:SetPoint('TOPRIGHT', showOffline, 'BOTTOMRIGHT', 0, -5)
-showMinimapButton:SetScript('OnClick', function(self)
-	AstralKeysSettings.options.showMinimapButton = self:GetChecked()
-	if AstralKeysSettings.options.showMinimapButton then
-		e.icon:Show('AstralKeys')
-	else
-		e.icon:Hide('AstralKeys')
-	end
-end)
-
-local filterButton = e.CreateCheckBox(quickOptionsFrame, 'Toggle Rank filters', 160)
-filterButton:SetPoint('TOPRIGHT', showMinimapButton, 'BOTTOMRIGHT', 0, -5)
-filterButton:SetScript('OnClick', function(self)
-	AstralKeysSettings.options.filterByRank = self:GetChecked()
-	if AstralKeysSettings.frameOptions.list == 'guild' then
-		e.UpdateFrames()
-	end
-	end)
-
 local optionsButton = CreateFrame('BUTTON', nil, AstralKeyFrame)
 optionsButton:SetSize(16, 16)
 optionsButton:SetPoint('TOPRIGHT', toggleButton, 'TOPLEFT', -5, 0)
@@ -502,20 +562,6 @@ optionsButton:SetScript('OnClick', function()
 	end)
 
 
-local quickOptions = CreateFrame('BUTTON', nil, AstralKeyFrame)
-quickOptions:SetSize(16, 16)
-quickOptions:SetPoint('TOPRIGHT', optionsButton, 'TOPLEFT', -5, 0)
-quickOptions:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\folder.tga')
-quickOptions:SetScript('OnClick', function ()
-	quickOptionsFrame:SetShown(not quickOptionsFrame:IsShown())
-end)
-quickOptions:SetScript('OnEnter', function(self)
-	self:GetNormalTexture():SetVertexColor(126/255, 126/255, 126/255)
-	end)
-quickOptions:SetScript('OnLeave', function(self)
-	self:GetNormalTexture():SetVertexColor(1, 1, 1)
-	end)
-
 -- Announce Buttons
 -----------------------------------------------------
 
@@ -525,12 +571,18 @@ announceFrame:SetPoint('TOPRIGHT', closeButton, 'BOTTOMRIGHT', 0, -5)
 announceFrame.announce = CreateFrame('BUTTON', nil, announceFrame)
 announceFrame.announce:SetSize(16, 16)
 announceFrame.announce:SetPoint('LEFT', announceFrame, 'LEFT')
-announceFrame.announce:SetScript('OnClick', function(self)
+
+function e.ToggleAnnounce()
 	if AstralKeysSettings.options.announceKey then
-		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\speaker2.tga')
+		announceFrame.announce:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\speaker2.tga')
 	else
-		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\speaker.tga')
+		announceFrame.announce:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\speaker.tga')
 	end
+	AstralKeysSettings.options.announceKey = not AstralKeysSettings.options.announceKey
+end
+
+
+announceFrame.announce:SetScript('OnClick', function(self)
 	e.ToggleAnnounce()
 	end)
 
@@ -564,15 +616,6 @@ guildAnnounce:SetScript('OnClick', function()
 	e.AnnounceCharacterKeys('GUILD')
 	end)
 
-quickOptionsFrame:SetScript('OnShow', function(self)
-	partyAnnounce:Disable()
-	guildAnnounce:Disable()
-	end)
-
-quickOptionsFrame:SetScript('OnHide', function(self)
-	partyAnnounce:Enable()
-	guildAnnounce:Enable()
-	end)
 
 -- Tooltip AstralKeyFrame
 -----------------------------------------------------
@@ -784,17 +827,17 @@ end
 local newOffset = 0
 
 contentFrame:SetScript('OnMouseWheel', function(self, delta)
-	if #sortedTable < 26 then return end
+	if sortedTable.numShown < 26 then return end
 
-	offset = offset - (delta * math.ceil(#sortedTable/25))
+	offset = offset - (delta * math.ceil(sortedTable.numShown/25))
 	
 	offset = math.max(0, offset)
-	offset = math.min(offset, #sortedTable - 25)
+	offset = math.min(offset, sortedTable.numShown - 25)
 	
 	e.UpdateLines()
 
 	contentFrame.slider:ClearAllPoints()
-	contentFrame.slider:SetPoint('TOPLEFT', contentFrame, 'TOPRIGHT', 0, -offset/(#sortedTable - 25) * 365)
+	contentFrame.slider:SetPoint('TOPLEFT', contentFrame, 'TOPRIGHT', 0, -offset/(sortedTable.numShown - 25) * 365)
 
 	end)
 
@@ -816,7 +859,7 @@ keyButton:SetScript('OnClick', function()
 		AstralKeysSettings.frameOptions.orientation = 1 - AstralKeysSettings.frameOptions.orientation
 	end
 	AstralKeysSettings.frameOptions.sortMethod = 4
-	e.SortTable(sortedTable, AstralKeysSettings.frameOptions.sortMethod)
+	e.SortTable(sortedTable[e.FrameListShown()], AstralKeysSettings.frameOptions.sortMethod)
 	e.UpdateLines()
 
 	end)
@@ -831,7 +874,7 @@ mapButton:SetScript('OnClick', function()
 		AstralKeysSettings.frameOptions.orientation = 1 - AstralKeysSettings.frameOptions.orientation
 	end
 	AstralKeysSettings.frameOptions.sortMethod = 3
-	e.SortTable(sortedTable, AstralKeysSettings.frameOptions.sortMethod)
+	e.SortTable(sortedTable[e.FrameListShown()], AstralKeysSettings.frameOptions.sortMethod)
 	e.UpdateLines()
 
 	end)
@@ -846,7 +889,7 @@ nameButton:SetScript('OnClick', function()
 		AstralKeysSettings.frameOptions.orientation = 1 - AstralKeysSettings.frameOptions.orientation
 	end
 	AstralKeysSettings.frameOptions.sortMethod = 1
-	e.SortTable(sortedTable, AstralKeysSettings.frameOptions.sortMethod)
+	e.SortTable(sortedTable[e.FrameListShown()], AstralKeysSettings.frameOptions.sortMethod)
 	e.UpdateLines()
 
 	end)
@@ -861,7 +904,7 @@ completeButton:SetScript('OnClick', function()
 		AstralKeysSettings.frameOptions.orientation = 1 - AstralKeysSettings.frameOptions.orientation
 	end
 	AstralKeysSettings.frameOptions.sortMethod = 5
-	e.SortTable(sortedTable, AstralKeysSettings.frameOptions.sortMethod)
+	e.SortTable(sortedTable[e.FrameListShown()], AstralKeysSettings.frameOptions.sortMethod)
 	e.UpdateLines()
 
 	end)
@@ -878,9 +921,9 @@ function AstralKeyFrame:OnUpdate(elapsed)
 end
 
 guildButton:SetScript('OnClick', function()
-	if e.FrameListShown() == 'friends' then
+	if e.FrameListShown() == 'friend' then
 		AstralContentFrame:ResetSlider()
-		friendButton:SetNormalTexture(nil)		
+		friendButton:SetNormalTexture(nil)
 		friendButton:SetText(WrapTextInColorCode('Friend list', 'ff9d9d9d'))
 		
 		guildButton:SetNormalTexture(guildButton:GetHighlightTexture())
@@ -894,13 +937,14 @@ guildButton:SetScript('OnClick', function()
 
 friendButton:SetScript('OnClick', function()
 	if e.FrameListShown() == 'guild' then
+		e.SetFrameListShown('friend')
+
 		AstralContentFrame:ResetSlider()
 		guildButton:SetText(WrapTextInColorCode('Guild list', 'ff9d9d9d'))
 		guildButton:SetNormalTexture(nil)
 
 		friendButton:SetNormalTexture(friendButton:GetHighlightTexture())		
 		friendButton:SetText('Friend list')
-		e.SetFrameListShown('friends')		
 		e.UpdateFrames()
 
 		completeButton:Hide()
@@ -915,7 +959,7 @@ function AstralKeyFrame:ToggleLists()
 	else
 		guildButton:Hide()
 		friendButton:Hide()
-		if e.FrameListShown() == 'friends' then
+		if e.FrameListShown() == 'friend' then
 			friendButton:SetNormalTexture(nil)	
 			friendButton:SetText(WrapTextInColorCode('Friend list', 'ff9d9d9d'))
 			
@@ -979,13 +1023,9 @@ local function InitializeFrame()
 	AstralAffixTwo:UpdateInfo()
 	AstralAffixThree:UpdateInfo()
 
-	showOffline:SetChecked(AstralKeysSettings.options.showOffline)
-	showMinimapButton:SetChecked(AstralKeysSettings.options.showMinimapButton)
-	filterButton:SetChecked(AstralKeysSettings.options.filterByRank)
-
 	characterTable = e.DeepCopy(AstralCharacters)
 
-	if e.AnnounceKey() then
+	if AstralKeysSettings.options.announceKey then
 		announceFrame.announce:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\speaker.tga')
 	else
 		announceFrame.announce:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\speaker2.tga')
@@ -1081,12 +1121,20 @@ end
 
 function e.UpdateLines()
 	if not init then return end
-	for i = 1, math.min(25, #sortedTable) do
-		unit_frames[i]:SetUnit(sortedTable[i + offset][1])
-		unit_frames[i]:UpdateWeekly(sortedTable[i + offset][1])
+	local list = e.FrameListShown()
+	local lastIndex = 1
+
+	for i = 1, math.min(sortedTable.numShown, 25) do
+		for j = lastIndex, #sortedTable[list] do
+			if sortedTable[list][j].isShown then
+				lastIndex = j + 1
+				unit_frames[i]:SetUnit(unpack(sortedTable[list][j + offset], 1, 7))
+				break
+			end
+		end
 	end
 
-	for i = math.min(25, #sortedTable) + 1, 25 do
+	for i = sortedTable.numShown + 1, 25 do
 		unit_frames[i]:ClearUnit()
 	end
 end
@@ -1094,23 +1142,18 @@ end
 function e.UpdateFrames()
 	if not init or not AstralKeyFrame:IsShown() then return end
 
-	if e.FrameListShown() == 'guild' then
-		sortedTable = e.UpdateTables(sortedTable, AstralKeys)
-		e.SortTable(sortedTable, AstralKeysSettings.frameOptions.sortMethod)
-	else
-		sortedTable = e.UpdateTables(sortedTable, AstralFriends)
-		e.SortTable(sortedTable, AstralKeysSettings.frameOptions.sortMethod)
+	e.UpdateTable(sortedTable)
+
+	if sortedTable.numShown + offset > sortedTable.numShown then
+		offset = sortedTable.numShown - 25
 	end
 
-	if #sortedTable + offset > #sortedTable then
-		offset = #sortedTable - 25
-	end
-
-	if #sortedTable > 25 then
+	if sortedTable.numShown > 25 then
 		AstralContentFrame.slider:Show()
 	else
 		AstralContentFrame.slider:Hide()
 	end
+
 	e.UpdateLines()
 end
 
@@ -1136,6 +1179,26 @@ function e.UpdateCharacterFrames()
 				characters[i]:UpdateInformation('')
 			end
 		end
+	end
+end
+
+function e.AddUnitToTable(unit, class, faction, listType, mapID, level, weekly, btag)
+	if not sortedTable[listType] then
+		sortedTable[listType] = {}
+	end
+	local found = false
+	for i = 1, #sortedTable[listType] do
+		if sortedTable[listType][i][1] == unit then
+			sortedTable[listType][i][3] = mapID
+			sortedTable[listType][i][4] = level
+			sortedTable[listType][i][5] = weekly
+			found = true
+			break
+		end
+	end
+
+	if not found then
+		sortedTable[listType][#sortedTable[listType] + 1] = {unit, class, mapID, level, weekly, faction, btag}
 	end
 end
 

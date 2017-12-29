@@ -1,69 +1,64 @@
 local _, e = ...
 
-local function ParseOnlineUnits(A)
-	local tbl = {}
-	local units = {}
-	local name
-	if e.FrameListShown() == 'guild' then
-		for i = 1, select(2, GetNumGuildMembers()) do
-			name = GetGuildRosterInfo(i)
-			units[name] = true
-		end
-	else
-		for i = 1, BNGetNumFriends() do
-			local name, gaID = select(5, BNGetFriendInfo(i))
-			if name then
-				local server = select(4, BNGetGameAccountInfo(gaID))
-				name = string.format('%s-%s', name, server)
-				units[name] = true
+local FILTER_METHOD = {}
+
+FILTER_METHOD['guild'] = function(A)
+	if not type(A) == 'table' then return end
+
+	for i = 1, #A.guild do
+		if e.UnitInGuild(A.guild[i][1]) then
+			if AstralKeysSettings.options.showOffline then
+				A.guild[i].isShown = true
+			else
+				A.guild[i].isShown = e.GuildMemberOnline(A.guild[i][1])
 			end
+
+			A.guild[i].isShown = A.guild[i].isShown and AstralKeysSettings.options.rankFilters[e.GuildMemberRank(A.guild[i][1])]
+
+			if A.guild[i].isShown then
+				A.numShown = A.numShown + 1
+			end
+		else
+			A.guild[i].isShown = false
 		end
 	end
-
-	for k, v in pairs(A) do
-		if units[v[1]] then
-			tbl[#tbl+1] = v
-		end
-	end
-
-	return tbl
 end
 
-local function ParseGuildRanks(A)
-	local tbl = {}
-	local units = {}
+FILTER_METHOD['friend'] = function(A)
+	if not type(A) == 'table' then return end
 
-	for i = 1, GetNumGuildMembers() do
-		local name, _, rankIndex = GetGuildRosterInfo(i)
-		if AstralKeysSettings.options.rankFilters[rankIndex + 1] then
-			units[name] = true
+	for i = 1, #A.friend do
+		if AstralKeysSettings.options.showOffline then
+			A.friend[i].isShown = true
+		else
+			A.friend[i].isShown = e.IsFriendOnline(A.friend[i][1])
+		end
+
+		if not AstralKeysSettings.options.showOtherFaction then
+			A.friend[i].isShown = A.friend[i].isShown and A.friend[i][6] == e.FACTION
+		end
+
+		if A.friend[i].isShown then
+			A.numShown = A.numShown + 1
 		end
 	end
-
-	for k, v in pairs(A) do
-		if units[v[1]] then
-			tbl[#tbl + 1] = v
-		end
-	end
-
-	return tbl
 end
 
-function e.UpdateTables(table, A)
-	table = e.DeepCopy(A)
-	if AstralKeysSettings.options.filterByRank then
-		table = ParseGuildRanks(table)
-	end
-	if not e.GetShowOffline() then
-		table = ParseOnlineUnits(table)
-	end	
+function e.AddSortMethod(list, f)
+	if type(list) ~= 'string' and list == '' then return end
+	if type(f) ~= 'function' then return end
 
-	return table
+	FILTER_METHOD[list] = f
+end
+
+function e.UpdateTable(tbl)
+	tbl.numShown = 0
+	FILTER_METHOD[e.FrameListShown()](tbl)
 end
 
 function e.SortTable(A, v)
 	if v == 3 then -- Map Name
-		if e.FrameListShown() == 'friends' then v = v + 1 end
+		--if e.FrameListShown() == 'friends' then v = v + 1 end
 	    for j = 2, #A do
 	        --Select item to sort
 	        local key = A[j]
@@ -81,7 +76,7 @@ function e.SortTable(A, v)
 	    	table.sort(A, function(a, b) return e.GetMapName(a[v]) > e.GetMapName(b[v]) end)
 	    end
 	else
-		if e.FrameListShown() == 'friends' then v = v + 1 end
+		--if e.FrameListShown() == 'friends' then v = v + 1 end
 	    for j = 2, #A do
 	        --Select item to sort
 	        local key = A[j]

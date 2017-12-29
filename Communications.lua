@@ -187,10 +187,9 @@ end
 AstralComs:Init()
 
 local function UpdateUnitKey(msg)
-	--Console:AddLine('Comm', msg)
 	local timeStamp = e.WeekTime() -- part of the week we got this key update, used to determine if a key got de-leveled or not
-	local unit = msg:sub(0, msg:find(':') - 1)
-	local class, dungeonID, keyLevel, weekly, week = msg:match('(%a+):(%d+):(%d+):(%d+):(%d+)', msg:find(':'))
+
+	local unit, class, dungeonID, keyLevel, weekly, week = strsplit(':', msg)
 	
 	dungeonID = tonumber(dungeonID)
 	keyLevel = tonumber(keyLevel)
@@ -211,6 +210,7 @@ local function UpdateUnitKey(msg)
 	end
 
 	e.UpdateFrames()
+	e.AddUnitToTable(unit, class, faction, 'guild', dungeonID, keyLevel, weekly)
 	
 	-- Update character frames if we received our own key
 	if unit == e.Player() then
@@ -256,6 +256,7 @@ local function SyncReceive(entry, sender)
 				AstralKeys[#AstralKeys + 1] = {unit, class, dungeonID, keyLevel, weekly, week, timeStamp}
 				e.SetUnitID(unit, #AstralKeys)
 			end
+			e.AddUnitToTable(unit, class, faction, 'guild', dungeonID, keyLevel, weekly)
 		end
 	end
 	unit, class, dungeonID, keyLevel, weekly, week, timeStamp = nil, nil, nil, nil, nil, nil, nil
@@ -393,17 +394,15 @@ function e.AnnounceCharacterKeys(channel)
 		local id = e.UnitID(strformat('%s-%s', e.CharacterName(i), e.CharacterRealm(i)))
 
 		if id then
-			local link, keyLevel = e.CreateKeyLink(id), e.UnitKeyLevel(id)
-			if keyLevel >= e.GetMinKeyLevel() then
-				if channel == 'PARTY' and not IsInGroup() then return end
-				SendChatMessage(strformat('%s %s +%d',e.CharacterName(i), link, keyLevel), channel)
-			end
+			local link = e.CreateKeyLink(e.UnitMapID(id), e.UnitKeyLevel(id))
+			if channel == 'PARTY' and not IsInGroup() then return end
+			SendChatMessage(strformat('%s %s +%d',e.CharacterName(i), link, e.UnitKeyLevel(id)), channel)
 		end
 	end
 end
 
 function e.AnnounceNewKey(keyLink, level)
 	if not IsInGroup() then return end
-	if not e.AnnounceKey() then return end
+	if not AstralKeysSettings.options.announceKey then return end
 	SendChatMessage(strformat(ANNOUNCE_MESSAGE, keyLink, level), 'PARTY')
 end

@@ -88,7 +88,7 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 	local msg = ''
 
 	if mapID then -- Won't have a mapID without having a
-		msg = string.format('%s:%s:%d:%d:%d:%d', e.Player(), e.PlayerClass(), mapID, keyLevel, CompletedWeekly(), e.Week)
+		msg = string.format('%s:%s:%d:%d:%d:%d:%s', e.Player(), e.PlayerClass(), mapID, keyLevel, CompletedWeekly(), e.Week, e.FACTION)
 	end
 
 	if not mapID and not AstralEvents:IsRegistered('CHAT_MSG_LOOT', 'loot_msg_parse') then -- No key found or event registered, let's look for those keys
@@ -160,7 +160,7 @@ function e.GetBestClear()
 		AstralCharacters[id].map = bestMap
 		AstralCharacters[id].level = bestLevel
 	else
-		table.insert(AstralCharacters, {unit = e.Player(), class = e.PlayerClass(), map = bestMap, level = bestLevel, faction = UnitFactionGroup('player')})
+		table.insert(AstralCharacters, {unit = e.Player(), class = e.PlayerClass(), map = bestMap, level = bestLevel, faction = e.FACTION})
 		e.SetCharacterID(e.Player(), #AstralCharacters)
 	end
 end

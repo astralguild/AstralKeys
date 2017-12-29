@@ -127,10 +127,10 @@ function e.CreateEditBox(parent, width, label, minValue, maxValue, labelPos)
 
 
 	editBox:SetScript("OnEditFocusLost", function(self)
-		if self:GetNumber() < minValue then
+		if self:GetNumber() < self.minValue then
 			self:SetNumber(self.minValue)
 		end
-		if self:GetNumber() > maxValue then
+		if self:GetNumber() > self.maxValue then
 			self:SetNumber(self.maxValue)
 		end
 		end)
@@ -173,37 +173,6 @@ function e.CreateCheckButton(parent, text)
 
 	return self
 end
---[[
-function e.CreateCheckBox(parent, label, textPos)
-	local checkbox = CreateFrame('CheckButton', nil, parent)
-	checkbox:SetSize(12, 12)
-	checkbox:SetBackdrop(BACKDROPBUTTON)
-	checkbox:SetBackdropBorderColor(85/255, 85/255, 85/255)
-	checkbox:SetText(label)
-
-	checkbox:SetNormalTexture(nil)
-	checkbox:SetBackdropColor(0, 0, 0)
-	if textPos == 'LEFT' then
-		checkbox:SetNormalFontObject(FONT_OBJECT_RIGHT)
-		checkbox:GetFontString():SetPoint('RIGHT', checkbox, 'LEFT', -5, 0)
-	else
-		checkbox:SetNormalFontObject(FONT_OBJECT_LEFT)
-		checkbox:GetFontString():SetPoint('LEFT', checkbox, 'RIGHT', 5, 0)
-	end
-
-	checkbox:SetPushedTextOffset(0,0)
-
-	checkbox.t = checkbox:CreateTexture('PUSHEDTEXTURE', 'BACKGROUND')
-	checkbox.t:SetSize(6, 6)
-	checkbox.t:SetPoint('TOPLEFT', checkbox, 'TOPLEFT', 3, -3)
-	checkbox.t:SetColorTexture(.9, .9, .9)
-	checkbox:SetCheckedTexture(checkbox.t)
-
-	checkbox:SetDisabledFontObject(FONT_OBJECT_DISABLED)
-
-	return checkbox
-end]]
-
 
 function e.CreateCheckBox(parent, label, width)
 	local checkbox = CreateFrame('CheckButton', nil, parent)
@@ -255,4 +224,90 @@ function e.CreateOptionButton(parent, width)
 	self:SetHighlightTexture(texture)
 
 	return self
+end
+
+local BACKDROP2 = {
+bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+edgeFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 16, edgeSize = 1,
+insets = {left = 0, right = 0, top = 0, bottom = 0}
+}
+
+local menuFrame = CreateFrame('FRAME', 'AstralMenuFrame', UIParent)
+menuFrame:Hide()
+menuFrame.dtbl = {}
+
+menuFrame:SetFrameStrata('TOOLTIP')
+menuFrame:SetWidth(150)
+menuFrame:SetHeight(40)
+menuFrame:SetBackdrop(BACKDROP2)
+menuFrame:SetBackdropBorderColor(0, 0, 0)
+menuFrame:SetBackdropColor(35/255, 35/255, 35/255)
+menuFrame:EnableKeyboard(true)
+--menuFrame:SetPropagateKeyboardInput(true)
+
+menuFrame:SetScript('OnKeyDown', function(self, key)
+	if key == 'ESCAPE' then
+		AstralMenuFrame:Hide()
+	end
+	end)
+
+menuFrame:SetScript('OnShow', function(self)
+	--AstralKeyFrame:SetPropagateKeyboardInput(false)
+	self:SetPropagateKeyboardInput(true)
+	end)
+
+menuFrame:SetScript('OnHide', function(self)
+	AstralKeyFrame:SetPropagateKeyboardInput(true)
+	end)
+
+menuFrame.title = menuFrame:CreateFontString('ARTWORK')
+menuFrame.title:SetFont(FONT_CONTENT, FONT_SIZE - 1)
+menuFrame.title:SetJustifyH('LEFT')
+menuFrame.title:SetSize(120, 15)
+menuFrame.title:SetPoint('TOPLEFT', menuFrame, 'TOPLEFT', 10, -5)
+
+local function HideMenu()
+	menuFrame:Hide()
+end
+
+function menuFrame:SetUnit(unitID)
+	self.unit = unitID
+	self.title:SetText(e.UnitName(unitID))
+end
+
+function menuFrame:NewObject(name, func, onShow)
+	local btn = CreateFrame('BUTTON', nil, menuFrame)
+	btn:SetSize(140, 20)
+	btn:SetBackdrop(BACKDROP2)
+	btn:SetBackdropBorderColor(0, 0, 0, 0)
+	btn:SetBackdropColor(25/255, 25/255, 25/255)
+	btn:SetNormalFontObject(FONT_OBJECT_CENTRE)
+
+	local texture = btn:CreateTexture()
+	texture:SetColorTexture(1, 1, 1, .2)
+	texture:SetPoint('TOPLEFT', 1, -1)
+	texture:SetPoint('BOTTOMRIGHT', -1, 1)
+	btn:SetHighlightTexture(texture)
+
+	btn:SetText(name)
+
+	btn:SetScript('OnClick', func)
+
+	if onShow and type(onShow) == 'function' then
+		btn:SetScript('OnShow', function(self) onShow(self) end)
+	end
+
+	return btn
+end
+
+function menuFrame:AddSelection(name, onClick, onShow)
+	local dtbl = self.dtbl
+	dtbl[#dtbl + 1] = self:NewObject(name, onClick, onShow)
+	self:SetHeight(#dtbl * 20 + 30)
+
+	if onClick then
+		dtbl[#dtbl]:HookScript('OnClick', HideMenu)
+	end
+
+	dtbl[#dtbl]:SetPoint('TOPLEFT', self, 'TOPLEFT', 5, -20*(#dtbl) -5)	
 end
