@@ -27,6 +27,10 @@ function e.GetFriendGaID(battleTag)
 	return BNFriendList[battleTag].gaID
 end
 
+function e.FriendBattleTag(id)
+	return AstralFriends[id][2]:sub(1, AstralFriends[id][2]:find('#') - 1)
+end
+
 -- Updates BNFriendList for friend update
 -- @paremt index int Friend's list index that was updated
 function e.BNFriendUpdate(index)

@@ -255,16 +255,6 @@ function UnitFrame:NewFrame(parent)
 		AstralContentFrame.slider:SetAlpha(.2)
 	end)
 
-	self:SetScript('OnMouseDown', function(self, button)
-		if button == 'LeftButton' and AstralKeysSettings.options.whisperClick then
-			if AstralKeysSettings.frameOptions.list == 'guild' then
-				ChatFrame_SendTell(e.Unit(self.unitID))
-			else
-				ChatFrame_SendSmartTell(e.FriendBattleTag(self.unitID):sub(1, e.FriendBattleTag(self.unitID):find('#') - 1))
-			end
-		end
-		end)
-
 	return self
 end
 
@@ -308,7 +298,15 @@ function UnitFrame:ClearUnit()
 end
 
 local function SendWhisper()
-	ChatFrame_SendTell(AstralKeys[AstralMenuFrame.unit][1])
+	if AstralKeysSettings.frameOptions.list == 'guild' then
+		ChatFrame_SendTell(e.Unit(AstralMenuFrame.unit))
+	else
+		if AstralFriends[AstralMenuFrame.unit][2] then
+			ChatFrame_SendSmartTell(e.FriendBattleTag(AstralMenuFrame.unit))
+		else
+			ChatFrame_SendTell(e.Friend(AstralMenuFrame.unit))
+		end
+	end
 end
 AstralMenuFrame:AddSelection('Whisper', SendWhisper)
 
@@ -852,6 +850,10 @@ contentFrame:SetScript('OnLeave', function()
 local keyButton = CreateButton(contentFrame, 'keyButton', 45, 20, 'Level', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT) --75
 keyButton:SetPoint('BOTTOMLEFT', contentFrame, 'TOPLEFT')
 keyButton:SetScript('OnClick', function()
+	if AstralMenuFrame:IsShown() then
+		AstralMenuFrame:Hide()
+	end
+
 	contentFrame:ResetSlider()
 	if AstralKeysSettings.frameOptions.sortMethod ~= 4 then
 		AstralKeysSettings.frameOptions.orientation = 0
@@ -867,6 +869,9 @@ keyButton:SetScript('OnClick', function()
 local mapButton = CreateButton(contentFrame, 'mapButton', 170, 20, 'Dungeon', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT)
 mapButton:SetPoint('LEFT', keyButton, 'RIGHT')
 mapButton:SetScript('OnClick', function()
+	if AstralMenuFrame:IsShown() then
+		AstralMenuFrame:Hide()
+	end
 	contentFrame:ResetSlider()
 	if AstralKeysSettings.frameOptions.sortMethod ~= 3 then
 		AstralKeysSettings.frameOptions.orientation = 0
@@ -882,6 +887,9 @@ mapButton:SetScript('OnClick', function()
 local nameButton = CreateButton(contentFrame, 'nameButton', 130, 20, 'Player', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT)
 nameButton:SetPoint('LEFT', mapButton, 'RIGHT')
 nameButton:SetScript('OnClick', function()
+	if AstralMenuFrame:IsShown() then
+		AstralMenuFrame:Hide()
+	end
 	contentFrame:ResetSlider()
 	if AstralKeysSettings.frameOptions.sortMethod ~= 1 then
 		AstralKeysSettings.frameOptions.orientation = 0
@@ -897,6 +905,9 @@ nameButton:SetScript('OnClick', function()
 local completeButton = CreateButton(contentFrame, 'completeButton', 30, 20, e.CACHE_LEVEL .. '+', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT)
 completeButton:SetPoint('LEFT', nameButton, 'RIGHT')
 completeButton:SetScript('OnClick', function()
+	if AstralMenuFrame:IsShown() then
+		AstralMenuFrame:Hide()
+	end
 	contentFrame:ResetSlider()
 	if AstralKeysSettings.frameOptions.sortMethod ~= 5 then
 		AstralKeysSettings.frameOptions.orientation = 0
@@ -921,6 +932,9 @@ function AstralKeyFrame:OnUpdate(elapsed)
 end
 
 guildButton:SetScript('OnClick', function()
+	if AstralMenuFrame:IsShown() then
+		AstralMenuFrame:Hide()
+	end
 	if e.FrameListShown() == 'friend' then
 		AstralContentFrame:ResetSlider()
 		friendButton:SetNormalTexture(nil)
@@ -936,6 +950,9 @@ guildButton:SetScript('OnClick', function()
 	end)
 
 friendButton:SetScript('OnClick', function()
+	if AstralMenuFrame:IsShown() then
+		AstralMenuFrame:Hide()
+	end
 	if e.FrameListShown() == 'guild' then
 		e.SetFrameListShown('friend')
 
