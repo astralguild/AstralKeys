@@ -266,7 +266,11 @@ end
 
 function menuFrame:SetUnit(unitID)
 	self.unit = unitID
-	self.title:SetText(e.UnitName(unitID))
+	if e.FrameListShown() == 'guild' then
+		self.title:SetText(e.UnitName(unitID))
+	else
+		self.title:SetText(e.FriendName(unitID))
+	end
 end
 
 function menuFrame:NewObject(name, func, onShow)

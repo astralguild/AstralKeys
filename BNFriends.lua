@@ -83,6 +83,10 @@ function e.Friend(id)
 	return AstralFriends[id][1]
 end
 
+function e.FriendName(id)
+	return AstralFriends[id][1]:sub(1, AstralFriends[id][1]:find('-') - 1)
+end
+
 function e.FriendGUID(unit)
 	return FRIEND_LIST[unit].guid
 end
