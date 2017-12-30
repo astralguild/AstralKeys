@@ -110,6 +110,10 @@ end
 local function UpdateNonBNetFriendList()
 	wipe(NonBNFriend_List)
 
+	for k,v in pairs(FRIEND_LIST) do
+		v.isConnected = false
+	end
+
 	for i = 1, select(2, GetNumFriends()) do -- Only parse over online friends
 		local name = strformat('%s-%s', GetFriendInfo(i), e.PlayerRealm())
 		local guid = select(9, GetFriendInfo(i))
@@ -117,6 +121,24 @@ local function UpdateNonBNetFriendList()
 		if FRIEND_LIST[name] then
 			FRIEND_LIST[name].isConnected = true
 			FRIEND_LIST[name].guid = guid
+		end
+	end
+
+	for i = 1, BNGetNumFriends() do
+		local presID, _, battleTag, _, toonName, gaID, client = BNGetFriendInfo(i)
+		if gaID then
+		local guid = select(20, BNGetGameAccountInfo(gaID))
+			BNFriendList[battleTag] = {toonName = toonName, client = client, gaID = gaID, usingAK = false}
+			if client == 'WoW' then
+				local fullName = toonName .. '-' .. select(4, BNGetGameAccountInfo(gaID))	
+				if NonBNFriend_List[fullName] then
+					NonBNFriend_List[fullName].isBtag = true -- don't need to send people on WoW friend and bnet friend the same data.
+				end
+				if FRIEND_LIST[fullName] then
+					FRIEND_LIST[fullName].isConnected = true
+					FRIEND_LIST[fullName].guid = guid
+				end
+			end
 		end
 	end
 end
@@ -146,11 +168,14 @@ local function RecieveKey(msg, sender)
 	else
 		AstralFriends[#AstralFriends + 1] = {unit, btag, class, dungeonID, keyLevel, week, timeStamp, faction}
 		e.SetFriendID(unit, #AstralFriends)
+		ShowFriends()
 	end
 
 	e.AddUnitToTable(unit, class, faction, 'friend', dungeonID, keyLevel, nil, btag)
 
-	if e.FrameListShown() == 'friends' then e.UpdateFrames() end
+	if e.FrameListShown() == 'friends' then 
+		e.UpdateFrames()
+	end
 end
 AstralComs:RegisterPrefix('BNET', UPDATE_VERSION, RecieveKey)
 AstralComs:RegisterPrefix('WHISPER', UPDATE_VERSION, RecieveKey)
@@ -196,11 +221,14 @@ local function SyncFriendUpdate(entry, sender)
 			else
 				AstralFriends[#AstralFriends + 1] = {unit, btag, class, dungeonID, keyLevel, week, timeStamp, faction}
 				e.SetFriendID(unit, #AstralFriends)
+				ShowFriends()
 			end
 			e.AddUnitToTable(unit, class, faction, 'friend', dungeonID, keyLevel, nil, btag)
 		end
 	end
-	if e.FrameListShown() == 'friends' then e.UpdateFrames() end
+	if e.FrameListShown() == 'friends' then 
+		e.UpdateFrames() 
+	end
 end
 AstralComs:RegisterPrefix('BNET', SYNC_VERSION, SyncFriendUpdate)
 AstralComs:RegisterPrefix('WHISPER', SYNC_VERSION, SyncFriendUpdate)

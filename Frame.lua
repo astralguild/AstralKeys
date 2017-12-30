@@ -299,7 +299,35 @@ function UnitFrame:ClearUnit()
 	self.weeklyTexture:Hide()
 end
 
-local function SendWhisper()
+local function Whisper_OnShow(self)
+	local isConnected = true
+	if e.FrameListShown() == 'guild' then
+		inviteType = GetDisplayedInviteType(e.GuildMemberGuid(e.Unit(AstralMenuFrame.unit)))
+		isConnected = e.GuildMemberOnline(e.Unit(AstralMenuFrame.unit))
+	end
+	if e.FrameListShown() == 'friend' then
+		inviteType = GetDisplayedInviteType(e.FriendGUID(e.Friend(AstralMenuFrame.unit)))
+		if AstralFriends[AstralMenuFrame.unit][2] then
+			local name = select(4, BNGetGameAccountInfo(e.GetFriendGaID(AstralFriends[AstralMenuFrame.unit][2])))
+			if not name then
+				isConnected = false
+			end
+		else
+			isConnected = e.IsFriendOnline(e.Friend(AstralMenuFrame.unit))
+		end
+	end
+	self.isConnected = isConnected
+
+	if not isConnected then
+		self:SetText(WrapTextInColorCode(self:GetText(), 'ff9d9d9d'))
+	else
+		self:SetText('Whisper')
+	end
+end
+
+local function SendWhisper(self)
+	if not self.isConnected then return end
+
 	if AstralKeysSettings.frameOptions.list == 'guild' then
 		ChatFrame_SendTell(e.Unit(AstralMenuFrame.unit))
 	else
@@ -310,7 +338,7 @@ local function SendWhisper()
 		end
 	end
 end
-AstralMenuFrame:AddSelection('Whisper', SendWhisper)
+AstralMenuFrame:AddSelection('Whisper', SendWhisper, Whisper_OnShow)
 
 local function Invite_OnShow(self)
 	local inviteType
@@ -347,7 +375,7 @@ local function Invite_OnShow(self)
 end
 
 local function InviteUnit(self)
-	if self.isConnected == false then return end
+	if not self.isConnected then return end
 	
 	if e.FrameListShown() == 'guild' then
 		if self.inviteType == 'INVITE' then
