@@ -230,6 +230,8 @@ function UnitFrame:NewFrame(parent)
 				return
 			end
 
+			if self:GetParent().unitID == 0 then return end
+
 			AstralMenuFrame:ClearAllPoints()
 			AstralMenuFrame:SetPoint('TOPLEFT', self, 'CENTER', 5, -5)
 			AstralMenuFrame:SetUnit(self:GetParent().unitID)
@@ -273,9 +275,9 @@ function UnitFrame:SetUnit(unit, class, mapID, keyLevel, cache, faction, btag)
 	end
 	if e.FrameListShown() == 'friend' then
 		self.unitID = e.FriendID(unit)
-		self.nameString:SetWidth(165)
+		self.nameString:SetWidth(165)		
 		if btag then
-			if faction == e.FACTION then
+			if tonumber(faction) == e.FACTION then
 				self.nameString:SetText( string.format('%s (%s)', WrapTextInColorCode(btag:sub(1, btag:find('#') - 1), 'ff82c5ff'), WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), select(4, GetClassColor(class)))))
 			else
 				self.nameString:SetText( string.format('%s (%s)', WrapTextInColorCode(btag:sub(1, btag:find('#') - 1), 'ff82c5ff'), WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), 'ff9d9d9d')))
@@ -312,11 +314,21 @@ AstralMenuFrame:AddSelection('Whisper', SendWhisper)
 
 local function Invite_OnShow(self)
 	local inviteType
+	local isConnected = true
 	if e.FrameListShown() == 'guild' then
 		inviteType = GetDisplayedInviteType(e.GuildMemberGuid(e.Unit(AstralMenuFrame.unit)))
+		isConnected = e.GuildMemberOnline(e.Unit(AstralMenuFrame.unit))
 	end
 	if e.FrameListShown() == 'friend' then
-		inviteType = GetDisplayedInviteType(e.FriendGUID(e.Unit(AstralMenuFrame.unit)))
+		inviteType = GetDisplayedInviteType(e.FriendGUID(e.Friend(AstralMenuFrame.unit)))
+		if AstralFriends[AstralMenuFrame.unit][2] then
+			local name = select(4, BNGetGameAccountInfo(e.GetFriendGaID(AstralFriends[AstralMenuFrame.unit][2])))
+			if not name then
+				isConnected = false
+			end
+		else
+			isConnected = e.IsFriendOnline(e.Friend(AstralMenuFrame.unit))
+		end
 	end
 
 	if inviteType == 'INVITE' then
@@ -325,57 +337,51 @@ local function Invite_OnShow(self)
 		self:SetText('Suggest Invite')
 	elseif inviteType == 'REQUEST_INVITE' then
 		self:SetText('Request Invite')
-	end	
+	end
+	if not isConnected then
+		self:SetText(WrapTextInColorCode(self:GetText(), 'ff9d9d9d'))
+	end
+
+	self.isConnected = isConnected
+	self.inviteType = inviteType
 end
 
 local function InviteUnit(self)
-	local inviteType
+	if self.isConnected == false then return end
+	
 	if e.FrameListShown() == 'guild' then
-		inviteType = GetDisplayedInviteType(e.GuildMemberGuid(e.Unit(AstralMenuFrame.unit)))
-		if inviteType == 'INVITE' then
+		if self.inviteType == 'INVITE' then
 			InviteToGroup(e.Unit(AstralMenuFrame.unit))
-		elseif inviteType == 'REQUEST_INVITE' then
+		elseif self.inviteType == 'REQUEST_INVITE' then
 			RequestInviteFromUnit(e.Unit(AstralMenuFrame.unit))
-		elseif inviteType == 'SUGGEST_INVITE' then
+		elseif self.inviteType == 'SUGGEST_INVITE' then
 			InviteToGroup(e.Unit(AstralMenuFrame.unit))
 		end
 	end
 	if e.FrameListShown() == 'friend' then
-		inviteType = GetDisplayedInviteType(e.FriendGUID(e.Unit(AstralMenuFrame.unit)))
 		if AstralFriends[AstralMenuFrame.unit][2] then -- bnet friend
-			if inviteType == 'INVITE' then
+			if self.inviteType == 'INVITE' then
 				BNInviteFriend(e.FriendGAID(e.Friend(AstralMenuFrame.unit)))
-			elseif inviteType == 'REQUEST_INVITE' then
-				BNRequestInviteFriend(e.FriendGAID(e.Friend(AstralMenuFrame.unit)))
-			elseif inviteType == 'SUGGEST_INVITE' then
-				BNInviteFriend(e.FriendGAID(e.Friend(AstralMenuFrame.unit)))
+			elseif self.inviteType == 'REQUEST_INVITE' then
+				BNRequestInviteFriend(e.GetFriendGaID(AstralFriends[AstralMenuFrame.unit][2]))
+			elseif self.inviteType == 'SUGGEST_INVITE' then
+				BNInviteFriend(e.GetFriendGaID(AstralFriends[AstralMenuFrame.unit][2]))
 			end			
 		else
-			if inviteType == 'INVITE' then
+			if self.inviteType == 'INVITE' then
 				BNInviteFriend(e.FriendGUID(e.Friend(AstralMenuFrame.unit)))
-			elseif inviteType == 'REQUEST_INVITE' then
+			elseif self.inviteType == 'REQUEST_INVITE' then
 				BNRequestInviteFriend(e.FriendGUID(e.Friend(AstralMenuFrame.unit)))
-			elseif inviteType == 'SUGGEST_INVITE' then
+			elseif self.inviteType == 'SUGGEST_INVITE' then
 				BNInviteFriend(e.FriendGUID(e.Friend(AstralMenuFrame.unit)))
 			end			
 		end
 	end
-
-	--[[
-	REQUEST_INVITE
-	INVITE
-	SUGGEST_INVITE
-
-
-
-	]]
-
 	-- GetDisplayedInviteType(guid)
 	-- InviteToGroup(fullname)
 	-- BNInviteFriend(gaID)
 	-- RequestInviteFromUnit(fullname)
 	-- BNRequestInviteFriend(gaID)
-	-- Do stuff here
 end
 AstralMenuFrame:AddSelection('Invite', InviteUnit, Invite_OnShow)
 

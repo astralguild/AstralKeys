@@ -243,7 +243,6 @@ menuFrame:SetBackdrop(BACKDROP2)
 menuFrame:SetBackdropBorderColor(0, 0, 0)
 menuFrame:SetBackdropColor(35/255, 35/255, 35/255)
 menuFrame:EnableKeyboard(true)
---menuFrame:SetPropagateKeyboardInput(true)
 
 menuFrame:SetScript('OnKeyDown', function(self, key)
 	if key == 'ESCAPE' then
@@ -252,12 +251,7 @@ menuFrame:SetScript('OnKeyDown', function(self, key)
 	end)
 
 menuFrame:SetScript('OnShow', function(self)
-	--AstralKeyFrame:SetPropagateKeyboardInput(false)
 	self:SetPropagateKeyboardInput(true)
-	end)
-
-menuFrame:SetScript('OnHide', function(self)
-	AstralKeyFrame:SetPropagateKeyboardInput(true)
 	end)
 
 menuFrame.title = menuFrame:CreateFontString('ARTWORK')
@@ -294,7 +288,7 @@ function menuFrame:NewObject(name, func, onShow)
 	btn:SetScript('OnClick', func)
 
 	if onShow and type(onShow) == 'function' then
-		btn:SetScript('OnShow', function(self) onShow(self) end)
+		btn:SetScript('OnShow', onShow)
 	end
 
 	return btn

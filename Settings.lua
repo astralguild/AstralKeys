@@ -1,5 +1,5 @@
 local _, e = ...
-local RESET_VERSION = 20001
+local RESET_VERSION = 21000
 -- Reset time 15:00 UTC AMERICAS
 -- 07:00 UTC EU
 

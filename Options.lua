@@ -140,7 +140,7 @@ syncFriends:SetScript('OnClick', function(self)
 	end)
 
 local minFriendSync = e.CreateEditBox(contentFrame, 25, 'Minimum key level to send to friends', 2, 99, 'LEFT')
-minFriendSync:SetPoint('LEFT', syncFriends, 'RIGHT', 260, 0)
+minFriendSync:SetPoint('LEFT', syncFriends, 'RIGHT', 245, 0)
 minFriendSync:HookScript('OnEditFocusLost', function(self)
 	AstralKeysSettings.options.minFriendSync = self:GetNumber()
 	end)

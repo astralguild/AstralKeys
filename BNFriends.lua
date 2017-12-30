@@ -67,7 +67,6 @@ AstralEvents:Register('BN_FRIEND_INFO_CHANGED', e.BNFriendUpdate, 'update_BNFrie
 ----------------------------------------------------
 -- Friend Indexing
 
-
 function e.SetFriendID(unit, id)
 	FRIEND_LIST[unit] = {id = id, isConnected = false}
 end
@@ -84,12 +83,12 @@ function e.Friend(id)
 	return AstralFriends[id][1]
 end
 
-function e.FriendGUID(id)
-	return FRIEND_LIST[e.Friend(id)].guid
+function e.FriendGUID(unit)
+	return FRIEND_LIST[unit].guid
 end
 
-function e.FriendGAID(id)
-	return FRIEND_LIST[e.Friend(id)].gaID
+function e.FriendGAID(unit)
+	return FRIEND_LIST[unit].gaID
 end
 
 function e.WipeFriendList()
@@ -174,7 +173,7 @@ local function SyncFriendUpdate(entry, sender)
 	local _pos = 0
 	while find(entry, '_', _pos) do
 
-		class, dungeonID, keyLevel, week, timeStamp, faction = entry:match(':(%a+):(%d+):(%d+):(%d+):(%d+):(%a+)', entry:find(':', _pos))
+		class, dungeonID, keyLevel, week, timeStamp, faction = entry:match(':(%a+):(%d+):(%d+):(%d+):(%d+):(%d+)', entry:find(':', _pos))
 		unit = entry:sub(_pos, entry:find(':', _pos) - 1)
 
 		_pos = find(entry, '_', _pos) + 1
@@ -195,7 +194,7 @@ local function SyncFriendUpdate(entry, sender)
 					AstralFriends[id][7] = timeStamp
 				end
 			else
-				AstralFriends[#AstralFriends + 1] = {unit, btag, class, dungeonID, keyLevel, week, timeStamp}
+				AstralFriends[#AstralFriends + 1] = {unit, btag, class, dungeonID, keyLevel, week, timeStamp, faction}
 				e.SetFriendID(unit, #AstralFriends)
 			end
 			e.AddUnitToTable(unit, class, faction, 'friend', dungeonID, keyLevel, nil, btag)
@@ -292,6 +291,7 @@ local function PingFriendsForAstralKeys()
 	for i = 1, BNGetNumFriends() do
 		local presID, _, battleTag, _, toonName, gaID, client = BNGetFriendInfo(i)
 		if gaID then
+		local guid = select(20, BNGetGameAccountInfo(gaID))
 			BNFriendList[battleTag] = {toonName = toonName, client = client, gaID = gaID, usingAK = false}
 			if client == 'WoW' then
 				local fullName = toonName .. '-' .. select(4, BNGetGameAccountInfo(gaID))	
@@ -300,6 +300,7 @@ local function PingFriendsForAstralKeys()
 				end
 				if FRIEND_LIST[fullName] then
 					FRIEND_LIST[fullName].isConnected = true
+					FRIEND_LIST[fullName].guid = guid
 				end
 			end
 		end

@@ -24,7 +24,6 @@ end
 
 local function InitData()
 	e.BuildMapTable()
-	if UnitLevel('player') ~= 110 then return end -- Character isn't max level, anything from them is useless
 	e.GetBestClear()
 	e.FindKeyStone(true, false)
 	AstralComs:NewMessage('AstralKeys', 'request', 'GUILD')
@@ -83,6 +82,7 @@ local function ParseLootMsgForKey(...)
 end
 
 function e.FindKeyStone(sendUpdate, anounceKey)
+	if UnitLevel('player') ~= 110 then return end
 	local mapID, keyLevel, affix1, affix2, affix3 = e.GetKeyInfo()
 
 	local msg = ''
