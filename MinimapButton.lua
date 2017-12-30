@@ -13,10 +13,10 @@ e.icon = LibStub("LibDBIcon-1.0")
 
 function addon:OnInitialize()
 	local shown
-	if not AstralKeysSettings.options.showMinimapButton then
+	if not AstralKeysSettings.options.showMiniMapButton then
 		shown = true
 	else
-		shown = AstralKeysSettings.options.showMinimapButton
+		shown = AstralKeysSettings.options.showMiniMapButton
 	end
 	self.db = LibStub("AceDB-3.0"):New("AstralMinimap", {
 		profile = {

@@ -171,7 +171,7 @@ end
 function InitData()
 	otherFaction:SetChecked(AstralKeysSettings.options.showOtherFaction)
 	showOffLine:SetChecked(AstralKeysSettings.options.showOffline)
-	showMinimap:SetChecked(AstralKeysSettings.options.showMinimapButton)
+	showMinimap:SetChecked(AstralKeysSettings.options.showMiniMapButton)
 	announceKeys:SetChecked(AstralKeysSettings.options.announceKey)
 	syncFriends:SetChecked(AstralKeysSettings.options.friendSync)
 	minFriendSync:SetNumber(AstralKeysSettings.options.minFriendSync)
