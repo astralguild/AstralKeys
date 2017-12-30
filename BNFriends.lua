@@ -100,7 +100,7 @@ end
 ---- Non BNet Friend stuff
 
 function e.IsFriendOnline(unit)
-	if not FRIEND_LIST[unit] then 
+	if not FRIEND_LIST[unit] then
 		return false
 	else
 		return FRIEND_LIST[unit].isConnected

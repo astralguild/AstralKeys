@@ -35,7 +35,7 @@ FILTER_METHOD['friend'] = function(A)
 		end
 
 		if not AstralKeysSettings.options.showOtherFaction then
-			A.friend[i].isShown = A.friend[i].isShown and A.friend[i][6] == e.FACTION
+			A.friend[i].isShown = A.friend[i].isShown and tonumber(A.friend[i][6]) == e.FACTION
 		end
 
 		if A.friend[i].isShown then
