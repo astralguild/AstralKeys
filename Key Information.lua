@@ -108,7 +108,7 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 		if IsInGuild() then
 			AstralComs:NewMessage('AstralKeys', strformat('%s %s', e.UPDATE_VERSION, msg), 'GUILD')
 		else -- Not in a guild, who are you people? Whatever, gotta make it work for them aswell
-			local id = e.UnitID(e.Player()) -- Are we in the DB already? 
+			local id = e.UnitID(e.Player()) -- Are we in the DB already?
 			if id then -- Yep, ok just update those values
 				AstralKeys[id][3] = tonumber(mapID)
 				AstralKeys[id][4] = tonumber(keyLevel)

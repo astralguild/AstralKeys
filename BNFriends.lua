@@ -34,7 +34,7 @@ end
 -- Updates BNFriendList for friend update
 -- @paremt index int Friend's list index that was updated
 function e.BNFriendUpdate(index)
-	if not index then return end -- No tag, event fired from player
+	if not index then return end -- No index, event fired from player
 	local presID, _, battleTag, _, toonName, gaID, client = BNGetFriendInfo(index) -- Let's get some fresh info, client != 'WoW' when on character list it seems
 
 	if not gaID then return end -- No game pressence ID, can't talk to them then
@@ -185,10 +185,10 @@ AstralComs:RegisterPrefix('BNET', UPDATE_VERSION, RecieveKey)
 AstralComs:RegisterPrefix('WHISPER', UPDATE_VERSION, RecieveKey)
 
 local function SyncFriendUpdate(entry, sender)
-	if not AstralKeysSettings.options.friendSync then return end	
-	local bnetID = select(17, BNGetGameAccountInfo(sender))
+	if not AstralKeysSettings.options.friendSync then return end
 	local btag
-	if type(sender) == 'number' then
+	if type(sender) == 'number' then	
+		local bnetID = select(17, BNGetGameAccountInfo(sender))
 		btag = select(3, BNGetFriendInfo(BNGetFriendIndex(bnetID)))
 	end
 
@@ -355,9 +355,9 @@ end
 
 -- Figures out who is using AK on friends list, sends them a response and key data
 local function PingResponse(msg, sender)
-	local bnetID = select(17, BNGetGameAccountInfo(sender))
 	local btag
 	if type(sender) == 'number' then
+		local bnetID = select(17, BNGetGameAccountInfo(sender))
 		btag = select(3, BNGetFriendInfo(BNGetFriendIndex(bnetID)))
 	end
 
@@ -407,3 +407,58 @@ function e.ToggleFriendSync()
 		AstralEvents:Unregister('BN_FRIEND_INFO_CHANGED', e.BNFriendUpdate, 'update_BNFriend')
 	end
 end
+
+local function FriendFilter(tbl)
+	if not type(tbl) == 'table' then return end
+
+	for i = 1, #tbl.friend do
+		if AstralKeysSettings.options.showOffline then
+			tbl.friend[i].isShown = true
+		else
+			tbl.friend[i].isShown = e.IsFriendOnline(tbl.friend[i][1])
+		end
+
+		if not AstralKeysSettings.options.showOtherFaction then
+			tbl.friend[i].isShown = tbl.friend[i].isShown and tonumber(tbl.friend[i][6]) == e.FACTION
+		end
+
+		if tbl.friend[i].isShown then
+			tbl.numShown = tbl.numShown + 1
+		end
+	end
+end
+e.AddListFilter('friend', FriendFilter)
+
+local function FriendSort(A, v)
+	if v == 3 then
+		table.sort(A, function(a, b) 
+			if AstralKeysSettings.frameOptions.orientation == 0 then
+				return e.GetMapName(a[v]) > e.GetMapName(b[v])
+			else
+				return e.GetMapName(b[v]) > e.GetMapName(a[v])
+			end
+			end)
+	else
+		if v == 1 then
+			table.sort(A, function(a, b)
+				local s = a[7] or '|'
+				local t = b[7] or '|'
+				if AstralKeysSettings.frameOptions.orientation == 0 then
+					return s > t
+				else
+					return s < t
+				end
+			end)
+		else
+			table.sort(A, function(a, b) 
+				if AstralKeysSettings.frameOptions.orientation == 0 then
+					return b[v] > a[v]
+				else
+					return b[v] < a[v]
+				end
+			end)
+		end
+	end
+end
+
+e.AddListSort('friend', FriendSort)
