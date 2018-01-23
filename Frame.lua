@@ -1194,6 +1194,7 @@ function e.UpdateFrames()
 	if not init or not AstralKeyFrame:IsShown() then return end
 
 	e.UpdateTable(sortedTable)
+	e.SortTable(sortedTable[e.FrameListShown()], AstralKeysSettings.frameOptions.sortMethod)
 
 	if sortedTable.numShown + offset > sortedTable.numShown then
 		offset = sortedTable.numShown - 25
@@ -1255,7 +1256,6 @@ end
 
 function e.AstralToggle()
 	if not init then InitializeFrame() end
-
 	AstralKeyFrame:SetShown(not AstralKeyFrame:IsShown())
 end
 
