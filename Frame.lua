@@ -223,6 +223,7 @@ function UnitFrame:NewFrame(parent)
 	self.unit:SetPoint('RIGHT', self, 'RIGHT')
 	self.unit:SetFrameLevel(10)
 	self.unit:EnableMouse(true)
+
 	self.unit:SetScript('OnMouseDown', function(self, button)
 		if button == 'RightButton' then
 			if AstralMenuFrame:IsShown() then
@@ -332,7 +333,7 @@ local function SendWhisper(self)
 		ChatFrame_SendTell(e.Unit(AstralMenuFrame.unit))
 	else
 		if AstralFriends[AstralMenuFrame.unit][2] then
-			ChatFrame_SendSmartTell(e.FriendBattleTag(AstralMenuFrame.unit))
+			ChatFrame_SendSmartTell(e.FriendPresName(e.Friend(AstralMenuFrame.unit)))
 		else
 			ChatFrame_SendTell(e.Friend(AstralMenuFrame.unit))
 		end

@@ -35,7 +35,7 @@ end
 -- @paremt index int Friend's list index that was updated
 function e.BNFriendUpdate(index)
 	if not index then return end -- No index, event fired from player
-	local presID, _, battleTag, _, toonName, gaID, client = BNGetFriendInfo(index) -- Let's get some fresh info, client != 'WoW' when on character list it seems
+	local presID, pName, battleTag, _, toonName, gaID, client = BNGetFriendInfo(index) -- Let's get some fresh info, client != 'WoW' when on character list it seems
 
 	if not gaID then return end -- No game pressence ID, can't talk to them then
 
@@ -45,6 +45,7 @@ function e.BNFriendUpdate(index)
 		local fullName = toonName .. '-' .. select(4, BNGetGameAccountInfo(gaID))
 		if FRIEND_LIST[fullName] then
 			FRIEND_LIST[fullName].guid = guid
+			FRIEND_LIST[fullName].pName = pName
 			FRIEND_LIST[fullName].isConnected = true
 		end
 		if NonBNFriend_List[fullName] then
@@ -95,6 +96,10 @@ function e.FriendGAID(unit)
 	return FRIEND_LIST[unit].gaID
 end
 
+function e.FriendPresName(unit)
+	return FRIEND_LIST[unit].pName
+end
+
 function e.WipeFriendList()
 	wipe(FRIEND_LIST)
 end
@@ -129,7 +134,7 @@ local function UpdateNonBNetFriendList()
 	end
 
 	for i = 1, BNGetNumFriends() do
-		local presID, _, battleTag, _, toonName, gaID, client = BNGetFriendInfo(i)
+		local presID, pName, battleTag, _, toonName, gaID, client = BNGetFriendInfo(i)
 		if gaID then
 		local guid = select(20, BNGetGameAccountInfo(gaID))
 			BNFriendList[battleTag] = {toonName = toonName, client = client, gaID = gaID, usingAK = false}
@@ -141,6 +146,7 @@ local function UpdateNonBNetFriendList()
 				if FRIEND_LIST[fullName] then
 					FRIEND_LIST[fullName].isConnected = true
 					FRIEND_LIST[fullName].guid = guid
+					FRIEND_LIST[fullName].pName = pName
 				end
 			end
 		end
@@ -321,7 +327,7 @@ local function PingFriendsForAstralKeys()
 	end
 
 	for i = 1, BNGetNumFriends() do
-		local presID, _, battleTag, _, toonName, gaID, client = BNGetFriendInfo(i)
+		local presID, pName, battleTag, _, toonName, gaID, client = BNGetFriendInfo(i)
 		if gaID then
 		local guid = select(20, BNGetGameAccountInfo(gaID))
 			BNFriendList[battleTag] = {toonName = toonName, client = client, gaID = gaID, usingAK = false}
@@ -333,6 +339,7 @@ local function PingFriendsForAstralKeys()
 				if FRIEND_LIST[fullName] then
 					FRIEND_LIST[fullName].isConnected = true
 					FRIEND_LIST[fullName].guid = guid
+					FRIEND_LIST[fullName].pName = pName
 				end
 			end
 		end
@@ -430,6 +437,7 @@ end
 e.AddListFilter('friend', FriendFilter)
 
 local function FriendSort(A, v)
+	if v == 5 then v = 1 end
 	if v == 3 then
 		table.sort(A, function(a, b) 
 			if AstralKeysSettings.frameOptions.orientation == 0 then
@@ -452,9 +460,9 @@ local function FriendSort(A, v)
 		else
 			table.sort(A, function(a, b) 
 				if AstralKeysSettings.frameOptions.orientation == 0 then
-					return b[v] > a[v]
+					return a[v] > b[v]
 				else
-					return b[v] < a[v]
+					return a[v] < b[v]
 				end
 			end)
 		end

@@ -48,8 +48,8 @@ if not AstralKeysSettings then
 		['resetVersion'] = RESET_VERSION,
 		['initTime'] = e.DataResetTime(),
 		['frameOptions'] = {
-			['orientation'] = 0,
-			['sortMethod'] = 1,
+			['orientation'] = 1,
+			['sortMethod'] = 4,
 			['viewMode'] = 0,
 			['list'] = 'guild',
 			},
@@ -92,8 +92,8 @@ frame:SetScript('OnEvent', function(self, event, ...)
 				['resetVersion'] = RESET_VERSION,
 				['initTime'] = e.DataResetTime(),
 				['frameOptions'] = {
-					['orientation'] = 0,
-					['sortMethod'] = 1,
+					['orientation'] = 1,
+					['sortMethod'] = 4,
 					['viewMode'] = 0,
 					['list'] = 'guild',
 					},

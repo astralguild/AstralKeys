@@ -53,7 +53,7 @@ SORT_MEDTHOD['guild'] = function(A, v)
 			if AstralKeysSettings.frameOptions.orientation == 0 then
 				return a[v] > b[v]
 			else
-				return b[v] > a[v]
+				return a[v] < b[v]
 			end
 		end)
 	end
