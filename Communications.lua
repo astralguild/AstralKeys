@@ -240,10 +240,6 @@ local function SyncReceive(entry, sender)
 		week = tonumber(week)
 		timeStamp = tonumber(timeStamp)
 
-		if unit:find('Bloopi') then
-			Console:AddLine(ADDON, sender .. '  ' .. weekly)
-		end
-
 		if week >= e.Week and e.UnitInGuild(unit) then 
 
 			local id = e.UnitID(unit)

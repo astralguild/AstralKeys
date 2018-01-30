@@ -187,6 +187,7 @@ local UnitFrame = {}
 UnitFrame.__index = UnitFrame
 
 function UnitFrame:NewFrame(parent)
+
 	local self = CreateFrame('FRAME', nil, parent)
 	self.unitID = 0
 
@@ -248,7 +249,7 @@ function UnitFrame:NewFrame(parent)
 				astralMouseOver:SetText(e.MapApText(self.mapID, self.keyLevel))
 				astralMouseOver:AdjustSize()
 				astralMouseOver:Show()
-				AstralContentFrame.slider:SetAlpha(1)
+				--AstralContentFrame.slider:SetAlpha(1)
 			end
 		end
 	end)
