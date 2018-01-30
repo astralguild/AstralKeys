@@ -240,6 +240,10 @@ local function SyncReceive(entry, sender)
 		week = tonumber(week)
 		timeStamp = tonumber(timeStamp)
 
+		if unit:find('Bloopi') then
+			Console:AddLine(ADDON, sender .. '  ' .. weekly)
+		end
+
 		if week >= e.Week and e.UnitInGuild(unit) then 
 
 			local id = e.UnitID(unit)
@@ -267,6 +271,7 @@ local function UpdateWeekly(weekly, sender)
 	local id = e.UnitID(sender)
 	if id then
 		AstralKeys[id][5] = tonumber(weekly)
+		AstralKeys[id][7] = e.WeekTime()
 		e.UpdateFrames()
 	end
 end
