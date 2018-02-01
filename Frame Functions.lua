@@ -200,8 +200,9 @@ function e.CreateCheckBox(parent, label, width)
 	checkbox:SetCheckedTexture(checkbox.t)
 
 	checkbox:SetDisabledFontObject(FONT_OBJECT_DISABLED)
-
-	checkbox:GetFontString():SetPoint('LEFT', tex, 'RIGHT', 5, 0)
+	if label then
+		checkbox:GetFontString():SetPoint('LEFT', tex, 'RIGHT', 5, 0)
+	end
 
 	return checkbox
 end

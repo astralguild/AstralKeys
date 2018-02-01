@@ -7,6 +7,7 @@ local PURPLE = 'ffa335ee'
 e.CACHE_LEVEL = 15 -- Weekly M+ requirement for class hall cache
 
 local function Weekly()
+	if UnitLevel('player') ~= 110 then return end
 	e.GetBestClear()
 	if AstralCharacters[e.GetCharacterID(e.Player())].level >= e.CACHE_LEVEL then
 		if IsInGuild() then
