@@ -264,7 +264,52 @@ end
 
 -- ff82c5ff BNet 'blue'
 
-function UnitFrame:SetUnit(unit, class, mapID, keyLevel, cache, faction, btag)
+local UNIT_FUNCTION = {}
+
+function e.AddUnitFunction(list, f)
+	if type(list) ~= 'string' and list == '' then return end
+	if type(f) ~= 'function' then return end
+
+	if UNIT_FUNCTION[list] then
+		error('Function already associated with the list ' .. list)
+		return
+	end
+	UNIT_FUNCTION[list] = f
+end
+
+local function GuildUnitFunction(self, unit, class, mapID, keyLevel, cache, faction, btag)
+	self.mapID = mapID
+	self.keyLevel = keyLevel
+	self.levelString:SetText(keyLevel)
+	self.dungeonString:SetText(e.GetMapName(mapID))
+	self.unitID = e.UnitID(unit)
+	self.nameString:SetText(WrapTextInColorCode(Ambiguate(unit, 'GUILD') , select(4, GetClassColor(class))))
+	self.weeklyTexture:SetShown(cache == 1)
+end
+e.AddUnitFunction('guild', GuildUnitFunction)
+
+UNIT_FUNCTION['friend'] = function(self, unit, class, mapID, keyLevel, cache, faction, btag)
+	self.mapID = mapID
+	self.keyLevel = keyLevel
+	self.levelString:SetText(keyLevel)
+	self.dungeonString:SetText(e.GetMapName(mapID))
+	self.weeklyTexture:SetShown(cache == 1)
+	self.unitID = e.FriendID(unit)	
+	if btag then
+		if tonumber(faction) == e.FACTION then
+			self.nameString:SetText( string.format('%s (%s)', WrapTextInColorCode(btag:sub(1, btag:find('#') - 1), 'ff82c5ff'), WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), select(4, GetClassColor(class)))))
+		else
+			self.nameString:SetText( string.format('%s (%s)', WrapTextInColorCode(btag:sub(1, btag:find('#') - 1), 'ff82c5ff'), WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), 'ff9d9d9d')))
+		end
+	else
+		self.nameString:SetText(WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), select(4, GetClassColor(class))))
+	end
+end
+
+function UnitFrame:SetUnit(...)
+	UNIT_FUNCTION[e.FrameListShown()](self, ...)
+
+	--[[
 	self.mapID = mapID
 	self.keyLevel = keyLevel
 	self.levelString:SetText(keyLevel)
@@ -288,7 +333,7 @@ function UnitFrame:SetUnit(unit, class, mapID, keyLevel, cache, faction, btag)
 			self.nameString:SetText(WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), select(4, GetClassColor(class))))
 		end
 		self.weeklyTexture:Hide()
-	end
+	end]]
 end
 
 function UnitFrame:ClearUnit()

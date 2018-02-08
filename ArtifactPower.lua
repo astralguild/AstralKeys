@@ -35,13 +35,13 @@ DUNGEON_TABLE[209]['name'] = 'The Arcway'
 DUNGEON_TABLE[210] = {}
 DUNGEON_TABLE[210]['name'] = 'Court of Stars'
 DUNGEON_TABLE[227] = {}
-DUNGEON_TABLE[227]['name'] = 'Return to Karazhan: Lower'
+DUNGEON_TABLE[227]['name'] = 'Karazhan: Lower'
 DUNGEON_TABLE[233] = {}
-DUNGEON_TABLE[233]['name'] = 'Cathedral of Eternal Night'
+DUNGEON_TABLE[233]['name'] = 'Cathedral'
 DUNGEON_TABLE[234] = {}
-DUNGEON_TABLE[234]['name'] = 'Return to Karazhan: Upper'
+DUNGEON_TABLE[234]['name'] = 'Karazhan: Upper'
 DUNGEON_TABLE[239] = {}
-DUNGEON_TABLE[239]['name'] = 'Seat of the Triumvirate'
+DUNGEON_TABLE[239]['name'] = 'Seat, Triumvirate'
 
 --[[ 
 Times
