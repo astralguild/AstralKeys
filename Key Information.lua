@@ -7,7 +7,6 @@ local PURPLE = 'ffa335ee'
 e.CACHE_LEVEL = 15 -- Weekly M+ requirement for class hall cache
 
 local function Weekly()
-	if UnitLevel('player') ~= 110 then return end
 	e.GetBestClear()
 	if AstralCharacters[e.GetCharacterID(e.Player())].level >= e.CACHE_LEVEL then
 		if IsInGuild() then
@@ -25,11 +24,13 @@ end
 
 local function InitData()
 	e.BuildMapTable()
-	e.GetBestClear()
 	e.FindKeyStone(true, false)
 	AstralComs:NewMessage('AstralKeys', 'request', 'GUILD')
 
 	AstralEvents:Unregister('CHALLENGE_MODE_MAPS_UPDATE', 'initData')
+
+	if UnitLevel('player') ~= 110 then return end
+	e.GetBestClear()
 	AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', Weekly, 'weeklyCheck')
 end
 AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', InitData, 'initData')
@@ -143,7 +144,6 @@ end
 -- Finds best map clear fothe week for logged on character. If character already is in database
 -- updates the information, else creates new entry for character
 function e.GetBestClear()
-	if UnitLevel('player') ~= 110 then return end
 	local bestLevel = 0
 	local bestMap = 0
 	for _, v in pairs(C_ChallengeMode.GetMapTable()) do
