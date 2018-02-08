@@ -349,11 +349,11 @@ end
 local function Whisper_OnShow(self)
 	local isConnected = true
 	if e.FrameListShown() == 'guild' then
-		inviteType = GetDisplayedInviteType(e.GuildMemberGuid(e.Unit(AstralMenuFrame.unit)))
+		--inviteType = GetDisplayedInviteType(e.GuildMemberGuid(e.Unit(AstralMenuFrame.unit)))
 		isConnected = e.GuildMemberOnline(e.Unit(AstralMenuFrame.unit))
 	end
 	if e.FrameListShown() == 'friend' then
-		inviteType = GetDisplayedInviteType(e.FriendGUID(e.Friend(AstralMenuFrame.unit)))
+		--inviteType = GetDisplayedInviteType(e.FriendGUID(e.Friend(AstralMenuFrame.unit)))
 		if AstralFriends[AstralMenuFrame.unit][2] then
 			local name = select(4, BNGetGameAccountInfo(e.GetFriendGaID(AstralFriends[AstralMenuFrame.unit][2])))
 			if not name then

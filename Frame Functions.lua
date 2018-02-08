@@ -14,6 +14,7 @@ insets = {left = 0, right = 0, top = 0, bottom = 0}
 
 e.FONT = {}
 e.FONT.HEADER = "Interface\\AddOns\\AstralKeys\\Media\\big_noodle_titling.TTF"
+--e.FONT.HEADER = "Interface\\AddOns\\AstralKeys\\Media\\Lato-Bold.TTF"
 e.FONT.CONTENT = "Interface\\AddOns\\AstralKeys\\Media\\Lato-Regular.TTF"
 e.FONT.SIZE = 13
 e.FONT.OBJECT = {}
@@ -200,8 +201,9 @@ function e.CreateCheckBox(parent, label, width)
 	checkbox:SetCheckedTexture(checkbox.t)
 
 	checkbox:SetDisabledFontObject(FONT_OBJECT_DISABLED)
-
-	checkbox:GetFontString():SetPoint('LEFT', tex, 'RIGHT', 5, 0)
+	if label then
+		checkbox:GetFontString():SetPoint('LEFT', tex, 'RIGHT', 5, 0)
+	end
 
 	return checkbox
 end

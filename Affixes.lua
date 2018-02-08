@@ -30,14 +30,14 @@ AFFIXES[2][1] = 6
 AFFIXES[2][2] = 4
 AFFIXES[2][3] = 9
 
-AFFIXES[3] = {} -- Necrotic, Skittish, Fortified
+AFFIXES[3] = {} -- Bolstering, Skittish, Fortified
 AFFIXES[3][1] = 7
 AFFIXES[3][2] = 2
 AFFIXES[3][3] = 10
 
-AFFIXES[4] = {} -- Teeming, Necrotic, Tyrannical
+AFFIXES[4] = {} -- Teeming, Vocanic, Tyrannical
 AFFIXES[4][1] = 5
-AFFIXES[4][2] = 4
+AFFIXES[4][2] = 3
 AFFIXES[4][3] = 9
 
 AFFIXES[5] = {} -- Sanguine, Grievous, Fortified
