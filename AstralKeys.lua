@@ -159,7 +159,7 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 
 	for i = 1, #AstralFriends do
 		e.SetFriendID(AstralFriends[i][1], i)
-		e.AddUnitToTable(AstralFriends[i][1], AstralFriends[i][3], AstralFriends[i][8], 'friend',  AstralFriends[i][4], AstralFriends[i][5], nil, AstralFriends[i][2])
+		e.AddUnitToTable(AstralFriends[i][1], AstralFriends[i][3], AstralFriends[i][8], 'friend',  AstralFriends[i][4], AstralFriends[i][5], AstralFriends[i][9], AstralFriends[i][2])
 	end
 
 	RegisterAddonMessagePrefix('AstralKeys')

@@ -303,7 +303,7 @@ UNIT_FUNCTION['friend'] = function(self, unit, class, mapID, keyLevel, cache, fa
 	self.levelString:SetText(keyLevel)
 	self.dungeonString:SetText(e.GetMapName(mapID))
 	self.weeklyTexture:SetShown(cache == 1)
-	self.unitID = e.FriendID(unit)	
+	self.unitID = e.FriendID(unit)
 	if btag then
 		if tonumber(faction) == e.FACTION then
 			self.nameString:SetText( string.format('%s (%s)', WrapTextInColorCode(btag:sub(1, btag:find('#') - 1), 'ff82c5ff'), WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), select(4, GetClassColor(class)))))

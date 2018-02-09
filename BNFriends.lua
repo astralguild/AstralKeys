@@ -1,7 +1,7 @@
 local ADDON, e = ...
 
-local SYNC_VERSION = 'sync2'
-local UPDATE_VERSION = 'update2'
+local SYNC_VERSION = 'sync3'
+local UPDATE_VERSION = 'update3'
 
 local strformat, find = string.format, string.find
 local tremove = table.remove
@@ -162,11 +162,12 @@ local function RecieveKey(msg, sender)
 	end
 
 	local timeStamp = e.WeekTime()
-	local unit, class, dungeonID, keyLevel, _, week, faction = strsplit(':', msg)
+	local unit, class, dungeonID, keyLevel, weekly, week, faction = strsplit(':', msg)
 
 	dungeonID = tonumber(dungeonID)
 	keyLevel = tonumber(keyLevel)
 	week = tonumber(week)
+	weekly = tonumber(weekly)
 
 	local id = e.FriendID(unit)
 
@@ -175,8 +176,9 @@ local function RecieveKey(msg, sender)
 		AstralFriends[id][5] = keyLevel
 		AstralFriends[id][6] = week
 		AstralFriends[id][7] = timeStamp
+		AstralFriends[id][9] = weekly
 	else
-		AstralFriends[#AstralFriends + 1] = {unit, btag, class, dungeonID, keyLevel, week, timeStamp, faction}
+		AstralFriends[#AstralFriends + 1] = {unit, btag, class, dungeonID, keyLevel, week, timeStamp, faction, weekly}
 		e.SetFriendID(unit, #AstralFriends)
 		ShowFriends()
 	end
@@ -192,6 +194,12 @@ AstralComs:RegisterPrefix('WHISPER', UPDATE_VERSION, RecieveKey)
 
 local function SyncFriendUpdate(entry, sender)
 	if not AstralKeysSettings.options.friendSync then return end
+
+	if AstralKeyFrame:IsShown() then
+		AstralKeyFrame:SetScript('OnUpdate', AstralKeyFrame.OnUpdate)
+		AstralKeyFrame.updateDelay = 0
+	end
+
 	local btag
 	if type(sender) == 'number' then	
 		local bnetID = select(17, BNGetGameAccountInfo(sender))
@@ -208,7 +216,7 @@ local function SyncFriendUpdate(entry, sender)
 	local _pos = 0
 	while find(entry, '_', _pos) do
 
-		class, dungeonID, keyLevel, week, timeStamp, faction = entry:match(':(%a+):(%d+):(%d+):(%d+):(%d+):(%d+)', entry:find(':', _pos))
+		class, dungeonID, keyLevel, week, timeStamp, faction, weekly = entry:match(':(%a+):(%d+):(%d+):(%d+):(%d+):(%d+):(%d+)', entry:find(':', _pos))
 		unit = entry:sub(_pos, entry:find(':', _pos) - 1)
 
 		_pos = find(entry, '_', _pos) + 1
@@ -217,6 +225,7 @@ local function SyncFriendUpdate(entry, sender)
 		keyLevel = tonumber(keyLevel)
 		week = tonumber(week)
 		timeStamp = tonumber(timeStamp)
+		weekly = tonumber(weekly)
 
 		if week >= e.Week then 
 
@@ -236,12 +245,21 @@ local function SyncFriendUpdate(entry, sender)
 			e.AddUnitToTable(unit, class, faction, 'friend', dungeonID, keyLevel, nil, btag)
 		end
 	end
-	if e.FrameListShown() == 'friends' then 
-		e.UpdateFrames() 
-	end
 end
 AstralComs:RegisterPrefix('BNET', SYNC_VERSION, SyncFriendUpdate)
 AstralComs:RegisterPrefix('WHISPER', SYNC_VERSION, SyncFriendUpdate)
+
+local function UpdateWeekly(msg)
+	local unit, weekly = strsplit(':', msg)
+
+	local id = e.FriendID(unit)
+	if id then
+		AstralFriends[id][9] = weekly
+		AstralFriends[id][7] = e.WeekTime()
+	end
+end
+AstralComs:RegisterPrefix('BNET', 'friendWeekly', UpdateWeekly)
+AstralComs:RegisterPrefix('WHISPER', 'friendWeekly', UpdateWeekly)
 
 local messageStack = {}
 local messageQueue = {}
@@ -257,7 +275,7 @@ local function PushKeysToFriends(target)
 		if id then -- We have a key for this character, let's get the message and queue it up
 			local map, level = e.UnitMapID(id), e.UnitKeyLevel(id)
 			if level >= minKeyLevel then
-				messageStack[#messageStack + 1] = strformat('%s_', strformat('%s:%s:%d:%d:%d:%d:%s', AstralCharacters[i].unit, e.UnitClass(id), map, level, e.Week, AstralKeys[id][7], AstralCharacters[i].faction)) -- name-server:class:mapID:keyLevel:week#:weekTime:faction
+				messageStack[#messageStack + 1] = strformat('%s_', strformat('%s:%s:%d:%d:%d:%d:%s:%d', AstralCharacters[i].unit, e.UnitClass(id), map, level, e.Week, AstralKeys[id][7], AstralCharacters[i].faction, AstralCharacters[i].level >= e.CACHE_LEVEL and 1 or 0)) -- name-server:class:mapID:keyLevel:week#:weekTime:faction
 			end
 		end
 	end
@@ -452,10 +470,31 @@ local function FriendSort(A, v)
 				local s = a[7] or '|'
 				local t = b[7] or '|'
 				if AstralKeysSettings.frameOptions.orientation == 0 then
+					if s > t then
+						return true
+					elseif
+						s < t then
+						return false
+					else
+						return a[1] > b[1]
+					end
+				else
+					if s < t then
+						return true
+					elseif
+						s > t then
+						return false
+					else
+						return a[1] < b[1]
+					end
+				end
+				--[[
 					return s > t
 				else
 					return s < t
-				end
+				else
+					return a[1] > b[1]
+				end]]
 			end)
 		else
 			table.sort(A, function(a, b) 
