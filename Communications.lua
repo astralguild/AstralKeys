@@ -229,6 +229,8 @@ local function SyncReceive(entry, sender)
 	local _pos = 0
 	while find(entry, '_', _pos) do
 		
+		--unit, class, dungeonID, keyLevel, weekly, week, timeStamp = string.split(':', entry:sub(_pos, entry:find('_', _pos) - 1))
+
 		class, dungeonID, keyLevel, weekly, week, timeStamp = entry:match(':(%a+):(%d+):(%d+):(%d+):(%d+):(%d)', entry:find(':', _pos))
 		unit = entry:sub(_pos, entry:find(':', _pos) - 1)
 		
@@ -245,7 +247,7 @@ local function SyncReceive(entry, sender)
 			local id = e.UnitID(unit)
 			if id then
 				if AstralKeys[id][7] < timeStamp then
-					if weekly == 1 then AstralKeys[id][5] = weekly end
+					if weekly == 1 then AstralKeys[id][5] = 1 end
 
 					AstralKeys[id][3] = dungeonID
 					AstralKeys[id][4] = keyLevel

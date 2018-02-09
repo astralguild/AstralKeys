@@ -43,17 +43,41 @@ SORT_MEDTHOD['guild'] = function(A, v)
 	if v == 3 then
 		table.sort(A, function(a, b) 
 			if AstralKeysSettings.frameOptions.orientation == 0 then
-				return e.GetMapName(a[v]) > e.GetMapName(b[v])
+				if e.GetMapName(a[v]) > e.GetMapName(b[v]) then
+					return true
+				elseif e.GetMapName(a[v]) < e.GetMapName(b[v]) then
+					return false
+				else
+					return a[1] > b[1]
+				end
 			else
-				return e.GetMapName(b[v]) > e.GetMapName(a[v])
+				if e.GetMapName(a[v]) < e.GetMapName(b[v]) then
+					return true
+				elseif e.GetMapName(a[v]) > e.GetMapName(b[v]) then
+					return false
+				else
+					return a[1] < b[1]
+				end
 			end
 			end)
 	else
 		table.sort(A, function(a, b)
 			if AstralKeysSettings.frameOptions.orientation == 0 then
-				return a[v] > b[v]
+				if a[v] > b[v] then
+					return true
+				elseif a[v] < b[v] then
+					return false
+				else
+					return a[1] > b[1]
+				end
 			else
-				return a[v] < b[v]
+				if a[v] < b[v] then
+					return true
+				elseif a[v] > b[v] then
+					return false
+				else
+					return a[1] < b[1]
+				end
 			end
 		end)
 	end

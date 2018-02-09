@@ -183,7 +183,7 @@ local function RecieveKey(msg, sender)
 		ShowFriends()
 	end
 
-	e.AddUnitToTable(unit, class, faction, 'friend', dungeonID, keyLevel, nil, btag)
+	e.AddUnitToTable(unit, class, faction, 'friend', dungeonID, keyLevel, weekly, btag)
 
 	if e.FrameListShown() == 'friends' then 
 		e.UpdateFrames()
@@ -231,6 +231,9 @@ local function SyncFriendUpdate(entry, sender)
 
 			local id = e.FriendID(unit)
 			if id then
+				if weekly == 1 then
+					AstralFriends[id][9] = 1
+				end
 				if AstralFriends[id][7] < timeStamp then
 					AstralFriends[id][4] = dungeonID
 					AstralFriends[id][5] = keyLevel
@@ -242,7 +245,7 @@ local function SyncFriendUpdate(entry, sender)
 				e.SetFriendID(unit, #AstralFriends)
 				ShowFriends()
 			end
-			e.AddUnitToTable(unit, class, faction, 'friend', dungeonID, keyLevel, nil, btag)
+			e.AddUnitToTable(unit, class, faction, 'friend', dungeonID, keyLevel, weekly, btag)
 		end
 	end
 end
@@ -488,13 +491,6 @@ local function FriendSort(A, v)
 						return a[1] < b[1]
 					end
 				end
-				--[[
-					return s > t
-				else
-					return s < t
-				else
-					return a[1] > b[1]
-				end]]
 			end)
 		else
 			table.sort(A, function(a, b) 
