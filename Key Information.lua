@@ -23,14 +23,14 @@ local function Weekly()
 end
 
 local function InitData()
+	AstralEvents:Unregister('CHALLENGE_MODE_MAPS_UPDATE', 'initData')
 	e.BuildMapTable()
 	e.FindKeyStone(true, false)
-	AstralComs:NewMessage('AstralKeys', 'request', 'GUILD')
+	e.GetBestClear()
 
-	AstralEvents:Unregister('CHALLENGE_MODE_MAPS_UPDATE', 'initData')
+	AstralComs:NewMessage('AstralKeys', 'request', 'GUILD')	
 
 	if UnitLevel('player') ~= 110 then return end
-	e.GetBestClear()
 	AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', Weekly, 'weeklyCheck')
 end
 AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', InitData, 'initData')
@@ -144,6 +144,7 @@ end
 -- Finds best map clear fothe week for logged on character. If character already is in database
 -- updates the information, else creates new entry for character
 function e.GetBestClear()
+	if UnitLevel('player') ~= 110 then return end
 	local bestLevel = 0
 	local bestMap = 0
 	for _, v in pairs(C_ChallengeMode.GetMapTable()) do

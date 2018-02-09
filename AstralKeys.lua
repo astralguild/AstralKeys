@@ -70,6 +70,7 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 		e.Week = math.floor((GetServerTime() - initializeTime[2]) / 604800)
 	end
 
+	Console:AddLine('Week', e.Week)
 	e.SetPlayerNameRealm()
 	e.SetPlayerClass()
 

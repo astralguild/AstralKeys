@@ -192,7 +192,7 @@ function UnitFrame:NewFrame(parent)
 	self.unitID = 0
 
 	self:EnableMouse(true)
-	self:SetSize(380, 15)
+	self:SetSize(400, 15)
 
 	self.levelString = self:CreateFontString('ARTWORK')
 	self.levelString:SetFont(FONT_CONTENT, FONT_SIZE)
@@ -209,7 +209,7 @@ function UnitFrame:NewFrame(parent)
 	self.nameString = self:CreateFontString('ARTWORK')
 	self.nameString:SetFont(FONT_CONTENT, FONT_SIZE)
 	self.nameString:SetJustifyH('LEFT')
-	self.nameString:SetSize(135, 15)
+	self.nameString:SetSize(165, 15)
 	self.nameString:SetPoint('LEFT', self.dungeonString, 'RIGHT')
 
 	self.weeklyTexture = self:CreateTexture('BACKGROUND')
@@ -241,6 +241,15 @@ function UnitFrame:NewFrame(parent)
 		end
 	end)
 
+	self.unit:SetScript('OnEnter', function(self)
+		AstralContentFrame.slider:SetAlpha(1)
+		end)
+
+	self.unit:SetScript('OnLeave', function(self)
+		astralMouseOver:Hide()
+		AstralContentFrame.slider:SetAlpha(.2)
+	end)
+
 	self:SetScript('OnEnter', function(self)
 		if UnitLevel('player') == 110 then
 			if self.mapID ~= 0 then
@@ -249,7 +258,7 @@ function UnitFrame:NewFrame(parent)
 				astralMouseOver:SetText(e.MapApText(self.mapID, self.keyLevel))
 				astralMouseOver:AdjustSize()
 				astralMouseOver:Show()
-				--AstralContentFrame.slider:SetAlpha(1)
+				AstralContentFrame.slider:SetAlpha(1)
 			end
 		end
 	end)
@@ -464,7 +473,7 @@ AstralMenuFrame:AddSelection('Cancel', function() return AstralMenuFrame:Hide() 
 
 local AstralKeyFrame = CreateFrame('FRAME', 'AstralKeyFrame', UIParent)
 AstralKeyFrame:SetFrameStrata('DIALOG')
-AstralKeyFrame:SetWidth(655)
+AstralKeyFrame:SetWidth(675)
 AstralKeyFrame:SetHeight(505)
 AstralKeyFrame:SetPoint('CENTER', UIParent, 'CENTER')
 AstralKeyFrame:EnableMouse(true)
@@ -603,9 +612,9 @@ toggleButton:SetScript('OnClick', function(self)
 	if AstralKeysSettings.frameOptions.viewMode == 0 then
 		AstralKeysSettings.frameOptions.viewMode = 1
 		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\menu.tga')
-		AstralKeyFrame:SetWidth(405)
+		AstralKeyFrame:SetWidth(425)
 		AstralKeyFrame:ClearAllPoints()
-		AstralKeyFrame:SetPoint('BOTTOMLEFT', UIParent, 'BOTTOMLEFT', left + width - 405, bottom)
+		AstralKeyFrame:SetPoint('BOTTOMLEFT', UIParent, 'BOTTOMLEFT', left + width - 425, bottom)
 		affixFrame:Hide()
 		astralCharacterFrame:Hide()
 		AstralKeyFrame.centreDivider:Hide()
@@ -614,9 +623,9 @@ toggleButton:SetScript('OnClick', function(self)
 	else
 		AstralKeysSettings.frameOptions.viewMode = 0
 		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize.tga')
-		AstralKeyFrame:SetWidth(655)
+		AstralKeyFrame:SetWidth(675)
 		AstralKeyFrame:ClearAllPoints()
-		AstralKeyFrame:SetPoint('BOTTOMLEFT', UIParent, 'BOTTOMLEFT', left + width - 655, bottom)
+		AstralKeyFrame:SetPoint('BOTTOMLEFT', UIParent, 'BOTTOMLEFT', left + width - 675, bottom)
 		affixFrame:Show()
 		astralCharacterFrame:Show()
 		AstralKeyFrame.centreDivider:Show()
@@ -888,7 +897,7 @@ characterContent:SetScript('OnLeave', function()
 ----------------------------------------------------------------
 
 local contentFrame = CreateFrame('FRAME', 'AstralContentFrame', AstralKeyFrame)
-contentFrame:SetSize(385, 390)
+contentFrame:SetSize(405, 390)
 contentFrame:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 255, -95)
 contentFrame:EnableMouseWheel(true)
 
@@ -965,7 +974,7 @@ mapButton:SetScript('OnClick', function()
 
 	end)
 
-local nameButton = CreateButton(contentFrame, 'nameButton', 130, 20, 'Player', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT)
+local nameButton = CreateButton(contentFrame, 'nameButton', 165, 20, 'Player', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT)
 nameButton:SetPoint('LEFT', mapButton, 'RIGHT')
 nameButton:SetScript('OnClick', function()
 	if AstralMenuFrame:IsShown() then
@@ -1130,7 +1139,7 @@ local function InitializeFrame()
 	end
 
 	if AstralKeysSettings.frameOptions.viewMode == 1 then
-		AstralKeyFrame:SetWidth(405)
+		AstralKeyFrame:SetWidth(425)
 		affixFrame:Hide()
 		astralCharacterFrame:Hide()
 		AstralKeyFrame.centreDivider:Hide()
@@ -1244,9 +1253,9 @@ function e.UpdateFrames()
 	e.SortTable(sortedTable[e.FrameListShown()], AstralKeysSettings.frameOptions.sortMethod)
 
 	if sortedTable.numShown + offset > sortedTable.numShown then
-		offset = sortedTable.numShown - 25
+		offset = math.max(offset - sortedTable.numShown, offset)
 	end
-
+	
 	if sortedTable.numShown > 25 then
 		AstralContentFrame.slider:Show()
 	else
