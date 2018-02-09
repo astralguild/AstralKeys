@@ -1252,9 +1252,10 @@ function e.UpdateFrames()
 	e.UpdateTable(sortedTable)
 	e.SortTable(sortedTable[e.FrameListShown()], AstralKeysSettings.frameOptions.sortMethod)
 
-	if sortedTable.numShown + offset > sortedTable.numShown then
-		offset = math.max(offset - sortedTable.numShown, offset)
+	if 25 + offset > sortedTable.numShown then
+		offset = sortedTable.numShown - 26
 	end
+	offset = math.max(offset, 0)
 	
 	if sortedTable.numShown > 25 then
 		AstralContentFrame.slider:Show()
