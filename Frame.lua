@@ -473,7 +473,7 @@ AstralMenuFrame:AddSelection('Cancel', function() return AstralMenuFrame:Hide() 
 
 local AstralKeyFrame = CreateFrame('FRAME', 'AstralKeyFrame', UIParent)
 AstralKeyFrame:SetFrameStrata('DIALOG')
-AstralKeyFrame:SetWidth(675)
+AstralKeyFrame:SetWidth(685)
 AstralKeyFrame:SetHeight(505)
 AstralKeyFrame:SetPoint('CENTER', UIParent, 'CENTER')
 AstralKeyFrame:EnableMouse(true)
@@ -897,7 +897,7 @@ characterContent:SetScript('OnLeave', function()
 ----------------------------------------------------------------
 
 local contentFrame = CreateFrame('FRAME', 'AstralContentFrame', AstralKeyFrame)
-contentFrame:SetSize(405, 390)
+contentFrame:SetSize(410, 390)
 contentFrame:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 255, -95)
 contentFrame:EnableMouseWheel(true)
 
@@ -1034,8 +1034,6 @@ guildButton:SetScript('OnClick', function()
 		guildButton:SetText('Guild list')
 		e.SetFrameListShown('guild')
 		e.UpdateFrames()
-		completeButton:Show()
-		nameButton:SetW(130)
 	end
 	end)
 
@@ -1053,9 +1051,6 @@ friendButton:SetScript('OnClick', function()
 		friendButton:SetNormalTexture(friendButton:GetHighlightTexture())		
 		friendButton:SetText('Friend list')
 		e.UpdateFrames()
-
-		completeButton:Hide()
-		nameButton:SetW(180)
 	end
 	end)
 
@@ -1074,8 +1069,6 @@ function AstralKeyFrame:ToggleLists()
 			guildButton:SetText('Guild list')
 			e.SetFrameListShown('guild')
 			e.UpdateFrames()
-			completeButton:Show()
-			nameButton:SetW(130)
 		end
 	end
 end
@@ -1117,8 +1110,6 @@ local function InitializeFrame()
 		guildButton:SetNormalTexture(nil)
 		friendButton:SetNormalTexture(friendButton:GetHighlightTexture())
 		friendButton:SetText('Friend list')
-		completeButton:Hide()
-		nameButton:SetW(180)
 	end
 
 	if not AstralKeysSettings.options.friendSync then
@@ -1189,8 +1180,7 @@ local function InitializeFrame()
 			if (#characterTable - characterOffset) > 8 then
 				characterOffset = characterOffset - delta
 				e.UpdateCharacterFrames()
-			end
-			
+			end			
 		else
 			if characterOffset > 0 then -- Scroll up
 				characterOffset = characterOffset - delta
