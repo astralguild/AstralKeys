@@ -473,7 +473,7 @@ AstralMenuFrame:AddSelection('Cancel', function() return AstralMenuFrame:Hide() 
 
 local AstralKeyFrame = CreateFrame('FRAME', 'AstralKeyFrame', UIParent)
 AstralKeyFrame:SetFrameStrata('DIALOG')
-AstralKeyFrame:SetWidth(685)
+AstralKeyFrame:SetWidth(675)
 AstralKeyFrame:SetHeight(505)
 AstralKeyFrame:SetPoint('CENTER', UIParent, 'CENTER')
 AstralKeyFrame:EnableMouse(true)
@@ -1176,21 +1176,20 @@ local function InitializeFrame()
 	characterContent:SetScript('OnMouseWheel', function(self, delta)
 		if #characterTable < 9 then return end -- There aren't more characters than frames, no need to scroll
 
-		if delta < 0 then -- Scroll down
-			if (#characterTable - characterOffset) > 8 then
-				characterOffset = characterOffset - delta
-				e.UpdateCharacterFrames()
-			end			
-		else
-			if characterOffset > 0 then -- Scroll up
-				characterOffset = characterOffset - delta
-				e.UpdateCharacterFrames()
-			end
+		local numSlots = 9
+
+		if e.GetCharacterID(e.Player()) then
+			numSlots = 8
 		end
 
-		characterContent.slider:ClearAllPoints()
-		characterContent.slider:SetPoint('TOPLEFT', characterContent, 'TOPRIGHT', 0, characterContent:GetHeight() * -characterOffset/(#characterTable - #characters))
+		characterOffset = characterOffset - delta
+		characterOffset = math.max(0, characterOffset)
+		characterOffset = math.min(characterOffset, #characterTable - numSlots)
 
+		e.UpdateCharacterFrames()
+
+		characterContent.slider:ClearAllPoints()
+		characterContent.slider:SetPoint('TOPLEFT', characterContent, 'TOPRIGHT', 0, characterContent:GetHeight() * -characterOffset/(#characterTable - numSlots))
 		end)
 
 	e.UpdateFrames()

@@ -57,6 +57,11 @@ function e.GetCharacterFaction(id)
 	return AstralCharacters[id].faction
 end
 
+-- Clears character IDs
+function e.WipeCharacterList()
+	wipe(characterList)
+end
+
 -- Sets player name-realm
 function e.SetPlayerNameRealm()
 	playerNameRealm = UnitName('player') .. '-' .. GetRealmName():gsub("%s+", "")

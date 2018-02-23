@@ -277,8 +277,9 @@ local function PushKeysToFriends(target)
 		local id = e.UnitID(AstralCharacters[i].unit)
 		if id then -- We have a key for this character, let's get the message and queue it up
 			local map, level = e.UnitMapID(id), e.UnitKeyLevel(id)
+			local weekly = AstralCharacters[i].level >= e.CACHE_LEVEL and 1 or 0
 			if level >= minKeyLevel then
-				messageStack[#messageStack + 1] = strformat('%s_', strformat('%s:%s:%d:%d:%d:%d:%s:%d', AstralCharacters[i].unit, e.UnitClass(id), map, level, e.Week, AstralKeys[id][7], AstralCharacters[i].faction, AstralCharacters[i].level >= e.CACHE_LEVEL and 1 or 0)) -- name-server:class:mapID:keyLevel:week#:weekTime:faction
+				messageStack[#messageStack + 1] = strformat('%s_', strformat('%s:%s:%d:%d:%d:%d:%d:%d', AstralCharacters[i].unit, e.UnitClass(id), map, level, e.Week, AstralKeys[id][7], AstralCharacters[i].faction, weekly)) -- name-server:class:mapID:keyLevel:week#:weekTime:faction:weekly
 			end
 		end
 	end

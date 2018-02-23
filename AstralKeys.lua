@@ -5,8 +5,9 @@ if not AstralCharacters then AstralCharacters = {} end
 if not AstralFriends then AstralFriends = {} end
 
 local initializeTime = {} 
-initializeTime[1]= 1500390000 -- US Tuesday at reset
-initializeTime[2]= 1500447600 -- EU Wednesday at reset
+initializeTime[1] = 1500390000 -- US Tuesday at reset
+initializeTime[2] = 1500447600 -- EU Wednesday at reset
+initializeTime[4] = 0
 
 local SI = {}
 SI[0] = ''
@@ -100,8 +101,11 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 				end
 
 				if time(date('*t', GetServerTime())) > AstralKeysSettings.initTime then
+					e.WipeCharacterList()
+					e.WipeUnitList()
 					AstralCharacters = {}
 					AstralKeys = {}
+					wipe(AstralFriends)
 					AstralAffixes = {}
 					AstralAffixes[1] = 0
 					AstralAffixes[2] = 0
@@ -130,6 +134,8 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 				end
 
 				if time(date('*t', GetServerTime())) > AstralKeysSettings.initTime then
+					e.WipeCharacterList()
+					e.WipeUnitList()
 					AstralCharacters = {}
 					AstralKeys = {}
 					wipe(AstralFriends)
