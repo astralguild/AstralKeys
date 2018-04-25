@@ -89,15 +89,14 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 
 	local msg = ''
 
-	if mapID then -- Won't have a mapID without having a
+	if mapID then 
 		msg = string.format('%s:%s:%d:%d:%d:%d:%s', e.Player(), e.PlayerClass(), mapID, keyLevel, CompletedWeekly(), e.Week, e.FACTION)
 	end
 
-	if not mapID and not AstralEvents:IsRegistered('CHAT_MSG_LOOT', 'loot_msg_parse') then -- No key found or event registered, let's look for those keys
+	if not mapID and not AstralEvents:IsRegistered('CHAT_MSG_LOOT', 'loot_msg_parse') then
 		AstralEvents:Register('CHAT_MSG_LOOT', ParseLootMsgForKey, 'loot_msg_parse')
 	end
 
-	-- Get the current key information the db to check for new key announcement
 	local oldMap, oldLevel = e.UnitMapID(e.UnitID(e.Player())), e.UnitKeyLevel(e.UnitID(e.Player()))
 
 	-- Key found, unregister function, no longer needed

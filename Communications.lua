@@ -26,7 +26,7 @@ local ANNOUNCE_MESSAGE = 'Astral Keys: New key %s + %d'
 local send_variance = ((-1)^math.random(1,2)) * math.random(1, 100)/ 10^3 -- random number to space out messages being sent between clients
 local SEND_INTERVAL = {}
 SEND_INTERVAL[1] = 0.2 + send_variance -- Normal operations
-SEND_INTERVAL[2] = 4 + send_variance -- Used when in a raiding environment
+SEND_INTERVAL[2] = 1 + send_variance -- Used when in a raiding environment
 SEND_INTERVAL[3] = 2 -- Used for version checks
 
 -- Current setting to be used
@@ -186,6 +186,8 @@ function AstralComs:Init()
 end
 AstralComs:Init()
 
+-- IN GUILD.LUA
+
 local function UpdateUnitKey(msg)
 	local timeStamp = e.WeekTime() -- part of the week we got this key update, used to determine if a key got de-leveled or not
 
@@ -297,8 +299,9 @@ local function PushKeyList(msg, sender)
 		end
 	end
 end
-
 AstralComs:RegisterPrefix('GUILD', 'request', PushKeyList)
+
+-- END OF GUILD.LUA
 
 local function VersionRequest()
 	local version = GetAddOnMetadata('AstralKeys', 'version')
@@ -377,20 +380,6 @@ CheckInstanceType = function()
 	end
 end
 AstralEvents:Register('PLAYER_ENTERING_WORLD', CheckInstanceType, 'entering_world')
-
-local function ResetAK()
-	AstralKeysSettings['reset'] = false
-	e.WipeUnitList()
-	e.WipeFrames()
-	e.FindKeyStone(true)
-	e.UpdateAffixes()
-	C_Timer.After(.75, function()
-		e.UpdateCharacterFrames()
-		e.UpdateFrames()
-	end)
-end
-AstralComs:RegisterPrefix('GUILD', 'resetAK', ResetAK)
---SendAddonMessage('AstralKeys', 'resetAK', 'GUILD')
 
 function e.AnnounceCharacterKeys(channel)
 	for i = 1, #AstralCharacters do

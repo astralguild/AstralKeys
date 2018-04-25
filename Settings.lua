@@ -56,6 +56,7 @@ if not AstralKeysSettings then
 		['options'] = {
 			['announceKey'] = true,
 			['showOffline'] = true,
+			['showTooltip'] = true,
 			['whisperClick'] = false,
 			['showMiniMapButton'] = true,
 			['friendSync'] = true,
@@ -77,6 +78,13 @@ if not AstralKeysSettings then
 		}
 end
 
+local function MixInSetting(section, name, value)
+	if AstralKeysSettings[section][name] == nil then
+		AstralKeysSettings[section][name] = value
+	end
+end
+
+
 --return AstralKeysSettings.options.friends.GetMinFriendSyncLevel
 local frame = CreateFrame('FRAME')
 frame:RegisterEvent('ADDON_LOADED')
@@ -84,6 +92,9 @@ frame:SetScript('OnEvent', function(self, event, ...)
 	local addon = ...
 	if addon == 'AstralKeys' then
 		_G['AstralEngine'] = e
+
+		MixInSetting('options', 'showTooltip', true)
+
 		if not AstralKeysSettings['resetVersion'] or AstralKeysSettings['resetVersion'] ~= RESET_VERSION then
 			wipe(AstralKeys)
 			wipe(AstralCharacters)
@@ -101,6 +112,7 @@ frame:SetScript('OnEvent', function(self, event, ...)
 					['announceKey'] = true,
 					['showOffline'] = true,
 					['whisperClick'] = false,
+					['showTooltip'] = true,
 					['showMiniMapButton'] = true,
 					['friendSync'] = true,
 					['minFriendSync'] = 2,

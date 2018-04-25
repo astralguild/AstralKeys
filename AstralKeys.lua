@@ -113,8 +113,10 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 					AstralKeysSettings.initTime = e.DataResetTime()
 					e.Week = math.floor((GetServerTime() - initializeTime[1]) / 604800)
 					e.FindKeyStone(true, false)
+					e.GetBestClear()
 					self:SetScript('OnUpdate', nil)
 					self = nil
+					return nil
 				end
 				self.elapsed = 0
 			end
@@ -145,9 +147,11 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 					AstralAffixes[3] = 0
 					AstralKeysSettings.initTime = e.DataResetTime()
 					e.FindKeyStone(true, false)
+					e.GetBestClear()
 					e.Week = math.floor((GetServerTime() - initializeTime[2]) / 604800)
 					self:SetScript('OnUpdate', nil)
 					self = nil
+					return nil
 				end
 				self.elapsed = 0
 			end

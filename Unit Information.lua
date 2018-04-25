@@ -1,17 +1,17 @@
 local _, e = ...
 
 local UNIT_LIST = {}
-local guildList = {}
+local GUILD_LIST = {}
 
 -- Puts all guild member's into a table for checking if unit in same guild, stores value as rankIndex for filtering by rank
 local function UpdateGuildList()
-	wipe(guildList)
+	wipe(GUILD_LIST)
 
 	for i = 1, GetNumGuildMembers() do
 		local name, _, rankIndex, _, _, _, _, _, connected = GetGuildRosterInfo(i)
 		local guid = select(17, GetGuildRosterInfo(i))
 		if not name then return end
-		guildList[name] = {rank = rankIndex + 1, isConnected = connected, guid = guid}
+		GUILD_LIST[name] = {rank = rankIndex + 1, isConnected = connected, guid = guid}
 	end
 end
 AstralEvents:Register('GUILD_ROSTER_UPDATE', UpdateGuildList, 'guildUpdate')
@@ -19,27 +19,27 @@ AstralEvents:Register('GUILD_ROSTER_UPDATE', UpdateGuildList, 'guildUpdate')
 -- Checks to see if a unit is in the player's guild
 -- @param unit Unit name and server
 function e.UnitInGuild(unit)
-	return guildList[unit] or false
+	return GUILD_LIST[unit] or false
 end
 
 function e.GuildMemberOnline(unit)
-	if not guildList[unit] then return false
+	if not GUILD_LIST[unit] then return false
 	else
-		return guildList[unit].isConnected
+		return GUILD_LIST[unit].isConnected
 	end
 end
 
 function e.GuildMemberRank(unit)
-	if not guildList[unit] then return false
+	if not GUILD_LIST[unit] then return false
 	else
-		return guildList[unit].rank
+		return GUILD_LIST[unit].rank
 	end
 end
 
 function e.GuildMemberGuid(unit)
-	if not guildList[unit] then return nil
+	if not GUILD_LIST[unit] then return nil
 	else
-		return guildList[unit].guid
+		return GUILD_LIST[unit].guid
 	end
 end
 

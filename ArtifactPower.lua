@@ -79,7 +79,7 @@ function e.BuildMapTable()
 	for map in pairs(DUNGEON_TABLE) do
 		local name, mapID, runTime = C_ChallengeMode.GetMapInfo(map)
 		local a, b, c = runTime, runTime * .8, runTime * .6
-		DUNGEON_TABLE[map]['name'] = name
+		--DUNGEON_TABLE[map]['name'] = name
 		DUNGEON_TABLE[map]['chestTimes'] = {}
 		DUNGEON_TABLE[map].chestTimes[1] = a
 		DUNGEON_TABLE[map].chestTimes[2] = b

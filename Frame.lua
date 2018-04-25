@@ -362,19 +362,31 @@ local function Whisper_OnShow(self)
 		isConnected = e.GuildMemberOnline(e.Unit(AstralMenuFrame.unit))
 	end
 	if e.FrameListShown() == 'friend' then
+		isConnected = e.IsFriendOnline(e.Friend(AstralMenuFrame.unit))
+		--[[
+
 		--inviteType = GetDisplayedInviteType(e.FriendGUID(e.Friend(AstralMenuFrame.unit)))
 		if AstralFriends[AstralMenuFrame.unit][2] then
-			local name = select(4, BNGetGameAccountInfo(e.GetFriendGaID(AstralFriends[AstralMenuFrame.unit][2])))
-			if not name then
-				isConnected = false
+			local gaID = e.GetFriendGaID(AstralFriends[AstralMenuFrame.unit][2])
+			if gaID then
+				local _, _, client, _, _, faction = BNGetGameAccountInfo(gaID)
+
+				if client == BNET_CLIENT_WOW then					
+					local name = select(4, BNGetGameAccountInfo(gaID))
+					if not name then
+						isConnected = false
+					end
+				else
+					isConnected = false
+				end
 			end
 		else
 			isConnected = e.IsFriendOnline(e.Friend(AstralMenuFrame.unit))
-		end
+		end]]
 	end
 	self.isConnected = isConnected
 
-	if not isConnected then
+	if not self.isConnected then
 		self:SetText(WrapTextInColorCode(self:GetText(), 'ff9d9d9d'))
 	else
 		self:SetText('Whisper')
@@ -404,15 +416,22 @@ local function Invite_OnShow(self)
 		isConnected = e.GuildMemberOnline(e.Unit(AstralMenuFrame.unit))
 	end
 	if e.FrameListShown() == 'friend' then
+		isConnected = e.IsFriendOnline(e.Friend(AstralMenuFrame.unit))
 		inviteType = GetDisplayedInviteType(e.FriendGUID(e.Friend(AstralMenuFrame.unit)))
+		--[[		
 		if AstralFriends[AstralMenuFrame.unit][2] then
-			local name = select(4, BNGetGameAccountInfo(e.GetFriendGaID(AstralFriends[AstralMenuFrame.unit][2])))
-			if not name then
+			local gaID = e.GetFriendGaID(AstralFriends[AstralMenuFrame.unit][2])
+			if gaID then
+				local name = select(4, BNGetGameAccountInfo(gaID))
+				if not name then
+					isConnected = false
+				end
+			else
 				isConnected = false
 			end
 		else
 			isConnected = e.IsFriendOnline(e.Friend(AstralMenuFrame.unit))
-		end
+		end]]
 	end
 
 	if inviteType == 'INVITE' then
@@ -937,6 +956,14 @@ contentFrame:SetScript('OnLeave', function()
 	contentFrame.slider:SetAlpha(0.2)
 	end)
 
+--[[ Sort methuds
+	1: Unit Name
+	2: 
+	3: Map Name
+	4: Key Level
+	5: Weekly
+]]
+
 local keyButton = CreateButton(contentFrame, 'keyButton', 45, 20, 'Level', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT) --75
 keyButton:SetPoint('BOTTOMLEFT', contentFrame, 'TOPLEFT')
 keyButton:SetScript('OnClick', function()
@@ -1289,14 +1316,14 @@ function e.AddUnitToTable(unit, class, faction, listType, mapID, level, weekly, 
 		if sortedTable[listType][i][1] == unit then
 			sortedTable[listType][i][3] = mapID
 			sortedTable[listType][i][4] = level
-			sortedTable[listType][i][5] = weekly
+			sortedTable[listType][i][5] = weekly or 0
 			found = true
 			break
 		end
 	end
 
 	if not found then
-		sortedTable[listType][#sortedTable[listType] + 1] = {unit, class, mapID, level, weekly, faction, btag}
+		sortedTable[listType][#sortedTable[listType] + 1] = {unit, class, mapID, level, weekly or 0, faction, btag}
 	end
 end
 

@@ -72,7 +72,7 @@ AFFIXES[10][3] = 9
 
 AFFIXES[11] = {} -- Sanguine, Volcanic, Fortified
 AFFIXES[11][1] = 8
-AFFIXES[11][2] = 3
+AFFIXES[11][2] = 4
 AFFIXES[11][3] = 10
 
 AFFIXES[12] = {} -- Bursting, Skittish, Tyrannical
