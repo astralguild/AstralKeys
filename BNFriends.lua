@@ -633,6 +633,7 @@ local function TooltipHook(self)
 
     local id = e.UnitID(unit)
     if id then
+    	GameTooltip:AddLine(' ')
         GameTooltip:AddLine('Current Keystone')
         GameTooltip:AddDoubleLine(e.GetMapName(e.UnitMapID(id)), e.UnitKeyLevel(id), 1, 1, 1, 1, 1, 1)
         return
@@ -640,6 +641,7 @@ local function TooltipHook(self)
 
     local id = e.FriendID(unit)
     if id then
+    	GameTooltip:AddLine(' ')
         GameTooltip:AddLine('Current Keystone')
         GameTooltip:AddDoubleLine(e.GetMapName(AstralFriends[id][4]), AstralFriends[id][5], 1, 1, 1, 1, 1, 1)
         return
