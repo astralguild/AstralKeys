@@ -526,11 +526,15 @@ do
 
 	local OnEnter, OnHide
 	function OnEnter(self)
+		if not self.id then return end -- Friend Groups adds fake units with no ide for group heeaders
 		if not AstralKeysSettings.options.showTooltip then return end
 
 		local left = FRIENDS_TOOLTIP_MAX_WIDTH - FRIENDS_TOOLTIP_MARGIN_WIDTH - FriendsTooltipAstralKeysInfo1:GetWidth()
 		local stringShown = false
+
 		local bnetIDAccount, accountName, isBattleTag, characterName, bnetIDGameAccount, client, lastOnline, isAFK, isDND, broadcastText, noteText, isFriend, broadcastTime = BNGetFriendInfo(self.id);
+		if not bnetIDAccount then return end -- Double check to make sure index is actually a game account and not a Friend Groups group header.
+		-- Call BNGetFriendInfo twice, first time doesn't seem to actually get the info?
 		bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline, lastOnline, isAFK, isDND, broadcastText, noteText, isFriend, broadcastTime = BNGetFriendInfo(self.id);
 
 		local numGameAccounts = 0 
