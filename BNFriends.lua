@@ -533,9 +533,10 @@ do
 		local stringShown = false
 
 		local bnetIDAccount, accountName, isBattleTag, characterName, bnetIDGameAccount, client, lastOnline, isAFK, isDND, broadcastText, noteText, isFriend, broadcastTime = BNGetFriendInfo(self.id);
-		if not bnetIDAccount then return end -- Double check to make sure index is actually a game account and not a Friend Groups group header.
 		-- Call BNGetFriendInfo twice, first time doesn't seem to actually get the info?
 		bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline, lastOnline, isAFK, isDND, broadcastText, noteText, isFriend, broadcastTime = BNGetFriendInfo(self.id);
+
+		if not bnetIDAccount then return end -- Double check to make sure index is actually a game account and not a Friend Groups group header.
 
 		local numGameAccounts = 0 
 
@@ -606,6 +607,8 @@ do
 			end
 		end
 
+		if not FriendsTooltip.maxWidth then return end
+		
 		FriendsTooltip:SetWidth(min(FRIENDS_TOOLTIP_MAX_WIDTH, FriendsTooltip.maxWidth + FRIENDS_TOOLTIP_MARGIN_WIDTH));
 		FriendsTooltip:SetHeight(FriendsTooltip.height + (stringShown and 0 or FRIENDS_TOOLTIP_MARGIN_WIDTH))
 	end
