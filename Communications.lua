@@ -1,7 +1,7 @@
 local ADDON, e = ...
 
 local find, sub, strformat = string.find, string.sub, string.format
-local SendAddonMessage, BNSendGameData = SendAddonMessage, BNSendGameData
+local BNSendGameData, SendAddonMessage = BNSendGameData, C_ChatInfo and C_ChatInfo.SendAddonMessage or SendAddonMessage
 
 -- Variables for syncing information
 -- Will only accept information from other clients with same version settings
@@ -21,12 +21,12 @@ local ANNOUNCE_MESSAGE = 'Astral Keys: New key %s + %d'
 
 -- Interval times for syncing keys between clients
 -- Two different time settings for in a raid or otherwise
--- Creates a random variance between +- [.200, .500] to help prevent
+-- Creates a random variance between +- [.001, .100] to help prevent
 -- disconnects from too many addon messages
-local send_variance = ((-1)^math.random(1,2)) * math.random(1, 100)/ 10^3 -- random number to space out messages being sent between clients
+local SEND_VARIANCE = ((-1)^math.random(1,2)) * math.random(1, 100)/ 10^3 -- random number to space out messages being sent between clients
 local SEND_INTERVAL = {}
-SEND_INTERVAL[1] = 0.2 + send_variance -- Normal operations
-SEND_INTERVAL[2] = 1 + send_variance -- Used when in a raiding environment
+SEND_INTERVAL[1] = 0.2 + SEND_VARIANCE -- Normal operations
+SEND_INTERVAL[2] = 1 + SEND_VARIANCE -- Used when in a raiding environment
 SEND_INTERVAL[3] = 2 -- Used for version checks
 
 -- Current setting to be used
@@ -36,7 +36,8 @@ local SEND_INTERVAL_SETTING = 1 -- What intervel to use for sending key informat
 AstralComs = CreateFrame('FRAME', 'AstralComs')
 
 function AstralComs:RegisterPrefix(channel, prefix, f)
-	if not channel then channel = 'GUILD' end -- Default to guild as channel if none is specified
+	local channel = channel or 'GUILD' -- Defaults to guild channel
+
 	if self:IsPrefixRegistered(channel, prefix) then return end -- Did we register something to the same channel with the same name?
 
 	if not self.dtbl[channel] then self.dtbl[channel] = {} end
@@ -363,10 +364,16 @@ AstralEvents:Register('ENCOUNTER_START', function()
 	AstralComs:UnregisterPrefix('GUILD', 'request')
 	end, 'encStart')
 
--- Boss is over, let's send informatino once again
-AstralEvents:Register('ENCOUNTER_STOP', function()
-	AstralComs:RegisterPrefix('GUID', 'request', PushKeyList)
-	end, 'encStop')
+if not C_ChatInfo then
+	AstralEvents:Register('ENCOUNTER_STOP', function()
+		AstralComs:RegisterPrefix('GUID', 'request', PushKeyList)
+		end, 'encStop')
+else
+	AstralEvents:Register('ENCOUNTER_END', function()
+		AstralComs:RegisterPrefix('GUID', 'request', PushKeyList)
+		end, 'encStop')
+end
+
 
 -- Checks to see if we zone into a raid instance,
 -- Let's increase the send interval if we are raiding, client sync can wait, dc's can't

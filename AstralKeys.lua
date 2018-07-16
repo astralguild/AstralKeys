@@ -78,10 +78,6 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 		wipe(AstralCharacters)
 		wipe(AstralKeys)
 		wipe(AstralFriends)
-		--AstralAffixes = {}
-		--AstralAffixes[1] = 0
-		--AstralAffixes[2] = 0
-		--AstralAffixes[3] = 0
 		AstralKeysSettings.initTime = e.DataResetTime()
 		e.FindKeyStone(true, false)
 	end
@@ -106,10 +102,6 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 					AstralCharacters = {}
 					AstralKeys = {}
 					wipe(AstralFriends)
-					AstralAffixes = {}
-					AstralAffixes[1] = 0
-					AstralAffixes[2] = 0
-					AstralAffixes[3] = 0
 					AstralKeysSettings.initTime = e.DataResetTime()
 					e.Week = math.floor((GetServerTime() - initializeTime[1]) / 604800)
 					e.FindKeyStone(true, false)
@@ -141,10 +133,6 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 					AstralCharacters = {}
 					AstralKeys = {}
 					wipe(AstralFriends)
-					AstralAffixes = {}
-					AstralAffixes[1] = 0
-					AstralAffixes[2] = 0
-					AstralAffixes[3] = 0
 					AstralKeysSettings.initTime = e.DataResetTime()
 					e.FindKeyStone(true, false)
 					e.GetBestClear()
@@ -172,8 +160,16 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 		e.AddUnitToTable(AstralFriends[i][1], AstralFriends[i][3], AstralFriends[i][8], 'friend',  AstralFriends[i][4], AstralFriends[i][5], AstralFriends[i][9], AstralFriends[i][2])
 	end
 
-	RegisterAddonMessagePrefix('AstralKeys')
-
-	C_ChallengeMode.RequestMapInfo()
+	if C_ChatInfo then
+		C_ChatInfo.RegisterAddonMessagePrefix('AstralKeys')
+	else
+		RegisterAddonMessagePrefix('AstralKeys')
+	end
+	if C_MythicPlus then
+		C_MythicPlus.RequestMapInfo()
+		C_MythicPlus.RequestCurrentAffixes()
+	else
+		C_ChallengeMode.RequestMapInfo()
+	end
 
 end, 'login')

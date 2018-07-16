@@ -1,5 +1,22 @@
 local ADDON, e = ...
 
+local AFFIXES = {}
+
+if C_MythicPlus then
+	local function UpdateMythicPlusAffixes()
+		AFFIXES = C_MythicPlus.GetCurrentAffixes()
+		for i = 1, #AFFIXES do
+			local id = AFFIXES[i]
+			local name, desc = C_ChallengeMode.GetAffixInfo(id)
+			AFFIXES[i] = {}
+			AFFIXES[i]['id'] = id
+			AFFIXES[i]['name'] = name
+			AFFIXES[i]['desc'] = desc
+		end
+	end
+	AstralEvents:Register('MYTHIC_PLUS_CURRENT_AFFIX_UPDATE', UpdateMythicPlusAffixes, 'updateAffixes')
+
+else
 --[[
 1 OVERFLOWING
 2 SKITTISH
@@ -17,8 +34,6 @@ local ADDON, e = ...
 14 QUAKING
 15 RELENTLESS
 16]]
-
-local AFFIXES = {}
 
 AFFIXES[1] = {} -- Teeming, Quaking, Fortified
 AFFIXES[1][1] = 5
@@ -79,33 +94,41 @@ AFFIXES[12] = {} -- Bursting, Skittish, Tyrannical
 AFFIXES[12][1] = 11
 AFFIXES[12][2] = 2
 AFFIXES[12][3] = 9
-
--- Retrieves weekly affixes from table based on current week from start day
--- @return integer First, second, and third affix for the week
-function e.WeeklyAffixes(weekOffSet)
-	local offSet = weekOffSet or 0
-	local week = (e.Week + offSet) % 12
-	if week == 0 then week = 12 end
-	return unpack(AFFIXES[week])
 end
 
 function e.AffixOne(weekOffSet)
-	local offSet = weekOffSet or 0
-	local week = (e.Week + offSet) % 12
-	if week == 0 then week = 12 end
-	return AFFIXES[week][1]
+	if C_MythicPlus then
+		return AFFIXES[2].id
+	else
+		local offSet = weekOffSet or 0
+		local week = (e.Week + offSet) % 12
+		if week == 0 then week = 12 end
+		return AFFIXES[week][1]
+	end
 end
 
 function e.AffixTwo(weekOffSet)
-	local offSet = weekOffSet or 0
-	local week = (e.Week + offSet) % 12
-	if week == 0 then week = 12 end
-	return AFFIXES[week][2]
+	if C_MythicPlus then
+		return AFFIXES[3].id
+	else
+		local offSet = weekOffSet or 0
+		local week = (e.Week + offSet) % 12
+		if week == 0 then week = 12 end
+		return AFFIXES[week][2]
+	end
 end
 
 function e.AffixThree(weekOffSet)
-	local offSet = weekOffSet or 0
-	local week = (e.Week + offSet) % 12
-	if week == 0 then week = 12 end
-	return AFFIXES[week][3]
+	if C_MythicPlus then
+		return AFFIXES[1].id
+	else
+		local offSet = weekOffSet or 0
+		local week = (e.Week + offSet) % 12
+		if week == 0 then week = 12 end
+		return AFFIXES[week][3]
+	end
+end
+
+function e.AffixFour()
+	return AFFIXES[4].id
 end

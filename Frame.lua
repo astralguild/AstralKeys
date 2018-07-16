@@ -12,6 +12,14 @@ local POSITIONS = {
 	[3] = 'RIGHT',
 }
 
+local CHARACTER_CURRENT_KEY = 'Current Key:'
+local CHARACTER_WEEKLY_BEST = 'Weekly Best:'
+local CHARACTER_DUNGEON_NOT_RAN = 'No mythic dungeon ran'
+local CHARACTER_KEY_NOT_FOUND = 'No key found'
+
+local COLOR_YELLOW = 'ffffd200'
+local COLOR_GRAY = 'ff9d9d9d'
+
 local offset, shownOffset = 0, 0
 local characterOffset = 0
 
@@ -86,19 +94,14 @@ local function CreateButton(parent, btnID, width, height, text, fontobject, high
 	return button
 end
 
-local function CreateCharacterFrame(parent, frameName, unitName, bestKey, createDivider)
+local function CreateCharacterFrame(parent, frameName, unitName, bestKey)
 
 	local frame = CreateFrame('FRAME', frameName, parent)
-	frame:SetSize(210, 31)
+	frame:SetSize(210, 50)
 	frame:SetFrameLevel(5)
 
 	frame.unit = unitName
-	frame.bestKey = ''
-	frame.currentKey = ''
 	frame.unitClass = ''
-	frame.bestMap = ''
-	frame.weeklyAP = 0
-	frame.realm = ''
 
 	frame.name = frame:CreateFontString('ARTWORK')
 	frame.name:SetJustifyH('LEFT')
@@ -110,72 +113,54 @@ local function CreateCharacterFrame(parent, frameName, unitName, bestKey, create
 	frame.keystone:SetJustifyH('LEFT')
 	frame.keystone:SetSize(200, 15)
 	frame.keystone:SetFont(FONT_CONTENT, FONT_SIZE)
-	frame.keystone:SetPoint('BOTTOMLEFT', frame, 'BOTTOMLEFT', 10, 0)
+	frame.keystone:SetPoint('TOPLEFT', frame.name, 'BOTTOMLEFT', 10, 0)
 
-	if createDivider then
-
-		frame.divider = frame:CreateTexture('BACKGROUND')
-		frame.divider:SetSize(125, 1)
-		frame.divider:SetPoint('BOTTOMLEFT', frame, 'BOTTOMLEFT', 25)
-		frame.divider:SetColorTexture(.3, .3, .3)
-
-	end
-
-	function frame:UpdateBestDungeon(characterID)
-		if not characterID then return end
-		self.bestKey = e.GetCharacterBestMap(characterID)
-		self.bestMap = e.GetCharacterBestMap(characterID)
-
-		self.name:SetText(WrapTextInColorCode(self.unit, select(4, GetClassColor(self.unitClass))) .. ' - ' .. self.bestKey)
-	end
+	frame.weeklyBest = frame:CreateFontString('ARTWORK')
+	frame.weeklyBest:SetJustifyH('LEFT')
+	frame.weeklyBest:SetSize(200, 15)
+	frame.weeklyBest:SetFont(FONT_CONTENT, FONT_SIZE)
+	frame.weeklyBest:SetPoint('TOPLEFT', frame.keystone, 'BOTTOMLEFT', 0, 0)
+	frame.weeklyBest:SetText('No Mythic Dungeon ran')
 
 	function frame:UpdateInformation(characterID)
-		if characterID then 
-			self.cid = characterID
+		if characterID then
 			self.unit = e.CharacterName(characterID)
-			self.realm = e.CharacterRealm(characterID)
 			self.unitClass = e.GetCharacterClass(characterID)
-			self.bestKey = e.GetCharacterBestLevel(characterID)
-			self.bestMap = e.GetCharacterBestMap(characterID)
-			self.weeklyAP = e.GetWeeklyAP(self.bestKey)
 
-			self.keystone:SetText(e.GetCharacterKey(self.unit .. '-' .. self.realm))
+			local bestKey = e.GetCharacterBestLevel(characterID)
+			local currentMapID = e.GetCharacterMapID(self.unit)
+			local currentKeyLevel = e.GetCharacterKeyLevel(self.unit)
 
-			if self.realm ~= e.PlayerRealm() then
+			if e.CharacterRealm(characterID) ~= e.PlayerRealm() then
 				self.unit = self.unit .. ' (*)'
 			end
+			self.name:SetText(WrapTextInColorCode(self.unit, select(4, GetClassColor(self.unitClass))))
 
-			if self.bestKey ~= 0 then
-				self.name:SetText(WrapTextInColorCode(self.unit, select(4, GetClassColor(self.unitClass))) .. ' - ' .. self.bestKey)
+			if bestKey ~= 0 then
+				self.weeklyBest:SetFormattedText('|c%s%s|r %d', COLOR_YELLOW, CHARACTER_WEEKLY_BEST, bestKey)
 			else
-				self.name:SetText(WrapTextInColorCode(self.unit, select(4, GetClassColor(self.unitClass))))
+				self.weeklyBest:SetFormattedText('|c%s%s|r', COLOR_GRAY, CHARACTER_DUNGEON_NOT_RAN)
+			end
+
+			if currentMapID then
+				self.keystone:SetFormattedText('|c%s%s|r %d %s', COLOR_YELLOW, CHARACTER_CURRENT_KEY, e.GetMapName(currentMapID))
+			else
+				self.keystone:SetFormattedText('|c%s%s|r', COLOR_GRAY, CHARACTER_KEY_NOT_FOUND)
 			end
 		else
 			self.name:SetText('')
 			self.keystone:SetText('')
-			self.cid = -1
+			self.weeklyBest:SetText('')
 		end
 	end
 
 	frame:SetScript('OnEnter', function(self)
-
-		if self.weeklyAP > 0 then
-			astralMouseOver:SetText(e.GetMapName(self.bestMap) .. '\n- ' .. e.ConvertToSI(self.weeklyAP * e.GetAKBonus()) .. ' AP in cache')
-		else
-			astralMouseOver:SetText('No mythic+ ran this week.')
-		end
-
-		astralMouseOver:AdjustSize()
-		astralMouseOver:ClearAllPoints()
-		astralMouseOver:SetPoint('TOPLEFT', frame, 'BOTTOMRIGHT', - 105, 20)
-		astralMouseOver:Show()
 		AstralCharacterContent.slider:SetAlpha(1)
-		end)
+	end)
 
 	frame:SetScript('OnLeave', function()
-		astralMouseOver:Hide()
 		AstralCharacterContent.slider:SetAlpha(.2)
-		end)
+	end)
 
 	return frame
 
@@ -246,25 +231,14 @@ function UnitFrame:NewFrame(parent)
 		end)
 
 	self.unit:SetScript('OnLeave', function(self)
-		astralMouseOver:Hide()
 		AstralContentFrame.slider:SetAlpha(.2)
 	end)
 
 	self:SetScript('OnEnter', function(self)
-		if UnitLevel('player') == 110 then
-			if self.mapID ~= 0 then
-				astralMouseOver:ClearAllPoints()
-				astralMouseOver:SetPoint('TOPLEFT', self, 'CENTER', -85, 0)
-				astralMouseOver:SetText(e.MapApText(self.mapID, self.keyLevel))
-				astralMouseOver:AdjustSize()
-				astralMouseOver:Show()
-				AstralContentFrame.slider:SetAlpha(1)
-			end
-		end
+		AstralContentFrame.slider:SetAlpha(1)
 	end)
 
 	self:SetScript('OnLeave', function(self)
-		astralMouseOver:Hide()
 		AstralContentFrame.slider:SetAlpha(.2)
 	end)
 
@@ -317,32 +291,6 @@ end
 
 function UnitFrame:SetUnit(...)
 	UNIT_FUNCTION[e.FrameListShown()](self, ...)
-
-	--[[
-	self.mapID = mapID
-	self.keyLevel = keyLevel
-	self.levelString:SetText(keyLevel)
-	self.dungeonString:SetText(e.GetMapName(mapID))
-	if e.FrameListShown() == 'guild' then
-		self.unitID = e.UnitID(unit)
-		self.nameString:SetWidth(135)
-		self.nameString:SetText(WrapTextInColorCode(Ambiguate(unit, 'GUILD') , select(4, GetClassColor(class))))
-		self.weeklyTexture:SetShown(cache == 1)
-	end
-	if e.FrameListShown() == 'friend' then
-		self.unitID = e.FriendID(unit)
-		self.nameString:SetWidth(165)		
-		if btag then
-			if tonumber(faction) == e.FACTION then
-				self.nameString:SetText( string.format('%s (%s)', WrapTextInColorCode(btag:sub(1, btag:find('#') - 1), 'ff82c5ff'), WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), select(4, GetClassColor(class)))))
-			else
-				self.nameString:SetText( string.format('%s (%s)', WrapTextInColorCode(btag:sub(1, btag:find('#') - 1), 'ff82c5ff'), WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), 'ff9d9d9d')))
-			end
-		else
-			self.nameString:SetText(WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), select(4, GetClassColor(class))))
-		end
-		self.weeklyTexture:Hide()
-	end]]
 end
 
 function UnitFrame:ClearUnit()
@@ -358,31 +306,10 @@ end
 local function Whisper_OnShow(self)
 	local isConnected = true
 	if e.FrameListShown() == 'guild' then
-		--inviteType = GetDisplayedInviteType(e.GuildMemberGuid(e.Unit(AstralMenuFrame.unit)))
 		isConnected = e.GuildMemberOnline(e.Unit(AstralMenuFrame.unit))
 	end
 	if e.FrameListShown() == 'friend' then
 		isConnected = e.IsFriendOnline(e.Friend(AstralMenuFrame.unit))
-		--[[
-
-		--inviteType = GetDisplayedInviteType(e.FriendGUID(e.Friend(AstralMenuFrame.unit)))
-		if AstralFriends[AstralMenuFrame.unit][2] then
-			local gaID = e.GetFriendGaID(AstralFriends[AstralMenuFrame.unit][2])
-			if gaID then
-				local _, _, client, _, _, faction = BNGetGameAccountInfo(gaID)
-
-				if client == BNET_CLIENT_WOW then					
-					local name = select(4, BNGetGameAccountInfo(gaID))
-					if not name then
-						isConnected = false
-					end
-				else
-					isConnected = false
-				end
-			end
-		else
-			isConnected = e.IsFriendOnline(e.Friend(AstralMenuFrame.unit))
-		end]]
 	end
 	self.isConnected = isConnected
 
@@ -787,8 +714,6 @@ local affixHeader = e.CreateHeader(affixFrame, 'affixHeader', 175, 20, 'Affixes'
 affixHeader:SetPoint('TOPLEFT', affixFrame, 'TOPLEFT')
 
 local affixOne = CreateFrame('FRAME', 'AstralAffixOne', affixFrame)
---affixOne.aid = e.GetAffix(1)
-
 affixOne:SetSize(100, 20)
 affixOne:SetPoint('TOPLEFT', affixHeader, 'BOTTOMLEFT', 10, -5)
 affixOne.string = affixOne:CreateFontString('ARTWORK')
@@ -821,8 +746,6 @@ affixOne:SetScript('OnLeave', function()
 	end)
 
 local affixTwo = CreateFrame('FRAME', 'AstralAffixTwo', affixFrame)
---affixTwo.aid = e.GetAffix(2)
-
 affixTwo:SetSize(100, 20)
 affixTwo:SetPoint('TOPLEFT', affixOne, 'BOTTOMLEFT', 0, -5)
 affixTwo.string = affixTwo:CreateFontString('ARTWORK')
@@ -855,8 +778,6 @@ affixTwo:SetScript('OnLeave', function()
 	end)
 
 local affixThree = CreateFrame('FRAME', 'AstralAffixThree', affixFrame)
---affixThree.aid = e.GetAffix(3)
-
 affixThree:SetSize(100, 20)
 affixThree:SetPoint('TOPLEFT', affixOne, 'TOPRIGHT', 10, 0)
 affixThree.string = affixThree:CreateFontString('ARTWORK')
@@ -1109,6 +1030,7 @@ AstralKeyFrame:SetScript('OnKeyDown', function(self, key)
 
 AstralKeyFrame:SetScript('OnShow', function(self)
 	e.UpdateFrames()
+	e.UpdateCharacterFrames()
 	self:SetPropagateKeyboardInput(true)
 	end)
 
@@ -1129,6 +1051,8 @@ end
 local init = false
 local function InitializeFrame()
 	init = true
+
+	local MAX_CHARACTER_FRAMES
 
 	if e.FrameListShown() == 'guild' then
 		guildButton:SetNormalTexture(guildButton:GetHighlightTexture())
@@ -1168,52 +1092,54 @@ local function InitializeFrame()
 
 	local id = e.GetCharacterID(e.Player())
 
-	-- Only create 9 character frames in total, first is reserved for current logged in character if 
+	-- Only create 6 character frames in total, first is reserved for current logged in character if 
 	if id then -- We are logged into a character that has a key
-		characters[1] = CreateCharacterFrame(characterFrame, nil, characterTable[id].unit, nil, false)
+		characters[1] = CreateCharacterFrame(characterFrame, nil, characterTable[id].unit, nil)
 		characters[1]:SetPoint('TOPLEFT', characterHeader, 'BOTTOMLEFT', 0, -5)
 
-		characterContent:SetSize(215, 260)
-		characterContent:SetPoint('TOPLEFT', characterHeader, 'BOTTOMLEFT', 0, -39)
+		characterContent:SetSize(215, 250)
+		characterContent:SetPoint('TOPLEFT', characterHeader, 'BOTTOMLEFT', 0, -50)
 
 		table.remove(characterTable, id)
 
-		for i = 1, math.min(#characterTable, 8) do -- Only 8 left character slots to make
-			characters[i+1] = CreateCharacterFrame(characterFrame, nil, characterTable[i].unit, nil, false)
-			characters[i+1]:SetPoint('TOPLEFT', characterContent, 'TOPLEFT', 0, -34*(i - 1) - 4)
+		for i = 1, math.min(#characterTable, 5) do -- Only 5 left character slots to make
+			characters[i+1] = CreateCharacterFrame(characterFrame, nil, characterTable[i].unit, nil)
+			characters[i+1]:SetPoint('TOPLEFT', characterContent, 'TOPLEFT', 0, -50*(i - 1) - 4)
 		end
-	else -- No key on said character, make 9 slots for characters
-		characterContent:SetSize(215, 290)
+	else -- No key on said character, make 6 slots for characters
+		characterContent:SetSize(215, 300)
 		characterContent:SetPoint('TOPLEFT', characterHeader, 'BOTTOMLEFT', 0, -5)
 
-		for i = 1, math.min(#characterTable, 9) do
-			characters[i] = CreateCharacterFrame(characterFrame, nil, characterTable[i].unit, nil, false)
-			characters[i]:SetPoint('TOPLEFT', characterContent, 'TOPLEFT', 0, -34*(i-1) - 4)
+		for i = 1, math.min(#characterTable, 6) do
+			characters[i] = CreateCharacterFrame(characterFrame, nil, characterTable[i].unit, nil)
+			characters[i]:SetPoint('TOPLEFT', characterContent, 'TOPLEFT', 0, -50*(i-1) - 4)
 		end
 	end
 
+	MAX_CHARACTER_FRAMES = math.floor(characterContent:GetHeight()/characters[1]:GetHeight())
+
 	characterContent.slider:SetPoint('TOPLEFT', characterContent, 'TOPRIGHT', 0, -10)
 
-	if #characterTable > 8 then
+	if #characterTable > MAX_CHARACTER_FRAMES then
 		characterContent.slider:Show()
 	else
 		characterContent.slider:Hide()
 	end
 
 	characterContent:SetScript('OnMouseWheel', function(self, delta)
-		if #characterTable < 9 then return end -- There aren't more characters than frames, no need to scroll
+		if #characterTable < 6 then return end -- There aren't more characters than frames, no need to scroll
 
-		local numSlots = 9
+		local numSlots = 6
 
 		if e.GetCharacterID(e.Player()) then
-			numSlots = 8
+			numSlots = 5
 		end
 
 		characterOffset = characterOffset - delta
 		characterOffset = math.max(0, characterOffset)
 		characterOffset = math.min(characterOffset, #characterTable - numSlots)
 
-		e.UpdateCharacterFrames()
+		e.UpdateCharacterEntries()
 
 		characterContent.slider:ClearAllPoints()
 		characterContent.slider:SetPoint('TOPLEFT', characterContent, 'TOPRIGHT', 0, characterContent:GetHeight() * -characterOffset/(#characterTable - numSlots))
@@ -1282,13 +1208,11 @@ function e.UpdateFrames()
 	e.UpdateLines()
 end
 
-function e.UpdateCharacterFrames()
+function e.UpdateCharacterEntries()
 	if not init then return end
-	characterTable = e.DeepCopy(AstralCharacters)
 
 	if e.GetCharacterID(e.Player()) then
 		characters[1]:UpdateInformation(e.GetCharacterID(e.Player()))
-		table.remove(characterTable, e.GetCharacterID(e.Player()))
 		for i = 2, #characters do
 			if characterTable[i-1] then
 				characters[i]:UpdateInformation(e.GetCharacterID(characterTable[i + characterOffset - 1].unit))
@@ -1305,6 +1229,18 @@ function e.UpdateCharacterFrames()
 			end
 		end
 	end
+end
+
+
+function e.UpdateCharacterFrames()
+	if not init then return end
+	characterTable = e.DeepCopy(AstralCharacters)
+	if e.GetCharacterID(e.Player()) then
+		characters[1]:UpdateInformation(e.GetCharacterID(e.Player()))
+		table.remove(characterTable, e.GetCharacterID(e.Player()))
+	end
+
+	e.UpdateCharacterEntries()
 end
 
 function e.AddUnitToTable(unit, class, faction, listType, mapID, level, weekly, btag)

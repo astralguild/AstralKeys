@@ -30,7 +30,7 @@ local function InitData()
 
 	AstralComs:NewMessage('AstralKeys', 'request', 'GUILD')	
 
-	if UnitLevel('player') ~= 110 then return end
+	if UnitLevel('player') < 110 then return end
 	AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', Weekly, 'weeklyCheck')
 end
 AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', InitData, 'initData')
@@ -84,7 +84,7 @@ local function ParseLootMsgForKey(...)
 end
 
 function e.FindKeyStone(sendUpdate, anounceKey)
-	if UnitLevel('player') ~= 110 then return end
+	if UnitLevel('player') < 110 then return end
 	local mapID, keyLevel, affix1, affix2, affix3 = e.GetKeyInfo()
 
 	local msg = ''
@@ -143,15 +143,19 @@ end
 -- Finds best map clear fothe week for logged on character. If character already is in database
 -- updates the information, else creates new entry for character
 function e.GetBestClear()
-	if UnitLevel('player') ~= 110 then return end
+	if UnitLevel('player') < 110 then return end
 	local bestLevel = 0
 	local bestMap = 0
-	for _, v in pairs(C_ChallengeMode.GetMapTable()) do
-		local _, _, weeklyBestLevel = C_ChallengeMode.GetMapPlayerStats(v)
-		if weeklyBestLevel then
-			if weeklyBestLevel > bestLevel then
-				bestLevel = weeklyBestLevel
-				bestMap = v
+	if C_MythicPlus then
+		bestMap, bestLevel = C_MythicPlus.GetLastWeeklyBestInformation()
+	else
+		for _, v in pairs(C_ChallengeMode.GetMapTable()) do
+			local _, _, weeklyBestLevel = C_ChallengeMode.GetMapPlayerStats(v)
+			if weeklyBestLevel then
+				if weeklyBestLevel > bestLevel then
+					bestLevel = weeklyBestLevel
+					bestMap = v
+				end
 			end
 		end
 	end
@@ -165,21 +169,3 @@ function e.GetBestClear()
 		e.SetCharacterID(e.Player(), #AstralCharacters)
 	end
 end
-
--- Deprecated
---[[
-if not AstralAffixes then 
-	AstralAffixes = {}
-	AstralAffixes[1] = 0
-	AstralAffixes[2] = 0
-	AstralAffixes[3] = 0
-end
-
-function e.SetAffix(affixNumber, affixID)
-	AstralAffixes[affixNumber] = affixID
-end
-
-function e.GetAffix(affixNumber)
-	return AstralAffixes[affixNumber]
-end
-]]
