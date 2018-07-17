@@ -1,7 +1,7 @@
 local ADDON, e = ...
 
 local find, sub, strformat = string.find, string.sub, string.format
-local BNSendGameData, SendAddonMessage = BNSendGameData, C_ChatInfo and C_ChatInfo.SendAddonMessage or SendAddonMessage
+local BNSendGameData, SendAddonMessage, SendChatMessage = BNSendGameData, C_ChatInfo.SendAddonMessage, SendChatMessage
 
 -- Variables for syncing information
 -- Will only accept information from other clients with same version settings

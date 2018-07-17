@@ -160,16 +160,8 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 		e.AddUnitToTable(AstralFriends[i][1], AstralFriends[i][3], AstralFriends[i][8], 'friend',  AstralFriends[i][4], AstralFriends[i][5], AstralFriends[i][9], AstralFriends[i][2])
 	end
 
-	if C_ChatInfo then
-		C_ChatInfo.RegisterAddonMessagePrefix('AstralKeys')
-	else
-		RegisterAddonMessagePrefix('AstralKeys')
-	end
-	if C_MythicPlus then
-		C_MythicPlus.RequestMapInfo()
-		C_MythicPlus.RequestCurrentAffixes()
-	else
-		C_ChallengeMode.RequestMapInfo()
-	end
+	C_ChatInfo.RegisterAddonMessagePrefix('AstralKeys')
+	C_MythicPlus.RequestMapInfo()
+	C_MythicPlus.RequestCurrentAffixes()
 
 end, 'login')

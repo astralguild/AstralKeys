@@ -509,7 +509,7 @@ logo:SetSize(64, 64)
 logo:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\Astral.tga')
 logo:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 10, -10)
 
-local title = e.CreateHeader(AstralKeyFrame, 'title', 220, 20, 'Astral Keys', 26)
+local title = e.CreateHeader(AstralKeyFrame, 'title', 350, 20, 'Astral Keys', 26)
 title:SetPoint('LEFT', logo, 'RIGHT', 10, 7) 
 
 -----------------------------------

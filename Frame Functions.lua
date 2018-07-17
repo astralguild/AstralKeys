@@ -14,12 +14,13 @@ insets = {left = 0, right = 0, top = 0, bottom = 0}
 
 e.FONT = {}
 e.FONT.HEADER = "Interface\\AddOns\\AstralKeys\\Media\\big_noodle_titling.TTF"
---e.FONT.HEADER = "Interface\\AddOns\\AstralKeys\\Media\\Lato-Bold.TTF"
 e.FONT.CONTENT = "Interface\\AddOns\\AstralKeys\\Media\\Lato-Regular.TTF"
 e.FONT.SIZE = 13
 e.FONT.OBJECT = {}
 
 local FONT_HEADER = e.FONT.HEADER
+
+--local FONT_HEADER = "Interface\\AddOns\\AstralKeys\\Media\\stop.ttf"
 local FONT_CONTENT = e.FONT.CONTENT
 local FONT_SIZE = e.FONT.SIZE
 local BACKDROP = e.BACKDROP

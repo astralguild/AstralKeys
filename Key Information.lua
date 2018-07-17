@@ -24,7 +24,6 @@ end
 
 local function InitData()
 	AstralEvents:Unregister('CHALLENGE_MODE_MAPS_UPDATE', 'initData')
-	e.BuildMapTable()
 	e.FindKeyStone(true, false)
 	e.GetBestClear()
 
