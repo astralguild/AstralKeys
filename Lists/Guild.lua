@@ -4,8 +4,8 @@ local find, sub, strformat = string.find, string.sub, string.format
 
 -- Variables for syncing information
 -- Will only accept information from other clients with same version settings
-local SYNC_VERSION = 'sync4'
-e.UPDATE_VERSION = 'updateV7'
+local SYNC_VERSION = 'sync5'
+e.UPDATE_VERSION = 'updateV8'
 
 local versionList = {}
 local highestVersion = 0

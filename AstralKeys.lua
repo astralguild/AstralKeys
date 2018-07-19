@@ -161,7 +161,8 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 	end
 
 	C_ChatInfo.RegisterAddonMessagePrefix('AstralKeys')
-	C_MythicPlus.RequestMapInfo()
+	--C_MythicPlus.RequestMapInfo()
 	C_MythicPlus.RequestCurrentAffixes()
+	C_MythicPlus.RequestRewards()
 
 end, 'login')

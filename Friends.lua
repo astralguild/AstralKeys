@@ -1,8 +1,8 @@
 local ADDON, e = ...
 local MAX_LEVEL = 110
 
-local SYNC_VERSION = 'sync3'
-local UPDATE_VERSION = 'update3'
+local SYNC_VERSION = 'sync4'
+local UPDATE_VERSION = 'update4'
 
 local strformat, find = string.format, string.find
 local tremove = table.remove

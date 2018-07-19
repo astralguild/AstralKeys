@@ -97,7 +97,7 @@ end
 local function CreateCharacterFrame(parent, frameName, unitName, bestKey)
 
 	local frame = CreateFrame('FRAME', frameName, parent)
-	frame:SetSize(210, 50)
+	frame:SetSize(250, 50)
 	frame:SetFrameLevel(5)
 
 	frame.unit = unitName
@@ -105,36 +105,37 @@ local function CreateCharacterFrame(parent, frameName, unitName, bestKey)
 
 	frame.name = frame:CreateFontString('ARTWORK')
 	frame.name:SetJustifyH('LEFT')
-	frame.name:SetSize(175, 15)
+	frame.name:SetSize(200, 15)
 	frame.name:SetFont(FONT_CONTENT, FONT_SIZE)
 	frame.name:SetPoint('TOPLEFT', frame, 'TOPLEFT')
 
 	frame.keystone = frame:CreateFontString('ARTWORK')
 	frame.keystone:SetJustifyH('LEFT')
-	frame.keystone:SetSize(200, 15)
+	frame.keystone:SetSize(240, 15)
 	frame.keystone:SetFont(FONT_CONTENT, FONT_SIZE)
 	frame.keystone:SetPoint('TOPLEFT', frame.name, 'BOTTOMLEFT', 10, 0)
 
 	frame.weeklyBest = frame:CreateFontString('ARTWORK')
 	frame.weeklyBest:SetJustifyH('LEFT')
-	frame.weeklyBest:SetSize(200, 15)
+	frame.weeklyBest:SetSize(240, 15)
 	frame.weeklyBest:SetFont(FONT_CONTENT, FONT_SIZE)
 	frame.weeklyBest:SetPoint('TOPLEFT', frame.keystone, 'BOTTOMLEFT', 0, 0)
 	frame.weeklyBest:SetText('No Mythic Dungeon ran')
 
 	function frame:UpdateInformation(characterID)
 		if characterID then
-			self.unit = e.CharacterName(characterID)
-			self.unitClass = e.GetCharacterClass(characterID)
+			local unit = e.CharacterName(characterID) 
+			local realm = e.CharacterRealm(characterID)
+			local unitClass = e.GetCharacterClass(characterID)
 
 			local bestKey = e.GetCharacterBestLevel(characterID)
-			local currentMapID = e.GetCharacterMapID(self.unit)
-			local currentKeyLevel = e.GetCharacterKeyLevel(self.unit)
+			local currentMapID = e.GetCharacterMapID(unit .. '-' .. realm)
+			local currentKeyLevel = e.GetCharacterKeyLevel(unit .. '-' .. realm)
 
 			if e.CharacterRealm(characterID) ~= e.PlayerRealm() then
-				self.unit = self.unit .. ' (*)'
+				unit = unit .. ' (*)'
 			end
-			self.name:SetText(WrapTextInColorCode(self.unit, select(4, GetClassColor(self.unitClass))))
+			self.name:SetText(WrapTextInColorCode(unit, select(4, GetClassColor(unitClass))))
 
 			if bestKey ~= 0 then
 				self.weeklyBest:SetFormattedText('|c%s%s|r %d', COLOR_YELLOW, CHARACTER_WEEKLY_BEST, bestKey)
@@ -143,7 +144,7 @@ local function CreateCharacterFrame(parent, frameName, unitName, bestKey)
 			end
 
 			if currentMapID then
-				self.keystone:SetFormattedText('|c%s%s|r %d %s', COLOR_YELLOW, CHARACTER_CURRENT_KEY, e.GetMapName(currentMapID))
+				self.keystone:SetFormattedText('|c%s%s|r %d %s', COLOR_YELLOW, 'Current:', currentKeyLevel, e.GetMapName(currentMapID))
 			else
 				self.keystone:SetFormattedText('|c%s%s|r', COLOR_GRAY, CHARACTER_KEY_NOT_FOUND)
 			end
@@ -1093,7 +1094,8 @@ local function InitializeFrame()
 	local id = e.GetCharacterID(e.Player())
 
 	-- Only create 6 character frames in total, first is reserved for current logged in character if 
-	if id then -- We are logged into a character that has a key
+	if id then -- We are logged into a character that has a key		
+		MAX_CHARACTER_FRAMES = 5
 		characters[1] = CreateCharacterFrame(characterFrame, nil, characterTable[id].unit, nil)
 		characters[1]:SetPoint('TOPLEFT', characterHeader, 'BOTTOMLEFT', 0, -5)
 
@@ -1107,6 +1109,7 @@ local function InitializeFrame()
 			characters[i+1]:SetPoint('TOPLEFT', characterContent, 'TOPLEFT', 0, -50*(i - 1) - 4)
 		end
 	else -- No key on said character, make 6 slots for characters
+		MAX_CHARACTER_FRAMES = 6
 		characterContent:SetSize(215, 300)
 		characterContent:SetPoint('TOPLEFT', characterHeader, 'BOTTOMLEFT', 0, -5)
 
@@ -1116,7 +1119,7 @@ local function InitializeFrame()
 		end
 	end
 
-	MAX_CHARACTER_FRAMES = math.floor(characterContent:GetHeight()/characters[1]:GetHeight())
+	--MAX_CHARACTER_FRAMES = math.floor(characterContent:GetHeight()/characters[1]:GetHeight())
 
 	characterContent.slider:SetPoint('TOPLEFT', characterContent, 'TOPRIGHT', 0, -10)
 

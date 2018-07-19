@@ -14,13 +14,14 @@ Communications.lua
 Affixes.lua
 Unit Information.lua
 Character Info.lua
-ArtifactPower.lua
+Dungeons.lua
 ArtifactKnowledge.lua
 Key Information.lua
 
 AstralKeys.lua
 
-BNFriends.lua
+Lists\Friends.lua
+## Lists\Guild.lua
 
 Frame Functions.lua
 Frame.lua

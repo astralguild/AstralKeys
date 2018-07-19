@@ -5,8 +5,8 @@ local BNSendGameData, SendAddonMessage, SendChatMessage = BNSendGameData, C_Chat
 
 -- Variables for syncing information
 -- Will only accept information from other clients with same version settings
-local SYNC_VERSION = 'sync4'
-e.UPDATE_VERSION = 'updateV7'
+local SYNC_VERSION = 'sync5'
+e.UPDATE_VERSION = 'updateV8'
 
 local versionList = {}
 local highestVersion = 0
@@ -223,6 +223,7 @@ end
 AstralComs:RegisterPrefix('GUILD', e.UPDATE_VERSION, UpdateUnitKey)
 
 local function SyncReceive(entry, sender)
+	if sender == e.Player() then return end
 	local unit, class, dungeonID, keyLevel, weekly, week, timeStamp
 	if AstralKeyFrame:IsShown() then
 		AstralKeyFrame:SetScript('OnUpdate', AstralKeyFrame.OnUpdate)
@@ -298,6 +299,9 @@ local function PushKeyList(msg, sender)
 			AstralComs:NewMessage('AstralKeys', strformat('%s %s', SYNC_VERSION, msg), 'GUILD')
 			msg = ''
 		end
+	end
+	if msg ~= '' then
+		AstralComs:NewMessage('AstralKeys', strformat('%s %s', SYNC_VERSION, msg), 'GUILD')
 	end
 end
 AstralComs:RegisterPrefix('GUILD', 'request', PushKeyList)
