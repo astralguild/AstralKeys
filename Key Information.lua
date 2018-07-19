@@ -41,7 +41,10 @@ function e.CreateKeyLink(mapID, keyLevel)
 end
 
 AstralEvents:Register('CHALLENGE_MODE_COMPLETED', function()
-	C_Timer.After(3, function() e.FindKeyStone(true, true) end)
+	C_Timer.After(3, function() 
+		e.FindKeyStone(true, true) 
+		C_MythicPlus.RequestRewards()
+	end)
 end, 'dungeonCompleted')
 
 local function CompletedWeekly()
@@ -123,20 +126,7 @@ end
 function e.GetBestClear()
 	if UnitLevel('player') < 110 then return end
 	local bestLevel = C_MythicPlus.GetWeeklyChestRewardLevel()
-	--[[
-	local bestLevel = 0
-	local bestMap = 0
-	for _, v in pairs(C_ChallengeMode.GetMapTable()) do
-		local _, weeklyBestLevel = C_MythicPlus.GetWeeklyBestForMap(v)
-		Console:AddLine(v, weeklyBestLevel)
-		if weeklyBestLevel then
-			if weeklyBestLevel > bestLevel then
-				bestLevel = weeklyBestLevel
-				bestMap = v
-			end
-		end
-	end
-]]
+
 	local id = e.GetCharacterID(e.Player())
 	if id then
 		AstralCharacters[id].map = bestMap
