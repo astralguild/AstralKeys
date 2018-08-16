@@ -15,7 +15,6 @@ Affixes.lua
 Unit Information.lua
 Character Info.lua
 Dungeons.lua
-ArtifactKnowledge.lua
 Key Information.lua
 
 AstralKeys.lua

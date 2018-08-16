@@ -8,14 +8,8 @@ Upper Kara   Верхний Каражан
 Lowre Kara   Нижний Каражан
 ]]
 
+-- Legion Dungeons
 DUNGEON_TABLE[197] = {}
---DUNGEON_TABLE[197]['enUS'] 
---DUNGEON_TABLE[197]['ptBR'] 
---DUNGEON_TABLE[197]['deDE'] 
---DUNGEON_TABLE[197]['frFR']
---DUNGEON_TABLE[197]['esMX']
---DUNGEON_TABLE[197]['ruRU']
-
 DUNGEON_TABLE[197]['name'] = 'Eye of Azshara'
 DUNGEON_TABLE[198] = {}
 DUNGEON_TABLE[198]['name'] = 'Darkheart Thicket'
@@ -41,6 +35,28 @@ DUNGEON_TABLE[234] = {}
 DUNGEON_TABLE[234]['name'] = 'Karazhan: Upper'
 DUNGEON_TABLE[239] = {}
 DUNGEON_TABLE[239]['name'] = 'Seat, Triumvirate'
+
+-- BfA Dungeons
+DUNGEON_TABLE[244] = {}
+DUNGEON_TABLE[244]['name'] = 'Atal\'dazar'
+DUNGEON_TABLE[245] = {}
+DUNGEON_TABLE[245]['name'] = 'Freehold'
+DUNGEON_TABLE[246] = {}
+DUNGEON_TABLE[246]['name'] = 'Tol Dagor'
+DUNGEON_TABLE[247] = {}
+DUNGEON_TABLE[247]['name'] = 'The Motherlode'
+DUNGEON_TABLE[248] = {}
+DUNGEON_TABLE[248]['name'] = 'Waycrest Manor'
+DUNGEON_TABLE[249] = {}
+DUNGEON_TABLE[249]['name'] = 'King\'s Rest'
+DUNGEON_TABLE[250] = {}
+DUNGEON_TABLE[250]['name'] = 'Temple of Sethraliss'
+DUNGEON_TABLE[251] = {}
+DUNGEON_TABLE[251]['name'] = 'The Underrot'
+DUNGEON_TABLE[252] = {}
+DUNGEON_TABLE[252]['name'] = 'Shrine of the Storm'
+DUNGEON_TABLE[253] = {}
+DUNGEON_TABLE[244]['name'] = 'Siege of Boralus'
 
 function e.GetMapName(mapID)
 	return DUNGEON_TABLE[tonumber(mapID)]['name']

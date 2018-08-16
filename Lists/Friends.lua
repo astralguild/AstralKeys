@@ -1,5 +1,5 @@
 local ADDON, e = ...
-local MAX_LEVEL = 110
+local MAX_LEVEL = 120
 
 local SYNC_VERSION = 'sync4'
 local UPDATE_VERSION = 'update4'

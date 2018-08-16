@@ -1,7 +1,11 @@
 local ADDON, e = ...
 
+local VERSION = 1
+if AstralEvents and AstralEvents.version >= VERSION then return end
+
 AstralEvents = CreateFrame('FRAME', 'AstralEvents')
 AstralEvents.dtbl = {}
+AstralEvents.version = VERSION
 
 -- Creates new event object
 -- @param f Function to be called on event

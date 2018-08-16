@@ -160,7 +160,6 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 		e.AddUnitToTable(AstralFriends[i][1], AstralFriends[i][3], AstralFriends[i][8], 'friend',  AstralFriends[i][4], AstralFriends[i][5], AstralFriends[i][9], AstralFriends[i][2])
 	end
 
-	--C_MythicPlus.RequestMapInfo()
 	C_MythicPlus.RequestCurrentAffixes()
 	C_MythicPlus.RequestRewards()
 

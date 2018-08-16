@@ -19,6 +19,7 @@ local CHARACTER_KEY_NOT_FOUND = 'No key found'
 
 local COLOR_YELLOW = 'ffffd200'
 local COLOR_GRAY = 'ff9d9d9d'
+local COLOR_BLUE_BNET = 'ff82c5ff'
 
 local offset, shownOffset = 0, 0
 local characterOffset = 0
@@ -246,8 +247,6 @@ function UnitFrame:NewFrame(parent)
 	return self
 end
 
--- ff82c5ff BNet 'blue'
-
 local UNIT_FUNCTION = {}
 
 function e.AddUnitFunction(list, f)
@@ -281,9 +280,9 @@ UNIT_FUNCTION['friend'] = function(self, unit, class, mapID, keyLevel, cache, fa
 	self.unitID = e.FriendID(unit)
 	if btag then
 		if tonumber(faction) == e.FACTION then
-			self.nameString:SetText( string.format('%s (%s)', WrapTextInColorCode(btag:sub(1, btag:find('#') - 1), 'ff82c5ff'), WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), select(4, GetClassColor(class)))))
+			self.nameString:SetText( string.format('%s (%s)', WrapTextInColorCode(btag:sub(1, btag:find('#') - 1), COLOR_BLUE_BNET), WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), select(4, GetClassColor(class)))))
 		else
-			self.nameString:SetText( string.format('%s (%s)', WrapTextInColorCode(btag:sub(1, btag:find('#') - 1), 'ff82c5ff'), WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), 'ff9d9d9d')))
+			self.nameString:SetText( string.format('%s (%s)', WrapTextInColorCode(btag:sub(1, btag:find('#') - 1), COLOR_BLUE_BNET), WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), 'ff9d9d9d')))
 		end
 	else
 		self.nameString:SetText(WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), select(4, GetClassColor(class))))

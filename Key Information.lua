@@ -28,14 +28,14 @@ local function InitData()
 	e.FindKeyStone(true, false)
 	e.GetBestClear()
 
-	AstralComs:NewMessage('AstralKeys', 'request', 'GUILD')	
+	AstralComs:NewMessage('AstralKeys', 'request', 'GUILD')
 
-	if UnitLevel('player') < 110 then return end
+	if UnitLevel('player') < 120 then return end
 	AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', Weekly, 'weeklyCheck')
 end
 AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', InitData, 'initData')
 
---|cffa335ee|Hkeystone:138019:206:13:5:3:9:0|h[Keystone: Neltharion's Lair (13)]|h|r 5 
+--|cffa335ee|Hkeystone:138019:206:13:5:3:9:0|h[Keystone: Neltharion's Lair (13)]|h|r 5
 function e.CreateKeyLink(mapID, keyLevel)
 	return strformat('\124cffa335ee\124Hkeystone:138019:%d:%d:%d:%d:%d:%d|h[Keystone: %s]\124h\124r', mapID, keyLevel, e.AffixOne(), e.AffixTwo(), e.AffixThree(), e.AffixFour(), e.GetMapName(mapID))--:gsub('\124\124', '\124')
 end
@@ -72,7 +72,7 @@ local function ParseLootMsgForKey(...)
 end
 
 function e.FindKeyStone(sendUpdate, anounceKey)
-	if UnitLevel('player') < 110 then return end
+	if UnitLevel('player') < 120 then return end
 
 	local mapID = C_MythicPlus.GetOwnedKeystoneChallengeMapID()
 	local keyLevel = C_MythicPlus.GetOwnedKeystoneLevel()
@@ -98,9 +98,9 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 		e.PushKeyDataToFriends(msg)
 		if IsInGuild() then
 			AstralComs:NewMessage('AstralKeys', strformat('%s %s', e.UPDATE_VERSION, msg), 'GUILD')
-		else -- Not in a guild, who are you people? Whatever, gotta make it work for them aswell
-			local id = e.UnitID(e.Player()) -- Are we in the DB already?
-			if id then -- Yep, ok just update those values
+		else -- Not in a guild, who are you people? Whatever, gotta make it work for them as well
+			local id = e.UnitID(e.Player())
+			if id then -- Are we in the DB already?
 				AstralKeys[id][3] = tonumber(mapID)
 				AstralKeys[id][4] = tonumber(keyLevel)
 				AstralKeys[id][6] = e.Week
@@ -124,7 +124,7 @@ end
 -- Finds best map clear fothe week for logged on character. If character already is in database
 -- updates the information, else creates new entry for character
 function e.GetBestClear()
-	if UnitLevel('player') < 110 then return end
+	if UnitLevel('player') < 120 then return end
 	local bestLevel = C_MythicPlus.GetWeeklyChestRewardLevel()
 
 	local id = e.GetCharacterID(e.Player())
