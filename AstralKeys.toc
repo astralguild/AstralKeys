@@ -2,7 +2,7 @@
 ## Title: Astral Keys
 ## Notes: Keystone Manager for Guilds and Friends
 ## Author: Phrike
-## Version: 2.2.06
+## Version: 2.2.07
 ## SavedVariables: AstralKeys, AstralCharacters, AstralFriends, AstralKeysSettings, AstralMinimap
 
 embeds.xml
