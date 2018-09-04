@@ -312,3 +312,36 @@ function menuFrame:AddSelection(name, onClick, onShow)
 
 	dtbl[#dtbl]:SetPoint('TOPLEFT', self, 'TOPLEFT', 5, -20*(#dtbl) -5)	
 end
+
+
+function e.AddEscHandler(frame)
+	if not frame and type(frame) ~= 'table' then
+		error('frame expcted, got '.. type(frame))
+	end
+	if frame:GetScript('OnKeyDown') then
+		frame:HookScript('OnKeyDown', function(self, key)
+			if key == 'ESCAPE' then
+				self:SetPropagateKeyboardInput(false)
+				self:Hide()
+			end
+		end)
+	else
+		frame:EnableKeyboard(true)
+		frame:SetPropagateKeyboardInput(true)
+		frame:SetScript('OnKeyDown', function(self, key)
+			if key == 'ESCAPE' then
+				self:SetPropagateKeyboardInput(false)
+				self:Hide()
+			end
+		end)
+	end
+	if frame:GetScript('OnShow') then
+		frame:HookScript('OnShow', function(self)
+			self:SetPropagateKeyboardInput(true)
+		end)
+	else
+		frame:SetScript('OnShow', function(self)
+			self:SetPropagateKeyboardInput(true)
+		end)
+	end
+end

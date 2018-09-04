@@ -4,7 +4,7 @@ local strformat = string.format
 local GRAY = 'ff9d9d9d'
 local PURPLE = 'ffa335ee'
 
-e.CACHE_LEVEL = 15 -- Weekly M+ requirement for class hall cache
+e.CACHE_LEVEL = 10 -- Weekly M+ requirement for class hall cache
 
 local function Weekly()
 	e.GetBestClear()
