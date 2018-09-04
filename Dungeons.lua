@@ -56,7 +56,7 @@ DUNGEON_TABLE[251]['name'] = 'The Underrot'
 DUNGEON_TABLE[252] = {}
 DUNGEON_TABLE[252]['name'] = 'Shrine of the Storm'
 DUNGEON_TABLE[253] = {}
-DUNGEON_TABLE[244]['name'] = 'Siege of Boralus'
+DUNGEON_TABLE[253]['name'] = 'Siege of Boralus'
 
 function e.GetMapName(mapID)
 	return DUNGEON_TABLE[tonumber(mapID)]['name']

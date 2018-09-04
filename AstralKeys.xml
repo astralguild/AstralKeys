@@ -1,0 +1,53 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+
+  <!-- font used for the list buttons and totals -->
+  <Font name="AstralFontNormal" virtual="true">
+  	<Member alphabet="roman">
+  		<Font font="Media\Lato-Regular.ttf" height="13"/>
+  	</Member>
+  </Font>
+
+  <Font name="AstralFontNormal" virtual="true">
+  	<Member alphabet="roman">
+  		<Font font="Media\big_noodle_titling.ttf" height="13"/>
+  	</Member>
+  </Font>
+
+  <!-- template for the three buttons across the bottom: reset, update and play/pause -->
+	<Button name="AstralCharacterTemplate" virtual="true">
+		<Size x="210" y="50"/>
+		<NormalTexture file="Interface\Buttons\UI-SquareButton-Up" desaturated="true">
+			<Color r="0.75" g="0.75" b="0.75"/>
+		</NormalTexture>
+		<PushedTexture file="Interface\Buttons\UI-SquareButton-Down" desaturated="true">
+			<Color r="0.75" g="0.75" b="0.75"/>
+		</PushedTexture>
+		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD" alpha="0.75">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="2" y="-2"/>
+				<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+			</Anchors>
+		</HighlightTexture>
+		<Scripts>
+			<OnEnter>
+				AddonUsage.ButtonOnEnter(self)
+			</OnEnter>
+			<OnLeave>
+				AddonUsage.MiniTooltip:Hide()
+			</OnLeave>
+			<OnMouseDown>
+				AddonUsage.UpdateButtonIcon(self,true)
+			</OnMouseDown>
+			<OnMouseUp>
+				AddonUsage.UpdateButtonIcon(self,false)
+			</OnMouseUp>
+			<OnShow>
+				AddonUsage.UpdateButtonIcon(self,false)
+			</OnShow>
+		</Scripts>
+	</Button>
+
+	<Script file="AddonUsage.lua"/>
+
+</Ui>
