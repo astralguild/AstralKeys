@@ -16,15 +16,15 @@ end
 AstralEvents:Register('MYTHIC_PLUS_CURRENT_AFFIX_UPDATE', UpdateMythicPlusAffixes, 'updateAffixes')
 
 function e.AffixOne(weekOffSet)
-	return AFFIXES[2].id
+	return AFFIXES[1].id
 end
 
 function e.AffixTwo(weekOffSet)
-	return AFFIXES[3].id
+	return AFFIXES[2].id
 end
 
 function e.AffixThree(weekOffSet)
-	return AFFIXES[1].id
+	return AFFIXES[3].id
 end
 
 function e.AffixFour()

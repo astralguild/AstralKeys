@@ -758,7 +758,7 @@ affixTwo.texture:SetPoint('LEFT', affixTwo, 'LEFT')
 affixTwo.texture:SetTexture(nil)
 
 function affixTwo:UpdateInfo()
-	self.aid = e.AffixTwo()
+	self.aid = e.AffixThree()
 	self.string:SetText(C_ChallengeMode.GetAffixInfo(self.aid))
 	self.texture:SetTexture(select(3, C_ChallengeMode.GetAffixInfo(self.aid)))
 end
@@ -790,7 +790,7 @@ affixThree.texture:SetPoint('LEFT', affixThree, 'LEFT')
 affixThree.texture:SetTexture(nil)
 
 function affixThree:UpdateInfo()
-	self.aid = e.AffixThree()
+	self.aid = e.AffixTwo()
 	self.string:SetText(C_ChallengeMode.GetAffixInfo(self.aid))
 	self.texture:SetTexture(select(3, C_ChallengeMode.GetAffixInfo(self.aid)))
 end

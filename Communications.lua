@@ -235,7 +235,7 @@ local function SyncReceive(entry, sender)
 		
 		--unit, class, dungeonID, keyLevel, weekly, week, timeStamp = string.split(':', entry:sub(_pos, entry:find('_', _pos) - 1))
 
-		class, dungeonID, keyLevel, weekly, week, timeStamp = entry:match(':(%a+):(%d+):(%d+):(%d+):(%d+):(%d)', entry:find(':', _pos))
+		class, dungeonID, keyLevel, weekly, week, timeStamp = entry:match(':(%a+):(%d+):(%d+):(%d+):(%d+):(%d+)', entry:find(':', _pos))
 		unit = entry:sub(_pos, entry:find(':', _pos) - 1)
 		
 		_pos = find(entry, '_', _pos) + 1
@@ -246,7 +246,7 @@ local function SyncReceive(entry, sender)
 		week = tonumber(week)
 		timeStamp = tonumber(timeStamp)
 
-		if week >= e.Week and e.UnitInGuild(unit) then 
+		if week >= e.Week and e.UnitInGuild(unit) then
 
 			local id = e.UnitID(unit)
 			if id then
