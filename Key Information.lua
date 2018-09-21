@@ -136,3 +136,9 @@ function e.GetBestClear()
 		e.SetCharacterID(e.Player(), #AstralCharacters)
 	end
 end
+
+local function MythicPlusStart()
+	e.FindKeyStone(true, false)
+end
+
+AstralEvents:Register('CHALLENGE_MODE_START', MythicPlusStart, 'PlayerEnteredMythic')

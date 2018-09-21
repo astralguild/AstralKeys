@@ -576,7 +576,7 @@ do
 
 		local characterNameString, gameInfoString, astralKeyString
 		if numGameAccounts > 1 then
-			for i = 1, math.max(numGameAccounts, 5) do
+			for i = 1, math.min(numGameAccounts, 5) do
 				local hasFocus, characterName, client, realmName, realmID, faction, race, class, _, zoneName, level, gameText = BNGetFriendGameAccountInfo(self.id, i);
 				characterNameString = _G['FriendsTooltipGameAccount' .. i .. 'Name']
 				gameInfoString = _G['FriendsTooltipGameAccount' .. i .. 'Info']
