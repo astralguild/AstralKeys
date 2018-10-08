@@ -1,15 +1,17 @@
 local _, e = ...
 
+-- Red color code
+-- #C72329
+
+-- Background
+-- Left #000000 ALPHA 0.8
+-- Right #212121 ALPHA 0.8
+
+
 local BACKDROP = {
 bgFile = "Interface/Tooltips/UI-Tooltip-Background",
 edgeFile = nil, tile = true, tileSize = 16, edgeSize = 16,
 insets = {left = 0, right = 0, top = 0, bottom = 0}
-}
-
-local POSITIONS = {
-	[1] = 'LEFT',
-	[2] = 'CENTER',
-	[3] = 'RIGHT',
 }
 
 local CHARACTER_CURRENT_KEY = 'Current Key:'
@@ -222,6 +224,7 @@ function UnitFrame:NewFrame(parent)
 			if self:GetParent().unitID == 0 then return end
 
 			AstralMenuFrame:ClearAllPoints()
+
 			AstralMenuFrame:SetPoint('TOPLEFT', self, 'CENTER', 5, -5)
 			AstralMenuFrame:SetUnit(self:GetParent().unitID)
 			AstralMenuFrame:Show()
@@ -345,20 +348,6 @@ local function Invite_OnShow(self)
 	if e.FrameListShown() == 'friend' then
 		isConnected = e.IsFriendOnline(e.Friend(AstralMenuFrame.unit))
 		inviteType = GetDisplayedInviteType(e.FriendGUID(e.Friend(AstralMenuFrame.unit)))
-		--[[		
-		if AstralFriends[AstralMenuFrame.unit][2] then
-			local gaID = e.GetFriendGaID(AstralFriends[AstralMenuFrame.unit][2])
-			if gaID then
-				local name = select(4, BNGetGameAccountInfo(gaID))
-				if not name then
-					isConnected = false
-				end
-			else
-				isConnected = false
-			end
-		else
-			isConnected = e.IsFriendOnline(e.Friend(AstralMenuFrame.unit))
-		end]]
 	end
 
 	if inviteType == 'INVITE' then
@@ -437,7 +426,7 @@ local guildInfo = CreateFrame('FRAME', nil, AstralKeyFrame)
 guildInfo:SetSize(125, 13)
 guildInfo:SetPoint('BOTTOMRIGHT', AstralKeyFrame, 'BOTTOMRIGHT', -5, 5)
 guildInfo:EnableMouse(true)
-guildInfo:SetScript('OnMouseDown', function(self) 
+guildInfo:SetScript('OnMouseDown', function(self)
 	if not astralGuildInfo then
 		local astralGuildInfo = CreateFrame('FRAME', 'astralGuildInfo', UIParent)
 		astralGuildInfo:SetFrameLevel(8)

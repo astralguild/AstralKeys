@@ -103,6 +103,7 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 					AstralCharacters = {}
 					AstralKeys = {}
 					wipe(AstralFriends)
+					e.WipeFriendList()
 					AstralKeysSettings.initTime = e.DataResetTime()
 					e.Week = math.floor((GetServerTime() - initializeTime[1]) / 604800)
 					e.FindKeyStone(true, false)
@@ -134,6 +135,7 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 					AstralCharacters = {}
 					AstralKeys = {}
 					wipe(AstralFriends)
+					e.WipeFriendList()
 					AstralKeysSettings.initTime = e.DataResetTime()
 					e.FindKeyStone(true, false)
 					e.GetBestClear()
