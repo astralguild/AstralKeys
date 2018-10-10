@@ -3,28 +3,6 @@ local _, e = ...
 local FILTER_METHOD = {}
 local SORT_MEDTHOD = {}
 
-FILTER_METHOD['guild'] = function(A)
-	if not type(A) == 'table' then return end
-
-	for i = 1, #A.guild do
-		if e.UnitInGuild(A.guild[i][1]) then
-			if AstralKeysSettings.options.showOffline then
-				A.guild[i].isShown = true
-			else
-				A.guild[i].isShown = e.GuildMemberOnline(A.guild[i][1])
-			end
-
-			A.guild[i].isShown = A.guild[i].isShown and AstralKeysSettings.options.rankFilters[e.GuildMemberRank(A.guild[i][1])]
-
-			if A.guild[i].isShown then
-				A.numShown = A.numShown + 1
-			end
-		else
-			A.guild[i].isShown = false
-		end
-	end
-end
-
 function e.AddListFilter(list, f)
 	if type(list) ~= 'string' and list == '' then return end
 	if type(f) ~= 'function' then return end
@@ -37,50 +15,6 @@ function e.AddListSort(list, f)
 	if type(f) ~= 'function' then return end
 
 	SORT_MEDTHOD[list] = f
-end
-
-SORT_MEDTHOD['guild'] = function(A, v)
-	if v == 3 then
-		table.sort(A, function(a, b) 
-			if AstralKeysSettings.frameOptions.orientation == 0 then
-				if e.GetMapName(a[v]) > e.GetMapName(b[v]) then
-					return true
-				elseif e.GetMapName(a[v]) < e.GetMapName(b[v]) then
-					return false
-				else
-					return a[1] > b[1]
-				end
-			else
-				if e.GetMapName(a[v]) < e.GetMapName(b[v]) then
-					return true
-				elseif e.GetMapName(a[v]) > e.GetMapName(b[v]) then
-					return false
-				else
-					return a[1] < b[1]
-				end
-			end
-			end)
-	else
-		table.sort(A, function(a, b)
-			if AstralKeysSettings.frameOptions.orientation == 0 then
-				if a[v] > b[v] then
-					return true
-				elseif a[v] < b[v] then
-					return false
-				else
-					return a[1] > b[1]
-				end
-			else
-				if a[v] < b[v] then
-					return true
-				elseif a[v] > b[v] then
-					return false
-				else
-					return a[1] < b[1]
-				end
-			end
-		end)
-	end
 end
 
 function e.UpdateTable(tbl)

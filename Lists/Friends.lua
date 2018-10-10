@@ -188,7 +188,7 @@ local function RecieveKey(msg, sender)
 		ShowFriends()
 	end
 
-	e.AddUnitToTable(unit, class, faction, 'friend', dungeonID, keyLevel, weekly, btag)
+	e.AddUnitToTable(unit, class, faction, 'FRIENDS', dungeonID, keyLevel, weekly, btag)
 
 	if e.FrameListShown() == 'friends' then 
 		e.UpdateFrames()
@@ -250,7 +250,7 @@ local function SyncFriendUpdate(entry, sender)
 				e.SetFriendID(unit, #AstralFriends)
 				ShowFriends()
 			end
-			e.AddUnitToTable(unit, class, faction, 'friend', dungeonID, keyLevel, weekly, btag)
+			e.AddUnitToTable(unit, class, faction, 'FRIENDS', dungeonID, keyLevel, weekly, btag)
 		end
 	end
 end
@@ -449,71 +449,101 @@ end
 local function FriendFilter(tbl)
 	if not type(tbl) == 'table' then return end
 
-	for i = 1, #tbl.friend do
+	for i = 1, #tbl.FRIENDS do
 		if AstralKeysSettings.options.showOffline then
-			tbl.friend[i].isShown = true
+			tbl.FRIENDS[i].isShown = true
 		else
-			tbl.friend[i].isShown = e.IsFriendOnline(tbl.friend[i][1])
+			tbl.FRIENDS[i].isShown = e.IsFriendOnline(tbl.FRIENDS[i].character_name)
 		end
 
 		if not AstralKeysSettings.options.showOtherFaction then
-			tbl.friend[i].isShown = tbl.friend[i].isShown and tonumber(tbl.friend[i][6]) == e.FACTION
+			tbl.FRIENDS[i].isShown = tbl.FRIENDS[i].isShown and tonumber(tbl.FRIENDS[i].faction) == e.FACTION
 		end
 
-		if tbl.friend[i].isShown then
+		if tbl.FRIENDS[i].isShown then
 			tbl.numShown = tbl.numShown + 1
 		end
 	end
 end
-e.AddListFilter('friend', FriendFilter)
+e.AddListFilter('FRIENDS', FriendFilter)
+
+local function CompareFriendNames(a, b)
+	local s = string.lower(a.btag) or '|'
+	local t = string.lower(b.btag) or '|'
+	if AstralKeysSettings.frameOptions.orientation == 0 then
+		if s > t then
+			return true
+		elseif
+			s < t then
+			return false
+		else
+			return string.lower(a.character_name) > string.lower(b.character_name)
+		end
+	else
+		if s < t then
+			return true
+		elseif
+			s > t then
+			return false
+		else
+			return string.lower(a.character_name) < string.lower(b.character_name)
+		end
+	end
+end
 
 local function FriendSort(A, v)
-	if v == 3 then -- Dungeon Name
-		table.sort(A, function(a, b) 
+	if v == 'dungeon_name' then -- Dungeon Name
+		table.sort(A, function(a, b)
 			if AstralKeysSettings.frameOptions.orientation == 0 then
-				return e.GetMapName(a[v]) > e.GetMapName(b[v])
-			else
-				return e.GetMapName(b[v]) > e.GetMapName(a[v])
-			end
-			end)
-	else
-		if v == 1 then -- BNet Name
-			table.sort(A, function(a, b)
-				local s = string.lower(a[7]) or '|'
-				local t = string.lower(b[7]) or '|'
-				if AstralKeysSettings.frameOptions.orientation == 0 then
-					if s > t then
-						return true
-					elseif
-						s < t then
-						return false
-					else
-						return string.lower(a[1]) > string.lower(b[1])
-					end
+				if e.GetMapName(a.mapID) > e.GetMapName(b.mapID) then
+					return true
+				elseif e.GetMapName(b.mapID) > e.GetMapName(a.mapID) then
+					return false
 				else
-					if s < t then
-						return true
-					elseif
-						s > t then
-						return false
-					else
-						return a[1] < b[1]
-					end
+					return a.character_name < b.character_name
 				end
+			else
+				if e.GetMapName(a.mapID) > e.GetMapName(b.mapID) then
+					return false
+				elseif e.GetMapName(b.mapID) > e.GetMapName(a.mapID) then
+					return true
+				else
+					return CompareFriendNames(a, b)
+				end
+			end
+		end)
+	else
+		if v == 'character_name' then -- BNet Name
+			table.sort(A, function(a, b)
+				return CompareFriendNames(a, b)
 			end)
 		else
 			table.sort(A, function(a, b) 
 				if AstralKeysSettings.frameOptions.orientation == 0 then
-					return a[v] > b[v]
+					if a[v] > b[v] then
+						return true
+					elseif
+						a[v] < b[v]  then
+						return false
+					else
+						return CompareFriendNames(a, b)
+					end
 				else
-					return a[v] < b[v]
+					if a[v] < b[v] then
+						return true
+					elseif
+						a[v] > b[v]  then
+						return false
+					else
+						return CompareFriendNames(a, b)
+					end
 				end
 			end)
 		end
 	end
 end
 
-e.AddListSort('friend', FriendSort)
+e.AddListSort('FRIENDS', FriendSort)
 
 -- Friend's list Hooking
 do

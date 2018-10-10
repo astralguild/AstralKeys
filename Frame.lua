@@ -17,6 +17,7 @@ local CHARACTER_DUNGEON_NOT_RAN = 'No mythic dungeon ran'
 local CHARACTER_KEY_NOT_FOUND = 'No key found'
 
 local COLOR_BLUE_BNET = 'ff82c5ff'
+local COLOR_GRAY = 'ff9d9d9d'
 
 local SCROLL_TEXTURE_ALPHA_MIN = 0.2
 local SCROLL_TEXTURE_ALPHA_MAX = 0.6
@@ -24,8 +25,8 @@ local SCROLL_TEXTURE_ALPHA_MAX = 0.6
 
 local sortedTable = {}
 sortedTable.numShown = 0
-sortedTable['guild'] = {}
-sortedTable['friend'] = {}
+sortedTable['GUILD'] = {}
+sortedTable['FRIENDS'] = {}
 
 function AstralKeysCharacterMixin:UpdateUnit(characterID)
 	local unit = e.CharacterName(characterID)
@@ -67,20 +68,10 @@ function AstralKeysCharacterMixin:OnLeave()
 	local scrollButton = _G[scrollBar:GetName() .. 'ThumbTexture']
 	scrollButton:SetAlpha(0.3)
 end
+local UNIT_FUNCTION = {}
 
-function AstralKeysListMixin:SetUnit(id)
-	local unit = e.UnitName(id)
-	local unitClass = e.UnitClass(id)
-	local bestKey = 0 --e.UnitBestKey()
-
-
-	self.levelString:SetText(e.UnitKeyLevel(id))
-	self.dungeonString:SetText(e.GetMapName(e.UnitMapID(id)))
-
-	self.nameString:SetText(WrapTextInColorCode(Ambiguate(unit, 'GUILD') , select(4, GetClassColor(unitClass))))
-
-	self.bestString:SetText(bestKey)
-	self.weeklyTexture:SetShown(true or bestKey >= e.CACHE_LEVEL)
+function AstralKeysListMixin:SetUnit(...)
+	UNIT_FUNCTION[e.FrameListShown()](self, ...)
 end
 
 
@@ -144,7 +135,7 @@ function UnitFrame:NewFrame(parent)
 	return self
 end
 
-local UNIT_FUNCTION = {}
+
 
 function e.AddUnitFunction(list, f)
 	if type(list) ~= 'string' and list == '' then return end
@@ -157,24 +148,22 @@ function e.AddUnitFunction(list, f)
 	UNIT_FUNCTION[list] = f
 end
 
-local function GuildUnitFunction(self, unit, class, mapID, keyLevel, cache, faction, btag)
-	self.mapID = mapID
-	self.keyLevel = keyLevel
-	self.levelString:SetText(keyLevel)
-	self.dungeonString:SetText(e.GetMapName(mapID))
+local function GuildUnitFunction(self, unit, unitClass, mapID, keyLevel, cache, faction, btag)
+	local bestKey = 0 --e.UnitBestKey(id)
 	self.unitID = e.UnitID(unit)
-	self.nameString:SetText(WrapTextInColorCode(Ambiguate(unit, 'GUILD') , select(4, GetClassColor(class))))
-	self.weeklyTexture:SetShown(cache == 1)
+	self.levelString:SetText(keyLevel)
+	self.dungeonString:SetText(e.GetMapName(mapID))
+	self.nameString:SetText(WrapTextInColorCode(Ambiguate(unit, 'GUILD') , select(4, GetClassColor(unitClass))))
+	self.bestString:SetText(bestKey)
+	self.weeklyTexture:SetShown(true or bestKey >= e.CACHE_LEVEL)
 end
-e.AddUnitFunction('guild', GuildUnitFunction)
+e.AddUnitFunction('GUILD', GuildUnitFunction)
 
-UNIT_FUNCTION['friend'] = function(self, unit, class, mapID, keyLevel, cache, faction, btag)
-	self.mapID = mapID
-	self.keyLevel = keyLevel
+UNIT_FUNCTION['FRIENDS'] = function(self, unit, class, mapID, keyLevel, cache, faction, btag)
+	self.unitID = e.FriendID(unit)
 	self.levelString:SetText(keyLevel)
 	self.dungeonString:SetText(e.GetMapName(mapID))
 	self.weeklyTexture:SetShown(cache == 1)
-	self.unitID = e.FriendID(unit)
 	if btag then
 		if tonumber(faction) == e.FACTION then
 			self.nameString:SetText( string.format('%s (%s)', WrapTextInColorCode(btag:sub(1, btag:find('#') - 1), COLOR_BLUE_BNET), WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), select(4, GetClassColor(class)))))
@@ -202,10 +191,10 @@ end
 
 local function Whisper_OnShow(self)
 	local isConnected = true
-	if e.FrameListShown() == 'guild' then
+	if e.FrameListShown() == 'GUILD' then
 		isConnected = e.GuildMemberOnline(e.Unit(AstralMenuFrame.unit))
 	end
-	if e.FrameListShown() == 'friend' then
+	if e.FrameListShown() == 'FRIENDS' then
 		isConnected = e.IsFriendOnline(e.Friend(AstralMenuFrame.unit))
 	end
 	self.isConnected = isConnected
@@ -220,7 +209,7 @@ end
 local function SendWhisper(self)
 	if not self.isConnected then return end
 
-	if AstralKeysSettings.frameOptions.list == 'guild' then
+	if AstralKeysSettings.frameOptions.list == 'GUILD' then
 		ChatFrame_SendTell(e.Unit(AstralMenuFrame.unit))
 	else
 		if AstralFriends[AstralMenuFrame.unit][2] then
@@ -235,11 +224,11 @@ AstralMenuFrame:AddSelection('Whisper', SendWhisper, Whisper_OnShow)
 local function Invite_OnShow(self)
 	local inviteType
 	local isConnected = true
-	if e.FrameListShown() == 'guild' then
+	if e.FrameListShown() == 'GUILD' then
 		inviteType = GetDisplayedInviteType(e.GuildMemberGuid(e.Unit(AstralMenuFrame.unit)))
 		isConnected = e.GuildMemberOnline(e.Unit(AstralMenuFrame.unit))
 	end
-	if e.FrameListShown() == 'friend' then
+	if e.FrameListShown() == 'FRIENDS' then
 		isConnected = e.IsFriendOnline(e.Friend(AstralMenuFrame.unit))
 		inviteType = GetDisplayedInviteType(e.FriendGUID(e.Friend(AstralMenuFrame.unit)))
 	end
@@ -262,7 +251,7 @@ end
 local function InviteUnit(self)
 	if not self.isConnected then return end
 	
-	if e.FrameListShown() == 'guild' then
+	if e.FrameListShown() == 'GUILD' then
 		if self.inviteType == 'INVITE' then
 			InviteToGroup(e.Unit(AstralMenuFrame.unit))
 		elseif self.inviteType == 'REQUEST_INVITE' then
@@ -271,7 +260,7 @@ local function InviteUnit(self)
 			InviteToGroup(e.Unit(AstralMenuFrame.unit))
 		end
 	end
-	if e.FrameListShown() == 'friend' then
+	if e.FrameListShown() == 'FRIENDS' then
 		if AstralFriends[AstralMenuFrame.unit][2] then -- bnet friend
 			if self.inviteType == 'INVITE' then
 				BNInviteFriend(e.FriendGAID(e.Friend(AstralMenuFrame.unit)))
@@ -415,32 +404,16 @@ tabFrame.buttons = {}
 local MIN_BUTTON_WIDTH = 50
 local MAX_BUTTON_WIDTH = 100
 
-local function CreateNewTab(name, parent, ...)
-	if not name or type(name) ~= 'string' then
-		error('CreateNewTab(name, parent, ...) name: string expected, received ' .. type(name))
-	end
-	local buttons = parent.buttons
-	local self = CreateFrame('BUTTON', '$parentTab' .. name, parent)
-	self:SetNormalFontObject(InterUIBlack_Small)
-	self:SetText(name)
-	self:SetWidth(50)
-	self:SetHeight(15)
-
-	local textWidth = self:GetFontString():GetStringWidth()
-	self.underline = self:CreateTexture(nil, 'ARTWORK')
-	self.underline:SetSize(textWidth, 2)
-	self.underline:SetColorTexture(214/255, 38/255, 38/255)
-	self.underline:SetPoint('BOTTOM', self, 'BOTTOM', 0, -1)
-
-	table.insert(buttons, self)
-end
-
--- Max 5 with current text
 local function UpdateTabs()
 	local frame = AstralKeyFrameTabFrame
 	local buttons = frame.buttons
 
 	for i = 1, #buttons do
+		if e.FrameListShown() == buttons[i].listName then
+			buttons[i].underline:Show()
+		else
+			buttons[i].underline:Hide()
+		end
 		if i == 1 then
 			buttons[i]:SetPoint('LEFT', frame, 'LEFT')
 		else
@@ -449,11 +422,44 @@ local function UpdateTabs()
 	end
 end
 
+local function Tab_OnClick(self)	
+    if e.FrameListShown() ~= self.listName then
+        e.SetFrameListShown(self.listName)
+        UpdateTabs()
+        e.UpdateFrames()
+        HybridScrollFrame_SetOffset(AstralKeyFrameListContainer, 0)
+    end
+end
+
+local function CreateNewTab(name, parent, ...)
+	if not name or type(name) ~= 'string' then
+		error('CreateNewTab(name, parent, ...) name: string expected, received ' .. type(name))
+	end
+	local buttons = parent.buttons
+	local self = CreateFrame('BUTTON', '$parentTab' .. name, parent)
+	self.listName = name
+	self:SetNormalFontObject(InterUIBlack_Small)
+	self:SetText(name)
+	self:SetWidth(50)
+	self:SetHeight(15)
+	self:SetScript('OnClick', function(self) Tab_OnClick(self) end)
+
+	local textWidth = self:GetFontString():GetStringWidth()
+	self.underline = self:CreateTexture(nil, 'ARTWORK')
+	self.underline:SetSize(textWidth, 2)
+	self.underline:SetColorTexture(214/255, 38/255, 38/255)
+	self.underline:SetPoint('BOTTOM', self, 'BOTTOM', 0, -1)
+
+	self.underline:Hide()
+
+	table.insert(buttons, self)
+end
+
+-- Max 5 with current text
+
+
+
 CreateNewTab('GUILD', tabFrame)
-CreateNewTab('FRIENDS', tabFrame)
-CreateNewTab('FRIENDS', tabFrame)
-CreateNewTab('FRIENDS', tabFrame)
-CreateNewTab('FRIENDS', tabFrame)
 CreateNewTab('FRIENDS', tabFrame)
 UpdateTabs()
 
@@ -572,24 +578,58 @@ characterScrollFrame.update = CharacterScrollFrame_Update
 
 -- Key List Frames
 ----------------------------------------------------------------
+-- self, unit, unitClass, mapID, keyLevel, cache, faction, btag
 function ListScrollFrame_Update()
 	local scrollFrame = AstralKeyFrameListContainer
 	local offset = HybridScrollFrame_GetOffset(scrollFrame)
 	local buttons = scrollFrame.buttons
-	local numButtons = #buttons
+	
 	local button, index
 	local height = scrollFrame.buttonHeight
 	local usedHeight = 0
-
 	local list = e.FrameListShown()
-	local lastIndex = 1
+	local data = sortedTable[e.FrameListShown()]
 
-	for i = 1, math.min(sortedTable.numShown, 25) do
+	local lastIndex = 1
+--[[
+	for i = 1, #buttons do
+		if data[i+offset] and data[i+offset].isShown then
+			buttons[i]:SetUnit(data[i+offset].character_name, data[i+offset].character_class, data[i+offset].mapID, data[i+offset].key_level, data[i+offset].weekly_cache, data[i+offset].faction, data[i+offset].btag)
+			buttons[i]:Show()
+			usedHeight = usedHeight + height
+		else
+			buttons[i]:Hide()
+		end
+	end]]
+--[[
+	for i = 1, #buttons do
+		if data[lastIndex+offset] and data[lastIndex+offset].isShown then
+			buttons[i]:SetUnit(data[lastIndex+offset].character_name, data[lastIndex+offset].character_class, data[lastIndex+offset].mapID, data[lastIndex+offset].key_level, data[lastIndex+offset].weekly_cache, data[lastIndex+offset].faction, data[lastIndex+offset].btag)
+			buttons[i]:Show()
+			lastIndex = lastIndex + 1
+			usedHeight = usedHeight + height
+		else
+			buttons[i]:Hide()
+		end
+	end]]
+--[[
+	for i = 1, #buttons do
+		if data[lastIndex+offset] and data[lastIndex+offset].isShown then
+			buttons[lastIndex]:SetUnit(data[lastIndex+offset].character_name, data[lastIndex+offset].character_class, data[lastIndex+offset].mapID, data[lastIndex+offset].key_level, data[lastIndex+offset].weekly_cache, data[lastIndex+offset].faction, data[lastIndex+offset].btag)
+			buttons[lastIndex]:Show()
+			lastIndex = lastIndex + 1
+			usedHeight = usedHeight + height
+		else
+			buttons[i]:Hide()
+		end
+	end]]
+	
+	for i = 1, math.min(sortedTable.numShown, #buttons) do
 		for j = lastIndex, #sortedTable[list] do
-			if sortedTable[list][j].isShown then
+			if sortedTable[list][j+offset] and sortedTable[list][j+offset].isShown then
 				usedHeight = usedHeight + height
 				lastIndex = j + 1
-				buttons[i]:SetUnit(j+offset)
+				buttons[i]:SetUnit(sortedTable[list][j+offset].character_name, sortedTable[list][j+offset].character_class, sortedTable[list][j+offset].mapID, sortedTable[list][j+offset].key_level, sortedTable[list][j+offset].weekly_cache, sortedTable[list][j+offset]['faction'], sortedTable[list][j+offset]['btag'])
 				buttons[i]:Show()
 				break
 			end
@@ -600,7 +640,7 @@ function ListScrollFrame_Update()
 		buttons[i]:Hide()
 	end
 
-	HybridScrollFrame_Update(AstralKeyFrameListContainer, height * #AstralKeys, usedHeight)
+	HybridScrollFrame_Update(AstralKeyFrameListContainer, height * sortedTable.numShown, usedHeight)
 end
 
 local listScrollFrame = CreateFrame('ScrollFrame', '$parentListContainer', AstralKeyFrame, 'HybridScrollFrameTemplate')
@@ -637,44 +677,67 @@ contentFrame:SetPoint('TOPLEFT', tabFrame, 'BOTTOMLEFT', 0, -30)
 	5: Weekly
 ]]
 
+local function ListButton_OnClick(self)
+	HybridScrollFrame_SetOffset(AstralKeyFrameListContainer, 0)
+
+	if self.sortMethod == AstralKeysSettings.frameOptions.sortMethod then
+		AstralKeysSettings.frameOptions.orientation = 1 - AstralKeysSettings.frameOptions.orientation
+	else
+		AstralKeysSettings.frameOptions.orientation = 0
+	end
+	AstralKeysSettings.frameOptions.sortMethod = self.sortMethod
+	e.SortTable(sortedTable[e.FrameListShown()], AstralKeysSettings.frameOptions.sortMethod)
+	e.UpdateFrames()
+end
+
 local keyLevelButton = CreateFrame('BUTTON', '%parentKeyLevelButton', contentFrame)
+keyLevelButton.sortMethod = 'key_level'
 keyLevelButton:SetSize(40, 20)
 keyLevelButton:SetNormalFontObject(InterUIBlack_Small)
 keyLevelButton:GetNormalFontObject():SetJustifyH('CENTER')
 keyLevelButton:SetText('LEVEL')
 keyLevelButton:SetAlpha(0.5)
 keyLevelButton:SetPoint('TOPLEFT', tabFrame, 'BOTTOMLEFT', 6, -10)
+keyLevelButton:SetScript('OnClick', function(self) ListButton_OnClick(self) end)
 
 local dungeonButton = CreateFrame('BUTTON', '%DungeonButton', contentFrame)
+dungeonButton.sortMethod = 'dungeon_name'
 dungeonButton:SetSize(160, 20)
 dungeonButton:SetNormalFontObject(InterUIBlack_Small)
 dungeonButton:GetNormalFontObject():SetJustifyH('LEFT')
 dungeonButton:SetText('DUNGEON')
 dungeonButton:SetAlpha(0.5)
 dungeonButton:SetPoint('LEFT', keyLevelButton, 'RIGHT', 10, 0)
+dungeonButton:SetScript('OnClick', function(self) ListButton_OnClick(self) end)
 
 local characterButton = CreateFrame('BUTTON', '%parentCharacterButton', contentFrame)
+characterButton.sortMethod = 'character_name'
 characterButton:SetSize(105, 20)
 characterButton:SetNormalFontObject(InterUIBlack_Small)
 characterButton:GetNormalFontObject():SetJustifyH('LEFT')
 characterButton:SetText('CHARACTER')
 characterButton:SetAlpha(0.5)
 characterButton:SetPoint('LEFT', dungeonButton, 'RIGHT')
+characterButton:SetScript('OnClick', function(self) ListButton_OnClick(self) end)
 
 local weeklyBestButton = CreateFrame('BUTTON', '%parentWeeklyBestButton', contentFrame)
+weeklyBestButton.sortMethod = 'weekly_best_level'
 weeklyBestButton:SetSize(50, 20)
 weeklyBestButton:SetNormalFontObject(InterUIBlack_Small)
 characterButton:GetNormalFontObject():SetJustifyH('CENTER')
 weeklyBestButton:SetText('WKLY BEST')
 weeklyBestButton:SetAlpha(0.5)
 weeklyBestButton:SetPoint('LEFT', characterButton, 'RIGHT')
+weeklyBestButton:SetScript('OnClick', function(self) ListButton_OnClick(self) end)
 
 local weeklyButton = CreateFrame('BUTTON', '%parentWeeklyButton', contentFrame)
+weeklyButton.sortMethod = 'weekly_cache'
 weeklyButton:SetSize(30, 20)
 weeklyButton:SetNormalFontObject(InterUIBlack_Small)
 weeklyButton:SetText('10+')
 weeklyButton:SetAlpha(0.5)
 weeklyButton:SetPoint('LEFT', weeklyBestButton, 'RIGHT', 10, 0)
+weeklyButton:SetScript('OnClick', function(self) ListButton_OnClick(self) end)
 
 --[[
 local keyButton = CreateButton(contentFrame, 'keyButton', 45, 20, 'Level', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT) --75
@@ -762,14 +825,13 @@ function AstralKeyFrame:OnUpdate(elapsed)
 end
 
 function AstralKeyFrame:ToggleLists()
-	if AstralKeysSettings.options.friendSync then		
-		
+	if AstralKeysSettings.options.friendSync then
+
 	else
-		if e.FrameListShown() == 'friend' then
-			
-			
-			e.SetFrameListShown('guild')
+		if e.FrameListShown() == 'FRIENDS' then
+			e.SetFrameListShown('GUILD')
 			e.UpdateFrames()
+			HybridScrollFrame_SetOffset(AstralKeyFrameListContainer, 0)
 		end
 	end
 end
@@ -802,16 +864,6 @@ local function InitializeFrame()
 	HybridScrollFrame_CreateButtons(AstralKeyFrameCharacterContainer, 'AstralCharacterFrameTemplate', 0, 0, 'TOPLEFT', 'TOPLEFT', 0, -10)
 	HybridScrollFrame_CreateButtons(AstralKeyFrameListContainer, 'AstralListFrameTemplate', 0, 0, 'TOPLEFT', 'TOPLEFT', 0, -15)
 
-	local MAX_CHARACTER_FRAMES
-
-	if e.FrameListShown() == 'guild' then
-	else
-	end
-
-	if not AstralKeysSettings.options.friendSync then
-	
-	end
-
 	e.UpdateAffixes()
 
 	if AstralKeysSettings.frameOptions.viewMode == 1 then
@@ -822,6 +874,7 @@ local function InitializeFrame()
 	end
 
 	e.UpdateFrames()
+	UpdateTabs()
 end
 
 function e.UpdateAffixes()
@@ -863,24 +916,23 @@ function e.UpdateCharacterFrames()
 	CharacterScrollFrame_Update()
 end
 
-function e.AddUnitToTable(unit, class, faction, listType, mapID, level, weekly, weeklyBest, btag)
+function e.AddUnitToTable(unit, class, faction, listType, mapID, level, weekly, btag)
 	if not sortedTable[listType] then
 		sortedTable[listType] = {}
 	end
 	local found = false
 	for i = 1, #sortedTable[listType] do
-		if sortedTable[listType][i][1] == unit then
-			sortedTable[listType][i][3] = mapID
-			sortedTable[listType][i][4] = level
-			sortedTable[listType][i][5] = weekly or 0
-			sortedTable[listType][i][6] = weeklyBest
+		if sortedTable[listType][i].character_name == unit then
+			sortedTable[listType][i].mapID = mapID
+			sortedTable[listType][i].key_level = level
+			sortedTable[listType][i].weekly_cache = weekly or 0
 			found = true
 			break
 		end
 	end
 
 	if not found then
-		sortedTable[listType][#sortedTable[listType] + 1] = {unit, class, mapID, level, weekly or 0, weeklyBest, faction, btag}
+		sortedTable[listType][#sortedTable[listType] + 1] = {character_name = unit, character_class = class, mapID = mapID, key_level = level, weekly_cache = weekly or 0, faction = faction, btag = btag}
 	end
 end
 

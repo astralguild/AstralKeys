@@ -36,7 +36,7 @@ local function UpdateUnitKey(msg)
 	end
 
 	e.UpdateFrames()
-	e.AddUnitToTable(unit, class, faction, 'guild', dungeonID, keyLevel, weekly)
+	e.AddUnitToTable(unit, class, faction, 'GUILD', dungeonID, keyLevel, weekly)
 	
 	-- Update character frames if we received our own key
 	if unit == e.Player() then
@@ -84,7 +84,7 @@ local function SyncReceive(entry, sender)
 				AstralKeys[#AstralKeys + 1] = {unit, class, dungeonID, keyLevel, weekly, week, timeStamp}
 				e.SetUnitID(unit, #AstralKeys)
 			end
-			e.AddUnitToTable(unit, class, faction, 'guild', dungeonID, keyLevel, weekly)
+			e.AddUnitToTable(unit, class, faction, 'GUILD', dungeonID, keyLevel, weekly)
 		end
 	end
 	unit, class, dungeonID, keyLevel, weekly, week, timeStamp = nil, nil, nil, nil, nil, nil, nil
@@ -125,3 +125,74 @@ local function PushKeyList(msg, sender)
 end
 
 AstralComs:RegisterPrefix('GUILD', 'request', PushKeyList)
+
+
+-- Guild sorting/Filtering
+local function GuildListSort(A, v)
+	if v == 'dungeon_name' then
+		table.sort(A, function(a, b) 
+			if AstralKeysSettings.frameOptions.orientation == 0 then
+				if e.GetMapName(a.mapID) > e.GetMapName(b.mapID) then
+					return true
+				elseif e.GetMapName(a.mapID) < e.GetMapName(b.mapID) then
+					return false
+				else
+					return a.character_name < b.character_name
+				end
+			else
+				if e.GetMapName(a.mapID) < e.GetMapName(b.mapID) then
+					return true
+				elseif e.GetMapName(a.mapID) > e.GetMapName(b.mapID) then
+					return false
+				else
+					return a.character_name < b.character_name
+				end
+			end
+			end)
+	else
+		table.sort(A, function(a, b)
+			if AstralKeysSettings.frameOptions.orientation == 0 then
+				if a[v] > b[v] then
+					return true
+				elseif a[v] < b[v] then
+					return false
+				else
+					return a.character_name < b.character_name
+				end
+			else
+				if a[v] < b[v] then
+					return true
+				elseif a[v] > b[v] then
+					return false
+				else
+					return a.character_name < b.character_name
+				end
+			end
+		end)
+	end
+end
+e.AddListSort('GUILD', GuildListSort)
+
+local function GuildListFilter(A)
+	if not type(A) == 'table' then return end
+
+	for i = 1, #A.GUILD do
+		if e.UnitInGuild(A.GUILD[i].character_name) then
+			if AstralKeysSettings.options.showOffline then
+				A.GUILD[i].isShown = true
+			else
+				A.GUILD[i].isShown = e.GuildMemberOnline(A.GUILD[i].character_name)
+			end
+
+			A.GUILD[i].isShown = A.GUILD[i].isShown and AstralKeysSettings.options.rankFilters[e.GuildMemberRank(A.GUILD[i].character_name)]
+
+			if A.GUILD[i].isShown then
+				A.numShown = A.numShown + 1
+			end
+		else
+			A.GUILD[i].isShown = false
+		end
+	end
+end
+e.AddListFilter('GUILD', GuildListFilter)
+

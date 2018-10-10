@@ -51,7 +51,7 @@ if not AstralKeysSettings then
 			['orientation'] = 1,
 			['sortMethod'] = 4,
 			['viewMode'] = 0,
-			['list'] = 'guild',
+			['list'] = 'GUILD',
 			},
 		['options'] = {
 			['announceKey'] = true,
@@ -106,7 +106,7 @@ frame:SetScript('OnEvent', function(self, event, ...)
 					['orientation'] = 1,
 					['sortMethod'] = 4,
 					['viewMode'] = 0,
-					['list'] = 'guild',
+					['list'] = 'GUILD',
 					},
 				['options'] = {
 					['announceKey'] = true,

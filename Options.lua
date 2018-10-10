@@ -105,6 +105,7 @@ showOffLine:SetPoint('TOPLEFT', contentFrame.header, 'BOTTOMLEFT', 0, -5)
 showOffLine:SetScript('OnClick', function(self)
 	AstralKeysSettings.options.showOffline = self:GetChecked()
 	e.UpdateFrames()
+	HybridScrollFrame_SetOffset(AstralKeyFrameListContainer, 0)
 	end)
 
 local showMinimap = e.CreateCheckBox(contentFrame, 'Show Minimap button')

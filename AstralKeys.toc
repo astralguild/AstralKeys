@@ -21,7 +21,7 @@ Key Information.lua
 AstralKeys.lua
 
 Lists\Friends.lua
-## Lists\Guild.lua
+Lists\Guild.lua
 
 Frame Functions.lua
 Frame.xml

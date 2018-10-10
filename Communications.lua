@@ -262,7 +262,7 @@ local function SyncReceive(entry, sender)
 				AstralKeys[#AstralKeys + 1] = {unit, class, dungeonID, keyLevel, weekly, week, timeStamp}
 				e.SetUnitID(unit, #AstralKeys)
 			end
-			e.AddUnitToTable(unit, class, faction, 'guild', dungeonID, keyLevel, weekly)
+			e.AddUnitToTable(unit, class, faction, 'GUILD', dungeonID, keyLevel, weekly)
 		end
 	end
 	unit, class, dungeonID, keyLevel, weekly, week, timeStamp = nil, nil, nil, nil, nil, nil, nil
