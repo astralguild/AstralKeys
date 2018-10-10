@@ -16,8 +16,6 @@ local CHARACTER_WEEKLY_BEST = 'Weekly Best:'
 local CHARACTER_DUNGEON_NOT_RAN = 'No mythic dungeon ran'
 local CHARACTER_KEY_NOT_FOUND = 'No key found'
 
-local COLOR_YELLOW = 'ffffd200'
-local COLOR_GRAY = 'ff9d9d9d'
 local COLOR_BLUE_BNET = 'ff82c5ff'
 
 local SCROLL_TEXTURE_ALPHA_MIN = 0.2
@@ -28,8 +26,6 @@ local sortedTable = {}
 sortedTable.numShown = 0
 sortedTable['guild'] = {}
 sortedTable['friend'] = {}
-local numShown = 0
-
 
 function AstralKeysCharacterMixin:UpdateUnit(characterID)
 	local unit = e.CharacterName(characterID)
@@ -583,15 +579,25 @@ function ListScrollFrame_Update()
 	local numButtons = #buttons
 	local button, index
 	local height = scrollFrame.buttonHeight
-	local usedHeight = #buttons * height
+	local usedHeight = 0
 
-	for i = 1, #buttons do
-		if AstralKeys[i+offset] then
-			buttons[i]:SetUnit(i+offset)
-			buttons[i]:Show()
-		else
-			buttons[i]:Hide()
+	local list = e.FrameListShown()
+	local lastIndex = 1
+
+	for i = 1, math.min(sortedTable.numShown, 25) do
+		for j = lastIndex, #sortedTable[list] do
+			if sortedTable[list][j].isShown then
+				usedHeight = usedHeight + height
+				lastIndex = j + 1
+				buttons[i]:SetUnit(j+offset)
+				buttons[i]:Show()
+				break
+			end
 		end
+	end
+
+	for i = sortedTable.numShown + 1, #buttons do
+		buttons[i]:Hide()
 	end
 
 	HybridScrollFrame_Update(AstralKeyFrameListContainer, height * #AstralKeys, usedHeight)
@@ -827,36 +833,16 @@ function e.UpdateAffixes()
 end
 
 function e.WipeFrames()
-	wipe(AstralCharacters)
-	wipe(AstralKeys)
 	wipe(sortedTable)
 end
 
 function e.UpdateLines()
-	if true then return end
 	if not init then return end
-	local list = e.FrameListShown()
-	local lastIndex = 1
-
-	for i = 1, math.min(sortedTable.numShown, 25) do
-		for j = lastIndex, #sortedTable[list] do
-			if sortedTable[list][j].isShown then
-				lastIndex = j + 1
-				unit_frames[i]:SetUnit(unpack(sortedTable[list][j + offset], 1, 7))
-				break
-			end
-		end
-	end
-
-	for i = sortedTable.numShown + 1, 25 do
-		unit_frames[i]:ClearUnit()
-	end
+	ListScrollFrame_Update()
 end
 
 function e.UpdateFrames()
 	if not init or not AstralKeyFrame:IsShown() then return end
-	ListScrollFrame_Update()
-	if true then return end
 
 	e.UpdateTable(sortedTable)
 	e.SortTable(sortedTable[e.FrameListShown()], AstralKeysSettings.frameOptions.sortMethod)
@@ -877,7 +863,7 @@ function e.UpdateCharacterFrames()
 	CharacterScrollFrame_Update()
 end
 
-function e.AddUnitToTable(unit, class, faction, listType, mapID, level, weekly, btag)
+function e.AddUnitToTable(unit, class, faction, listType, mapID, level, weekly, weeklyBest, btag)
 	if not sortedTable[listType] then
 		sortedTable[listType] = {}
 	end
@@ -887,13 +873,14 @@ function e.AddUnitToTable(unit, class, faction, listType, mapID, level, weekly, 
 			sortedTable[listType][i][3] = mapID
 			sortedTable[listType][i][4] = level
 			sortedTable[listType][i][5] = weekly or 0
+			sortedTable[listType][i][6] = weeklyBest
 			found = true
 			break
 		end
 	end
 
 	if not found then
-		sortedTable[listType][#sortedTable[listType] + 1] = {unit, class, mapID, level, weekly or 0, faction, btag}
+		sortedTable[listType][#sortedTable[listType] + 1] = {unit, class, mapID, level, weekly or 0, weeklyBest, faction, btag}
 	end
 end
 

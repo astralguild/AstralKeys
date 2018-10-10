@@ -104,7 +104,6 @@ local showOffLine = e.CreateCheckBox(contentFrame, 'Show offline players')
 showOffLine:SetPoint('TOPLEFT', contentFrame.header, 'BOTTOMLEFT', 0, -5)
 showOffLine:SetScript('OnClick', function(self)
 	AstralKeysSettings.options.showOffline = self:GetChecked()
-	AstralContentFrame:ResetSlider()
 	e.UpdateFrames()
 	end)
 
