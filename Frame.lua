@@ -17,6 +17,9 @@ local COLOR_YELLOW = 'ffffd200'
 local COLOR_GRAY = 'ff9d9d9d'
 local COLOR_BLUE_BNET = 'ff82c5ff'
 
+local SCROLL_TEXTURE_ALPHA_MIN = 0.2
+local SCROLL_TEXTURE_ALPHA_MAX = 0.6
+
 local offset, shownOffset = 0, 0
 local characterOffset = 0
 
@@ -559,11 +562,11 @@ function CharacterScrollFrame_Update()
 end
 
 local function CharacterScrollFrame_OnEnter()
-	AstralKeyFrameCharacterContainerScrollBarThumbTexture:SetAlpha(0.6)
+	AstralKeyFrameCharacterContainerScrollBarThumbTexture:SetAlpha(SCROLL_TEXTURE_ALPHA_MAX)
 end
 
 local function CharacterScrollFrame_OnLeave()
-	AstralKeyFrameCharacterContainerScrollBarThumbTexture:SetAlpha(0.3)
+	AstralKeyFrameCharacterContainerScrollBarThumbTexture:SetAlpha(SCROLL_TEXTURE_ALPHA_MIN)
 end
 
 local characterScrollFrame = CreateFrame('ScrollFrame', '$parentCharacterContainer', AstralKeyFrame, 'HybridScrollFrameTemplate')
@@ -588,8 +591,9 @@ _G[characterScrollBar:GetName() .. 'ScrollDownButton']:Hide()
 _G[characterScrollBar:GetName() .. 'ScrollUpButton']:Hide()
 
 local scrollButton = _G[characterScrollBar:GetName() .. 'ThumbTexture']
---scrollButton:SetHeight(50)
+scrollButton:SetHeight(50)
 scrollButton:SetWidth(5)
+scrollButton:SetVertexColor(1, 1, 1, SCROLL_TEXTURE_ALPHA_MIN)
 --scrollButton:SetTexture(nil)
 --scrollButton:SetColorTexture(1, 1, 1, 0.3)
 
@@ -907,11 +911,10 @@ function e.UpdateCharacterFrames()
 	local id = e.GetCharacterID(e.Player())
 	if id then
 		local player = table.remove(AstralCharacters, id)
-		--table.sort(AstralCharacters, function(a,b) return a.unit >= b.unit end)
+		table.sort(AstralCharacters, function(a,b) return a.unit < b.unit end)
 		table.insert(AstralCharacters, 1, player)
 		e.UpdateCharacterIDs()
 	end
-	HybridScrollFrame_Update(AstralKeyFrameCharacterContainer, #AstralCharacters*65,#AstralCharacters*65)
 	CharacterScrollFrame_Update()
 end
 

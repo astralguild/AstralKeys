@@ -21,7 +21,7 @@ Character Frame Template
 						<Anchor point="TOPLEFT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentKeyString" inherits="InterUIBold_Normal" wordwrap="false" parentKey="keyString" text="CURRENT" alpha="0.5">
+				<FontString name="$parentKeyString" inherits="InterUIBold_Small" wordwrap="false" parentKey="keyString" text="CURRENT" alpha="0.5" justifyH="LEFT">
 					<Size>
 						<AbsDimension x="75" y="15"/>
 					</Size>
@@ -29,7 +29,7 @@ Character Frame Template
 						<Anchor point="TOPLEFT" relativeTo="$parentNameString" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentWeeklyString" inherits="InterUIBold_Normal" wordwrap="false" parentKey="weeklyString" text="WKLY BEST" alpha="0.5">
+				<FontString name="$parentWeeklyString" inherits="InterUIBold_Small" wordwrap="false" parentKey="weeklyString" text="WKLY BEST" alpha="0.5"  justifyH="LEFT">
 					<Size>
 						<AbsDimension x="75" y="15"/>
 					</Size>
