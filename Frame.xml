@@ -7,7 +7,7 @@
 Character Frame Template
 ********************************************************************************
 -->
-	<Button name="AstralCharacterFrameTemplate" virtual="true" minin="AstralKeysCharacterMixin">
+	<Button name="AstralCharacterFrameTemplate" virtual="true" mixin="AstralKeysCharacterMixin">
 		<Size>
 			<AbsDimension x="250" y="50"/>
 		</Size>
@@ -21,40 +21,38 @@ Character Frame Template
 						<Anchor point="TOPLEFT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentKeyString" inherits="InterUIBold_Normal" wordwrap="false" parentKey="keyString">
+				<FontString name="$parentKeyString" inherits="InterUIBold_Normal" wordwrap="false" parentKey="keyString" text="CURRENT" alpha="0.5">
 					<Size>
-						<AbsDimension x="200" y="15"/>
+						<AbsDimension x="75" y="15"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentNameString" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentWeeklyString" inherits="InterUIBold_Normal" wordwrap="false" parentKey="weeklyString">
+				<FontString name="$parentWeeklyString" inherits="InterUIBold_Normal" wordwrap="false" parentKey="weeklyString" text="WKLY BEST" alpha="0.5">
 					<Size>
-						<AbsDimension x="200" y="15"/>
+						<AbsDimension x="75" y="15"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentKeyString" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentKeyStringValue" inherits="InterUIBold_Tiny" wordwrap="false" parentKey="keyStringValue">
-					<Size>
-						<AbsDimension x="200" y="15"/>
-					</Size>
+				<FontString name="$parentKeyStringValue" inherits="InterUIRegular_Small" wordwrap="false" parentKey="keyStringValue" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentKeyString" relativePoint="RIGHT" x="20" y="0"/>
+						<Anchor point="LEFT" relativeTo="$parentKeyString" relativePoint="RIGHT" x="10" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentWeeklyStringValue" inherits="InterUIBold_Tiny" wordwrap="false" parentKey="weeklyStringValue">
-					<Size>
-						<AbsDimension x="200" y="15"/>
-					</Size>
+				<FontString name="$parentWeeklyStringValue" inherits="InterUIRegular_Small" wordwrap="false" parentKey="weeklyStringValue" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentKeyString" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+						<Anchor point="LEFT" relativeTo="$parentWeeklyString" relativePoint="RIGHT" x="10" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
 	</Button>
 	<Button name="AstralListFrameTemplate" virtual="true">
 		<Size>

@@ -169,7 +169,7 @@
 	</FontFamily>
 	<FontFamily name="InterUIBlack_Normal" virtual="true">
 		<Member alphabet="roman">
-			<Font font="Interface\AddOns\AstralKeys\Media\Font\Inter-UI-Black.ttf" height="12" justifyH="LEFT" >
+			<Font font="Interface\AddOns\AstralKeys\Media\Font\Inter-UI-Black.ttf" height="12" justifyH="LEFT">
 			</Font>
 		</Member>
 		<Member alphabet="korean">
@@ -309,7 +309,7 @@
 	</FontFamily>
 	<FontFamily name="InterUIMedium_Normal" virtual="true">
 		<Member alphabet="roman">
-			<Font font="Interface\AddOns\AstralKeys\Media\Font\Inter-UI-Medium.ttf" height="12" justifyH="LEFT" >
+			<Font font="Interface\AddOns\AstralKeys\Media\Font\Inter-UI-Medium.ttf" height="12" justifyH="LEFT">
 			</Font>
 		</Member>
 		<Member alphabet="korean">

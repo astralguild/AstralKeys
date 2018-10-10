@@ -28,7 +28,6 @@ sortedTable.numShown = 0
 sortedTable['guild'] = {}
 sortedTable['friend'] = {}
 local numShown = 0
-local characters = {}
 local characterTable = {}
 
 local function MixIn(D, T)	
@@ -42,108 +41,44 @@ end
 AstralKeysCharacterMixin = {}
 
 function AstralKeysCharacterMixin:UpdateUnit(characterID)
-	if characterID then
-		local unit = e.CharacterName(characterID)
-		local realm = e.CharacterRealm(characterID)
-		local unitClass = e.GetCharacterClass(characterID)
+	local unit = e.CharacterName(characterID)
+	local realm = e.CharacterRealm(characterID)
+	local unitClass = e.GetCharacterClass(characterID)
 
-		local bestKey = e.GetCharacterBestLevel(characterID)
-		local currentMapID = e.GetCharacterMapID(unit .. '-' .. realm)
-		local currentKeyLevel = e.GetCharacterKeyLevel(unit .. '-' .. realm)
+	local bestKey = e.GetCharacterBestLevel(characterID)
+	local currentMapID = e.GetCharacterMapID(unit .. '-' .. realm)
+	local currentKeyLevel = e.GetCharacterKeyLevel(unit .. '-' .. realm)
 
-		if e.CharacterRealm(characterID) ~= e.PlayerRealm() then
-			unit = unit .. ' (*)'
-		end
-		self.nameString:SetText(WrapTextInColorCode(unit, select(4, GetClassColor(unitClass))))
+	if e.CharacterRealm(characterID) ~= e.PlayerRealm() then
+		unit = unit .. ' (*)'
+	end
+	self.nameString:SetText(WrapTextInColorCode(unit, select(4, GetClassColor(unitClass))))
 
-		if bestKey ~= 0 then
-			self.weeklyStringValue:SetText(bestKey)
-		end
+	if bestKey ~= 0 then
+		self.weeklyStringValue:SetText(bestKey)
+	end
 
-		if unit:find('Neko') then
-			self.weeklyStringValue:SetText(10)
-		end
+	if unit:find('Neko') then
+		self.weeklyStringValue:SetText(10)
+	end
 
-		if currentMapID then
-			self.keyStringValue:SetFormattedText('%d %s', currentKeyLevel, e.GetMapName(currentMapID))
-		else
-			self.keyStringValue:SetFormattedText('|c%s%s|r', COLOR_GRAY, CHARACTER_KEY_NOT_FOUND)
-		end
+	if currentMapID then
+		self.keyStringValue:SetFormattedText('%d %s', currentKeyLevel, e.GetMapName(currentMapID))
 	else
-		self.nameString:SetText('')
-		self.keyStringValue:SetText('')
-		self.weeklyStringValue:SetText('')
+		self.keyStringValue:SetFormattedText('|c%s%s|r', COLOR_GRAY, CHARACTER_KEY_NOT_FOUND)
 	end
 end
 
-local function CreateCharacterFrame(parent, frameName, unitName, bestKey)
+function AstralKeysCharacterMixin:OnEnter()
+	local scrollBar = self:GetParent():GetParent().scrollBar
+	local scrollButton = _G[scrollBar:GetName() .. 'ThumbTexture']
+	scrollButton:SetAlpha(0.6)
+end
 
-	local frame = CreateFrame('FRAME', frameName, parent)
-	frame:SetSize(250, 50)
-	frame:SetFrameLevel(5)
-
-	frame.unit = unitName
-	frame.unitClass = ''
-
-	frame.name = frame:CreateFontString(nil, 'OVERLAY', 'InterUIBold_Normal')
-	frame.name:SetSize(200, 15)
-	frame.name:SetPoint('TOPLEFT', frame, 'TOPLEFT')
-
-	frame.keyText = frame:CreateFontString(nil, 'OVERLAY', 'InterUIBold_Tiny')
-	frame.keyText:SetAlpha(0.5)
-	frame.keyText:SetPoint('TOPLEFT', frame.name, 'BOTTOMLEFT', 0, -5)
-	frame.keyText:SetText('CURRENT')
-
-	frame.weeklyText = frame:CreateFontString(nil, 'OVERLAY', 'InterUIBold_Tiny')
-	frame.weeklyText:SetAlpha(0.5)
-	frame.weeklyText:SetPoint('TOPLEFT', frame.keyText, 'BOTTOMLEFT', 0, -5)
-	frame.weeklyText:SetText('WKLY BEST')
-
-
-	frame.keyValue =  frame:CreateFontString(nil, 'OVERLAY', 'InterUIRegular_Small')
-	frame.keyValue:SetPoint('LEFT', frame.keyText, 'RIGHT', 20, 0)
-
-	frame.weeklyValue = frame:CreateFontString(nil, 'OVERLAY', 'InterUIRegular_Small')
-	frame.weeklyValue:SetPoint('TOPLEFT', frame.keyValue, 'BOTTOMLEFT', 0, -5)
-
-	function frame:UpdateInformation(characterID)
-		if characterID then
-			local unit = e.CharacterName(characterID) 
-			local realm = e.CharacterRealm(characterID)
-			local unitClass = e.GetCharacterClass(characterID)
-
-			local bestKey = e.GetCharacterBestLevel(characterID)
-			local currentMapID = e.GetCharacterMapID(unit .. '-' .. realm)
-			local currentKeyLevel = e.GetCharacterKeyLevel(unit .. '-' .. realm)
-
-			if e.CharacterRealm(characterID) ~= e.PlayerRealm() then
-				unit = unit .. ' (*)'
-			end
-			self.name:SetText(WrapTextInColorCode(unit, select(4, GetClassColor(unitClass))))
-
-			if bestKey ~= 0 then
-				self.weeklyValue:SetText(bestKey)
-			end
-
-			if unit:find('Neko') then
-				self.weeklyValue:SetText(10)
-			end
-
-			if currentMapID then
-				self.keyValue:SetFormattedText('%d %s', currentKeyLevel, e.GetMapName(currentMapID))
-			else
-				self.keyValue:SetFormattedText('|c%s%s|r', COLOR_GRAY, CHARACTER_KEY_NOT_FOUND)
-			end
-		else
-			self.name:SetText('')
-			self.keyValue:SetText('')
-			self.weeklyValue:SetText('')
-		end
-	end
-
-
-	return frame
-
+function AstralKeysCharacterMixin:OnLeave()
+	local scrollBar = self:GetParent():GetParent().scrollBar
+	local scrollButton = _G[scrollBar:GetName() .. 'ThumbTexture']
+	scrollButton:SetAlpha(0.3)
 end
 
 local unit_frames = {}
@@ -449,7 +384,6 @@ toggleButton:SetSize(16, 16)
 toggleButton:SetPoint('TOPRIGHT', closeButton, 'TOPLEFT', - 5, 0)
 toggleButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize.tga')
 
-
 toggleButton:SetScript('OnClick', function(self)
 	local left, bottom, width = AstralKeyFrame:GetRect()
 	if AstralKeysSettings.frameOptions.viewMode == 0 then
@@ -603,47 +537,64 @@ local characterContent = CreateFrame('FRAME', 'AstralCharacterContent', characte
 characterContent:SetPoint('TOPLEFT', characterTitle, 'BOTTOMLEFT', 0, -10)
 characterContent:SetSize(215, 300)
 
-local function CharacterScrollFrame_Update()
+function CharacterScrollFrame_Update()
 	local scrollFrame = AstralKeyFrameCharacterContainer
 	local offset = HybridScrollFrame_GetOffset(scrollFrame)
 	local buttons = scrollFrame.buttons
 	local numButtons = #buttons
 	local button, index
+	local height = scrollFrame.buttonHeight
+	local usedHeight = #buttons * height
 
-
-	if e.GetCharacterID(e.Player()) then
-		buttons[1]:UpdateUnit(e.GetCharacterID(e.Player()))
-		for i = 2, #buttons do
-			if characterTable[i-1] then
-				buttons[i]:UpdateUnit(e.GetCharacterID(characterTable[i + offset - 1].unit))
-			else
-				buttons[i]:UpdateUnit('')
-			end	
-		end
-	else
-		for i = 1, #buttons do
-			if characterTable[i] then
-				buttons[i]:UpdateUnit(e.GetCharacterID(characterTable[i + offset].unit))
-			else
-				buttons[i]:UpdateUnit('')
-			end
+	for i = 1, #buttons do
+		if AstralCharacters[i+offset] then
+			buttons[i]:UpdateUnit(i+offset)
+			buttons[i]:Show()
+		else
+			buttons[i]:Hide()
 		end
 	end
 
+	HybridScrollFrame_Update(AstralKeyFrameCharacterContainer, height * #AstralCharacters, usedHeight)
 end
 
+local function CharacterScrollFrame_OnEnter()
+	AstralKeyFrameCharacterContainerScrollBarThumbTexture:SetAlpha(0.6)
+end
 
+local function CharacterScrollFrame_OnLeave()
+	AstralKeyFrameCharacterContainerScrollBarThumbTexture:SetAlpha(0.3)
+end
 
 local characterScrollFrame = CreateFrame('ScrollFrame', '$parentCharacterContainer', AstralKeyFrame, 'HybridScrollFrameTemplate')
-characterScrollFrame:SetSize(215, 300)
-characterScrollFrame:SetPoint('TOPLEFT', characterFrame, 'TOPLEFT', 0, -100)
+characterScrollFrame:SetSize(190, 320)
+characterScrollFrame:SetPoint('TOPLEFT', characterTitle, 'TOPLEFT', 0, -25)
+characterScrollFrame:SetScript('OnEnter',  CharacterScrollFrame_OnEnter)
+characterScrollFrame:SetScript('OnLeave', CharacterScrollFrame_OnLeave)
 
-local characterScrollBar = CreateFrame('Slider', '$parentCharacterScrollBar', characterScrollFrame, 'HybridScrollBarTemplate')
-characterScrollBar:SetPoint('TOPLEFT', characterScrollFrame, 'TOPLEFT')
-characterScrollBar:SetPoint('BOTTOMRIGHT', characterScrollFrame, 'BOTTOMRIGHT', 1, 0)
---characterScrollBar.onvaluechanged = nil;
+local characterScrollBar = CreateFrame('Slider', '$parentScrollBar', characterScrollFrame, 'HybridScrollBarTemplate')
+characterScrollBar:SetWidth(10)
+characterScrollBar:SetPoint('TOPLEFT', characterScrollFrame, 'TOPRIGHT')
+characterScrollBar:SetPoint('BOTTOMLEFT', characterScrollFrame, 'BOTTOMRIGHT', 1, 0)
+--characterScrollBar:SetMinMaxValues(0, 3)
+characterScrollBar:SetScript('OnEnter', CharacterScrollFrame_OnEnter)
+characterScrollBar:SetScript('OnLeave', CharacterScrollFrame_OnLeave)
 
-characterScrollFrame.stepSize = 50 + 5
+-- Re-skin the scroll Bar
+characterScrollBar.ScrollBarTop:Hide()
+characterScrollBar.ScrollBarMiddle:Hide()
+characterScrollBar.ScrollBarBottom:Hide()
+_G[characterScrollBar:GetName() .. 'ScrollDownButton']:Hide()
+_G[characterScrollBar:GetName() .. 'ScrollUpButton']:Hide()
+
+local scrollButton = _G[characterScrollBar:GetName() .. 'ThumbTexture']
+--scrollButton:SetHeight(50)
+scrollButton:SetWidth(5)
+--scrollButton:SetTexture(nil)
+--scrollButton:SetColorTexture(1, 1, 1, 0.3)
+
+--characterScrollFrame.stepSize = 65
+characterScrollFrame.buttonHeight = 50
 characterScrollFrame.update = CharacterScrollFrame_Update
 
 
@@ -867,7 +818,7 @@ local init = false
 local function InitializeFrame()
 	init = true
 
-	HybridScrollFrame_CreateButtons(AstralKeyFrameCharacterContainer, 'AstralCharacterFrameTemplate', 0, 0, 'TOPLEFT', 'TOPLEFT', 0, 10, 'TOP', 'BOTTOM')
+	HybridScrollFrame_CreateButtons(AstralKeyFrameCharacterContainer, 'AstralCharacterFrameTemplate', 0, 0, 'TOPLEFT', 'TOPLEFT', 0, -15)
 
 	local MAX_CHARACTER_FRAMES
 
@@ -881,8 +832,6 @@ local function InitializeFrame()
 
 	e.UpdateAffixes()
 
-	characterTable = e.DeepCopy(AstralCharacters)
-
 	if AstralKeysSettings.frameOptions.viewMode == 1 then
 		AstralKeyFrame:SetWidth(425)
 		AstralContentFrame:ClearAllPoints()
@@ -890,57 +839,7 @@ local function InitializeFrame()
 		toggleButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\menu.tga')
 	end
 
-	local id = e.GetCharacterID(e.Player())
---[[
-	-- Only create 6 character frames in total, first is reserved for current logged in character if 
-	if id then -- We are logged into a character that has a key		
-		MAX_CHARACTER_FRAMES = 5
-		characters[1] = CreateCharacterFrame(characterFrame, nil, characterTable[id].unit, nil)
-		characters[1]:SetPoint('TOPLEFT', characterTitle, 'BOTTOMLEFT', 0, -15)
-
-		characterContent:SetSize(215, 250)
-		characterContent:SetPoint('TOPLEFT', characters[1], 'BOTTOMLEFT', 0, -10)
-
-		table.remove(characterTable, id)
-
-		for i = 1, math.min(#characterTable, 5) do -- Only 5 left character slots to make
-			characters[i+1] = CreateCharacterFrame(characterFrame, nil, characterTable[i].unit, nil)
-			characters[i+1]:SetPoint('TOPLEFT', characterContent, 'TOPLEFT', 0, -45*(i - 1) - 10*(i - 1))
-		end
-	else -- No key on said character, make 6 slots for characters
-		MAX_CHARACTER_FRAMES = 6
-		characterContent:SetSize(215, 300)
-		characterContent:SetPoint('TOPLEFT', characterTitle, 'BOTTOMLEFT', 0, -10)
-
-		for i = 1, math.min(#characterTable, 6) do
-			characters[i] = CreateCharacterFrame(characterFrame, nil, characterTable[i].unit, nil)
-			characters[i]:SetPoint('TOPLEFT', characterContent, 'TOPLEFT', 0, -45*(i-1) - 10)
-		end
-	end
-
-	--MAX_CHARACTER_FRAMES = math.floor(characterContent:GetHeight()/characters[1]:GetHeight())
-
-
-	characterContent:SetScript('OnMouseWheel', function(self, delta)
-		if #characterTable < 6 then return end -- There aren't more characters than frames, no need to scroll
-
-		local numSlots = 6
-
-		if e.GetCharacterID(e.Player()) then
-			numSlots = 5
-		end
-
-		characterOffset = characterOffset - delta
-		characterOffset = math.max(0, characterOffset)
-		characterOffset = math.min(characterOffset, #characterTable - numSlots)
-
-		e.UpdateCharacterEntries()
-
-		end)
-]]
 	e.UpdateFrames()
-	e.UpdateCharacterFrames()
-
 end
 
 function e.UpdateAffixes()
@@ -1002,39 +901,18 @@ function e.UpdateFrames()
 	e.UpdateLines()
 end
 
-function e.UpdateCharacterEntries()
-	if not init then return end
-
-	if e.GetCharacterID(e.Player()) then
-		characters[1]:UpdateInformation(e.GetCharacterID(e.Player()))
-		for i = 2, #characters do
-			if characterTable[i-1] then
-				characters[i]:UpdateInformation(e.GetCharacterID(characterTable[i + characterOffset - 1].unit))
-			else
-				characters[i]:UpdateInformation('')
-			end	
-		end
-	else
-		for i = 1, #characters do
-			if characterTable[i] then
-				characters[i]:UpdateInformation(e.GetCharacterID(characterTable[i + characterOffset].unit))
-			else
-				characters[i]:UpdateInformation('')
-			end
-		end
-	end
-end
-
-
 function e.UpdateCharacterFrames()
 	if not init then return end
-	characterTable = e.DeepCopy(AstralCharacters)
-	if e.GetCharacterID(e.Player()) then
-		characters[1]:UpdateInformation(e.GetCharacterID(e.Player()))
-		table.remove(characterTable, e.GetCharacterID(e.Player()))
+	
+	local id = e.GetCharacterID(e.Player())
+	if id then
+		local player = table.remove(AstralCharacters, id)
+		--table.sort(AstralCharacters, function(a,b) return a.unit >= b.unit end)
+		table.insert(AstralCharacters, 1, player)
+		e.UpdateCharacterIDs()
 	end
-
-	e.UpdateCharacterEntries()
+	HybridScrollFrame_Update(AstralKeyFrameCharacterContainer, #AstralCharacters*65,#AstralCharacters*65)
+	CharacterScrollFrame_Update()
 end
 
 function e.AddUnitToTable(unit, class, faction, listType, mapID, level, weekly, btag)

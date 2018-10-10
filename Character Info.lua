@@ -8,6 +8,13 @@ function e.SetCharacterID(unit, unitID)
 	characterList[unit] = unitID
 end
 
+function e.UpdateCharacterIDs()
+	wipe(characterList)
+	for i = 1, #AstralCharacters do
+		characterList[AstralCharacters[i].unit] = i
+	end
+end
+
 -- Retrieves character's realm
 -- @return string Realm name for character
 function e.CharacterRealm(id)
