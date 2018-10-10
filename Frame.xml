@@ -1,0 +1,112 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Frame.lua"/>
+
+<!-- 
+********************************************************************************
+Character Frame Template
+********************************************************************************
+-->
+	<Button name="AstralCharacterFrameTemplate" virtual="true" minin="AstralKeysCharacterMixin">
+		<Size>
+			<AbsDimension x="250" y="50"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTOWKR">
+				<FontString name="$parentNameString" inherits="InterUIBold_Normal" wordwrap="false" parentKey="nameString">
+					<Size>
+						<AbsDimension x="200" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentKeyString" inherits="InterUIBold_Normal" wordwrap="false" parentKey="keyString">
+					<Size>
+						<AbsDimension x="200" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentNameString" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentWeeklyString" inherits="InterUIBold_Normal" wordwrap="false" parentKey="weeklyString">
+					<Size>
+						<AbsDimension x="200" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentKeyString" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentKeyStringValue" inherits="InterUIBold_Tiny" wordwrap="false" parentKey="keyStringValue">
+					<Size>
+						<AbsDimension x="200" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentKeyString" relativePoint="RIGHT" x="20" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentWeeklyStringValue" inherits="InterUIBold_Tiny" wordwrap="false" parentKey="weeklyStringValue">
+					<Size>
+						<AbsDimension x="200" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentKeyString" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Button>
+	<Button name="AstralListFrameTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="400" y="15"/>
+		</Size>
+		<Layers>
+			<FontString name="$parentLevelString" inherits="InterUIBlack_Normal" justifyH='RIGHT' wordwrap="false" parentKey="levelString">
+				<Size>
+					<AbsDimension x="20" y="15"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="20" y="0"/>
+				</Anchors>
+			</FontString>
+			<FontString name="$parentDungeonString" inherits="InterUIBlack_Normal" justifyH='LEFT' wordwrap="false" parentKey="dungeonString">
+				<Size>
+					<AbsDimension x="160" y="15"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentLevelString" relativePoint="RIGHT" x="25" y="0"/>
+				</Anchors>
+			</FontString>
+			<FontString name="$parentNameString" inherits="InterUIMedium_Normal" justifyH='LEFT' wordwrap="false" parentKey="nameString">
+				<Size>
+					<AbsDimension x="150" y="15"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDungeonString" relativePoint="RIGHT" x="25" y="0"/>
+				</Anchors>
+			</FontString>
+			<FontString name="$parentBestString" inherits="InterUIBlack_Normal" justifyH='LEFT' wordwrap="false" parentKey="bestString">
+				<Size>
+					<AbsDimension x="20" y="15"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentNameString" relativePoint="RIGHT" x="25" y="0"/>
+				</Anchors>
+			</FontString>
+			<Texture name="$parentWeekly" file="Interface\AddOns\AstralKeys\Media\check.tga">
+				<Size>
+					<AbsDimension x="12" y="12"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentBestString" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+			</Texture>
+		</Layers>
+		<Scripts>
+			<OnClick function="AstralKeysList_OnClick"/>
+		</Scripts>
+	</Button>
+</Ui>
+
+
+

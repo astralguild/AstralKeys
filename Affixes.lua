@@ -28,5 +28,5 @@ function e.AffixThree(weekOffSet)
 end
 
 function e.AffixFour()
-	return 0 -- AFFIXES[4].id
+	return AFFIXES[4].id
 end

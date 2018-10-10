@@ -6,6 +6,7 @@
 ## SavedVariables: AstralKeys, AstralCharacters, AstralFriends, AstralKeysSettings, AstralMinimap
 
 embeds.xml
+fonts.xml
 Settings.lua
 Events.lua
 Tables.lua
@@ -23,6 +24,6 @@ Lists\Friends.lua
 ## Lists\Guild.lua
 
 Frame Functions.lua
-Frame.lua
+Frame.xml
 MinimapButton.lua
 Options.lua
