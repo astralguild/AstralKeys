@@ -1,5 +1,8 @@
 local _, e = ...
 
+-- MixIns
+AstralKeysCharacterMixin = {}
+AstralKeysListMixin = {}
 -- Red color code
 -- #C72329
 
@@ -20,28 +23,13 @@ local COLOR_BLUE_BNET = 'ff82c5ff'
 local SCROLL_TEXTURE_ALPHA_MIN = 0.2
 local SCROLL_TEXTURE_ALPHA_MAX = 0.6
 
-local offset, shownOffset = 0, 0
-local characterOffset = 0
-
-local name, keyLevel, mapID, class, realm, indexEnd
-
 
 local sortedTable = {}
 sortedTable.numShown = 0
 sortedTable['guild'] = {}
 sortedTable['friend'] = {}
 local numShown = 0
-local characterTable = {}
 
-local function MixIn(D, T)	
-	for k,v in pairs(T) do
-		if (type(v) == "function") and (force or (D[k] == nil)) then
-			D[k] = v;
-		end
-	end
-end
-
-AstralKeysCharacterMixin = {}
 
 function AstralKeysCharacterMixin:UpdateUnit(characterID)
 	local unit = e.CharacterName(characterID)
@@ -84,10 +72,23 @@ function AstralKeysCharacterMixin:OnLeave()
 	scrollButton:SetAlpha(0.3)
 end
 
-local unit_frames = {}
+function AstralKeysListMixin:SetUnit(id)
+	local unit = e.UnitName(id)
+	local unitClass = e.UnitClass(id)
+	local bestKey = 0 --e.UnitBestKey()
+
+
+	self.levelString:SetText(e.UnitKeyLevel(id))
+	self.dungeonString:SetText(e.GetMapName(e.UnitMapID(id)))
+
+	self.nameString:SetText(WrapTextInColorCode(Ambiguate(unit, 'GUILD') , select(4, GetClassColor(unitClass))))
+
+	self.bestString:SetText(bestKey)
+	self.weeklyTexture:SetShown(true or bestKey >= e.CACHE_LEVEL)
+end
+
 
 local UnitFrame = {}
-UnitFrame.__index = UnitFrame
 
 function AstralKeysList_OnClick()
 	print('testing')
@@ -142,22 +143,6 @@ function UnitFrame:NewFrame(parent)
 			AstralMenuFrame:SetUnit(self:GetParent().unitID)
 			AstralMenuFrame:Show()
 		end
-	end)
-
-	self.unit:SetScript('OnEnter', function(self)
-		AstralContentFrame.slider:SetAlpha(1)
-		end)
-
-	self.unit:SetScript('OnLeave', function(self)
-		AstralContentFrame.slider:SetAlpha(.2)
-	end)
-
-	self:SetScript('OnEnter', function(self)
-		AstralContentFrame.slider:SetAlpha(1)
-	end)
-
-	self:SetScript('OnLeave', function(self)
-		AstralContentFrame.slider:SetAlpha(.2)
 	end)
 
 	return self
@@ -321,8 +306,8 @@ AstralMenuFrame:AddSelection('Cancel', function() return AstralMenuFrame:Hide() 
 
 local AstralKeyFrame = CreateFrame('FRAME', 'AstralKeyFrame', UIParent)
 AstralKeyFrame:SetFrameStrata('DIALOG')
-AstralKeyFrame:SetWidth(710)
-AstralKeyFrame:SetHeight(505)
+AstralKeyFrame:SetWidth(740)
+AstralKeyFrame:SetHeight(490)
 AstralKeyFrame:SetPoint('CENTER', UIParent, 'CENTER')
 AstralKeyFrame:EnableMouse(true)
 AstralKeyFrame:SetMovable(true)
@@ -337,7 +322,7 @@ AstralKeyFrame.texture:SetAllPoints(AstralKeyFrame)
 AstralKeyFrame.texture:SetColorTexture(0, 0, 0, 0.8)
 
 local menuBar = CreateFrame('FRAME', '%parentMenuBar', AstralKeyFrame)
-menuBar:SetSize(50, 505)
+menuBar:SetSize(50, 490)
 menuBar:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT')
 menuBar.texture = menuBar:CreateTexture(nil, 'BACKGROUND')
 menuBar.texture:SetAllPoints(menuBar)
@@ -423,14 +408,8 @@ optionsButton:SetScript('OnClick', function()
 	AstralOptionsFrame:SetShown( not AstralOptionsFrame:IsShown())
 	end)
 
-
--- Announce Buttons
------------------------------------------------------
-
--- Tooltip AstralKeyFrame
------------------------------------------------------
 local tabFrame = CreateFrame('FRAME', '$parentTabFrame', AstralKeyFrame)
-tabFrame:SetSize(385, 30)
+tabFrame:SetSize(420, 30)
 tabFrame:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', -30, -10)
 tabFrame.t = tabFrame:CreateTexture(nil, 'ARTWORK')
 tabFrame.t:SetAllPoints(tabFrame)
@@ -483,7 +462,7 @@ CreateNewTab('FRIENDS', tabFrame)
 UpdateTabs()
 
 local characterFrame = CreateFrame('FRAME', '$parentCharacterFrame', AstralKeyFrame)
-characterFrame:SetSize(225, 505)
+characterFrame:SetSize(225, 490)
 characterFrame:SetPoint('TOPLEFT', menuBar, 'TOPRIGHT', 1, 0)
 
 local characterTitle = characterFrame:CreateFontString(nil, 'OVERLAY', 'InterUIBlack_Small')
@@ -492,7 +471,8 @@ characterTitle:SetText('CHARACTERS')
 
 local guildVersionString = characterFrame:CreateFontString(nil, 'OVERLAY', 'InterUIRegular_Small')
 guildVersionString:SetFormattedText('Astral Turalyon (US) %s', 'v3')
-guildVersionString:SetPoint('BOTTOMLEFT', characterFrame, 'BOTTOMLEFT', 20, 10)
+guildVersionString:SetJustifyH('CENTER')
+guildVersionString:SetPoint('BOTTOM', characterFrame, 'BOTTOM', 0, 20)
 guildVersionString:SetAlpha(0.2)
 
 characterFrame.texture = characterFrame:CreateTexture(nil, 'BACKGROUND')
@@ -536,10 +516,6 @@ end
 
 -- Character Frames
 ----------------------------------------------------------------
-local characterContent = CreateFrame('FRAME', 'AstralCharacterContent', characterFrame)
-characterContent:SetPoint('TOPLEFT', characterTitle, 'BOTTOMLEFT', 0, -10)
-characterContent:SetSize(215, 300)
-
 function CharacterScrollFrame_Update()
 	local scrollFrame = AstralKeyFrameCharacterContainer
 	local offset = HybridScrollFrame_GetOffset(scrollFrame)
@@ -579,7 +555,6 @@ local characterScrollBar = CreateFrame('Slider', '$parentScrollBar', characterSc
 characterScrollBar:SetWidth(10)
 characterScrollBar:SetPoint('TOPLEFT', characterScrollFrame, 'TOPRIGHT')
 characterScrollBar:SetPoint('BOTTOMLEFT', characterScrollFrame, 'BOTTOMRIGHT', 1, 0)
---characterScrollBar:SetMinMaxValues(0, 3)
 characterScrollBar:SetScript('OnEnter', CharacterScrollFrame_OnEnter)
 characterScrollBar:SetScript('OnLeave', CharacterScrollFrame_OnLeave)
 
@@ -594,57 +569,59 @@ local scrollButton = _G[characterScrollBar:GetName() .. 'ThumbTexture']
 scrollButton:SetHeight(50)
 scrollButton:SetWidth(5)
 scrollButton:SetVertexColor(1, 1, 1, SCROLL_TEXTURE_ALPHA_MIN)
---scrollButton:SetTexture(nil)
---scrollButton:SetColorTexture(1, 1, 1, 0.3)
 
---characterScrollFrame.stepSize = 65
-characterScrollFrame.buttonHeight = 50
+characterScrollFrame.buttonHeight = 45
 characterScrollFrame.update = CharacterScrollFrame_Update
 
 
 -- Key List Frames
 ----------------------------------------------------------------
+function ListScrollFrame_Update()
+	local scrollFrame = AstralKeyFrameListContainer
+	local offset = HybridScrollFrame_GetOffset(scrollFrame)
+	local buttons = scrollFrame.buttons
+	local numButtons = #buttons
+	local button, index
+	local height = scrollFrame.buttonHeight
+	local usedHeight = #buttons * height
+
+	for i = 1, #buttons do
+		if AstralKeys[i+offset] then
+			buttons[i]:SetUnit(i+offset)
+			buttons[i]:Show()
+		else
+			buttons[i]:Hide()
+		end
+	end
+
+	HybridScrollFrame_Update(AstralKeyFrameListContainer, height * #AstralKeys, usedHeight)
+end
+
+local listScrollFrame = CreateFrame('ScrollFrame', '$parentListContainer', AstralKeyFrame, 'HybridScrollFrameTemplate')
+listScrollFrame:SetSize(420, 390)
+listScrollFrame:SetPoint('TOPLEFT', tabFrame, 'BOTTOMLEFT', 0, -40)
+listScrollFrame.update = ListScrollFrame_Update
+
+local listScrollBar = CreateFrame('Slider', '$parentScrollBar', listScrollFrame, 'HybridScrollBarTemplate')
+listScrollBar:SetWidth(10)
+listScrollBar:SetPoint('TOPLEFT', listScrollFrame, 'TOPRIGHT')
+listScrollBar:SetPoint('BOTTOMLEFT', listScrollFrame, 'BOTTOMRIGHT', 1, 0)
+
+listScrollBar.ScrollBarTop:Hide()
+listScrollBar.ScrollBarMiddle:Hide()
+listScrollBar.ScrollBarBottom:Hide()
+_G[listScrollBar:GetName() .. 'ScrollDownButton']:Hide()
+_G[listScrollBar:GetName() .. 'ScrollUpButton']:Hide()
+
+local scrollButton = _G[listScrollBar:GetName() .. 'ThumbTexture']
+scrollButton:SetHeight(50)
+scrollButton:SetWidth(5)
+scrollButton:SetVertexColor(1, 1, 1, SCROLL_TEXTURE_ALPHA_MIN)
+listScrollFrame.buttonHeight = 15
 
 local contentFrame = CreateFrame('FRAME', 'AstralContentFrame', AstralKeyFrame)
-contentFrame:SetSize(410, 390)
+contentFrame:SetSize(450, 390)
 contentFrame:SetPoint('TOPLEFT', tabFrame, 'BOTTOMLEFT', 0, -30)
-contentFrame:EnableMouseWheel(true)
-
-contentFrame.slider = contentFrame:CreateTexture(nil, 'BACKGROUND')
-contentFrame.slider:SetColorTexture(0.2, 0.2, 0.2)
-contentFrame.slider:SetSize(8, 8)
-contentFrame.slider:SetPoint('TOPLEFT', contentFrame, 'TOPRIGHT')
-contentFrame.slider:SetAlpha(0.2)
-
-
-function contentFrame:ResetSlider()
-	offset = 0
-	self.slider:SetPoint('TOPLEFT', self, 'TOPRIGHT')
-end
-local newOffset = 0
-
-contentFrame:SetScript('OnMouseWheel', function(self, delta)
-	if sortedTable.numShown < 26 then return end
-
-	offset = offset - (delta * math.ceil(sortedTable.numShown/25))
-	
-	offset = math.max(0, offset)
-	offset = math.min(offset, sortedTable.numShown - 25)
-	
-	e.UpdateLines()
-
-	contentFrame.slider:ClearAllPoints()
-	contentFrame.slider:SetPoint('TOPLEFT', contentFrame, 'TOPRIGHT', 0, -offset/(sortedTable.numShown - 25) * 365)
-
-	end)
-
-contentFrame:SetScript('OnEnter', function()
-	contentFrame.slider:SetAlpha(1)
-	end)
-
-contentFrame:SetScript('OnLeave', function()
-	contentFrame.slider:SetAlpha(0.2)
-	end)
 
 --[[ Sort methuds
 	1: Unit Name
@@ -660,7 +637,7 @@ keyLevelButton:SetNormalFontObject(InterUIBlack_Small)
 keyLevelButton:GetNormalFontObject():SetJustifyH('CENTER')
 keyLevelButton:SetText('LEVEL')
 keyLevelButton:SetAlpha(0.5)
-keyLevelButton:SetPoint('BOTTOMLEFT', contentFrame, 'TOPLEFT')
+keyLevelButton:SetPoint('TOPLEFT', tabFrame, 'BOTTOMLEFT', 6, -10)
 
 local dungeonButton = CreateFrame('BUTTON', '%DungeonButton', contentFrame)
 dungeonButton:SetSize(160, 20)
@@ -671,7 +648,7 @@ dungeonButton:SetAlpha(0.5)
 dungeonButton:SetPoint('LEFT', keyLevelButton, 'RIGHT', 10, 0)
 
 local characterButton = CreateFrame('BUTTON', '%parentCharacterButton', contentFrame)
-characterButton:SetSize(100, 20)
+characterButton:SetSize(105, 20)
 characterButton:SetNormalFontObject(InterUIBlack_Small)
 characterButton:GetNormalFontObject():SetJustifyH('LEFT')
 characterButton:SetText('CHARACTER')
@@ -679,9 +656,10 @@ characterButton:SetAlpha(0.5)
 characterButton:SetPoint('LEFT', dungeonButton, 'RIGHT')
 
 local weeklyBestButton = CreateFrame('BUTTON', '%parentWeeklyBestButton', contentFrame)
-weeklyBestButton:SetSize(40, 20)
+weeklyBestButton:SetSize(50, 20)
 weeklyBestButton:SetNormalFontObject(InterUIBlack_Small)
-weeklyBestButton:SetText('BEST')
+characterButton:GetNormalFontObject():SetJustifyH('CENTER')
+weeklyBestButton:SetText('WKLY BEST')
 weeklyBestButton:SetAlpha(0.5)
 weeklyBestButton:SetPoint('LEFT', characterButton, 'RIGHT')
 
@@ -690,7 +668,7 @@ weeklyButton:SetSize(30, 20)
 weeklyButton:SetNormalFontObject(InterUIBlack_Small)
 weeklyButton:SetText('10+')
 weeklyButton:SetAlpha(0.5)
-weeklyButton:SetPoint('LEFT', weeklyBestButton, 'RIGHT')
+weeklyButton:SetPoint('LEFT', weeklyBestButton, 'RIGHT', 10, 0)
 
 --[[
 local keyButton = CreateButton(contentFrame, 'keyButton', 45, 20, 'Level', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT) --75
@@ -778,8 +756,7 @@ function AstralKeyFrame:OnUpdate(elapsed)
 end
 
 function AstralKeyFrame:ToggleLists()
-	if AstralKeysSettings.options.friendSync then
-		
+	if AstralKeysSettings.options.friendSync then		
 		
 	else
 		if e.FrameListShown() == 'friend' then
@@ -812,17 +789,12 @@ AstralKeyFrame:SetScript('OnDragStop', function(self)
 	self:StopMovingOrSizing()
 	end)
 
-for i = 1, 25 do
-	unit_frames[i] = UnitFrame:NewFrame(AstralContentFrame)
-	unit_frames[i]:SetPoint('TOPLEFT', keyLevelButton, 'BOTTOMLEFT', 5, (i-1) * -25 - 3)
-	MixIn(unit_frames[i], UnitFrame)
-end
-
 local init = false
 local function InitializeFrame()
 	init = true
 
-	HybridScrollFrame_CreateButtons(AstralKeyFrameCharacterContainer, 'AstralCharacterFrameTemplate', 0, 0, 'TOPLEFT', 'TOPLEFT', 0, -15)
+	HybridScrollFrame_CreateButtons(AstralKeyFrameCharacterContainer, 'AstralCharacterFrameTemplate', 0, 0, 'TOPLEFT', 'TOPLEFT', 0, -10)
+	HybridScrollFrame_CreateButtons(AstralKeyFrameListContainer, 'AstralListFrameTemplate', 0, 0, 'TOPLEFT', 'TOPLEFT', 0, -15)
 
 	local MAX_CHARACTER_FRAMES
 
@@ -858,14 +830,10 @@ function e.WipeFrames()
 	wipe(AstralCharacters)
 	wipe(AstralKeys)
 	wipe(sortedTable)
-	wipe(characterTable)
-	e.GetBestClear()
-
-	offset = 0
-	characterOffset = 0
 end
 
 function e.UpdateLines()
+	if true then return end
 	if not init then return end
 	local list = e.FrameListShown()
 	local lastIndex = 1
@@ -887,20 +855,11 @@ end
 
 function e.UpdateFrames()
 	if not init or not AstralKeyFrame:IsShown() then return end
+	ListScrollFrame_Update()
+	if true then return end
 
 	e.UpdateTable(sortedTable)
 	e.SortTable(sortedTable[e.FrameListShown()], AstralKeysSettings.frameOptions.sortMethod)
-
-	if 25 + offset > sortedTable.numShown then
-		offset = sortedTable.numShown - 26
-	end
-	offset = math.max(offset, 0)
-	
-	if sortedTable.numShown > 25 then
-		AstralContentFrame.slider:Show()
-	else
-		AstralContentFrame.slider:Hide()
-	end
 
 	e.UpdateLines()
 end

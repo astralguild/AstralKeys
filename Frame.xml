@@ -21,30 +21,30 @@ Character Frame Template
 						<Anchor point="TOPLEFT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentKeyString" inherits="InterUIBold_Small" wordwrap="false" parentKey="keyString" text="CURRENT" alpha="0.5" justifyH="LEFT">
+				<FontString name="$parentKeyString" inherits="InterUIBold_Tiny" wordwrap="false" parentKey="keyString" text="CURRENT" alpha="0.5" justifyH="LEFT">
 					<Size>
 						<AbsDimension x="75" y="15"/>
 					</Size>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentNameString" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+						<Anchor point="TOPLEFT" relativeTo="$parentNameString" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentWeeklyString" inherits="InterUIBold_Small" wordwrap="false" parentKey="weeklyString" text="WKLY BEST" alpha="0.5"  justifyH="LEFT">
+				<FontString name="$parentWeeklyString" inherits="InterUIBold_Tiny" wordwrap="false" parentKey="weeklyString" text="WKLY BEST" alpha="0.5"  justifyH="LEFT">
 					<Size>
 						<AbsDimension x="75" y="15"/>
 					</Size>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentKeyString" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+						<Anchor point="TOPLEFT" relativeTo="$parentKeyString" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentKeyStringValue" inherits="InterUIRegular_Small" wordwrap="false" parentKey="keyStringValue" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentKeyString" relativePoint="RIGHT" x="10" y="0"/>
+						<Anchor point="LEFT" relativeTo="$parentKeyString" relativePoint="RIGHT" x="10" y="1"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentWeeklyStringValue" inherits="InterUIRegular_Small" wordwrap="false" parentKey="weeklyStringValue" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentWeeklyString" relativePoint="RIGHT" x="10" y="0"/>
+						<Anchor point="LEFT" relativeTo="$parentWeeklyString" relativePoint="RIGHT" x="10" y="1"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -54,51 +54,53 @@ Character Frame Template
 			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Button>
-	<Button name="AstralListFrameTemplate" virtual="true">
+	<Button name="AstralListFrameTemplate" virtual="true" mixin="AstralKeysListMixin">
 		<Size>
-			<AbsDimension x="400" y="15"/>
+			<AbsDimension x="430" y="15"/>
 		</Size>
 		<Layers>
-			<FontString name="$parentLevelString" inherits="InterUIBlack_Normal" justifyH='RIGHT' wordwrap="false" parentKey="levelString">
-				<Size>
-					<AbsDimension x="20" y="15"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPLEFT" x="20" y="0"/>
-				</Anchors>
-			</FontString>
-			<FontString name="$parentDungeonString" inherits="InterUIBlack_Normal" justifyH='LEFT' wordwrap="false" parentKey="dungeonString">
-				<Size>
-					<AbsDimension x="160" y="15"/>
-				</Size>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentLevelString" relativePoint="RIGHT" x="25" y="0"/>
-				</Anchors>
-			</FontString>
-			<FontString name="$parentNameString" inherits="InterUIMedium_Normal" justifyH='LEFT' wordwrap="false" parentKey="nameString">
-				<Size>
-					<AbsDimension x="150" y="15"/>
-				</Size>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDungeonString" relativePoint="RIGHT" x="25" y="0"/>
-				</Anchors>
-			</FontString>
-			<FontString name="$parentBestString" inherits="InterUIBlack_Normal" justifyH='LEFT' wordwrap="false" parentKey="bestString">
-				<Size>
-					<AbsDimension x="20" y="15"/>
-				</Size>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentNameString" relativePoint="RIGHT" x="25" y="0"/>
-				</Anchors>
-			</FontString>
-			<Texture name="$parentWeekly" file="Interface\AddOns\AstralKeys\Media\check.tga">
-				<Size>
-					<AbsDimension x="12" y="12"/>
-				</Size>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentBestString" relativePoint="RIGHT" x="0" y="0"/>
-				</Anchors>
-			</Texture>
+			<Layer level="ARTOWKR">
+				<FontString name="$parentLevelString" inherits="InterUIBlack_Normal" justifyH='RIGHT' wordwrap="false" parentKey="levelString">
+					<Size>
+						<AbsDimension x="20" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPLEFT" x="32" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentDungeonString" inherits="InterUIBlack_Normal" justifyH='LEFT' wordwrap="false" parentKey="dungeonString">
+					<Size>
+						<AbsDimension x="160" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLevelString" relativePoint="RIGHT" x="24" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentNameString" inherits="InterUIMedium_Normal" justifyH='LEFT' wordwrap="false" parentKey="nameString">
+					<Size>
+						<AbsDimension x="103" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentDungeonString" relativePoint="RIGHT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentBestString" inherits="InterUIBlack_Normal" justifyH='RIGHT' wordwrap="false" parentKey="bestString">
+					<Size>
+						<AbsDimension x="20" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentNameString" relativePoint="RIGHT" x="10" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentWeekly" file="Interface\AddOns\AstralKeys\Media\check.tga" parentKey='weeklyTexture'>
+					<Size>
+						<AbsDimension x="12" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentBestString" relativePoint="RIGHT" x="41" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Scripts>
 			<OnClick function="AstralKeysList_OnClick"/>

@@ -85,3 +85,8 @@ function e.UnitMapID(id)
 	if not id then return nil end
 	return AstralKeys[id][3]
 end
+
+function e.UnitBestKey(id)
+	if not id then return nil end
+	return AstralKeys[id][9]
+end
