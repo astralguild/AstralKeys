@@ -1,47 +1,6 @@
 local _, e = ...
 
 local UNIT_LIST = {}
-local GUILD_LIST = {}
-
--- Puts all guild member's into a table for checking if unit in same guild, stores value as rankIndex for filtering by rank
-local function UpdateGuildList()
-	wipe(GUILD_LIST)
-
-	for i = 1, GetNumGuildMembers() do
-		local name, _, rankIndex, _, _, _, _, _, connected = GetGuildRosterInfo(i)
-		local guid = select(17, GetGuildRosterInfo(i))
-		if not name then return end
-		GUILD_LIST[name] = {rank = rankIndex + 1, isConnected = connected, guid = guid}
-	end
-end
-AstralEvents:Register('GUILD_ROSTER_UPDATE', UpdateGuildList, 'guildUpdate')
-
--- Checks to see if a unit is in the player's guild
--- @param unit Unit name and server
-function e.UnitInGuild(unit)
-	return GUILD_LIST[unit] or false
-end
-
-function e.GuildMemberOnline(unit)
-	if not GUILD_LIST[unit] then return false
-	else
-		return GUILD_LIST[unit].isConnected
-	end
-end
-
-function e.GuildMemberRank(unit)
-	if not GUILD_LIST[unit] then return false
-	else
-		return GUILD_LIST[unit].rank
-	end
-end
-
-function e.GuildMemberGuid(unit)
-	if not GUILD_LIST[unit] then return nil
-	else
-		return GUILD_LIST[unit].guid
-	end
-end
 
 -- Sets a number to a unit for quicker access to table
 -- @param unit  Unit name and server
@@ -53,7 +12,7 @@ end
 -- Retrieves ID number for associated unit
 -- @param unit Unit name and server
 function e.UnitID(unit)
-	return UNIT_LIST[unit] or false
+	return UNIT_LIST[unit] or nil
 end
 
 function e.UnitName(id)

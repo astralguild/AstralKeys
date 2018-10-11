@@ -2,6 +2,7 @@
 	<FontFamily name="InterUIBold_Tiny" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Interface\AddOns\AstralKeys\Media\Font\Inter-UI-Bold.ttf" height="8">
+				<Color r="1" g="1" b="1" a="1"/>					
 			</Font>
 		</Member>
 		<Member alphabet="korean">

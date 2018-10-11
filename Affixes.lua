@@ -30,3 +30,7 @@ end
 function e.AffixFour()
 	return AFFIXES[4].id
 end
+
+function e.AffixName(id)
+	return AFFIXES[id].name
+end

@@ -10,38 +10,6 @@ initializeTime[1] = 1500390000 -- US Tuesday at reset
 initializeTime[2] = 1500447600 -- EU Wednesday at reset
 initializeTime[4] = 0
 
-local SI = {}
-SI[0] = ''
-SI[1] = 'k'
-SI[2] = 'M'
-SI[3] = 'G'
-SI[4] = 'T'
-SI[5] = 'P'
-
-local IMP = {}
-IMP[0] = ''
-IMP[1] = 'k'
-IMP[2] = 'M'
-IMP[3] = 'B'
-IMP[4] = 'T'
-IMP[5] = 'Q'
-
-function e.ConvertToSI(quantity)
-	local amount = quantity
-	local power = 0
-
-	while amount > 1000 do
-		power = power + 1
-		amount = amount /1000
-	end
-
-	if amount < 10 then
-		return string.format('%.2f', amount) .. ' ' .. IMP[power]
-	else
-		return math.floor(amount) .. ' ' .. IMP[power]
-	end
-end
-
 function e.WeekTime()
 	local region = GetCurrentRegion()
 

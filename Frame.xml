@@ -9,13 +9,13 @@ Character Frame Template
 -->
 	<Button name="AstralCharacterFrameTemplate" virtual="true" mixin="AstralKeysCharacterMixin">
 		<Size>
-			<AbsDimension x="250" y="50"/>
+			<AbsDimension x="180" y="50"/>
 		</Size>
 		<Layers>
 			<Layer level="ARTOWKR">
 				<FontString name="$parentNameString" inherits="InterUIBold_Normal" wordwrap="false" parentKey="nameString">
 					<Size>
-						<AbsDimension x="200" y="15"/>
+						<AbsDimension x="180" y="15"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="0"/>
@@ -39,12 +39,12 @@ Character Frame Template
 				</FontString>
 				<FontString name="$parentKeyStringValue" inherits="InterUIRegular_Small" wordwrap="false" parentKey="keyStringValue" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentKeyString" relativePoint="RIGHT" x="10" y="1"/>
+						<Anchor point="LEFT" relativeTo="$parentKeyString" relativePoint="RIGHT" x="0" y="1"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentWeeklyStringValue" inherits="InterUIRegular_Small" wordwrap="false" parentKey="weeklyStringValue" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentWeeklyString" relativePoint="RIGHT" x="10" y="1"/>
+						<Anchor point="LEFT" relativeTo="$parentWeeklyString" relativePoint="RIGHT" x="0" y="1"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -56,7 +56,7 @@ Character Frame Template
 	</Button>
 	<Button name="AstralListFrameTemplate" virtual="true" mixin="AstralKeysListMixin">
 		<Size>
-			<AbsDimension x="430" y="15"/>
+			<AbsDimension x="440" y="20"/>
 		</Size>
 		<Layers>
 			<Layer level="ARTOWKR">
@@ -70,7 +70,7 @@ Character Frame Template
 				</FontString>
 				<FontString name="$parentDungeonString" inherits="InterUIBlack_Normal" justifyH='LEFT' wordwrap="false" parentKey="dungeonString">
 					<Size>
-						<AbsDimension x="160" y="15"/>
+						<AbsDimension x="155" y="15"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentLevelString" relativePoint="RIGHT" x="24" y="0"/>
@@ -78,7 +78,7 @@ Character Frame Template
 				</FontString>
 				<FontString name="$parentNameString" inherits="InterUIMedium_Normal" justifyH='LEFT' wordwrap="false" parentKey="nameString">
 					<Size>
-						<AbsDimension x="103" y="15"/>
+						<AbsDimension x="153" y="15"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentDungeonString" relativePoint="RIGHT" x="0" y="0"/>
@@ -103,8 +103,18 @@ Character Frame Template
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnClick function="AstralKeysList_OnClick"/>
+			<OnLoad>
+				self:RegisterForClicks("RightButtonUp")
+			</OnLoad>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
+		<!--
+		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD" setAllPoints="true">
+			<color r="1" b="1" g="1" a="0.3"/>
+		</HighlightTexture>
+		-->
 	</Button>
 </Ui>
 

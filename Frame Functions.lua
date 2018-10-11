@@ -181,7 +181,7 @@ function e.CreateCheckBox(parent, label, width)
 	checkbox:SetSize(width or 200, 20)
 	checkbox:SetBackdrop(nil)
 	checkbox:SetBackdropBorderColor(85/255, 85/255, 85/255)
-	checkbox:SetNormalFontObject(FONT_OBJECT_LEFT)
+	checkbox:SetNormalFontObject(InterUIRegular_Normal)
 	checkbox:SetText(label)
 
 	checkbox:SetNormalTexture(nil)
@@ -190,15 +190,15 @@ function e.CreateCheckBox(parent, label, width)
 	checkbox:SetPushedTextOffset(1,-1)
 
 	local tex = checkbox:CreateTexture('PUSHED_TEXTURE_BOX', 'BACKGROUND')
-	tex:SetSize(14, 14)
+	tex:SetSize(12, 12)
 	tex:SetPoint('LEFT', checkbox, 'LEFT', -2, 0)
 	tex:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\box2.tga')
 	tex:SetVertexColor(0.3, 0.3, 0.3)
 
 	checkbox.t = checkbox:CreateTexture('PUSHEDTEXTURE', 'BACKGROUND')
-	checkbox.t:SetSize(8, 8)
+	checkbox.t:SetSize(12, 12)
 	checkbox.t:SetPoint('CENTER', tex, 'CENTER', 0, 0)
-	checkbox.t:SetColorTexture(.9, .9, .9)
+	checkbox.t:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\check.tga')
 	checkbox:SetCheckedTexture(checkbox.t)
 
 	checkbox:SetDisabledFontObject(FONT_OBJECT_DISABLED)
@@ -269,7 +269,7 @@ end
 
 function menuFrame:SetUnit(unitID)
 	self.unit = unitID
-	if e.FrameListShown() == 'guild' then
+	if e.FrameListShown() == 'GUILD' then
 		self.title:SetText(e.UnitName(unitID))
 	else
 		self.title:SetText(e.FriendName(unitID))

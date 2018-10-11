@@ -1,5 +1,6 @@
 local _, e = ...
 local RESET_VERSION = 20200
+e.CLIENT_VERSION = 30
 -- Reset time 15:00 UTC AMERICAS
 -- 07:00 UTC EU
 
@@ -88,8 +89,7 @@ end
 --return AstralKeysSettings.options.friends.GetMinFriendSyncLevel
 local frame = CreateFrame('FRAME')
 frame:RegisterEvent('ADDON_LOADED')
-frame:SetScript('OnEvent', function(self, event, ...)
-	local addon = ...
+frame:SetScript('OnEvent', function(self, event, addon)
 	if addon == 'AstralKeys' then
 		_G['AstralEngine'] = e
 

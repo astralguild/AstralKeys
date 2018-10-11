@@ -2,7 +2,7 @@
 ## Title: Astral Keys
 ## Notes: Keystone Manager for Guilds and Friends
 ## Author: Phrike
-## Version: 2.2.09
+## Version: 3.0
 ## SavedVariables: AstralKeys, AstralCharacters, AstralFriends, AstralKeysSettings, AstralMinimap
 
 embeds.xml
@@ -10,8 +10,12 @@ fonts.xml
 Settings.lua
 Events.lua
 Tables.lua
-
 Communications.lua
+
+Lists.lua
+Lists\Friends.lua
+Lists\Guild.lua
+
 Affixes.lua
 Unit Information.lua
 Character Info.lua
@@ -19,10 +23,6 @@ Dungeons.lua
 Key Information.lua
 
 AstralKeys.lua
-
-Lists\Friends.lua
-Lists\Guild.lua
-
 Frame Functions.lua
 Frame.xml
 MinimapButton.lua

@@ -4,6 +4,8 @@ local MAX_LEVEL = 120
 local SYNC_VERSION = 'sync4'
 local UPDATE_VERSION = 'update4'
 
+local COLOR_BLUE_BNET = 'ff82c5ff'
+
 local strformat, find = string.format, string.find
 local tremove = table.remove
 
@@ -492,51 +494,69 @@ local function CompareFriendNames(a, b)
 end
 
 local function FriendSort(A, v)
-	if v == 'dungeon_name' then -- Dungeon Name
+	if v == 'dungeon_name' then
 		table.sort(A, function(a, b)
-			if AstralKeysSettings.frameOptions.orientation == 0 then
-				if e.GetMapName(a.mapID) > e.GetMapName(b.mapID) then
-					return true
-				elseif e.GetMapName(b.mapID) > e.GetMapName(a.mapID) then
-					return false
+			local aOnline = e.IsFriendOnline(a.character_name) and 1 or 0
+			local bOnline = e.IsFriendOnline(b.character_name) and 1 or 0
+			if aOnline == bOnline then
+				if AstralKeysSettings.frameOptions.orientation == 0 then
+					if e.GetMapName(a.mapID) > e.GetMapName(b.mapID) then
+						return true
+					elseif e.GetMapName(b.mapID) > e.GetMapName(a.mapID) then
+						return false
+					else
+						return a.character_name < b.character_name
+					end
 				else
-					return a.character_name < b.character_name
+					if e.GetMapName(a.mapID) > e.GetMapName(b.mapID) then
+						return false
+					elseif e.GetMapName(b.mapID) > e.GetMapName(a.mapID) then
+						return true
+					else
+						return CompareFriendNames(a, b)
+					end
 				end
 			else
-				if e.GetMapName(a.mapID) > e.GetMapName(b.mapID) then
-					return false
-				elseif e.GetMapName(b.mapID) > e.GetMapName(a.mapID) then
-					return true
-				else
-					return CompareFriendNames(a, b)
-				end
+				return aOnline > bOnline
 			end
 		end)
 	else
-		if v == 'character_name' then -- BNet Name
+		if v == 'character_name' then
 			table.sort(A, function(a, b)
-				return CompareFriendNames(a, b)
+				local aOnline = e.IsFriendOnline(a.character_name) and 1 or 0
+				local bOnline = e.IsFriendOnline(b.character_name) and 1 or 0
+				if aOnline == bOnline then
+					return CompareFriendNames(a, b)
+				else
+					return aOnline > bOnline
+				end
 			end)
 		else
 			table.sort(A, function(a, b) 
-				if AstralKeysSettings.frameOptions.orientation == 0 then
-					if a[v] > b[v] then
-						return true
-					elseif
-						a[v] < b[v]  then
-						return false
+				local aOnline = e.IsFriendOnline(a.character_name) and 1 or 0
+				local bOnline = e.IsFriendOnline(b.character_name) and 1 or 0
+				if aOnline == bOnline then
+					if AstralKeysSettings.frameOptions.orientation == 0 then
+						if a[v] > b[v] then
+							return true
+						elseif
+							a[v] < b[v]  then
+							return false
+						else
+							return CompareFriendNames(a, b)
+						end
 					else
-						return CompareFriendNames(a, b)
+						if a[v] < b[v] then
+							return true
+						elseif
+							a[v] > b[v]  then
+							return false
+						else
+							return CompareFriendNames(a, b)
+						end
 					end
 				else
-					if a[v] < b[v] then
-						return true
-					elseif
-						a[v] > b[v]  then
-						return false
-					else
-						return CompareFriendNames(a, b)
-					end
+					return aOnline > bOnline
 				end
 			end)
 		end
@@ -686,3 +706,26 @@ local function TooltipHook(self)
 end
 
 GameTooltip:HookScript('OnTooltipSetUnit', TooltipHook)
+
+local function FriendUnitFunction(self, unit, class, mapID, keyLevel, cache, faction, btag)
+	self.unitID = e.FriendID(unit)
+	self.levelString:SetText(keyLevel)
+	self.dungeonString:SetText(e.GetMapName(mapID))
+	self.weeklyTexture:SetShown(cache == 1)
+	if btag then
+		if tonumber(faction) == e.FACTION then
+			self.nameString:SetText( string.format('%s (%s)', WrapTextInColorCode(btag:sub(1, btag:find('#') - 1), COLOR_BLUE_BNET), WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), select(4, GetClassColor(class)))))
+		else
+			self.nameString:SetText( string.format('%s (%s)', WrapTextInColorCode(btag:sub(1, btag:find('#') - 1), COLOR_BLUE_BNET), WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), 'ff9d9d9d')))
+		end
+	else
+		self.nameString:SetText(WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), select(4, GetClassColor(class))))
+	end
+	if e.IsFriendOnline(unit) then
+		self:SetAlpha(1)
+	else
+		self:SetAlpha(0.4)
+	end
+end
+
+e.AddUnitFunction('FRIENDS', FriendUnitFunction)

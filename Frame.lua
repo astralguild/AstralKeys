@@ -1,5 +1,11 @@
 local _, e = ...
 
+local BACKDROP = {
+bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+edgeFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 16, edgeSize = 1,
+insets = {left = 0, right = 0, top = 0, bottom = 0}
+}
+
 -- MixIns
 AstralKeysCharacterMixin = {}
 AstralKeysListMixin = {}
@@ -10,19 +16,19 @@ AstralKeysListMixin = {}
 -- Left #000000 ALPHA 0.8
 -- Right #212121 ALPHA 0.8
 
-
-local CHARACTER_CURRENT_KEY = 'Current Key:'
-local CHARACTER_WEEKLY_BEST = 'Weekly Best:'
 local CHARACTER_DUNGEON_NOT_RAN = 'No mythic dungeon ran'
 local CHARACTER_KEY_NOT_FOUND = 'No key found'
 
-local COLOR_BLUE_BNET = 'ff82c5ff'
 local COLOR_GRAY = 'ff9d9d9d'
 
+-- Scroll bar texture alpha settings
 local SCROLL_TEXTURE_ALPHA_MIN = 0.2
 local SCROLL_TEXTURE_ALPHA_MAX = 0.6
 
+local FRAME_WIDTH_EXPANDED = 765
+local FRAME_WIDTH_MINIMIZED = 550
 
+-- Used for filtering, sorting, and displaying units on lists
 local sortedTable = {}
 sortedTable.numShown = 0
 sortedTable['GUILD'] = {}
@@ -60,135 +66,49 @@ end
 function AstralKeysCharacterMixin:OnEnter()
 	local scrollBar = self:GetParent():GetParent().scrollBar
 	local scrollButton = _G[scrollBar:GetName() .. 'ThumbTexture']
-	scrollButton:SetAlpha(0.6)
+	scrollButton:SetAlpha(SCROLL_TEXTURE_ALPHA_MAX)
 end
 
 function AstralKeysCharacterMixin:OnLeave()
 	local scrollBar = self:GetParent():GetParent().scrollBar
 	local scrollButton = _G[scrollBar:GetName() .. 'ThumbTexture']
-	scrollButton:SetAlpha(0.3)
+	scrollButton:SetAlpha(SCROLL_TEXTURE_ALPHA_MIN)
 end
-local UNIT_FUNCTION = {}
 
 function AstralKeysListMixin:SetUnit(...)
-	UNIT_FUNCTION[e.FrameListShown()](self, ...)
+	e.GetListFunction(e.FrameListShown())(self, ...)
 end
 
+function AstralKeysListMixin:OnClick()
+	AstralMenuFrame:ClearAllPoints()
+	local uiScale = UIParent:GetScale();
 
-local UnitFrame = {}
+	local cursorX, cursorY = GetCursorPosition();
+	cursorX = cursorX/uiScale;
+	cursorY =  cursorY/uiScale;
+	xOffset, yOffset = 15, 0
 
-function AstralKeysList_OnClick()
-	print('testing')
+	xOffset = cursorX + xOffset
+	yOffset = cursorY + yOffset
+
+	AstralMenuFrame:SetUnit(self.unitID)
+	AstralMenuFrame:SetPoint('TOPLEFT', UIParent, 'BOTTOMLEFT', xOffset, yOffset)
+	ToggleFrame(AstralMenuFrame)
 end
 
-function UnitFrame:NewFrame(parent)
-
-	local self = CreateFrame('FRAME', nil, parent)
-	self.unitID = 0
-
-	self:EnableMouse(true)
-	self:SetSize(400, 15)
-
-	self.levelString = self:CreateFontString(nil, 'OVERLAY', 'InterUIBlack_Normal')
-	self.levelString:SetPoint('TOPRIGHT', self, 'TOPLEFT', 20, 0)
-	self.levelString:SetSize(20, 15)
-	self.levelString:SetJustifyH('RIGHT')
-
-	self.dungeonString = self:CreateFontString(nil, 'OVERLAY', 'InterUIBlack_Normal')
-	self.dungeonString:SetSize(160, 15)
-	self.dungeonString:SetPoint('LEFT', self.levelString, 'RIGHT', 25, 0)
-
-	self.nameString = self:CreateFontString(nil, 'OVERLAY', 'InterUIMedium_Normal')
-	self.nameString:SetSize(150, 15)
-	self.nameString:SetPoint('LEFT', self.dungeonString, 'RIGHT')
-
-	self.weeklyTexture = self:CreateTexture(nil, 'BACKGROUND')
-	self.weeklyTexture:SetSize(15, 15)
-
-	self.weeklyTexture:SetPoint('LEFT', self.nameString, 'RIGHT')
-	self.weeklyTexture:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\check.tga')
-	self.weeklyTexture:Hide()
-
-	self.unit = CreateFrame('FRAME', nil, self)
-	self.unit:SetSize(170, 15)
-	self.unit:SetPoint('RIGHT', self, 'RIGHT')
-	self.unit:SetFrameLevel(10)
-	self.unit:EnableMouse(true)
-
-	self.unit:SetScript('OnMouseDown', function(self, button)
-		if button == 'RightButton' then
-			if AstralMenuFrame:IsShown() then
-				AstralMenuFrame:Hide()
-				return
-			end
-
-			if self:GetParent().unitID == 0 then return end
-
-			AstralMenuFrame:ClearAllPoints()
-
-			AstralMenuFrame:SetPoint('TOPLEFT', self, 'CENTER', 5, -5)
-			AstralMenuFrame:SetUnit(self:GetParent().unitID)
-			AstralMenuFrame:Show()
-		end
-	end)
-
-	return self
+function AstralKeysListMixin:OnEnter()
+	local scrollBar = self:GetParent():GetParent().scrollBar
+	local scrollButton = _G[scrollBar:GetName() .. 'ThumbTexture']
+	scrollButton:SetAlpha(SCROLL_TEXTURE_ALPHA_MAX)
 end
 
-
-
-function e.AddUnitFunction(list, f)
-	if type(list) ~= 'string' and list == '' then return end
-	if type(f) ~= 'function' then return end
-
-	if UNIT_FUNCTION[list] then
-		error('Function already associated with the list ' .. list)
-		return
-	end
-	UNIT_FUNCTION[list] = f
+function AstralKeysListMixin:OnLeave()
+	local scrollBar = self:GetParent():GetParent().scrollBar
+	local scrollButton = _G[scrollBar:GetName() .. 'ThumbTexture']
+	scrollButton:SetAlpha(SCROLL_TEXTURE_ALPHA_MIN)
 end
 
-local function GuildUnitFunction(self, unit, unitClass, mapID, keyLevel, cache, faction, btag)
-	local bestKey = 0 --e.UnitBestKey(id)
-	self.unitID = e.UnitID(unit)
-	self.levelString:SetText(keyLevel)
-	self.dungeonString:SetText(e.GetMapName(mapID))
-	self.nameString:SetText(WrapTextInColorCode(Ambiguate(unit, 'GUILD') , select(4, GetClassColor(unitClass))))
-	self.bestString:SetText(bestKey)
-	self.weeklyTexture:SetShown(true or bestKey >= e.CACHE_LEVEL)
-end
-e.AddUnitFunction('GUILD', GuildUnitFunction)
-
-UNIT_FUNCTION['FRIENDS'] = function(self, unit, class, mapID, keyLevel, cache, faction, btag)
-	self.unitID = e.FriendID(unit)
-	self.levelString:SetText(keyLevel)
-	self.dungeonString:SetText(e.GetMapName(mapID))
-	self.weeklyTexture:SetShown(cache == 1)
-	if btag then
-		if tonumber(faction) == e.FACTION then
-			self.nameString:SetText( string.format('%s (%s)', WrapTextInColorCode(btag:sub(1, btag:find('#') - 1), COLOR_BLUE_BNET), WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), select(4, GetClassColor(class)))))
-		else
-			self.nameString:SetText( string.format('%s (%s)', WrapTextInColorCode(btag:sub(1, btag:find('#') - 1), COLOR_BLUE_BNET), WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), 'ff9d9d9d')))
-		end
-	else
-		self.nameString:SetText(WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), select(4, GetClassColor(class))))
-	end
-end
-
-function UnitFrame:SetUnit(...)
-	UNIT_FUNCTION[e.FrameListShown()](self, ...)
-end
-
-function UnitFrame:ClearUnit()
-	self.unitID = 0
-	self.mapID = 0
-	self.keyLevel = 0
-	self.levelString:SetText('')
-	self.dungeonString:SetText('')
-	self.nameString:SetText('')
-	self.weeklyTexture:Hide()
-end
-
+-- Unit dropdown mneu items, whisper and invite
 local function Whisper_OnShow(self)
 	local isConnected = true
 	if e.FrameListShown() == 'GUILD' then
@@ -279,19 +199,13 @@ local function InviteUnit(self)
 			end			
 		end
 	end
-	-- GetDisplayedInviteType(guid)
-	-- InviteToGroup(fullname)
-	-- BNInviteFriend(gaID)
-	-- RequestInviteFromUnit(fullname)
-	-- BNRequestInviteFriend(gaID)
 end
 AstralMenuFrame:AddSelection('Invite', InviteUnit, Invite_OnShow)
-
 AstralMenuFrame:AddSelection('Cancel', function() return AstralMenuFrame:Hide() end)
 
 local AstralKeyFrame = CreateFrame('FRAME', 'AstralKeyFrame', UIParent)
 AstralKeyFrame:SetFrameStrata('DIALOG')
-AstralKeyFrame:SetWidth(740)
+AstralKeyFrame:SetWidth(765)
 AstralKeyFrame:SetHeight(490)
 AstralKeyFrame:SetPoint('CENTER', UIParent, 'CENTER')
 AstralKeyFrame:EnableMouse(true)
@@ -306,7 +220,32 @@ AstralKeyFrame.texture = AstralKeyFrame:CreateTexture(nil, 'BACKGROUND')
 AstralKeyFrame.texture:SetAllPoints(AstralKeyFrame)
 AstralKeyFrame.texture:SetColorTexture(0, 0, 0, 0.8)
 
-local menuBar = CreateFrame('FRAME', '%parentMenuBar', AstralKeyFrame)
+local AstralKeyToolTip = CreateFrame( "GameTooltip", "AstralKeyToolTip", AAFrame, "GameTooltipTemplate" )
+AstralKeyToolTip:SetOwner(AstralKeyFrame, "ANCHOR_CURSOR")
+AstralKeyToolTip:SetScript('OnShow', function(self)
+	self:SetBackdrop(BACKDROP)
+	self:SetBackdropColor(0, 0, 0, .8)
+	self:SetBackdropBorderColor(0, 0, 0)
+end)
+
+-- Skin the tooltip.
+
+for i = 1, 8 do
+	_G['AstralKeyToolTipTextRight' .. i]:SetFontObject(InterUIBold_Tiny)
+	_G['AstralKeyToolTipTextLeft' .. i]:SetFontObject(InterUIBold_Tiny)
+end
+
+local offLineButton = e.CreateCheckBox(AstralKeyFrame, SHOW_OFFLINE_MEMBERS, 150)
+offLineButton:SetNormalFontObject(InterUIRegular_Small)
+offLineButton:SetPoint('BOTTOMRIGHT', AstralKeyFrame, 'BOTTOMRIGHT', -15, 10)
+offLineButton:SetAlpha(0.5)
+offLineButton:SetScript('OnClick', function(self)
+	AstralKeysSettings.options.showOffline = self:GetChecked()
+	HybridScrollFrame_SetOffset(AstralKeyFrameListContainer, 0)
+	e.UpdateFrames()
+end)
+
+local menuBar = CreateFrame('FRAME', '$parentMenuBar', AstralKeyFrame)
 menuBar:SetSize(50, 490)
 menuBar:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT')
 menuBar.texture = menuBar:CreateTexture(nil, 'BACKGROUND')
@@ -323,22 +262,52 @@ divider:SetSize(20, 1)
 divider:SetColorTexture(.6, .6, .6, .8)
 divider:SetPoint('TOP', logo_Key, 'BOTTOM', 0, -20)
 
+local reportButton = CreateFrame('BUTTON', '$parentReportButton', menuBar)
+reportButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\speaker.tga')
+reportButton:SetSize(20, 20)
+reportButton:GetNormalTexture():SetVertexColor(.8, .8, .8, 0.8)
+reportButton:SetPoint('TOP', divider, 'BOTTOM', 0, -20)
+reportButton:SetScript('OnEnter', function(self)
+	self:GetNormalTexture():SetVertexColor(126/255, 126/255, 126/255, 0.8)
+end)
+reportButton:SetScript('OnLeave', function(self)
+	self:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
+end)
+reportButton:SetScript('OnClick', function()
+	AstralOptionsFrame:SetShown( not AstralOptionsFrame:IsShown())
+	end)
+
 local settingsButton = CreateFrame('BUTTON', '$parentSettingsButton', menuBar)
-settingsButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\settings_cog.tga')
+settingsButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\cog2.tga')
 settingsButton:SetSize(20, 20)
-settingsButton:GetNormalTexture():SetVertexColor(.8, .8, .8)
-settingsButton:SetPoint('TOP', divider, 'BOTTOM', 0, -20)
+settingsButton:GetNormalTexture():SetVertexColor(.8, .8, .8, 0.8)
+settingsButton:SetPoint('TOP', reportButton, 'BOTTOM', 0, -20)
 settingsButton:SetScript('OnEnter', function(self)
-	self:GetNormalTexture():SetVertexColor(126/255, 126/255, 126/255)
+	self:GetNormalTexture():SetVertexColor(126/255, 126/255, 126/255, 0.8)
 end)
 settingsButton:SetScript('OnLeave', function(self)
-	self:GetNormalTexture():SetVertexColor(1, 1, 1)
+	self:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
 end)
+settingsButton:SetScript('OnClick', function()
+	AstralOptionsFrame:SetShown( not AstralOptionsFrame:IsShown())
+	end)
 
 local logo_Astral = menuBar:CreateTexture(nil, 'ARTWORK')
 logo_Astral:SetSize(32, 32)
-logo_Astral:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\Astral.tga')
+logo_Astral:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\Astral.tga')
 logo_Astral:SetPoint('BOTTOMLEFT', menuBar, 'BOTTOMLEFT', 10, 10)
+
+local collapseButton = CreateFrame('BUTTON', '$parentCollapseButton', menuBar)
+collapseButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\collapse.tga')
+collapseButton:SetSize(20, 20)
+collapseButton:GetNormalTexture():SetVertexColor(.8, .8, .8, 0.8)
+collapseButton:SetPoint('BOTTOM', logo_Astral, 'TOP', 0, 20)
+collapseButton:SetScript('OnEnter', function(self)
+	self:GetNormalTexture():SetVertexColor(126/255, 126/255, 126/255, 0.8)
+end)
+collapseButton:SetScript('OnLeave', function(self)
+	self:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
+end)
 
 ---- List Buttons
 -----------------------------------
@@ -352,50 +321,13 @@ closeButton:SetScript('OnClick', function()
 end)
 closeButton:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', -10, -10)
 
-local toggleButton = CreateFrame('BUTTON', nil, AstralKeyFrame)
-toggleButton:SetSize(16, 16)
-toggleButton:SetPoint('TOPRIGHT', closeButton, 'TOPLEFT', - 5, 0)
-toggleButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize.tga')
+-- Tab bar at the top, only show 5 and then start scrolling
 
-toggleButton:SetScript('OnClick', function(self)
-	local left, bottom, width = AstralKeyFrame:GetRect()
-	if AstralKeysSettings.frameOptions.viewMode == 0 then
-		AstralKeysSettings.frameOptions.viewMode = 1
-		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\menu.tga')
-		AstralKeyFrame:SetWidth(425)
-		AstralKeyFrame:ClearAllPoints()
-		AstralKeyFrame:SetPoint('BOTTOMLEFT', UIParent, 'BOTTOMLEFT', left + width - 425, bottom)
-		AstralContentFrame:ClearAllPoints()
-		AstralContentFrame:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 5, -95)
-	else
-		AstralKeysSettings.frameOptions.viewMode = 0
-		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\minimize.tga')
-		AstralKeyFrame:SetWidth(675)
-		AstralKeyFrame:ClearAllPoints()
-		AstralKeyFrame:SetPoint('BOTTOMLEFT', UIParent, 'BOTTOMLEFT', left + width - 675, bottom)
-		AstralContentFrame:ClearAllPoints()
-		AstralContentFrame:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 255, -95)
-	end
-	end)
-
-local optionsButton = CreateFrame('BUTTON', nil, AstralKeyFrame)
-optionsButton:SetSize(16, 16)
-optionsButton:SetPoint('TOPRIGHT', toggleButton, 'TOPLEFT', -5, 0)
-optionsButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\menu3.tga')
-optionsButton:SetScript('OnEnter', function(self)
-	self:GetNormalTexture():SetVertexColor(126/255, 126/255, 126/255)
-	end)
-optionsButton:SetScript('OnLeave', function(self)
-	self:GetNormalTexture():SetVertexColor(1, 1, 1)
-	end)
-
-optionsButton:SetScript('OnClick', function()
-	AstralOptionsFrame:SetShown( not AstralOptionsFrame:IsShown())
-	end)
-
+-- MenuBar 50px
+-- Middle Frame 215px
 local tabFrame = CreateFrame('FRAME', '$parentTabFrame', AstralKeyFrame)
-tabFrame:SetSize(420, 30)
-tabFrame:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', -30, -10)
+tabFrame:SetSize(500, 40)
+tabFrame:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', 0, 0)
 tabFrame.t = tabFrame:CreateTexture(nil, 'ARTWORK')
 tabFrame.t:SetAllPoints(tabFrame)
 --tabFrame.t:SetColorTexture(0, .5, 1)
@@ -405,17 +337,18 @@ local MIN_BUTTON_WIDTH = 50
 local MAX_BUTTON_WIDTH = 100
 
 local function UpdateTabs()
-	local frame = AstralKeyFrameTabFrame
-	local buttons = frame.buttons
+	local buttons = AstralKeyFrameTabFrame.buttons
 
 	for i = 1, #buttons do
 		if e.FrameListShown() == buttons[i].listName then
 			buttons[i].underline:Show()
+			buttons[i]:SetAlpha(1)
 		else
 			buttons[i].underline:Hide()
+			buttons[i]:SetAlpha(0.5)
 		end
 		if i == 1 then
-			buttons[i]:SetPoint('LEFT', frame, 'LEFT')
+			buttons[i]:SetPoint('LEFT', AstralKeyFrameTabFrame, 'LEFT', 10, 0)
 		else
 			buttons[i]:SetPoint('LEFT', buttons[i-1], 'RIGHT', 10, 0)
 		end
@@ -428,6 +361,7 @@ local function Tab_OnClick(self)
         UpdateTabs()
         e.UpdateFrames()
         HybridScrollFrame_SetOffset(AstralKeyFrameListContainer, 0)
+        AstralKeyFrameListContainer.scrollBar:SetValue(0)
     end
 end
 
@@ -455,17 +389,74 @@ local function CreateNewTab(name, parent, ...)
 	table.insert(buttons, self)
 end
 
--- Max 5 with current text
-
-
-
 CreateNewTab('GUILD', tabFrame)
 CreateNewTab('FRIENDS', tabFrame)
 UpdateTabs()
 
+-- Middle panel construction, Affixe info, character info, guild/version string
 local characterFrame = CreateFrame('FRAME', '$parentCharacterFrame', AstralKeyFrame)
-characterFrame:SetSize(225, 490)
-characterFrame:SetPoint('TOPLEFT', menuBar, 'TOPRIGHT', 1, 0)
+characterFrame:SetSize(215, 490)
+characterFrame:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 51, 0)
+
+characterFrame.collapse = characterFrame:CreateAnimationGroup()
+local characterCollapse = characterFrame.collapse:CreateAnimation('Alpha')
+characterCollapse:SetFromAlpha(1)
+characterCollapse:SetToAlpha(0)
+characterCollapse:SetDuration(.15)
+characterCollapse:SetSmoothing('IN_OUT')
+
+characterCollapse:SetScript('OnFinished', function(self)
+	self:GetParent():GetParent():Hide()
+	end)
+
+characterCollapse:SetScript('OnUpdate', function(self)
+	if self:GetProgress() > 0.6 then self:GetRegionParent():SetAlpha(self:GetProgress()/2) end
+	local left, bottom, width = AstralKeyFrame:GetRect()
+	local newWidth = FRAME_WIDTH_EXPANDED - (self:GetProgress() * 215)
+	AstralKeyFrame:ClearAllPoints()
+	AstralKeyFrame:SetPoint('BOTTOMLEFT', UIParent, 'BOTTOMLEFT', left + width - newWidth, bottom)
+	AstralKeyFrame:SetWidth(newWidth)
+	end)
+
+characterFrame.expand = characterFrame:CreateAnimationGroup()
+local characterExpand = characterFrame.expand:CreateAnimation('Alpha')
+characterExpand:SetFromAlpha(0)
+characterExpand:SetToAlpha(1)
+characterExpand:SetDuration(.15)
+characterExpand:SetSmoothing('IN_OUT')
+
+characterExpand:SetScript('OnPlay', function(self)
+	self:GetParent():GetParent():Show()
+	end)
+
+characterExpand:SetScript('OnUpdate', function(self, elapsed)
+		if self:GetProgress() < 0.6 then self:GetRegionParent():SetAlpha(0) end
+		local left, bottom, width = AstralKeyFrame:GetRect()
+		local newWidth = FRAME_WIDTH_MINIMIZED + (self:GetProgress() * 215)
+		AstralKeyFrame:ClearAllPoints()
+		AstralKeyFrame:SetPoint('BOTTOMLEFT', UIParent, 'BOTTOMLEFT', left + width - newWidth, bottom)
+		AstralKeyFrame:SetWidth(newWidth)
+	end)
+
+
+collapseButton:SetScript('OnClick', function(self)
+	if AstralKeysSettings.frameOptions.viewMode == 0 then
+		if AstralKeyFrameCharacterFrame.expand:IsPlaying() then
+			AstralKeyFrameCharacterFrame.expand:Stop()
+		end
+		AstralKeyFrameCharacterFrame.collapse:Play()
+		AstralKeysSettings.frameOptions.viewMode = 1
+		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\collapse.tga')
+	else
+		if AstralKeyFrameCharacterFrame.collapse:IsPlaying() then
+			AstralKeyFrameCharacterFrame.collapse:Stop()
+		end
+		AstralKeyFrameCharacterFrame.expand:Play()
+		AstralKeysSettings.frameOptions.viewMode = 0
+		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\expand.tga')
+	end
+	end)
+
 
 local characterTitle = characterFrame:CreateFontString(nil, 'OVERLAY', 'InterUIBlack_Small')
 characterTitle:SetPoint('TOPLEFT', characterFrame, 'TOPLEFT', 20, -100)
@@ -487,9 +478,11 @@ affixTitle:SetText('AFFIXES')
 
 -- Affix Frames
 -----------------------------------------------------
+
 do
 	for i = 1, 4 do
 		local frame = CreateFrame('FRAME', '$parentAffix' .. i, characterFrame)
+		frame.id = i
 
 		local mask = frame:CreateMaskTexture()
 		mask:SetTexture("Interface\\MINIMAP\\UI-Minimap-Background", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
@@ -513,13 +506,23 @@ do
 			self.affixID = affixID
 			self.texture:SetTexture(select(3, C_ChallengeMode.GetAffixInfo(affixID)))
 		end
+
+		frame:SetScript('OnEnter', function(self)
+			AstralKeyToolTip:SetOwner(self, 'ANCHOR_BOTTOMLEFT')
+			AstralKeyToolTip:AddLine(e.AffixName(self.id), 1, 1, 1)
+			--GameTooltip:AddLine("|T"..itemTexture..":0|t ")  USE THIS TO ADD WEEKS TO COME AFFIXES 2-3?
+			AstralKeyToolTip:Show()
+			end)
+		frame:SetScript('OnLeave', function(self)
+			AstralKeyToolTip:Hide()
+		end)
 	end
 end
 
 -- Character Frames
 ----------------------------------------------------------------
 function CharacterScrollFrame_Update()
-	local scrollFrame = AstralKeyFrameCharacterContainer
+	local scrollFrame = AstralKeyFrameCharacterFrameCharacterContainer
 	local offset = HybridScrollFrame_GetOffset(scrollFrame)
 	local buttons = scrollFrame.buttons
 	local numButtons = #buttons
@@ -536,19 +539,19 @@ function CharacterScrollFrame_Update()
 		end
 	end
 
-	HybridScrollFrame_Update(AstralKeyFrameCharacterContainer, height * #AstralCharacters, usedHeight)
+	HybridScrollFrame_Update(AstralKeyFrameCharacterFrameCharacterContainer, height * #AstralCharacters, usedHeight)
 end
 
 local function CharacterScrollFrame_OnEnter()
-	AstralKeyFrameCharacterContainerScrollBarThumbTexture:SetAlpha(SCROLL_TEXTURE_ALPHA_MAX)
+	AstralKeyFrameCharacterFrameCharacterContainerScrollBarThumbTexture:SetAlpha(SCROLL_TEXTURE_ALPHA_MAX)
 end
 
 local function CharacterScrollFrame_OnLeave()
-	AstralKeyFrameCharacterContainerScrollBarThumbTexture:SetAlpha(SCROLL_TEXTURE_ALPHA_MIN)
+	AstralKeyFrameCharacterFrameCharacterContainerScrollBarThumbTexture:SetAlpha(SCROLL_TEXTURE_ALPHA_MIN)
 end
 
-local characterScrollFrame = CreateFrame('ScrollFrame', '$parentCharacterContainer', AstralKeyFrame, 'HybridScrollFrameTemplate')
-characterScrollFrame:SetSize(190, 320)
+local characterScrollFrame = CreateFrame('ScrollFrame', '$parentCharacterContainer', AstralKeyFrameCharacterFrame, 'HybridScrollFrameTemplate')
+characterScrollFrame:SetSize(180, 320)
 characterScrollFrame:SetPoint('TOPLEFT', characterTitle, 'TOPLEFT', 0, -25)
 characterScrollFrame:SetScript('OnEnter',  CharacterScrollFrame_OnEnter)
 characterScrollFrame:SetScript('OnLeave', CharacterScrollFrame_OnLeave)
@@ -588,42 +591,8 @@ function ListScrollFrame_Update()
 	local height = scrollFrame.buttonHeight
 	local usedHeight = 0
 	local list = e.FrameListShown()
-	local data = sortedTable[e.FrameListShown()]
-
 	local lastIndex = 1
---[[
-	for i = 1, #buttons do
-		if data[i+offset] and data[i+offset].isShown then
-			buttons[i]:SetUnit(data[i+offset].character_name, data[i+offset].character_class, data[i+offset].mapID, data[i+offset].key_level, data[i+offset].weekly_cache, data[i+offset].faction, data[i+offset].btag)
-			buttons[i]:Show()
-			usedHeight = usedHeight + height
-		else
-			buttons[i]:Hide()
-		end
-	end]]
---[[
-	for i = 1, #buttons do
-		if data[lastIndex+offset] and data[lastIndex+offset].isShown then
-			buttons[i]:SetUnit(data[lastIndex+offset].character_name, data[lastIndex+offset].character_class, data[lastIndex+offset].mapID, data[lastIndex+offset].key_level, data[lastIndex+offset].weekly_cache, data[lastIndex+offset].faction, data[lastIndex+offset].btag)
-			buttons[i]:Show()
-			lastIndex = lastIndex + 1
-			usedHeight = usedHeight + height
-		else
-			buttons[i]:Hide()
-		end
-	end]]
---[[
-	for i = 1, #buttons do
-		if data[lastIndex+offset] and data[lastIndex+offset].isShown then
-			buttons[lastIndex]:SetUnit(data[lastIndex+offset].character_name, data[lastIndex+offset].character_class, data[lastIndex+offset].mapID, data[lastIndex+offset].key_level, data[lastIndex+offset].weekly_cache, data[lastIndex+offset].faction, data[lastIndex+offset].btag)
-			buttons[lastIndex]:Show()
-			lastIndex = lastIndex + 1
-			usedHeight = usedHeight + height
-		else
-			buttons[i]:Hide()
-		end
-	end]]
-	
+
 	for i = 1, math.min(sortedTable.numShown, #buttons) do
 		for j = lastIndex, #sortedTable[list] do
 			if sortedTable[list][j+offset] and sortedTable[list][j+offset].isShown then
@@ -639,19 +608,31 @@ function ListScrollFrame_Update()
 	for i = sortedTable.numShown + 1, #buttons do
 		buttons[i]:Hide()
 	end
-
+	AstralKeyFrameListContainer.stepSize = (sortedTable.numShown / #buttons) * height
 	HybridScrollFrame_Update(AstralKeyFrameListContainer, height * sortedTable.numShown, usedHeight)
 end
 
+local function ListScrollFrame_OnEnter()
+	AstralKeyFrameListContainerScrollBarThumbTexture:SetAlpha(SCROLL_TEXTURE_ALPHA_MAX)
+end
+
+local function ListScrollFrame_OnLeave()
+	AstralKeyFrameListContainerScrollBarThumbTexture:SetAlpha(SCROLL_TEXTURE_ALPHA_MIN)
+end
+
 local listScrollFrame = CreateFrame('ScrollFrame', '$parentListContainer', AstralKeyFrame, 'HybridScrollFrameTemplate')
-listScrollFrame:SetSize(420, 390)
-listScrollFrame:SetPoint('TOPLEFT', tabFrame, 'BOTTOMLEFT', 0, -40)
+listScrollFrame:SetSize(455, 390)
+listScrollFrame:SetPoint('TOPLEFT', tabFrame, 'BOTTOMLEFT', 10, -35)
 listScrollFrame.update = ListScrollFrame_Update
+listScrollFrame:SetScript('OnEnter',  ListScrollFrame_OnEnter)
+listScrollFrame:SetScript('OnLeave', ListScrollFrame_OnLeave)
 
 local listScrollBar = CreateFrame('Slider', '$parentScrollBar', listScrollFrame, 'HybridScrollBarTemplate')
 listScrollBar:SetWidth(10)
 listScrollBar:SetPoint('TOPLEFT', listScrollFrame, 'TOPRIGHT')
 listScrollBar:SetPoint('BOTTOMLEFT', listScrollFrame, 'BOTTOMRIGHT', 1, 0)
+listScrollBar:SetScript('OnEnter', ListScrollFrame_OnEnter)
+listScrollBar:SetScript('OnLeave', ListScrollFrame_OnLeave)
 
 listScrollBar.ScrollBarTop:Hide()
 listScrollBar.ScrollBarMiddle:Hide()
@@ -669,16 +650,9 @@ local contentFrame = CreateFrame('FRAME', 'AstralContentFrame', AstralKeyFrame)
 contentFrame:SetSize(450, 390)
 contentFrame:SetPoint('TOPLEFT', tabFrame, 'BOTTOMLEFT', 0, -30)
 
---[[ Sort methuds
-	1: Unit Name
-	2: 
-	3: Map Name
-	4: Key Level
-	5: Weekly
-]]
-
 local function ListButton_OnClick(self)
 	HybridScrollFrame_SetOffset(AstralKeyFrameListContainer, 0)
+	AstralKeyFrameListContainer.scrollBar:SetValue(0)
 
 	if self.sortMethod == AstralKeysSettings.frameOptions.sortMethod then
 		AstralKeysSettings.frameOptions.orientation = 1 - AstralKeysSettings.frameOptions.orientation
@@ -690,19 +664,19 @@ local function ListButton_OnClick(self)
 	e.UpdateFrames()
 end
 
-local keyLevelButton = CreateFrame('BUTTON', '%parentKeyLevelButton', contentFrame)
+local keyLevelButton = CreateFrame('BUTTON', '$parentKeyLevelButton', contentFrame)
 keyLevelButton.sortMethod = 'key_level'
 keyLevelButton:SetSize(40, 20)
 keyLevelButton:SetNormalFontObject(InterUIBlack_Small)
 keyLevelButton:GetNormalFontObject():SetJustifyH('CENTER')
 keyLevelButton:SetText('LEVEL')
 keyLevelButton:SetAlpha(0.5)
-keyLevelButton:SetPoint('TOPLEFT', tabFrame, 'BOTTOMLEFT', 6, -10)
+keyLevelButton:SetPoint('TOPLEFT', tabFrame, 'BOTTOMLEFT', 16, -5)
 keyLevelButton:SetScript('OnClick', function(self) ListButton_OnClick(self) end)
 
-local dungeonButton = CreateFrame('BUTTON', '%DungeonButton', contentFrame)
+local dungeonButton = CreateFrame('BUTTON', '$parentDungeonButton', contentFrame)
 dungeonButton.sortMethod = 'dungeon_name'
-dungeonButton:SetSize(160, 20)
+dungeonButton:SetSize(155, 20)
 dungeonButton:SetNormalFontObject(InterUIBlack_Small)
 dungeonButton:GetNormalFontObject():SetJustifyH('LEFT')
 dungeonButton:SetText('DUNGEON')
@@ -710,9 +684,9 @@ dungeonButton:SetAlpha(0.5)
 dungeonButton:SetPoint('LEFT', keyLevelButton, 'RIGHT', 10, 0)
 dungeonButton:SetScript('OnClick', function(self) ListButton_OnClick(self) end)
 
-local characterButton = CreateFrame('BUTTON', '%parentCharacterButton', contentFrame)
+local characterButton = CreateFrame('BUTTON', '$parentCharacterButton', contentFrame)
 characterButton.sortMethod = 'character_name'
-characterButton:SetSize(105, 20)
+characterButton:SetSize(153, 20)
 characterButton:SetNormalFontObject(InterUIBlack_Small)
 characterButton:GetNormalFontObject():SetJustifyH('LEFT')
 characterButton:SetText('CHARACTER')
@@ -720,7 +694,7 @@ characterButton:SetAlpha(0.5)
 characterButton:SetPoint('LEFT', dungeonButton, 'RIGHT')
 characterButton:SetScript('OnClick', function(self) ListButton_OnClick(self) end)
 
-local weeklyBestButton = CreateFrame('BUTTON', '%parentWeeklyBestButton', contentFrame)
+local weeklyBestButton = CreateFrame('BUTTON', '$parentWeeklyBestButton', contentFrame)
 weeklyBestButton.sortMethod = 'weekly_best_level'
 weeklyBestButton:SetSize(50, 20)
 weeklyBestButton:SetNormalFontObject(InterUIBlack_Small)
@@ -730,7 +704,7 @@ weeklyBestButton:SetAlpha(0.5)
 weeklyBestButton:SetPoint('LEFT', characterButton, 'RIGHT')
 weeklyBestButton:SetScript('OnClick', function(self) ListButton_OnClick(self) end)
 
-local weeklyButton = CreateFrame('BUTTON', '%parentWeeklyButton', contentFrame)
+local weeklyButton = CreateFrame('BUTTON', '$parentWeeklyButton', contentFrame)
 weeklyButton.sortMethod = 'weekly_cache'
 weeklyButton:SetSize(30, 20)
 weeklyButton:SetNormalFontObject(InterUIBlack_Small)
@@ -739,80 +713,6 @@ weeklyButton:SetAlpha(0.5)
 weeklyButton:SetPoint('LEFT', weeklyBestButton, 'RIGHT', 10, 0)
 weeklyButton:SetScript('OnClick', function(self) ListButton_OnClick(self) end)
 
---[[
-local keyButton = CreateButton(contentFrame, 'keyButton', 45, 20, 'Level', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT) --75
-keyButton:SetPoint('BOTTOMLEFT', contentFrame, 'TOPLEFT')
-keyButton:SetScript('OnClick', function()
-	if AstralMenuFrame:IsShown() then
-		AstralMenuFrame:Hide()
-	end
-
-	contentFrame:ResetSlider()
-	if AstralKeysSettings.frameOptions.sortMethod ~= 4 then
-		AstralKeysSettings.frameOptions.orientation = 0
-	else
-		AstralKeysSettings.frameOptions.orientation = 1 - AstralKeysSettings.frameOptions.orientation
-	end
-	AstralKeysSettings.frameOptions.sortMethod = 4
-	e.SortTable(sortedTable[e.FrameListShown()], AstralKeysSettings.frameOptions.sortMethod)
-	e.UpdateLines()
-
-	end)
-
-local mapButton = CreateButton(contentFrame, 'mapButton', 170, 20, 'Dungeon', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT)
-mapButton:SetPoint('LEFT', keyButton, 'RIGHT')
-mapButton:SetScript('OnClick', function()
-	if AstralMenuFrame:IsShown() then
-		AstralMenuFrame:Hide()
-	end
-	contentFrame:ResetSlider()
-	if AstralKeysSettings.frameOptions.sortMethod ~= 3 then
-		AstralKeysSettings.frameOptions.orientation = 0
-	else
-		AstralKeysSettings.frameOptions.orientation = 1 - AstralKeysSettings.frameOptions.orientation
-	end
-	AstralKeysSettings.frameOptions.sortMethod = 3
-	e.SortTable(sortedTable[e.FrameListShown()], AstralKeysSettings.frameOptions.sortMethod)
-	e.UpdateLines()
-
-	end)
-
-local nameButton = CreateButton(contentFrame, 'nameButton', 165, 20, 'Player', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT)
-nameButton:SetPoint('LEFT', mapButton, 'RIGHT')
-nameButton:SetScript('OnClick', function()
-	if AstralMenuFrame:IsShown() then
-		AstralMenuFrame:Hide()
-	end
-	contentFrame:ResetSlider()
-	if AstralKeysSettings.frameOptions.sortMethod ~= 1 then
-		AstralKeysSettings.frameOptions.orientation = 0
-	else
-		AstralKeysSettings.frameOptions.orientation = 1 - AstralKeysSettings.frameOptions.orientation
-	end
-	AstralKeysSettings.frameOptions.sortMethod = 1
-	e.SortTable(sortedTable[e.FrameListShown()], AstralKeysSettings.frameOptions.sortMethod)
-	e.UpdateLines()
-
-	end)
-
-local completeButton = CreateButton(contentFrame, 'completeButton', 30, 20, e.CACHE_LEVEL .. '+', FONT_OBJECT_CENTRE, FONT_OBJECT_HIGHLIGHT)
-completeButton:SetPoint('LEFT', nameButton, 'RIGHT')
-completeButton:SetScript('OnClick', function()
-	if AstralMenuFrame:IsShown() then
-		AstralMenuFrame:Hide()
-	end
-	contentFrame:ResetSlider()
-	if AstralKeysSettings.frameOptions.sortMethod ~= 5 then
-		AstralKeysSettings.frameOptions.orientation = 0
-	else
-		AstralKeysSettings.frameOptions.orientation = 1 - AstralKeysSettings.frameOptions.orientation
-	end
-	AstralKeysSettings.frameOptions.sortMethod = 5
-	e.SortTable(sortedTable[e.FrameListShown()], AstralKeysSettings.frameOptions.sortMethod)
-	e.UpdateLines()
-
-	end)
-]]
 function AstralKeyFrame:OnUpdate(elapsed)
 	self.updateDelay = self.updateDelay + elapsed
 
@@ -832,6 +732,8 @@ function AstralKeyFrame:ToggleLists()
 			e.SetFrameListShown('GUILD')
 			e.UpdateFrames()
 			HybridScrollFrame_SetOffset(AstralKeyFrameListContainer, 0)
+			AstralKeyFrameListContainer.scrollBar:SetValue(0)
+
 		end
 	end
 end
@@ -844,6 +746,7 @@ AstralKeyFrame:SetScript('OnKeyDown', function(self, key)
 	end)
 
 AstralKeyFrame:SetScript('OnShow', function(self)
+	offLineButton:SetChecked(AstralKeysSettings.options.showOffline)
 	e.UpdateFrames()
 	e.UpdateCharacterFrames()
 	self:SetPropagateKeyboardInput(true)
@@ -861,17 +764,19 @@ local init = false
 local function InitializeFrame()
 	init = true
 
-	HybridScrollFrame_CreateButtons(AstralKeyFrameCharacterContainer, 'AstralCharacterFrameTemplate', 0, 0, 'TOPLEFT', 'TOPLEFT', 0, -10)
-	HybridScrollFrame_CreateButtons(AstralKeyFrameListContainer, 'AstralListFrameTemplate', 0, 0, 'TOPLEFT', 'TOPLEFT', 0, -15)
+	if AstralKeysSettings.frameOptions.viewMode == 1 then
+		collapseButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\collapse.tga')
+		AstralKeyFrame:SetWidth(FRAME_WIDTH_MINIMIZED)
+		AstralKeyFrameCharacterFrame:Hide()
+	else
+		collapseButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\expand.tga')
+	end
+
+	offLineButton:SetChecked(AstralKeysSettings.options.showOffline)
+	HybridScrollFrame_CreateButtons(AstralKeyFrameCharacterFrameCharacterContainer, 'AstralCharacterFrameTemplate', 0, 0, 'TOPLEFT', 'TOPLEFT', 0, -10)
+	HybridScrollFrame_CreateButtons(AstralKeyFrameListContainer, 'AstralListFrameTemplate', 0, 0, 'TOPLEFT', 'TOPLEFT', 0, -10)
 
 	e.UpdateAffixes()
-
-	if AstralKeysSettings.frameOptions.viewMode == 1 then
-		AstralKeyFrame:SetWidth(425)
-		AstralContentFrame:ClearAllPoints()
-		AstralContentFrame:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 5, -95)
-		toggleButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\menu.tga')
-	end
 
 	e.UpdateFrames()
 	UpdateTabs()
@@ -950,4 +855,4 @@ local function handler(msg)
 end
 
 SlashCmdList['ASTRALKEYS'] = handler;
-SlashCmdList['ASTRALKEYSV'] = function(msg) e.VersionCheck() end
+SlashCmdList['ASTRALKEYSV'] = function(msg) e.CheckGuildVersion() end
