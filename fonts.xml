@@ -142,7 +142,13 @@
 	</FontFamily>
 	<FontFamily name="InterUIBlack_Small" virtual="true">
 		<Member alphabet="roman">
-			<Font font="Interface\AddOns\AstralKeys\Media\Font\Inter-UI-Black.ttf" height="10">
+			<Font font="Interface\AddOns\AstralKeys\Media\Font\Inter-UI-Black.ttf" height="10">				
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="1" g="1" b="1" a="0"/>
+				</Shadow>
 			</Font>
 		</Member>
 		<Member alphabet="korean">

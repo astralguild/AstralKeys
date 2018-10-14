@@ -34,3 +34,7 @@ end
 function e.AffixName(id)
 	return AFFIXES[id].name
 end
+
+function e.GetAffixID(id)
+	return AFFIXES[id].id
+end
