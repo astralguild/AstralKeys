@@ -1,4 +1,4 @@
-local ADDON, e = ...
+local e, L = unpack(select(2, ...))
 
 local find, sub, strformat = string.find, string.sub, string.format
 local BNSendGameData, SendAddonMessage, SendChatMessage = BNSendGameData, C_ChatInfo.SendAddonMessage, SendChatMessage

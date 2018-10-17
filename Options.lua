@@ -1,4 +1,4 @@
-local ADDON, e = ...
+local e, L = unpack(select(2, ...))
 
 local BACKDROP = {
 bgFile = "Interface/Tooltips/UI-Tooltip-Background",

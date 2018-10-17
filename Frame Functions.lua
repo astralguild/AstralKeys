@@ -1,4 +1,4 @@
-local _, e = ...
+local e, L = unpack(select(2, ...))
 
 e.BACKDROP = {
 bgFile = "Interface/Tooltips/UI-Tooltip-Background",

@@ -1,4 +1,4 @@
-local _, e = ...
+local e, L = unpack(select(2, ...))
 
 local addon = LibStub("AceAddon-3.0"):NewAddon("AstralKeys", "AceConsole-3.0")
 

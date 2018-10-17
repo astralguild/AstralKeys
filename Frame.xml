@@ -55,8 +55,9 @@ Character Frame Template
 		</Scripts>
 	</Button>
 	<Button name="AstralListFrameTemplate" virtual="true" mixin="AstralKeysListMixin">
+		<!-- with WKYL BST, 440 px -->
 		<Size>
-			<AbsDimension x="440" y="20"/>
+			<AbsDimension x="400" y="20"/>
 		</Size>
 		<Layers>
 			<Layer level="ARTOWKR">
@@ -84,6 +85,7 @@ Character Frame Template
 						<Anchor point="LEFT" relativeTo="$parentDungeonString" relativePoint="RIGHT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
+				<!--
 				<FontString name="$parentBestString" inherits="InterUIBlack_Normal" justifyH='RIGHT' wordwrap="false" parentKey="bestString">
 					<Size>
 						<AbsDimension x="20" y="15"/>
@@ -92,12 +94,13 @@ Character Frame Template
 						<Anchor point="LEFT" relativeTo="$parentNameString" relativePoint="RIGHT" x="10" y="0"/>
 					</Anchors>
 				</FontString>
+				-->
 				<Texture name="$parentWeekly" file="Interface\AddOns\AstralKeys\Media\check.tga" parentKey='weeklyTexture'>
 					<Size>
 						<AbsDimension x="12" y="12"/>
 					</Size>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentBestString" relativePoint="RIGHT" x="41" y="0"/>
+						<Anchor point="LEFT" relativeTo="$parentNameString" relativePoint="RIGHT" x="12" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>

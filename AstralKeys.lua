@@ -1,4 +1,4 @@
-local a, e = ...
+local e, L = unpack(select(2, ...))
 e.Week = 0
 
 if not AstralKeys then AstralKeys = {} end

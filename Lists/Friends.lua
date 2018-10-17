@@ -1,4 +1,4 @@
-local ADDON, e = ...
+local e, L = unpack(select(2, ...))
 local MAX_LEVEL = 120
 
 local SYNC_VERSION = 'sync4'

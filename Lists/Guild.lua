@@ -1,4 +1,4 @@
-local ADDON, e = ...
+local e, L = unpack(select(2, ...))
 
 local find, sub, strformat = string.find, string.sub, string.format
 
@@ -275,7 +275,7 @@ local function GuildUnitFunction(self, unit, unitClass, mapID, keyLevel, cache, 
 	self.levelString:SetText(keyLevel)
 	self.dungeonString:SetText(e.GetMapName(mapID))
 	self.nameString:SetText(WrapTextInColorCode(Ambiguate(unit, 'GUILD') , select(4, GetClassColor(unitClass))))
-	self.bestString:SetText(bestKey)
+	--self.bestString:SetText(bestKey)
 	self.weeklyTexture:SetShown(true or bestKey >= e.CACHE_LEVEL)
 	if e.GuildMemberOnline(unit) then
 		self:SetAlpha(1)

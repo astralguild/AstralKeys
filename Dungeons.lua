@@ -1,6 +1,18 @@
-local _, e = ...
+local e, L = unpack(select(2, ...))
 
 local DUNGEON_TABLE = {}
+
+local function SetDungeonTable()
+	local dungeonTable = C_ChallengeMode.GetMapTable()
+
+	for _, mapID in pairs(dungeonTable) do
+		local name = C_ChallengeMode.GetMapUIInfo(mapID)
+		DUNGEON_TABLE[mapID] = name
+	end
+	AstralEvents:Unregister('CHALLENGE_MODE_MAPS_UPDATE', 'SetDungeonTable')
+end
+
+AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', SetDungeonTable, 'SetDungeonTable')
 
 --[[
 RUSSIAN
@@ -59,5 +71,10 @@ DUNGEON_TABLE[353] = {}
 DUNGEON_TABLE[353]['name'] = 'Siege of Boralus'
 
 function e.GetMapName(mapID)
-	return DUNGEON_TABLE[tonumber(mapID)]['name']
+	return DUNGEON_TABLE[tonumber(mapID)]
 end
+
+--[[
+function e.GetMapName(mapID)
+	return DUNGEON_TABLE[tonumber(mapID)]['name']
+end]]

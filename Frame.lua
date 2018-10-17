@@ -1,4 +1,4 @@
-local _, e = ...
+local e, L = unpack(select(2, ...))
 
 local BACKDROP = {
 bgFile = "Interface/Tooltips/UI-Tooltip-Background",
@@ -25,8 +25,8 @@ local COLOR_GRAY = 'ff9d9d9d'
 local SCROLL_TEXTURE_ALPHA_MIN = 0.2
 local SCROLL_TEXTURE_ALPHA_MAX = 0.6
 
-local FRAME_WIDTH_EXPANDED = 765
-local FRAME_WIDTH_MINIMIZED = 550
+local FRAME_WIDTH_EXPANDED = 715
+local FRAME_WIDTH_MINIMIZED = 510
 
 -- Used for filtering, sorting, and displaying units on lists
 local sortedTable = {}
@@ -52,10 +52,6 @@ function AstralKeysCharacterMixin:UpdateUnit(characterID)
 		self.weeklyStringValue:SetText(bestKey)
 	else
 		self.weeklyStringValue:SetText(WrapTextInColorCode(CHARACTER_DUNGEON_NOT_RAN, COLOR_GRAY))
-	end
-
-	if unit:find('Neko') then
-		self.weeklyStringValue:SetText(10)
 	end
 
 	if currentMapID then
@@ -207,7 +203,7 @@ AstralMenuFrame:AddSelection('Cancel', function() return AstralMenuFrame:Hide() 
 
 local AstralKeyFrame = CreateFrame('FRAME', 'AstralKeyFrame', UIParent)
 AstralKeyFrame:SetFrameStrata('DIALOG')
-AstralKeyFrame:SetWidth(755)
+AstralKeyFrame:SetWidth(715)
 AstralKeyFrame:SetHeight(490)
 AstralKeyFrame:SetPoint('CENTER', UIParent, 'CENTER')
 AstralKeyFrame:EnableMouse(true)
@@ -328,10 +324,10 @@ closeButton:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', -14, -14)
 -- MenuBar 50px
 -- Middle Frame 215px
 local tabFrame = CreateFrame('FRAME', '$parentTabFrame', AstralKeyFrame)
-tabFrame:SetSize(490, 40)
+tabFrame:SetSize(450, 40)
 tabFrame:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', 0, 0)
-tabFrame.t = tabFrame:CreateTexture(nil, 'ARTWORK')
-tabFrame.t:SetAllPoints(tabFrame)
+--tabFrame.t = tabFrame:CreateTexture(nil, 'ARTWORK')
+--tabFrame.t:SetAllPoints(tabFrame)
 --tabFrame.t:SetColorTexture(0, .5, 1)
 tabFrame.buttons = {}
 
@@ -440,7 +436,6 @@ characterExpand:SetScript('OnUpdate', function(self, elapsed)
 		AstralKeyFrame:SetWidth(newWidth)
 	end)
 
-
 collapseButton:SetScript('OnClick', function(self)
 	if AstralKeysSettings.frameOptions.viewMode == 0 then
 		if AstralKeyFrameCharacterFrame.expand:IsPlaying() then
@@ -458,7 +453,6 @@ collapseButton:SetScript('OnClick', function(self)
 		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\expand.tga')
 	end
 	end)
-
 
 local characterTitle = characterFrame:CreateFontString('$parentCharacterTitle', 'OVERLAY', 'InterUIBlack_Small')
 characterTitle:SetPoint('TOPLEFT', characterFrame, 'TOPLEFT', 20, -100)
@@ -488,7 +482,6 @@ affixFrame.t = affixFrame:CreateTexture(nil, 'ARTWORK')
 affixFrame.t:SetAllPoints(affixFrame)
 --affixFrame.t:SetColorTexture(0, .5, 1)
 affixFrame:Hide()
-
 
 local affixExpandButton = CreateFrame('BUTTON', '$parentAffixExpandButton', characterFrame)
 affixExpandButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline_keyboard_arrow_down_black_18dp.tga')
@@ -769,7 +762,7 @@ local function ListScrollFrame_OnLeave()
 end
 
 local listScrollFrame = CreateFrame('ScrollFrame', '$parentListContainer', AstralKeyFrame, 'HybridScrollFrameTemplate')
-listScrollFrame:SetSize(455, 390)
+listScrollFrame:SetSize(415, 390)
 listScrollFrame:SetPoint('TOPLEFT', tabFrame, 'BOTTOMLEFT', 10, -35)
 listScrollFrame.update = ListScrollFrame_Update
 listScrollFrame:SetScript('OnEnter',  ListScrollFrame_OnEnter)
@@ -795,7 +788,7 @@ scrollButton:SetVertexColor(1, 1, 1, SCROLL_TEXTURE_ALPHA_MIN)
 listScrollFrame.buttonHeight = 15
 
 local contentFrame = CreateFrame('FRAME', 'AstralContentFrame', AstralKeyFrame)
-contentFrame:SetSize(450, 390)
+contentFrame:SetSize(410, 390)
 contentFrame:SetPoint('TOPLEFT', tabFrame, 'BOTTOMLEFT', 0, -30)
 
 local function ListButton_OnClick(self)
@@ -841,7 +834,7 @@ characterButton:SetText('CHARACTER')
 characterButton:SetAlpha(0.5)
 characterButton:SetPoint('LEFT', dungeonButton, 'RIGHT')
 characterButton:SetScript('OnClick', function(self) ListButton_OnClick(self) end)
-
+--[[
 local weeklyBestButton = CreateFrame('BUTTON', '$parentWeeklyBestButton', contentFrame)
 weeklyBestButton.sortMethod = 'weekly_best_level'
 weeklyBestButton:SetSize(50, 20)
@@ -851,14 +844,14 @@ weeklyBestButton:SetText('WKLY BEST')
 weeklyBestButton:SetAlpha(0.5)
 weeklyBestButton:SetPoint('LEFT', characterButton, 'RIGHT')
 weeklyBestButton:SetScript('OnClick', function(self) ListButton_OnClick(self) end)
-
+]]
 local weeklyButton = CreateFrame('BUTTON', '$parentWeeklyButton', contentFrame)
 weeklyButton.sortMethod = 'weekly_cache'
 weeklyButton:SetSize(30, 20)
 weeklyButton:SetNormalFontObject(InterUIBlack_Small)
 weeklyButton:SetText('10+')
 weeklyButton:SetAlpha(0.5)
-weeklyButton:SetPoint('LEFT', weeklyBestButton, 'RIGHT', 10, 0)
+weeklyButton:SetPoint('LEFT', characterButton, 'RIGHT', 10, 0)
 weeklyButton:SetScript('OnClick', function(self) ListButton_OnClick(self) end)
 
 function AstralKeyFrame:OnUpdate(elapsed)
@@ -906,6 +899,11 @@ AstralKeyFrame:SetScript('OnDragStart', function(self)
 
 AstralKeyFrame:SetScript('OnDragStop', function(self)
 	self:StopMovingOrSizing()
+	end)
+
+AstralKeyFrame:SetScript('OnHide', function(self)
+	AstralMenuFrame:Hide()
+
 	end)
 
 local init = false

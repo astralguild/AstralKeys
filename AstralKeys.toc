@@ -5,6 +5,10 @@
 ## Version: 3.0
 ## SavedVariables: AstralKeys, AstralCharacters, AstralFriends, AstralKeysSettings, AstralMinimap
 
+Init.lua
+Localization\Localization.lua
+Localization\enUS.lua
+
 embeds.xml
 fonts.xml
 Settings.lua

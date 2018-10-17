@@ -1,8 +1,7 @@
-local ADDON, e = ...
+local e, L = unpack(select(2, ...))
 
 AstralEvents = CreateFrame('FRAME', 'AstralEvents')
 AstralEvents.dtbl = {}
-AstralEvents.version = VERSION
 
 -- Creates new event object
 -- @param f Function to be called on event

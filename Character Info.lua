@@ -1,4 +1,4 @@
-local _, e = ...
+local e, L = unpack(select(2, ...))
 
 local playerClass, characterID
 local playerNameRealm = UnitName('player') .. '-' .. GetRealmName():gsub("%s+", "")

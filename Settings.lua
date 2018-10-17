@@ -1,4 +1,4 @@
-local _, e = ...
+local e, L = unpack(select(2, ...))
 local RESET_VERSION = 20200
 e.CLIENT_VERSION = 30
 -- Reset time 15:00 UTC AMERICAS

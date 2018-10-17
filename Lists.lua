@@ -1,4 +1,4 @@
-local ADDON, e = ...
+local e, L = unpack(select(2, ...))
 
 -- Function to be called depenending on which list is being viewed, list being viewed retrieved by e.FrameListShown()
 local UNIT_FUNCTION = {}

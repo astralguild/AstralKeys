@@ -1,4 +1,4 @@
-local ADDON, e = ...
+local e, L = unpack(select(2, ...))
 local strformat = string.format
 
 local GRAY = 'ff9d9d9d'
