@@ -276,7 +276,7 @@ local function GuildUnitFunction(self, unit, unitClass, mapID, keyLevel, cache, 
 	self.dungeonString:SetText(e.GetMapName(mapID))
 	self.nameString:SetText(WrapTextInColorCode(Ambiguate(unit, 'GUILD') , select(4, GetClassColor(unitClass))))
 	--self.bestString:SetText(bestKey)
-	self.weeklyTexture:SetShown(true or bestKey >= e.CACHE_LEVEL)
+	self.weeklyTexture:SetShown(cache == 1 or bestKey >= e.CACHE_LEVEL)
 	if e.GuildMemberOnline(unit) then
 		self:SetAlpha(1)
 	else

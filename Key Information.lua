@@ -84,6 +84,7 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 	end
 
 	if not mapID and not AstralEvents:IsRegistered('CHAT_MSG_LOOT', 'loot_msg_parse') then
+		Console:AddLine('KeyInfo', 'No key found, parsing loot')
 		AstralEvents:Register('CHAT_MSG_LOOT', ParseLootMsgForKey, 'loot_msg_parse')
 	end
 

@@ -227,7 +227,6 @@ AstralKeyToolTip:SetScript('OnShow', function(self)
 end)
 
 -- Skin the tooltip.
-
 for i = 1, 8 do
 	_G['AstralKeyToolTipTextRight' .. i]:SetFontObject(InterUIBold_Tiny)
 	_G['AstralKeyToolTipTextLeft' .. i]:SetFontObject(InterUIBold_Tiny)
@@ -318,6 +317,12 @@ closeButton:SetScript('OnClick', function()
 	AstralKeyFrame:Hide()
 end)
 closeButton:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', -14, -14)
+closeButton:SetScript('OnEnter', function(self)
+	self:GetNormalTexture():SetVertexColor(126/255, 126/255, 126/255, 0.8)
+end)
+closeButton:SetScript('OnLeave', function(self)
+	self:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
+end)
 
 -- Tab bar at the top, only show 5 and then start scrolling
 

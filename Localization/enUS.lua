@@ -18,3 +18,4 @@ L['AFFIXES'] = 'AFFIXES'
 -- Misc
 L['CURRENT_KEY'] = 'CURRENT'
 L['CHARACTER_DUNGEON_NOT_RAN'] = 'No mythic+ ran'
+L['CHARACTER_KEY_NOT_FOUND'] = 'No key found'

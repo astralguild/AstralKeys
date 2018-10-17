@@ -12,11 +12,5 @@ L['zhCN'] = {}
 L['zhTW'] = {}
 
 local locale = GetLocale()
-Console:AddLine('locale', locale)
-
 L = L[locale]
 
-
-function printL()
-	tprint(L)
-end
