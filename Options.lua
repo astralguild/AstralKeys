@@ -1,68 +1,29 @@
 local e, L = unpack(select(2, ...))
 
-local BACKDROP = {
-bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-edgeFile = nil, tile = true, tileSize = 16, edgeSize = 16,
-insets = {left = 0, right = 0, top = 0, bottom = 0}
-}
-
-local BACKDROP2 = {
-bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-edgeFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 16, edgeSize = 1,
-insets = {left = 0, right = 0, top = 0, bottom = 0}
-}
-
-local POSITIONS = {
-	[1] = 'LEFT',
-	[2] = 'CENTER',
-	[3] = 'RIGHT',
-}
-
-local BACKDROPBUTTON = {
-bgFile = nil,
-edgeFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 0, edgeSize = 1,
-insets = {left = 0, right = 0, top = 0, bottom = 0}
-}
-
-local FONT_HEADER = "Interface\\AddOns\\AstralKeys\\Media\\big_noodle_titling.TTF"
-local FONT_CONTENT = "Interface\\AddOns\\AstralKeys\\Media\\Lato-Regular.TTF"
-local FONT_SIZE = 13
-
-local FONT_OBJECT_LEFT = CreateFont("FONT_OBJECT_LEFT")
-FONT_OBJECT_LEFT:SetFont(FONT_CONTENT, FONT_SIZE)
-FONT_OBJECT_LEFT:SetJustifyH('LEFT')
-FONT_OBJECT_LEFT:SetTextColor(1, 1, 1)
-
-local FONT_OBJECT_RIGHT = CreateFont("FONT_OBJECT_RIGHT")
-FONT_OBJECT_RIGHT:SetFont(FONT_CONTENT, FONT_SIZE)
-FONT_OBJECT_RIGHT:SetJustifyH('RIGHT')
-FONT_OBJECT_RIGHT:SetTextColor(1, 1, 1)
-
-local FONT_OBJECT_CENTRE = CreateFont("FONT_OBJECT_CENTRE")
-FONT_OBJECT_CENTRE:SetFont(FONT_CONTENT, FONT_SIZE)
-FONT_OBJECT_CENTRE:SetJustifyH('CENTER')
-FONT_OBJECT_CENTRE:SetTextColor(1, 1, 1)
-
-local FONT_OBJECT_HIGHLIGHT = CreateFont("FONT_OBJECT_HIGHLIGHT")
-FONT_OBJECT_HIGHLIGHT:SetFont(FONT_CONTENT, FONT_SIZE)
-FONT_OBJECT_HIGHLIGHT:SetJustifyH('CENTER')
-FONT_OBJECT_HIGHLIGHT:SetTextColor(192/255, 192/255, 192/255)
-
 local AstralOptionsFrame = CreateFrame('FRAME', 'AstralOptionsFrame', UIParent)
 AstralOptionsFrame:SetFrameStrata('DIALOG')
 AstralOptionsFrame:SetFrameLevel(5)
 AstralOptionsFrame:SetHeight(385)
 AstralOptionsFrame:SetWidth(650)
 AstralOptionsFrame:SetPoint('CENTER', UIParent, 'CENTER')
-AstralOptionsFrame:SetBackdrop(e.BACKDROP)
-AstralOptionsFrame:SetBackdropColor(0, 0, 0, 1)
 AstralOptionsFrame:SetMovable(true)
 AstralOptionsFrame:EnableMouse(true)
 AstralOptionsFrame:RegisterForDrag('LeftButton')
 AstralOptionsFrame:EnableKeyboard(true)
 AstralOptionsFrame:SetPropagateKeyboardInput(true)
 AstralOptionsFrame:SetClampedToScreen(true)
+AstralOptionsFrame.background = AstralOptionsFrame:CreateTexture(nil, 'BACKGROUND')
+AstralOptionsFrame.background:SetAllPoints(AstralOptionsFrame)
+AstralOptionsFrame.background:SetColorTexture(0, 0, 0, 0.8)
 AstralOptionsFrame:Hide()
+
+local menuBar = CreateFrame('FRAME', '$parentMenuBar', AstralOptionsFrame)
+menuBar:SetWidth(50)
+menuBar:SetHeight(385)
+menuBar:SetPoint('TOPLEFT', AstralOptionsFrame, 'TOPLEFT')
+menuBar.texture = menuBar:CreateTexture(nil, 'BACKGROUND')
+menuBar.texture:SetAllPoints(menuBar)
+menuBar.texture:SetColorTexture(33/255, 33/255, 33/255, 0.8)
 
 AstralOptionsFrame:SetScript('OnDragStart', function(self)
 	self:StartMoving()
@@ -71,37 +32,59 @@ AstralOptionsFrame:SetScript('OnDragStart', function(self)
 AstralOptionsFrame:SetScript('OnDragStop', function(self)
 	self:StopMovingOrSizing()
 	end)
-
-local logo = AstralOptionsFrame:CreateTexture('ARTWORK')
+--[[
+local logo = AstralOptionsFrame:CreateTexture(nil, 'ARTWORK')
 logo:SetSize(64, 64)
 logo:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\Astral.tga')
 logo:SetPoint('TOPLEFT', AstralOptionsFrame, 'TOPLEFT', 10, -10)
+]]
+local logo_Key = menuBar:CreateTexture(nil, 'ARTWORK')
+logo_Key:SetSize(32, 32)
+logo_Key:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\key-white@2x2.tga')
+logo_Key:SetPoint('TOPLEFT', menuBar, 'TOPLEFT', 10, -10)
 
-local title = e.CreateHeader(AstralOptionsFrame, 'title', 260, 20, 'Astral Keys Options', 26)
-title:SetPoint('LEFT', logo, 'RIGHT', 10, -10)
+local divider = menuBar:CreateTexture(nil, 'ARTWORK')
+divider:SetSize(20, 1)
+divider:SetColorTexture(.6, .6, .6, .8)
+divider:SetPoint('TOP', logo_Key, 'BOTTOM', 0, -20)
 
-local closeButton = CreateFrame('BUTTON', nil, AstralOptionsFrame)
-closeButton:SetSize(15, 15)
-closeButton:SetNormalFontObject(FONT_OBJECT_CENTRE)
-closeButton:SetHighlightFontObject(FONT_OBJECT_HIGHLIGHT)
-closeButton:SetText('X')
-closeButton:SetPoint('TOPRIGHT', AstralOptionsFrame, 'TOPRIGHT', -10, -10)
+local logo_Astral = menuBar:CreateTexture(nil, 'ARTWORK')
+logo_Astral:SetAlpha(0.8)
+logo_Astral:SetSize(32, 32)
+logo_Astral:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\Logo@2x2.tga')
+logo_Astral:SetPoint('BOTTOMLEFT', menuBar, 'BOTTOMLEFT', 10, 10)
 
+local closeButton = CreateFrame('BUTTON', '$parentCloseButton', AstralOptionsFrame)
+closeButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline-close-24px@2x.tga')
+closeButton:SetSize(12, 12)
+closeButton:GetNormalTexture():SetVertexColor(.8, .8, .8, 0.8)
 closeButton:SetScript('OnClick', function()
 	AstralOptionsFrame:Hide()
+end)
+closeButton:SetPoint('TOPRIGHT', AstralOptionsFrame, 'TOPRIGHT', -14, -14)
+closeButton:SetScript('OnEnter', function(self)
+	self:GetNormalTexture():SetVertexColor(126/255, 126/255, 126/255, 0.8)
+end)
+closeButton:SetScript('OnLeave', function(self)
+	self:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
 end)
 
 -- Content frame to anchor all option panels
 -- 
 local contentFrame = CreateFrame('FRAME', 'AstralFrame_OptionContent', AstralOptionsFrame)
-contentFrame:SetPoint('TOPLEFT', logo, 'BOTTOMLEFT', 5, -10)
-contentFrame:SetSize(630, 350)
+contentFrame:SetPoint('TOPLEFT', menuBar, 'TOPRIGHT', 15, -15)
+contentFrame:SetSize(550, 335)
 
-contentFrame.header = e.CreateHeader(contentFrame, 'general_header', 200, 20, 'General Options', 10)
-contentFrame.header:SetPoint('TOPLEFT', contentFrame, 'TOPLEFT', 5, 0)
+contentFrame.t = contentFrame:CreateTexture(nil, 'ARTWORK')
+contentFrame.t:SetAllPoints(contentFrame)
+--contentFrame.t:SetColorTexture(0, .5, 1)
+
+local generalHeader = contentFrame:CreateFontString(nil, 'OVERLAY', 'InterUIBold_Normal')
+generalHeader:SetText(L['GENERAL OPTIONS'])
+generalHeader:SetPoint('TOPLEFT', contentFrame, 'TOPLEFT')
 
 local showOffLine = e.CreateCheckBox(contentFrame, 'Show offline players')
-showOffLine:SetPoint('TOPLEFT', contentFrame.header, 'BOTTOMLEFT', 0, -5)
+showOffLine:SetPoint('TOPLEFT', generalHeader, 'BOTTOMLEFT', 10, -10)
 showOffLine:SetScript('OnClick', function(self)
 	AstralKeysSettings.options.showOffline = self:GetChecked()
 	e.UpdateFrames()
@@ -117,15 +100,9 @@ showMinimap:SetScript('OnClick', function(self)
 	else
 		e.icon:Hide('AstralKeys')
 	end
-	if IsAddOnLoaded('ElvUI_Enhanced') then
+	if IsAddOnLoaded('ElvUI_Enhanced') then -- Update the layout for the minimap buttons
 		ElvUI[1]:GetModule('MinimapButtons'):UpdateLayout()
 	end
-	end)
-
-local announceKeys = e.CreateCheckBox(contentFrame, 'Announce new keys to party')
-announceKeys:SetPoint('LEFT', showMinimap, 'RIGHT', 10, 0)
-announceKeys:SetScript('OnClick', function(self)
-	e.ToggleAnnounce()
 	end)
 
 local showTooltip = e.CreateCheckBox(contentFrame, 'Show current key in tooltip')
@@ -134,39 +111,44 @@ showTooltip:SetScript('OnClick', function(self)
 	AstralKeysSettings.options.showTooltip = self:GetChecked()
 	end)
 
-contentFrame.syncHeader = e.CreateHeader(contentFrame, 'sync_header', 200, 20, 'Syncing Options', 10)
-contentFrame.syncHeader:SetPoint('TOPLEFT', showTooltip, 'BOTTOMLEFT', 0, -10)
+local announceParty = e.CreateCheckBox(contentFrame, L['Announce new keys to party'])
+announceParty:SetPoint('TOPLEFT', showTooltip, 'BOTTOMLEFT', 0, -5)
+announceParty:SetScript('OnClick', function(self)
+	e.ToggleAnnounce('PARTY')
+	end)
+
+local announceGuild = e.CreateCheckBox(contentFrame, L['Announce new keys to guild'])
+announceGuild:SetPoint('LEFT', announceParty, 'RIGHT', 10, 0)
+announceGuild:SetScript('OnClick', function(self)
+	e.ToggleAnnounce('GUILD')
+	end)
+
+local syncHeader = contentFrame:CreateFontString(nil, 'OVERLAY', 'InterUIBold_Normal')
+syncHeader:SetText(L['SYNC OPTIONS'])
+syncHeader:SetPoint('TOPLEFT', announceParty, 'BOTTOMLEFT', -10, -20)
 
 local syncFriends = e.CreateCheckBox(contentFrame, 'Sync with friends')
-syncFriends:SetPoint('TOPLEFT', contentFrame.syncHeader, 'BOTTOMLEFT', 0, -5)
+syncFriends:SetPoint('TOPLEFT', syncHeader, 'BOTTOMLEFT', 10, -10)
 syncFriends:SetScript('OnClick', function(self)
 	AstralKeysSettings.options.friendSync= self:GetChecked()
 	AstralKeyFrame:ToggleLists()
 	e.ToggleFriendSync()
 	end)
 
-local minFriendSync = e.CreateEditBox(contentFrame, 25, 'Minimum key level to send to friends', 2, 99, 'LEFT')
-minFriendSync:SetPoint('LEFT', syncFriends, 'RIGHT', 245, 0)
-minFriendSync:HookScript('OnEditFocusLost', function(self)
-	AstralKeysSettings.options.minFriendSync = self:GetNumber()
-	end)
-
 local otherFaction = e.CreateCheckBox(contentFrame, 'Show other faction')
-otherFaction:SetPoint('TOPLEFT', syncFriends, 'BOTTOMLEFT', 0, -5)
+otherFaction:SetPoint('LEFT', syncFriends, 'RIGHT', 10, 0)
 otherFaction:SetScript('OnClick', function(self)
 	AstralKeysSettings.options.showOtherFaction = self:GetChecked()
 	e.UpdateFrames()
 	end)
 
-local filter_header = e.CreateHeader(contentFrame, 'filter_header', 200, 20, 'Rank filter for Guild list', 10)
-filter_header:SetPoint('TOPLEFT', otherFaction, 'BOTTOMLEFT', 0, -10)
+local rankFilterHeader = contentFrame:CreateFontString(nil, 'OVERLAY', 'InterUIBold_Normal')
+rankFilterHeader:SetText(L['Rank Filter'])
+rankFilterHeader:SetPoint('TOPLEFT', syncFriends, 'BOTTOMLEFT', -10, -20)
 
-local filter_descript = contentFrame:CreateFontString('BACKGROUND')
-filter_descript:SetFont(FONT_CONTENT, FONT_SIZE)
-filter_descript:SetText('Include these ranks in the guild listing')
-filter_descript:SetJustifyH('LEFT')
-
-filter_descript:SetPoint('TOPLEFT', filter_header, 'BOTTOMLEFT', 3, -2)
+local filter_descript = contentFrame:CreateFontString(nil, 'OVERLAY', 'InterUIRegular_Small')
+filter_descript:SetText(L['Include these ranks in the guild listing'])
+filter_descript:SetPoint('TOPLEFT', rankFilterHeader, 'BOTTOMLEFT', 5, -5)
 
 local _ranks = {}
 for i = 1, 10 do
@@ -178,33 +160,30 @@ function InitData()
 	otherFaction:SetChecked(AstralKeysSettings.options.showOtherFaction)
 	showOffLine:SetChecked(AstralKeysSettings.options.showOffline)
 	showMinimap:SetChecked(AstralKeysSettings.options.showMiniMapButton)
-	announceKeys:SetChecked(AstralKeysSettings.options.announceKey)
+	announceParty:SetChecked(AstralKeysSettings.options.announceKey)
 	showTooltip:SetChecked(AstralKeysSettings.options.showTooltip)
 	syncFriends:SetChecked(AstralKeysSettings.options.friendSync)
-	minFriendSync:SetNumber(AstralKeysSettings.options.minFriendSync)
 
 	for i = 1, GuildControlGetNumRanks() do
-	_ranks[i]:SetText(GuildControlGetRankName(i))
+		_ranks[i]:SetText(GuildControlGetRankName(i))
 
-	for i = GuildControlGetNumRanks() + 1, 10 do
-		_ranks[i]:Hide()
-	end
+		for i = GuildControlGetNumRanks() + 1, 10 do
+			_ranks[i]:Hide()
+		end
 
-	if i < 4 then
-		_ranks[i]:SetPoint('TOPLEFT', filter_descript, 'BOTTOMLEFT', (i-1)%3 * 210, -5)
-		elseif i < 7 then
-			_ranks[i]:SetPoint('TOPLEFT', filter_descript, 'BOTTOMLEFT', (i-1)%3 * 210, -25)
-		elseif i < 10 then
-			_ranks[i]:SetPoint('TOPLEFT', filter_descript, 'BOTTOMLEFT', (i-1)%3 * 210, -45)
+		if i == 1 then
+			_ranks[i]:SetPoint('TOPLEFT', filter_descript, 'BOTTOMLEFT', 5, -10)
+		elseif (i % 3 == 1) then
+			_ranks[i]:SetPoint('TOPLEFT', _ranks[i-3], 'BOTTOMLEFT', 0, -5)
 		else
-			_ranks[i]:SetPoint('TOPLEFT', filter_descript, 'BOTTOMLEFT', (i-1)%3 * 210, -65)
+			_ranks[i]:SetPoint('LEFT', _ranks[i-1], 'RIGHT', 10, 0)
 		end
 
 		_ranks[i]:SetChecked(AstralKeysSettings.options.rankFilters[i])
 
 		_ranks[i]:SetScript('OnClick', function(self)
 			AstralKeysSettings.options.rankFilters[self.id] = self:GetChecked()
-			if AstralKeysSettings.frameOptions.list == 'guild' then
+			if AstralKeysSettings.frameOptions.list == 'GUILD' then
 				e.UpdateFrames()
 			end
 			end)
@@ -224,8 +203,7 @@ AstralOptionsFrame:SetScript('OnShow', function(self)
 	otherFaction:SetChecked(AstralKeysSettings.options.showOtherFaction)
 	showOffLine:SetChecked(AstralKeysSettings.options.showOffline)
 	showMinimap:SetChecked(AstralKeysSettings.options.showMiniMapButton)
-	announceKeys:SetChecked(AstralKeysSettings.options.announceKey)
+	announceParty:SetChecked(AstralKeysSettings.options.announceKey)
 	showTooltip:SetChecked(AstralKeysSettings.options.showTooltip)
 	syncFriends:SetChecked(AstralKeysSettings.options.friendSync)
-	minFriendSync:SetNumber(AstralKeysSettings.options.minFriendSync)
 	end)

@@ -1,8 +1,23 @@
 local e, L = unpack(select(2, ...))
+
 local RESET_VERSION = 20200
-e.CLIENT_VERSION = 30
+e.CLIENT_VERSION = '2.0'
 -- Reset time 15:00 UTC AMERICAS
 -- 07:00 UTC EU
+
+
+local uiScale, mult
+
+function e:SetUIScale()
+	local screenHeight = UIParent:GetHeight()
+	local scale = string.match( GetCVar( "gxWindowedResolution" ), "%d+x(%d+)" )
+	uiScale = UIParent:GetScale()
+	mult = 768/scale/uiScale
+end
+
+function e:Scale(x)
+	return mult * floor(x/mult+.5)
+end
 
 function e.DataResetTime()
 	local region = GetCurrentRegion()
@@ -61,7 +76,6 @@ if not AstralKeysSettings then
 			['whisperClick'] = false,
 			['showMiniMapButton'] = true,
 			['friendSync'] = true,
-			['minFriendSync'] = 2,
 			['showOtherFaction'] = false,
 			['rankFilters'] = {
 				[1] = true,
@@ -91,6 +105,7 @@ local frame = CreateFrame('FRAME')
 frame:RegisterEvent('ADDON_LOADED')
 frame:SetScript('OnEvent', function(self, event, addon)
 	if addon == 'AstralKeys' then
+		e:SetUIScale()
 		_G['AstralEngine'] = e
 
 		MixInSetting('options', 'showTooltip', true)
@@ -115,7 +130,6 @@ frame:SetScript('OnEvent', function(self, event, addon)
 					['showTooltip'] = true,
 					['showMiniMapButton'] = true,
 					['friendSync'] = true,
-					['minFriendSync'] = 2,
 					['showOtherFaction'] = false,
 					['rankFilters'] = {
 						[1] = true,

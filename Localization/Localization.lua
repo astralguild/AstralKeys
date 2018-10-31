@@ -1,16 +1,18 @@
-local _, L = unpack(select(2, ...))
+local L = select(2, ...)[2]
 
-L['enUS'] = {}
-L['enGB'] = {}
-L['deDE'] = {}
-L['esES'] = {}
-L['esMX'] = {}
-L['frFR'] = {}
-L['koKR'] = {}
-L['ruRU'] = {}
-L['zhCN'] = {}
-L['zhTW'] = {}
-
+local localizations = {}
 local locale = GetLocale()
-L = L[locale]
+if(locale == 'enGB') then
+	locale = 'enUS'
+end
 
+setmetatable(L, {
+	__call = function(_, newLocale)
+		localizations[newLocale] = {}
+		return localizations[newLocale]
+	end,
+	__index = function(_, key)
+		local localeTable = localizations[locale]
+		return localeTable and localeTable[key] or tostring(key)
+	end
+})

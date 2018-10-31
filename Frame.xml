@@ -13,7 +13,7 @@ Character Frame Template
 		</Size>
 		<Layers>
 			<Layer level="ARTOWKR">
-				<FontString name="$parentNameString" inherits="InterUIBold_Normal" wordwrap="false" parentKey="nameString">
+				<FontString name="$parentNameString" inherits="InterUIBold_Normal" wordwrap="false" parentKey="nameString" justifyH="LEFT">
 					<Size>
 						<AbsDimension x="180" y="15"/>
 					</Size>
@@ -23,7 +23,7 @@ Character Frame Template
 				</FontString>
 				<FontString name="$parentKeyString" inherits="InterUIBold_Tiny" wordwrap="false" parentKey="keyString" text="CURRENT" alpha="0.5" justifyH="LEFT">
 					<Size>
-						<AbsDimension x="75" y="15"/>
+						<AbsDimension x="70" y="15"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentNameString" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
@@ -31,7 +31,7 @@ Character Frame Template
 				</FontString>
 				<FontString name="$parentWeeklyString" inherits="InterUIBold_Tiny" wordwrap="false" parentKey="weeklyString" text="WKLY BEST" alpha="0.5"  justifyH="LEFT">
 					<Size>
-						<AbsDimension x="75" y="15"/>
+						<AbsDimension x="70" y="15"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentKeyString" relativePoint="BOTTOMLEFT" x="0" y="0"/>
@@ -39,12 +39,12 @@ Character Frame Template
 				</FontString>
 				<FontString name="$parentKeyStringValue" inherits="InterUIRegular_Small" wordwrap="false" parentKey="keyStringValue" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentKeyString" relativePoint="RIGHT" x="0" y="1"/>
+						<Anchor point="LEFT" relativeTo="$parentKeyString" relativePoint="RIGHT" x="0" y=".5"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentWeeklyStringValue" inherits="InterUIRegular_Small" wordwrap="false" parentKey="weeklyStringValue" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentWeeklyString" relativePoint="RIGHT" x="0" y="1"/>
+						<Anchor point="LEFT" relativeTo="$parentWeeklyString" relativePoint="RIGHT" x="0" y=".5"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -52,6 +52,7 @@ Character Frame Template
 		<Scripts>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
+			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Button>
 	<Button name="AstralListFrameTemplate" virtual="true" mixin="AstralKeysListMixin">
@@ -95,12 +96,12 @@ Character Frame Template
 					</Anchors>
 				</FontString>
 				-->
-				<Texture name="$parentWeekly" file="Interface\AddOns\AstralKeys\Media\check.tga" parentKey='weeklyTexture'>
+				<Texture name="$parentWeekly" file="Interface\AddOns\AstralKeys\Media\Texture\baseline-done-small@2x.tga" parentKey='weeklyTexture'>
 					<Size>
 						<AbsDimension x="12" y="12"/>
 					</Size>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentNameString" relativePoint="RIGHT" x="12" y="0"/>
+						<Anchor point="LEFT" relativeTo="$parentNameString" relativePoint="RIGHT" x="13" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>

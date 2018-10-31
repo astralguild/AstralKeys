@@ -21,7 +21,9 @@ function e.WeekTime()
 end
 
 AstralEvents:Register('PLAYER_LOGIN', function()
-	GuildRoster()
+	if IsInGuild() then
+		GuildRoster()
+	end
 
 	if UnitFactionGroup('player') == 'Alliance' then
 		e.FACTION = 0

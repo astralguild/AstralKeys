@@ -240,18 +240,26 @@ function e.CheckGuildVersion()
 	AstralComs:Show()
 end
 
-local function VersionCheckOnLoginOrGroupJoin()
-	AstralComs:NewMessage('AstralKeys', 'versionCheck ' .. e.CLIENT_VERSION, 'GUILD')
+local function GuildVersionCheckOnLogin()
+	--AstralComs:NewMessage('AstralKeys', 'versionCheck ' .. e.CLIENT_VERSION, 'GUILD')
 end
-AstralEvents:Register('PLAYER_LOGIN', VersionCheckOnLoginOrGroupJoin, 'versionCheck_login_group')
-AstralEvents:Register('GROUP_ROSTER_UPDATE', VersionCheckOnLoginOrGroupJoin, 'versionCheck_login_group')
+AstralEvents:Register('PLAYER_LOGIN', GuildVersionCheckOnLogin, 'versionCheck_login_guild')
+
+local function GroupVersionCheckOnJoin()
+	if IsInRaid() then
+		AstralComs:NewMessage('AstralKeys', 'versionCheck ' .. e.CLIENT_VERSION, 'RAID')
+	elseif (IsInGroup() and not IsInGroup(LE_PARTY_CATEGORY_INSTANCE) == 'INSTANCE_CHAT') then
+		AstralComs:NewMessage('AstralKeys', 'versionCheck ' .. e.CLIENT_VERSION, 'PARTY')
+	end
+end
+AstralEvents:Register('GROUP_ROSTER_UPDATE', GroupVersionCheckOnJoin, 'versionCheck_login_group')
 
 local receivedVersionMessage = false
 local function VersionCheck(version, sender)
-	if sender == e.Player() then return end
+	print(version, sender)
+	--if sender == e.Player() then return end
 	if not version then return end
-	local version = tonumber(version)
-	if not receivedVersionMessage and (version > e.CLIENT_VERSION) then
+	if not receivedVersionMessage and (tonumber(version) > tonumber(e.CLIENT_VERSION)) then
 		receivedVersionMessage = true
 		print('You\'re version is out of date, the current version is', version)
 	else
@@ -264,7 +272,7 @@ local function VersionCheck(version, sender)
 			messageChannel = 'GUILD'
 		end
 		if messageChannel then
-			AstralComs:NewMessage('AstralKeys', 'versionCheck ' .. localVersion, messageChannel)
+			--AstralComs:NewMessage('AstralKeys', 'versionCheck ' .. e.CLIENT_VERSION, messageChannel)
 		end
 	end
 end

@@ -28,6 +28,7 @@
 			</Font>
 		</Member>
 	</FontFamily>
+	<!--Not used yet-->
 	<FontFamily name="InterUIBold_Small" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Interface\AddOns\AstralKeys\Media\Font\Inter-UI-Bold.ttf" height="10">
@@ -62,7 +63,7 @@
 			</Font>
 		</Member>
 		<Member alphabet="korean">
-			<Font font="Fonts\2002.TTF" height="12">
+			<Font font="Fonts\2002.TTF" height="12" justifyH="LEFT">
 			</Font>
 		</Member>
 		<Member alphabet="simplifiedchinese">
@@ -142,7 +143,7 @@
 	</FontFamily>
 	<FontFamily name="InterUIBlack_Small" virtual="true">
 		<Member alphabet="roman">
-			<Font font="Interface\AddOns\AstralKeys\Media\Font\Inter-UI-Black.ttf" height="10">				
+			<Font font="Interface\AddOns\AstralKeys\Media\Font\Inter-UI-Black.ttf" height="10">
 				<Shadow>
 					<Offset>
 						<AbsDimension x="1" y="-1"/>
@@ -164,7 +165,7 @@
 			</Font>
 		</Member>
 		<Member alphabet="russian">
-			<Font font="Fonts\FRIZQT___CYR.TTF" height="10">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="12">
 				<Shadow>
 					<Offset>
 						<AbsDimension x="1" y="-1"/>
@@ -180,19 +181,19 @@
 			</Font>
 		</Member>
 		<Member alphabet="korean">
-			<Font font="Fonts\2002.TTF" height="12">
+			<Font font="Fonts\2002.TTF" height="12" justifyH="LEFT">
 			</Font>
 		</Member>
 		<Member alphabet="simplifiedchinese">
-			<Font font="Fonts\ARKai_T.ttf" height="12">
+			<Font font="Fonts\ARKai_T.ttf" height="12" justifyH="LEFT">
 			</Font>
 		</Member>
 		<Member alphabet="traditionalchinese">
-			<Font font="Fonts\blei00d.TTF" height="12">
+			<Font font="Fonts\blei00d.TTF" height="12" justifyH="LEFT">
 			</Font>
 		</Member>
 		<Member alphabet="russian">
-			<Font font="Fonts\FRIZQT___CYR.TTF" height="12">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="12" justifyH="LEFT">
 				<Shadow>
 					<Offset>
 						<AbsDimension x="1" y="-1"/>
@@ -292,19 +293,19 @@
 			</Font>
 		</Member>
 		<Member alphabet="korean">
-			<Font font="Fonts\2002.TTF" height="16">
+			<Font font="Fonts\2002.TTF" height="12">
 			</Font>
 		</Member>
 		<Member alphabet="simplifiedchinese">
-			<Font font="Fonts\ARKai_T.ttf" height="17">
+			<Font font="Fonts\ARKai_T.ttf" height="12">
 			</Font>
 		</Member>
 		<Member alphabet="traditionalchinese">
-			<Font font="Fonts\blei00d.TTF" height="17">
+			<Font font="Fonts\blei00d.TTF" height="12">
 			</Font>
 		</Member>
 		<Member alphabet="russian">
-			<Font font="Fonts\FRIZQT___CYR.TTF" height="16">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="12">
 				<Shadow>
 					<Offset>
 						<AbsDimension x="1" y="-1"/>

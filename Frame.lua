@@ -1,11 +1,5 @@
 local e, L = unpack(select(2, ...))
 
-local BACKDROP = {
-bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-edgeFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 16, edgeSize = 1,
-insets = {left = 0, right = 0, top = 0, bottom = 0}
-}
-
 -- MixIns
 AstralKeysCharacterMixin = {}
 AstralKeysListMixin = {}
@@ -15,18 +9,14 @@ AstralKeysListMixin = {}
 -- Background
 -- Left #000000 ALPHA 0.8
 -- Right #212121 ALPHA 0.8
-
-local CHARACTER_DUNGEON_NOT_RAN = 'No mythic+ ran'
-local CHARACTER_KEY_NOT_FOUND = 'No key found'
-
 local COLOR_GRAY = 'ff9d9d9d'
 
 -- Scroll bar texture alpha settings
 local SCROLL_TEXTURE_ALPHA_MIN = 0.2
 local SCROLL_TEXTURE_ALPHA_MAX = 0.6
 
-local FRAME_WIDTH_EXPANDED = 715
-local FRAME_WIDTH_MINIMIZED = 510
+local FRAME_WIDTH_EXPANDED = 725
+local FRAME_WIDTH_MINIMIZED = 500
 
 -- Used for filtering, sorting, and displaying units on lists
 local sortedTable = {}
@@ -51,13 +41,13 @@ function AstralKeysCharacterMixin:UpdateUnit(characterID)
 	if bestKey ~= 0 then
 		self.weeklyStringValue:SetText(bestKey)
 	else
-		self.weeklyStringValue:SetText(WrapTextInColorCode(CHARACTER_DUNGEON_NOT_RAN, COLOR_GRAY))
+		self.weeklyStringValue:SetText(WrapTextInColorCode(L['CHARACTER_DUNGEON_NOT_RAN'], COLOR_GRAY))
 	end
 
 	if currentMapID then
 		self.keyStringValue:SetFormattedText('%d %s', currentKeyLevel, e.GetMapName(currentMapID))
 	else
-		self.keyStringValue:SetFormattedText('|c%s%s|r', COLOR_GRAY, CHARACTER_KEY_NOT_FOUND)
+		self.keyStringValue:SetFormattedText('|c%s%s|r', COLOR_GRAY, L['CHARACTER_KEY_NOT_FOUND'])
 	end
 end
 
@@ -73,17 +63,23 @@ function AstralKeysCharacterMixin:OnLeave()
 	scrollButton:SetAlpha(SCROLL_TEXTURE_ALPHA_MIN)
 end
 
+function AstralKeysCharacterMixin:OnLoad()
+	self.weeklyString:SetText(L['WEEKLY_BEST'])
+	self.keyString:SetText(L['CURRENT_KEY'])
+end
+
 function AstralKeysListMixin:SetUnit(...)
 	e.GetListFunction(e.FrameListShown())(self, ...)
 end
 
 function AstralKeysListMixin:OnClick()
 	AstralMenuFrame:ClearAllPoints()
-	local uiScale = UIParent:GetScale();
+	local uiScale = UIParent:GetScale()
 
-	local cursorX, cursorY = GetCursorPosition();
-	cursorX = cursorX/uiScale;
-	cursorY =  cursorY/uiScale;
+	local cursorX, cursorY = GetCursorPosition()
+	local left, bottom, width, height = AstralKeyFrame:GetRect()
+	cursorX = cursorX/uiScale
+	cursorY =  cursorY/uiScale
 	xOffset, yOffset = 20, 0
 
 	xOffset = cursorX + xOffset
@@ -120,7 +116,7 @@ local function Whisper_OnShow(self)
 	if not self.isConnected then
 		self:SetText(WrapTextInColorCode(self:GetText(), 'ff9d9d9d'))
 	else
-		self:SetText('Whisper')
+		self:SetText(L['Whisper'])
 	end
 end
 
@@ -147,17 +143,10 @@ local function Invite_OnShow(self)
 		isConnected = e.GuildMemberOnline(e.Unit(AstralMenuFrame.unit))
 	end
 	if e.FrameListShown() == 'FRIENDS' then
-		isConnected = e.IsFriendOnline(e.Friend(AstralMenuFrame.unit))
 		inviteType = GetDisplayedInviteType(e.FriendGUID(e.Friend(AstralMenuFrame.unit)))
+		isConnected = e.IsFriendOnline(e.Friend(AstralMenuFrame.unit))
 	end
-
-	if inviteType == 'INVITE' then
-		self:SetText('Invite')
-	elseif inviteType == 'SUGGEST_INVITE' then
-		self:SetText('Suggest Invite')
-	elseif inviteType == 'REQUEST_INVITE' then
-		self:SetText('Request Invite')
-	end
+	self:SetText(L[inviteType])
 	if not isConnected then
 		self:SetText(WrapTextInColorCode(self:GetText(), 'ff9d9d9d'))
 	end
@@ -198,8 +187,8 @@ local function InviteUnit(self)
 		end
 	end
 end
-AstralMenuFrame:AddSelection('Invite', InviteUnit, Invite_OnShow)
-AstralMenuFrame:AddSelection('Cancel', function() return AstralMenuFrame:Hide() end)
+AstralMenuFrame:AddSelection(L['INVITE'], InviteUnit, Invite_OnShow)
+AstralMenuFrame:AddSelection(L['Cancel'], function() return AstralMenuFrame:Hide() end)
 
 local AstralKeyFrame = CreateFrame('FRAME', 'AstralKeyFrame', UIParent)
 AstralKeyFrame:SetFrameStrata('DIALOG')
@@ -214,14 +203,18 @@ AstralKeyFrame:SetPropagateKeyboardInput(true)
 AstralKeyFrame:SetClampedToScreen(true)
 AstralKeyFrame:Hide()
 AstralKeyFrame.updateDelay = 0
-AstralKeyFrame.texture = AstralKeyFrame:CreateTexture(nil, 'BACKGROUND')
-AstralKeyFrame.texture:SetAllPoints(AstralKeyFrame)
-AstralKeyFrame.texture:SetColorTexture(0, 0, 0, 0.8)
+AstralKeyFrame.background = AstralKeyFrame:CreateTexture(nil, 'BACKGROUND')
+AstralKeyFrame.background:SetAllPoints(AstralKeyFrame)
+AstralKeyFrame.background:SetColorTexture(0, 0, 0, 0.8)
 
 local AstralKeyToolTip = CreateFrame( "GameTooltip", "AstralKeyToolTip", AAFrame, "GameTooltipTemplate" )
 AstralKeyToolTip:SetOwner(AstralKeyFrame, "ANCHOR_CURSOR")
 AstralKeyToolTip:SetScript('OnShow', function(self)
-	self:SetBackdrop(BACKDROP)
+	self:SetBackdrop({
+					bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+					edgeFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 16, edgeSize = 1,
+					insets = {left = 0, right = 0, top = 0, bottom = 0}
+					})
 	self:SetBackdropColor(0, 0, 0, 1)
 	self:SetBackdropBorderColor(0, 0, 0)
 end)
@@ -248,6 +241,7 @@ menuBar:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT')
 menuBar.texture = menuBar:CreateTexture(nil, 'BACKGROUND')
 menuBar.texture:SetAllPoints(menuBar)
 menuBar.texture:SetColorTexture(33/255, 33/255, 33/255, 0.8)
+--menuBar.texture:SetColorTexture(121/255, 96/255, 180/255, 0.8) -- Looks alright
 
 local logo_Key = menuBar:CreateTexture(nil, 'ARTWORK')
 logo_Key:SetSize(32, 32)
@@ -329,7 +323,7 @@ end)
 -- MenuBar 50px
 -- Middle Frame 215px
 local tabFrame = CreateFrame('FRAME', '$parentTabFrame', AstralKeyFrame)
-tabFrame:SetSize(450, 40)
+tabFrame:SetSize(450, 45)
 tabFrame:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', 0, 0)
 --tabFrame.t = tabFrame:CreateTexture(nil, 'ARTWORK')
 --tabFrame.t:SetAllPoints(tabFrame)
@@ -351,7 +345,7 @@ local function UpdateTabs()
 			buttons[i]:SetAlpha(0.5)
 		end
 		if i == 1 then
-			buttons[i]:SetPoint('LEFT', AstralKeyFrameTabFrame, 'LEFT', 10, 0)
+			buttons[i]:SetPoint('TOPLEFT', AstralKeyFrameTabFrame, 'TOPLEFT', 10, -17)
 		else
 			buttons[i]:SetPoint('LEFT', buttons[i-1], 'RIGHT', 10, 0)
 		end
@@ -376,7 +370,7 @@ local function CreateNewTab(name, parent, ...)
 	local self = CreateFrame('BUTTON', '$parentTab' .. name, parent)
 	self.listName = name
 	self:SetNormalFontObject(InterUIBlack_Small)
-	self:SetText(name)
+	self:SetText(L[name])
 	self:SetWidth(50)
 	self:SetHeight(15)
 	self:SetScript('OnClick', function(self) Tab_OnClick(self) end)
@@ -398,7 +392,7 @@ UpdateTabs()
 
 -- Middle panel construction, Affixe info, character info, guild/version string
 local characterFrame = CreateFrame('FRAME', '$parentCharacterFrame', AstralKeyFrame)
-characterFrame:SetSize(215, 490)
+characterFrame:SetSize(225, 490)
 characterFrame:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 51, 0)
 
 characterFrame.collapse = characterFrame:CreateAnimationGroup()
@@ -409,13 +403,13 @@ characterCollapse:SetDuration(.12)
 characterCollapse:SetSmoothing('IN_OUT')
 
 characterCollapse:SetScript('OnFinished', function(self)
-	self:GetParent():GetParent():Hide()
+	self:GetRegionParent():Hide()
 	end)
 
 characterCollapse:SetScript('OnUpdate', function(self)
-	if self:GetProgress() > 0.6 then self:GetRegionParent():SetAlpha(self:GetProgress()/2) end
+	self:GetRegionParent():SetAlpha(self:GetSmoothProgress()/2)
 	local left, bottom, width = AstralKeyFrame:GetRect()
-	local newWidth = FRAME_WIDTH_EXPANDED - (self:GetProgress() * 215)
+	local newWidth = FRAME_WIDTH_EXPANDED - (self:GetProgress() * 215) -- 215:: Character Frame Width
 	AstralKeyFrame:ClearAllPoints()
 	AstralKeyFrame:SetPoint('BOTTOMLEFT', UIParent, 'BOTTOMLEFT', left + width - newWidth, bottom)
 	AstralKeyFrame:SetWidth(newWidth)
@@ -430,12 +424,13 @@ characterExpand:SetDuration(.12)
 characterExpand:SetSmoothing('IN_OUT')
 
 characterExpand:SetScript('OnPlay', function(self)
-	self:GetParent():GetParent():Show()
+	self:GetRegionParent():Show()
 	end)
+
 characterExpand:SetScript('OnUpdate', function(self, elapsed)
-		if self:GetProgress() < 0.6 then self:GetRegionParent():SetAlpha(0) end
+		self:GetRegionParent():SetAlpha(self:GetSmoothProgress()*2)
 		local left, bottom, width = AstralKeyFrame:GetRect()
-		local newWidth = FRAME_WIDTH_MINIMIZED + (self:GetProgress() * 215)
+		local newWidth = FRAME_WIDTH_MINIMIZED + (self:GetProgress() * 215) -- 215:: Character Frame Width
 		AstralKeyFrame:ClearAllPoints()
 		AstralKeyFrame:SetPoint('BOTTOMLEFT', UIParent, 'BOTTOMLEFT', left + width - newWidth, bottom)
 		AstralKeyFrame:SetWidth(newWidth)
@@ -459,169 +454,9 @@ collapseButton:SetScript('OnClick', function(self)
 	end
 	end)
 
-local characterTitle = characterFrame:CreateFontString('$parentCharacterTitle', 'OVERLAY', 'InterUIBlack_Small')
-characterTitle:SetPoint('TOPLEFT', characterFrame, 'TOPLEFT', 20, -100)
-characterTitle:SetText('CHARACTERS')
-
-local guildVersionString = characterFrame:CreateFontString(nil, 'OVERLAY', 'InterUIRegular_Small')
-guildVersionString:SetFormattedText('Astral Turalyon (US) %s', 'v3')
-guildVersionString:SetJustifyH('CENTER')
-guildVersionString:SetPoint('BOTTOM', characterFrame, 'BOTTOM', 0, 20)
-guildVersionString:SetAlpha(0.2)
-
-characterFrame.texture = characterFrame:CreateTexture(nil, 'BACKGROUND')
-characterFrame.texture:SetColorTexture(33/255, 33/255, 33/255, 0.8)
-characterFrame.texture:SetAllPoints(characterFrame)
-
 local affixTitle = characterFrame:CreateFontString('$parentAffixTitle', 'OVERLAY', 'InterUIBlack_Small')
 affixTitle:SetPoint('TOPLEFT', characterFrame, 'TOPLEFT', 20, -20)
-affixTitle:SetText('AFFIXES')
-
--- Potential Affix frame for coming week's affixes
-----------------------------------------------------
-AstralKeyFrame.affixesExpanded = false
-local affixFrame = CreateFrame('FRAME', '$parentAffixFrame', AstralKeyFrameCharacterFrame)
-affixFrame:SetSize(215, 150)
-affixFrame:SetPoint('TOP', characterFrame, 'TOP', 0 , -90)
-affixFrame.t = affixFrame:CreateTexture(nil, 'ARTWORK')
-affixFrame.t:SetAllPoints(affixFrame)
---affixFrame.t:SetColorTexture(0, .5, 1)
-affixFrame:Hide()
-
-local affixExpandButton = CreateFrame('BUTTON', '$parentAffixExpandButton', characterFrame)
-affixExpandButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline_keyboard_arrow_down_black_18dp.tga')
-affixExpandButton:SetSize(24, 14)
-affixExpandButton:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
-affixExpandButton:SetPoint('TOP', characterFrame, 'TOP', 0, -80)
-
-do
-	for i = 1, 12 do
-		local frame = CreateFrame('FRAME', '$parentAffix' .. i, affixFrame)
-		frame.id = (i % 4) + 1
-
-		local mask = frame:CreateMaskTexture()
-		mask:SetTexture("Interface\\MINIMAP\\UI-Minimap-Background", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
-		mask:SetSize(32, 32)
-		mask:SetPoint("CENTER")
-
-		frame.affixID = 0
-		frame:SetSize(32, 32)
-		frame.texture = frame:CreateTexture(nil, 'ARTWORK')
-				
-		--frame.texture:AddMaskTexture(mask)
-
-		if i == 1 then
-			frame:SetPoint('TOPLEFT', affixFrame, 'TOPLEFT', 15, -15)
-		elseif i == 5 then
-			frame:SetPoint('TOPLEFT', '$parentAffix1', 'BOTTOMLEFT', 0, -15)
-		elseif i == 9 then
-			frame:SetPoint('TOPLEFT', '$parentAffix5', 'BOTTOMLEFT', 0, -15)
-		else
-			frame:SetPoint('LEFT', '$parentAffix' .. (i -1), 'RIGHT', 15, 0)
-		end
-		frame.texture:SetSize(32, 32)
-		frame.texture:SetPoint('TOPLEFT', frame, 'TOPLEFT')
-		--frame.texture:SetAllPoints(frame)
-
-		function frame:UpdateInfo(affixID)
-			self.affixID = affixID
-			self.texture:SetTexture(select(3, C_ChallengeMode.GetAffixInfo(e.GetAffixID(self.id))))
-		end
-
-		frame:SetScript('OnEnter', function(self)
-			AstralKeyToolTip:SetOwner(self, 'ANCHOR_BOTTOMLEFT', 7, -2)
-			AstralKeyToolTip:AddLine(e.AffixName(self.id), 1, 1, 1)
-			--GameTooltip:AddLine("|T"..itemTexture..":0|t ")  USE THIS TO ADD WEEKS TO COME AFFIXES 2-3?
-			AstralKeyToolTip:Show()
-			end)
-		frame:SetScript('OnLeave', function(self)
-			AstralKeyToolTip:Hide()
-		end)
-	end
-end
-
-affixFrame.expand = affixFrame:CreateAnimationGroup()
-local affixExpand = affixFrame.expand:CreateAnimation('Alpha')
-
-affixExpand:SetFromAlpha(0)
-affixExpand:SetToAlpha(1)
-affixExpand:SetDuration(.12)
-affixExpand:SetSmoothing('IN_OUT')
-
-affixExpand:SetScript('OnPlay', function(self)
-	AstralKeyFrame.affixesExpanded = true
-	self:GetParent():GetParent():Show()
-	for i = 1, 12 do
-		--_G['AstralKeyFrameCharacterFrameAffixFrameAffix' .. i]:SetAlpha(0)
-	end
-	end)
-
-affixExpand:SetScript('OnFinished', function(self)
-	
-	end)
-
-affixExpand:SetScript('OnUpdate', function(self)
-	local progress = self:GetProgress()
-	local startAlpha, endAlpha
-
-	startAlpha = progress / 3
-
-	for i = 1, 12 do
-		AstralKeyFrameCharacterFrameAffixFrame:SetHeight(progress * 165)
-		_G['AstralKeyFrameCharacterFrameAffixFrameAffix' .. i].texture:SetTexCoord(0, 1, 0, progress)
-		_G['AstralKeyFrameCharacterFrameAffixFrameAffix' .. i].texture:SetHeight(32 * progress)
-		AstralKeyFrameCharacterFrameCharacterTitle:SetPoint('TOPLEFT', AstralKeyFrameCharacterFrameAffixFrame, 'BOTTOMLEFT', 20, -15)
-	end
-	end)
-
-affixFrame.collapse = affixFrame:CreateAnimationGroup()
-local affixCollapse = affixFrame.collapse:CreateAnimation('Alpha')
-
-affixCollapse:SetFromAlpha(1)
-affixCollapse:SetToAlpha(0)
-affixCollapse:SetDuration(.12)
-affixCollapse:SetSmoothing('IN_OUT')
-
-affixCollapse:SetScript('OnPlay', function(self)
-	AstralKeyFrame.affixesExpanded = false
-	for i = 1, 12 do
-		--_G['AstralKeyFrameCharacterFrameAffixFrameAffix' .. i]:SetAlpha(0)
-	end
-	end)
-
-affixCollapse:SetScript('OnFinished', function(self)
-		self:GetRegionParent():Hide()
-		AstralKeyFrameCharacterFrameCharacterTitle:SetPoint('TOPLEFT', AstralKeyFrameCharacterFrame, 'TOPLEFT', 20, -100)
-	end)
-
-affixCollapse:SetScript('OnUpdate', function(self)
-	local progress = self:GetProgress()
-	local startAlpha, endAlpha
-
-	startAlpha = progress / 3
-
-	for i = 1, 12 do
-		AstralKeyFrameCharacterFrameAffixFrame:SetHeight((1-progress) * 165)
-		_G['AstralKeyFrameCharacterFrameAffixFrameAffix' .. i].texture:SetTexCoord(0, 1, 0, (1-progress))
-		_G['AstralKeyFrameCharacterFrameAffixFrameAffix' .. i].texture:SetHeight(32 * (1-progress))
-		AstralKeyFrameCharacterFrameCharacterTitle:SetPoint('TOPLEFT', AstralKeyFrameCharacterFrameAffixFrame, 'BOTTOMLEFT', 20, -15)
-	end
-	end)
-
-affixExpandButton:SetScript('OnClick', function(self)
-	if AstralKeyFrame.affixesExpanded then
-		affixFrame.collapse:Play()
-		self:GetNormalTexture():SetVertexColor(0, .2, .8)
-
-	else
-		affixFrame.expand:Play()
-		self:GetNormalTexture():SetVertexColor(.4, 0, .8)
-	end
-	end)
-
-
--- Potential Affix frame for coming week's affixes
-----------------------------------------------------
+affixTitle:SetText(L['AFFIXES'])
 
 -- Affix Frames
 -----------------------------------------------------
@@ -638,26 +473,25 @@ do
 
 		frame.affixID = 0
 		frame:SetSize(32, 32)
-		frame.texture = frame:CreateTexture(nil, 'ARTWORK')
+		frame.icon = frame:CreateTexture(nil, 'ARTWORK')
 				
-		frame.texture:AddMaskTexture(mask)
+		frame.icon:AddMaskTexture(mask)
 
 		if i == 1 then
 			frame:SetPoint('TOPLEFT', affixTitle, 'BOTTOMLEFT', 0, -15)
 		else
 			frame:SetPoint('LEFT', '$parentAffix' .. (i -1), 'RIGHT', 15, 0)
 		end
-		frame.texture:SetAllPoints(frame)
+		frame.icon:SetAllPoints(frame)
 
 		function frame:UpdateInfo(affixID)
 			self.affixID = affixID
-			self.texture:SetTexture(select(3, C_ChallengeMode.GetAffixInfo(affixID)))
+			self.icon:SetTexture(select(3, C_ChallengeMode.GetAffixInfo(affixID)))
 		end
 
 		frame:SetScript('OnEnter', function(self)
 			AstralKeyToolTip:SetOwner(self, 'ANCHOR_BOTTOMLEFT', 7, -2)
-			AstralKeyToolTip:AddLine(e.AffixName(self.id), 1, 1, 1)
-			--GameTooltip:AddLine("|T"..itemTexture..":0|t ")  USE THIS TO ADD WEEKS TO COME AFFIXES 2-3?
+			AstralKeyToolTip:AddLine(e.AffixName(self.affixID), 1, 1, 1)
 			AstralKeyToolTip:Show()
 			end)
 		frame:SetScript('OnLeave', function(self)
@@ -666,8 +500,179 @@ do
 	end
 end
 
+
+-- Potential Affix frame for coming week's affixes
+----------------------------------------------------
+AstralKeyFrame.affixesExpanded = false
+local affixFrame = CreateFrame('FRAME', '$parentAffixFrame', AstralKeyFrameCharacterFrame)
+affixFrame:SetSize(185, 15)
+affixFrame:SetPoint('TOPLEFT', AstralKeyFrameCharacterFrameAffix1, 'BOTTOMLEFT', 0 , -10)
+
+local affixExpandButton = CreateFrame('BUTTON', '$parentAffixExpandButton', characterFrame)
+affixExpandButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline_keyboard_arrow_down_black_18dp.tga')
+affixExpandButton:SetSize(24, 14)
+affixExpandButton:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
+affixExpandButton:SetPoint('BOTTOM', affixFrame, 'BOTTOM', 0, 0)
+
+do
+	for i = 1, 8 do
+		local frame = CreateFrame('FRAME', '$parentAffix' .. i, affixFrame)
+		frame.id = (i % 4) == 0 and 4 or i % 4
+		if i < 5 then
+			frame.weekOffset = 1
+		else
+			frame.weekOffset = 2
+		end
+
+		local mask = frame:CreateMaskTexture()
+		mask:SetTexture("Interface\\MINIMAP\\UI-Minimap-Background", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
+		mask:SetSize(32, 32)
+		mask:SetPoint("CENTER")
+
+		frame.affixID = 0
+		frame:SetSize(32, 32)
+		frame.texture = frame:CreateTexture(nil, 'ARTWORK')
+				
+		frame.texture:AddMaskTexture(mask)
+
+		if i == 1 then
+			frame:SetPoint('TOPLEFT', affixFrame, 'TOPLEFT', 0, 0)
+		elseif i == 5 then
+			frame:SetPoint('TOPLEFT', '$parentAffix1', 'BOTTOMLEFT', 0, -15)
+		else
+			frame:SetPoint('LEFT', '$parentAffix' .. (i -1), 'RIGHT', 15, 0)
+		end
+		frame.texture:SetPoint('TOPLEFT', frame, 'TOPLEFT')
+		frame.texture:SetAllPoints(frame)
+
+		function frame:UpdateInfo()
+			self.affixID = e.GetAffixID(self.id, self.weekOffset)
+			self.texture:SetTexture(select(3, C_ChallengeMode.GetAffixInfo(self.affixID)))
+		end
+
+		frame:SetScript('OnEnter', function(self)
+			AstralKeyToolTip:SetOwner(self, 'ANCHOR_BOTTOMLEFT', 7, -2)			
+			AstralKeyToolTip:AddLine(e.AffixName(self.affixID), 1, 1, 1)
+			--AstralKeyToolTip:AddLine(e.AffixDescription(self.affixID), 1, 1, 1, true)
+			AstralKeyToolTip:Show()
+			end)
+		frame:SetScript('OnLeave', function(self)
+			AstralKeyToolTip:Hide()
+		end)
+
+		frame:Hide()
+	end
+end
+
+affixFrame.expand = affixFrame:CreateAnimationGroup()
+
+local affixExpand = affixFrame.expand:CreateAnimation('Alpha')
+affixExpand:SetFromAlpha(0)
+affixExpand:SetToAlpha(1)
+affixExpand:SetDuration(.12)
+affixExpand:SetSmoothing('IN_OUT')
+
+affixExpand:SetScript('OnPlay', function(self)
+	AstralKeyFrame.affixesExpanded = true
+	end)
+
+affixExpand:SetScript('OnUpdate', function(self)
+	local progress = self:GetProgress()
+
+	AstralKeyFrameCharacterFrameAffixFrame:SetHeight((progress * 85) + 15)
+	AstralKeyFrameCharacterFrameCharacterContainer:SetHeight(((1-progress) * 85) + 230)
+	AstralKeyFrameCharacterFrameCharacterTitle:SetPoint('TOPLEFT', affixFrame, 'BOTTOMLEFT', 0, -10)
+	affixExpandButton:SetPoint('BOTTOM', affixFrame, 'BOTTOM', 0, 0)
+	end)
+
+local affixIconsExpand = affixFrame.expand:CreateAnimation('Alpha')
+affixIconsExpand:SetDuration(0.08)
+affixIconsExpand:SetFromAlpha(0)
+affixIconsExpand:SetToAlpha(1)
+affixIconsExpand:SetSmoothing('IN_OUT')
+affixIconsExpand:SetStartDelay(0.1)
+
+affixIconsExpand:SetScript('OnPlay', function(self)
+	for i = 1, 8 do
+		_G['AstralKeyFrameCharacterFrameAffixFrameAffix' .. i]:Show()
+	end
+	end)
+
+affixIconsExpand:SetScript('OnUpdate', function(self)
+	local alpha = self:GetSmoothProgress()
+	for i = 1, 8 do
+		_G['AstralKeyFrameCharacterFrameAffixFrameAffix' .. i]:SetAlpha(alpha)
+	end
+	end)
+
+affixFrame.collapse = affixFrame:CreateAnimationGroup()
+
+local affixIconsCollapse = affixFrame.collapse:CreateAnimation('Alpha')
+affixIconsCollapse:SetDuration(0.08)
+affixIconsCollapse:SetFromAlpha(1)
+affixIconsCollapse:SetToAlpha(0)
+affixIconsCollapse:SetSmoothing('IN_OUT')
+affixIconsCollapse:SetStartDelay(0.1)
+
+affixIconsCollapse:SetScript('OnFinished', function()
+	for i = 1, 8 do
+		_G['AstralKeyFrameCharacterFrameAffixFrameAffix' .. i]:Hide()
+	end
+	end)
+
+affixIconsCollapse:SetScript('OnUpdate', function(self)
+	local alpha = self:GetSmoothProgress()
+	for i = 1, 8 do
+		_G['AstralKeyFrameCharacterFrameAffixFrameAffix' .. i]:SetAlpha(alpha)
+	end
+	end)
+
+local affixCollapse = affixFrame.collapse:CreateAnimation('Alpha')
+affixCollapse:SetFromAlpha(1)
+affixCollapse:SetToAlpha(0)
+affixCollapse:SetDuration(.12)
+affixCollapse:SetSmoothing('IN_OUT')
+
+affixCollapse:SetScript('OnPlay', function(self)
+	AstralKeyFrame.affixesExpanded = false
+	end)
+
+affixCollapse:SetScript('OnUpdate', function(self)
+	local progress = self:GetSmoothProgress()
+
+	AstralKeyFrameCharacterFrameAffixFrame:SetHeight(((1-progress) * 85) + 15)
+	AstralKeyFrameCharacterFrameCharacterContainer:SetHeight((progress * 85) + 230)
+	AstralKeyFrameCharacterFrameCharacterTitle:SetPoint('TOPLEFT', affixFrame, 'BOTTOMLEFT', 0, -10)
+	affixExpandButton:SetPoint('BOTTOM', affixFrame, 'BOTTOM', 0, 0)
+	end)
+
+affixExpandButton:SetScript('OnClick', function(self)
+	if AstralKeyFrame.affixesExpanded then
+		affixFrame.collapse:Play()		
+	else
+		affixFrame.expand:Play()
+	end
+	end)
+
+-- Potential Affix frame for coming week's affixes
+----------------------------------------------------
+
 -- Character Frames
 ----------------------------------------------------------------
+local characterTitle = characterFrame:CreateFontString('$parentCharacterTitle', 'OVERLAY', 'InterUIBlack_Small')
+characterTitle:SetPoint('TOPLEFT', affixFrame, 'BOTTOMLEFT', 0, -10)
+characterTitle:SetText(L['CHARACTERS'])
+
+local guildVersionString = characterFrame:CreateFontString(nil, 'OVERLAY', 'InterUIRegular_Small')
+guildVersionString:SetFormattedText('Astral Turalyon (US) %s', 'v3')
+guildVersionString:SetJustifyH('CENTER')
+guildVersionString:SetPoint('BOTTOM', characterFrame, 'BOTTOM', 0, 20)
+guildVersionString:SetAlpha(0.2)
+
+characterFrame.background = characterFrame:CreateTexture(nil, 'BACKGROUND')
+characterFrame.background:SetColorTexture(33/255, 33/255, 33/255, 0.8)
+characterFrame.background:SetAllPoints(characterFrame)
+
 function CharacterScrollFrame_Update()
 	local scrollFrame = AstralKeyFrameCharacterFrameCharacterContainer
 	local offset = HybridScrollFrame_GetOffset(scrollFrame)
@@ -698,7 +703,7 @@ local function CharacterScrollFrame_OnLeave()
 end
 
 local characterScrollFrame = CreateFrame('ScrollFrame', '$parentCharacterContainer', AstralKeyFrameCharacterFrame, 'HybridScrollFrameTemplate')
-characterScrollFrame:SetSize(180, 320)
+characterScrollFrame:SetSize(180, 315)
 characterScrollFrame:SetPoint('TOPLEFT', characterTitle, 'TOPLEFT', 0, -25)
 characterScrollFrame:SetScript('OnEnter',  CharacterScrollFrame_OnEnter)
 characterScrollFrame:SetScript('OnLeave', CharacterScrollFrame_OnLeave)
@@ -719,7 +724,7 @@ _G[characterScrollBar:GetName() .. 'ScrollUpButton']:Hide()
 
 local scrollButton = _G[characterScrollBar:GetName() .. 'ThumbTexture']
 scrollButton:SetHeight(50)
-scrollButton:SetWidth(5)
+scrollButton:SetWidth(4)
 scrollButton:SetVertexColor(1, 1, 1, SCROLL_TEXTURE_ALPHA_MIN)
 
 characterScrollFrame.buttonHeight = 45
@@ -786,10 +791,10 @@ listScrollBar.ScrollBarBottom:Hide()
 _G[listScrollBar:GetName() .. 'ScrollDownButton']:Hide()
 _G[listScrollBar:GetName() .. 'ScrollUpButton']:Hide()
 
-local scrollButton = _G[listScrollBar:GetName() .. 'ThumbTexture']
-scrollButton:SetHeight(50)
-scrollButton:SetWidth(5)
-scrollButton:SetVertexColor(1, 1, 1, SCROLL_TEXTURE_ALPHA_MIN)
+local listScrollButton = _G[listScrollBar:GetName() .. 'ThumbTexture']
+listScrollButton:SetHeight(50)
+listScrollButton:SetWidth(4)
+listScrollButton:SetVertexColor(1, 1, 1, SCROLL_TEXTURE_ALPHA_MIN)
 listScrollFrame.buttonHeight = 15
 
 local contentFrame = CreateFrame('FRAME', 'AstralContentFrame', AstralKeyFrame)
@@ -815,7 +820,7 @@ keyLevelButton.sortMethod = 'key_level'
 keyLevelButton:SetSize(40, 20)
 keyLevelButton:SetNormalFontObject(InterUIBlack_Small)
 keyLevelButton:GetNormalFontObject():SetJustifyH('CENTER')
-keyLevelButton:SetText('LEVEL')
+keyLevelButton:SetText(L['LEVEL'])
 keyLevelButton:SetAlpha(0.5)
 keyLevelButton:SetPoint('TOPLEFT', tabFrame, 'BOTTOMLEFT', 16, -5)
 keyLevelButton:SetScript('OnClick', function(self) ListButton_OnClick(self) end)
@@ -825,7 +830,7 @@ dungeonButton.sortMethod = 'dungeon_name'
 dungeonButton:SetSize(155, 20)
 dungeonButton:SetNormalFontObject(InterUIBlack_Small)
 dungeonButton:GetNormalFontObject():SetJustifyH('LEFT')
-dungeonButton:SetText('DUNGEON')
+dungeonButton:SetText(L['DUNGEON'])
 dungeonButton:SetAlpha(0.5)
 dungeonButton:SetPoint('LEFT', keyLevelButton, 'RIGHT', 10, 0)
 dungeonButton:SetScript('OnClick', function(self) ListButton_OnClick(self) end)
@@ -835,7 +840,7 @@ characterButton.sortMethod = 'character_name'
 characterButton:SetSize(153, 20)
 characterButton:SetNormalFontObject(InterUIBlack_Small)
 characterButton:GetNormalFontObject():SetJustifyH('LEFT')
-characterButton:SetText('CHARACTER')
+characterButton:SetText(L['CHARACTER'])
 characterButton:SetAlpha(0.5)
 characterButton:SetPoint('LEFT', dungeonButton, 'RIGHT')
 characterButton:SetScript('OnClick', function(self) ListButton_OnClick(self) end)
@@ -845,7 +850,7 @@ weeklyBestButton.sortMethod = 'weekly_best_level'
 weeklyBestButton:SetSize(50, 20)
 weeklyBestButton:SetNormalFontObject(InterUIBlack_Small)
 characterButton:GetNormalFontObject():SetJustifyH('CENTER')
-weeklyBestButton:SetText('WKLY BEST')
+weeklyBestButton:SetText(L['WKLY BEST'])
 weeklyBestButton:SetAlpha(0.5)
 weeklyBestButton:SetPoint('LEFT', characterButton, 'RIGHT')
 weeklyBestButton:SetScript('OnClick', function(self) ListButton_OnClick(self) end)
@@ -854,7 +859,7 @@ local weeklyButton = CreateFrame('BUTTON', '$parentWeeklyButton', contentFrame)
 weeklyButton.sortMethod = 'weekly_cache'
 weeklyButton:SetSize(30, 20)
 weeklyButton:SetNormalFontObject(InterUIBlack_Small)
-weeklyButton:SetText('10+')
+weeklyButton:SetText(L['10+'])
 weeklyButton:SetAlpha(0.5)
 weeklyButton:SetPoint('LEFT', characterButton, 'RIGHT', 10, 0)
 weeklyButton:SetScript('OnClick', function(self) ListButton_OnClick(self) end)
@@ -940,10 +945,9 @@ function e.UpdateAffixes()
 	AstralKeyFrameCharacterFrameAffix3:UpdateInfo(e.AffixThree())
 	AstralKeyFrameCharacterFrameAffix4:UpdateInfo(e.AffixFour())
 
-
 	-- Prototype code
 
-	for i = 1, 12 do
+	for i = 1, 8 do
 		_G['AstralKeyFrameCharacterFrameAffixFrameAffix' .. i]:UpdateInfo()
 	end
 end
