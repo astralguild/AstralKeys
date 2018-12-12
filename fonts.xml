@@ -87,7 +87,7 @@
 	</FontFamily>
 	<FontFamily name="InterUIBold_Large" virtual="true">
 		<Member alphabet="roman">
-			<Font font="Interface\AddOns\AstralKeys\Media\Font\Inter-UI-Bold.ttf" height="14" justifyH="LEFT">
+			<Font font="Interface\AddOns\AstralKeys\Media\Font\Inter-UI-Bold.ttf" height="16" justifyH="LEFT">
 			</Font>
 		</Member>
 		<Member alphabet="korean">
