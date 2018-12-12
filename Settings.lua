@@ -94,6 +94,7 @@ frame:SetScript('OnEvent', function(self, event, addon)
 		_G['AstralEngine'] = e
 
 		MixInSetting('options', 'showTooltip', true)
+		MixInSetting('frameOptions', 'frame_list', 'GUILD')
 
 		if not AstralKeysSettings['resetVersion'] or AstralKeysSettings['resetVersion'] ~= RESET_VERSION then
 			wipe(AstralKeys)
@@ -106,7 +107,7 @@ frame:SetScript('OnEvent', function(self, event, addon)
 					['orientation'] = 1,
 					['sortMethod'] = 'character_name',
 					['viewMode'] = 0,
-					['list'] = 'GUILD',
+					['frame_list'] = 'GUILD',
 					},
 				['options'] = {
 					['announce_party'] = true,
@@ -137,9 +138,9 @@ frame:SetScript('OnEvent', function(self, event, addon)
 	end)
 
 function e.FrameListShown()
-	return AstralKeysSettings.frameOptions.list
+	return AstralKeysSettings.frameOptions.frame_list
 end
 
 function e.SetFrameListShown(data)
-	AstralKeysSettings.frameOptions.list = data
+	AstralKeysSettings.frameOptions.frame_list = data
 end

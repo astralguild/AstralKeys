@@ -9,7 +9,6 @@ L['PARTY'] = PARTY
 L['LEVEL'] = LEVEL
 L['DUNGEON'] = DUNGEONS
 L['CHARACTER'] = CHARACTER
-L['10+'] = '10+'
 
 -- Subsection Headers
 L['CHARACTERS'] = 'CHARACTERS'
@@ -28,4 +27,7 @@ L['Whisper'] = WHISPER
 L['INVITE'] = INVITE
 L['SUGGEST_INVITE'] = SUGGEST_INVITE
 L['REQUEST_INVITE'] = REQUEST_INVITE
-L['Cancel'] = CANCEL
+L['CANCEL'] = CANCEL
+
+-- Announce messages
+L['ANNOUNCE_NEW_KEY'] = 'Astral Keys: New key %s + %d'

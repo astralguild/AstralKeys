@@ -130,11 +130,10 @@ end
 
 local reportFrame = CreateFrame('FRAME', 'AstralReportFrame', UIParent)
 reportFrame:Hide()
-reportFrame.dtbl = {}
 
 reportFrame:SetFrameStrata('TOOLTIP')
 reportFrame:SetWidth(100)
-reportFrame:SetHeight(50)
+reportFrame:SetHeight(70)
 reportFrame.background = reportFrame:CreateTexture(nil, 'BACKGROUND')
 reportFrame.background:SetAllPoints(reportFrame)
 reportFrame.background:SetColorTexture(0, 0, 0, 1)
@@ -168,11 +167,11 @@ guildButton:SetBackdropBorderColor(0, 0, 0, 0)
 guildButton:SetBackdropColor(25/255, 25/255, 25/255)
 guildButton:SetNormalFontObject(InterUIBlack_Normal)
 
-local partyHighlightTexture = guildButton:CreateTexture()
-partyHighlightTexture:SetColorTexture(0.5, 0.5, 0.5, .2)
-partyHighlightTexture:SetPoint('TOPLEFT', 1, -1)
-partyHighlightTexture:SetPoint('BOTTOMRIGHT', -1, 1)
-guildButton:SetHighlightTexture(partyHighlightTexture)
+local guildHighlightTexture = guildButton:CreateTexture()
+guildHighlightTexture:SetColorTexture(0.5, 0.5, 0.5, .2)
+guildHighlightTexture:SetPoint('TOPLEFT', 1, -1)
+guildHighlightTexture:SetPoint('BOTTOMRIGHT', -1, 1)
+guildButton:SetHighlightTexture(guildHighlightTexture)
 
 guildButton:SetPoint('TOPLEFT', partyButton, 'BOTTOMLEFT', 0, -1)
 
@@ -181,6 +180,27 @@ guildButton:SetScript('OnClick', function()
 	e.AnnounceCharacterKeys('GUILD')
 	reportFrame:Hide()
 	end)
+
+local cancelButton = CreateFrame('BUTTON', nil, reportFrame)
+cancelButton:SetSize(90, 20)
+cancelButton:SetBackdrop(BACKDROP2)
+cancelButton:SetBackdropBorderColor(0, 0, 0, 0)
+cancelButton:SetBackdropColor(25/255, 25/255, 25/255)
+cancelButton:SetNormalFontObject(InterUIBlack_Normal)
+
+local cancelHighlightTexture = cancelButton:CreateTexture()
+cancelHighlightTexture:SetColorTexture(0.5, 0.5, 0.5, .2)
+cancelHighlightTexture:SetPoint('TOPLEFT', 1, -1)
+cancelHighlightTexture:SetPoint('BOTTOMRIGHT', -1, 1)
+cancelButton:SetHighlightTexture(cancelHighlightTexture)
+
+cancelButton:SetPoint('TOPLEFT', guildButton, 'BOTTOMLEFT', 0, -1)
+
+cancelButton:SetText(L['CANCEL'])
+cancelButton:SetScript('OnClick', function()
+	reportFrame:Hide()
+	end)
+
 
 function e.AddEscHandler(frame)
 	if not frame and type(frame) ~= 'table' then

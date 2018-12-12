@@ -279,7 +279,7 @@ local function GuildUnitFunction(self, unit, unitClass, mapID, keyLevel, weekly_
 	else
 		self.bestString:SetText(nil)
 	end
-	--self.weeklyTexture:SetShown(cache == 1 or bestKey >= e.CACHE_LEVEL)
+	
 	if e.GuildMemberOnline(unit) then
 		self:SetAlpha(1)
 	else

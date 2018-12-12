@@ -15,10 +15,6 @@ local messageStack = {}
 
 local PrintVersion, CheckInstanceType
 
--- New key announce message
--- TODO: add option to change message to something else
-local ANNOUNCE_MESSAGE = 'Astral Keys: New key %s + %d'
-
 -- Interval times for syncing keys between clients
 -- Two different time settings for in a raid or otherwise
 -- Creates a random variance between +- [.001, .100] to help prevent
@@ -246,6 +242,7 @@ function e.CheckGuildVersion()
 	AstralComs:Show()
 end
 
+-- Testing
 local function GuildVersionCheckOnLogin()
 	--AstralComs:NewMessage('AstralKeys', 'versionCheck ' .. e.CLIENT_VERSION, 'GUILD')
 end
@@ -322,9 +319,9 @@ end
 
 function e.AnnounceNewKey(keyLink, level)
 	if AstralKeysSettings.options.announce_party and IsInGroup() then
-		SendChatMessage(strformat(ANNOUNCE_MESSAGE, keyLink, level), 'PARTY')
+		SendChatMessage(strformat(L['ANNOUNCE_NEW_KEY'], keyLink, level), 'PARTY')
 	end
 	if AstralKeysSettings.options.announce_guild and IsInGuild() then
-		SendChatMessage(strformat(ANNOUNCE_MESSAGE, keyLink, level), 'GUILD')
+		SendChatMessage(strformat(L['ANNOUNCE_NEW_KEY'], keyLink, level), 'GUILD')
 	end
 end

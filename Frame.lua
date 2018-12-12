@@ -12,7 +12,7 @@ AstralKeysListMixin = {}
 local COLOR_GRAY = 'ff9d9d9d'
 
 -- Scroll bar texture alpha settings
-local SCROLL_TEXTURE_ALPHA_MIN = 0.2
+local SCROLL_TEXTURE_ALPHA_MIN = 0.25
 local SCROLL_TEXTURE_ALPHA_MAX = 0.6
 
 local FRAME_WIDTH_EXPANDED = 725
@@ -73,6 +73,7 @@ function AstralKeysListMixin:SetUnit(...)
 end
 
 function AstralKeysListMixin:OnClick()
+	AstralReportFrame:Hide()
 	AstralMenuFrame:ClearAllPoints()
 	local uiScale = UIParent:GetScale()
 
@@ -127,7 +128,7 @@ local function SendWhisper(self)
 		ChatFrame_SendTell(e.Unit(AstralMenuFrame.unit))
 	else
 		if AstralFriends[AstralMenuFrame.unit][2] then
-			ChatFrame_SendSmartTell(e.FriendPresName(e.Friend(AstralMenuFrame.unit)))
+			ChatFrame_SendBNetTell(e.FriendPresName(e.Friend(AstralMenuFrame.unit)))
 		else
 			ChatFrame_SendTell(e.Friend(AstralMenuFrame.unit))
 		end
@@ -188,7 +189,7 @@ local function InviteUnit(self)
 	end
 end
 AstralMenuFrame:AddSelection(L['INVITE'], InviteUnit, Invite_OnShow)
-AstralMenuFrame:AddSelection(L['Cancel'], function() return AstralMenuFrame:Hide() end)
+AstralMenuFrame:AddSelection(L['CANCEL'], function() return AstralMenuFrame:Hide() end)
 
 local AstralKeyFrame = CreateFrame('FRAME', 'AstralKeyFrame', UIParent)
 AstralKeyFrame:SetFrameStrata('DIALOG')
@@ -245,7 +246,8 @@ menuBar.texture:SetColorTexture(33/255, 33/255, 33/255, 0.8)
 
 local logo_Key = menuBar:CreateTexture(nil, 'ARTWORK')
 logo_Key:SetSize(32, 32)
-logo_Key:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\key-white@2x2.tga')
+logo_Key:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\key-white@2x')
+logo_Key:SetVertexColor(0.8, 0.8, 0.8, 0.8)
 logo_Key:SetPoint('TOPLEFT', menuBar, 'TOPLEFT', 10, -10)
 
 local divider = menuBar:CreateTexture(nil, 'ARTWORK')
@@ -254,7 +256,7 @@ divider:SetColorTexture(.6, .6, .6, .8)
 divider:SetPoint('TOP', logo_Key, 'BOTTOM', 0, -20)
 
 local reportButton = CreateFrame('BUTTON', '$parentReportButton', menuBar)
-reportButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\speaker.tga')
+reportButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline-volume_up-24px@2x')
 reportButton:SetSize(20, 20)
 reportButton:GetNormalTexture():SetVertexColor(.8, .8, .8, 0.8)
 reportButton:SetPoint('TOP', divider, 'BOTTOM', 0, -20)
@@ -265,13 +267,14 @@ reportButton:SetScript('OnLeave', function(self)
 	self:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
 end)
 reportButton:SetScript('OnClick', function(self)
+	AstralMenuFrame:Hide()
 	AstralReportFrame:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 10, -3)
 	AstralReportFrame:SetShown( not AstralReportFrame:IsShown())
 	end)
 
 local settingsButton = CreateFrame('BUTTON', '$parentSettingsButton', menuBar)
-settingsButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\cog2.tga')
-settingsButton:SetSize(20, 20)
+settingsButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline-settings-20px@2x')
+settingsButton:SetSize(24, 24)
 settingsButton:GetNormalTexture():SetVertexColor(.8, .8, .8, 0.8)
 settingsButton:SetPoint('TOP', reportButton, 'BOTTOM', 0, -20)
 settingsButton:SetScript('OnEnter', function(self)
@@ -281,17 +284,29 @@ settingsButton:SetScript('OnLeave', function(self)
 	self:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
 end)
 settingsButton:SetScript('OnClick', function()
+	AstralMenuFrame:Hide()
 	AstralOptionsFrame:SetShown( not AstralOptionsFrame:IsShown())
 	end)
 
-local logo_Astral = menuBar:CreateTexture(nil, 'ARTWORK')
-logo_Astral:SetAlpha(0.8)
+local logo_Astral = CreateFrame('FRAME', nil, menuBar)
 logo_Astral:SetSize(32, 32)
-logo_Astral:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\Logo@2x-2.tga')
 logo_Astral:SetPoint('BOTTOMLEFT', menuBar, 'BOTTOMLEFT', 10, 10)
+logo_Astral:SetAlpha(0.8)
+
+logo_Astral.logo = logo_Astral:CreateTexture(nil, 'ARTWORK')
+logo_Astral.logo:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\Logo@2x')
+logo_Astral.logo:SetAllPoints()
+
+logo_Astral:SetScript('OnEnter', function(self)
+	self:SetAlpha(1)
+	end)
+
+logo_Astral:SetScript('OnLeave', function(self)
+	self:SetAlpha(0.8)
+	end)
 
 local collapseButton = CreateFrame('BUTTON', '$parentCollapseButton', menuBar)
-collapseButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\collapse.tga')
+collapseButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline-last_page-24px@2x')
 collapseButton:SetSize(20, 20)
 collapseButton:GetNormalTexture():SetVertexColor(.8, .8, .8, 0.8)
 collapseButton:SetPoint('BOTTOM', logo_Astral, 'TOP', 0, 20)
@@ -305,7 +320,7 @@ end)
 ---- List Buttons
 -----------------------------------
 local closeButton = CreateFrame('BUTTON', '$parentCloseButton', AstralKeyFrame)
-closeButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline-close-24px@2x.tga')
+closeButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline-close-24px@2x')
 closeButton:SetSize(12, 12)
 closeButton:GetNormalTexture():SetVertexColor(.8, .8, .8, 0.8)
 closeButton:SetScript('OnClick', function()
@@ -444,14 +459,14 @@ collapseButton:SetScript('OnClick', function(self)
 		end
 		AstralKeyFrameCharacterFrame.collapse:Play()
 		AstralKeysSettings.frameOptions.viewMode = 1
-		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\collapse.tga')
+		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline-first_page-24px@2x')
 	else
 		if AstralKeyFrameCharacterFrame.collapse:IsPlaying() then
 			AstralKeyFrameCharacterFrame.collapse:Stop()
 		end
 		AstralKeyFrameCharacterFrame.expand:Play()
 		AstralKeysSettings.frameOptions.viewMode = 0
-		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\expand.tga')
+		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline-last_page-24px@2x')
 	end
 	end)
 
@@ -512,7 +527,7 @@ affixFrame:SetSize(185, 15)
 affixFrame:SetPoint('TOPLEFT', AstralKeyFrameCharacterFrameAffix1, 'BOTTOMLEFT', 0 , -10)
 
 local affixExpandButton = CreateFrame('BUTTON', '$parentAffixExpandButton', characterFrame)
-affixExpandButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline_keyboard_arrow_down_black_18dp.tga')
+affixExpandButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline_keyboard_arrow_down_white_18dp')
 affixExpandButton:SetSize(24, 14)
 affixExpandButton:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
 affixExpandButton:SetPoint('BOTTOM', affixFrame, 'BOTTOM', 0, 0)
@@ -576,7 +591,7 @@ affixExpand:SetDuration(.12)
 affixExpand:SetSmoothing('IN_OUT')
 
 affixExpand:SetScript('OnPlay', function(self)
-	affixExpandButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline_keyboard_arrow_up_black_18dp.tga')
+	affixExpandButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline_keyboard_arrow_up_white_18dp')
 	affixExpandButton:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
 	AstralKeyFrame.affixesExpanded = true
 	end)
@@ -642,7 +657,7 @@ affixCollapse:SetDuration(.12)
 affixCollapse:SetSmoothing('IN_OUT')
 
 affixCollapse:SetScript('OnPlay', function(self)
-	affixExpandButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline_keyboard_arrow_down_black_18dp.tga')
+	affixExpandButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline_keyboard_arrow_down_white_18dp')
 	affixExpandButton:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
 	AstralKeyFrame.affixesExpanded = false
 	end)
@@ -670,12 +685,87 @@ local characterTitle = characterFrame:CreateFontString('$parentCharacterTitle', 
 characterTitle:SetPoint('TOPLEFT', affixFrame, 'BOTTOMLEFT', 0, -10)
 characterTitle:SetText(L['CHARACTERS'])
 
+local guildVersionString = CreateFrame('BUTTON', nil, characterFrame)
+guildVersionString:SetNormalFontObject(InterUIRegular_Small)
+guildVersionString:SetSize(110, 20)
+guildVersionString:SetPoint('BOTTOM', characterFrame, 'BOTTOM', 0, 10)
+guildVersionString:SetFormattedText('Astral - Turalyon (US) %s', e.CLIENT_VERSION)
+guildVersionString:SetAlpha(0.2)
+
+guildVersionString:SetScript('OnEnter', function(self)
+	self:SetAlpha(.8)
+	end)
+guildVersionString:SetScript('OnLeave', function(self)
+	self:SetAlpha(0.2)
+	end)
+
+guildVersionString:SetScript('OnClick', function()
+	if not astralGuildInfo then
+		local astralGuildInfo = CreateFrame('FRAME', 'astralGuildInfo', UIParent)
+		astralGuildInfo:SetFrameLevel(8)
+		astralGuildInfo:SetSize(200, 100)
+		astralGuildInfo:SetBackdrop(BACKDROPBUTTON)
+		astralGuildInfo:EnableKeyboard(true)
+		astralGuildInfo:SetBackdropBorderColor(.2, .2, .2, 1)
+		astralGuildInfo:SetPoint('BOTTOM', UIParent, 'TOP', 0, -300)
+
+		astralGuildInfo.text = astralGuildInfo:CreateFontString(nil, 'OVERLAY', 'InterUIRegular_Normal')
+		astralGuildInfo.text:SetPoint('TOP', astralGuildInfo,'TOP', 0, -10)
+		astralGuildInfo.text:SetText('Visit Astral at')
+
+		astralGuildInfo.editBox = CreateFrame('EditBox', nil, astralGuildInfo)
+		astralGuildInfo.editBox:SetSize(180, 20)
+		astralGuildInfo.editBox:SetPoint('TOP', astralGuildInfo.text, 'BOTTOM', 0, -10)
+
+		astralGuildInfo.tex = astralGuildInfo:CreateTexture('ARTWORK')
+		astralGuildInfo.tex:SetSize(198, 98)
+		astralGuildInfo.tex:SetPoint('TOPLEFT', astralGuildInfo, 'TOPLEFT', 1, -1)
+		astralGuildInfo.tex:SetColorTexture(0, 0, 0)
+
+		astralGuildInfo.editBox:SetBackdrop(BACKDROPBUTTON)
+		astralGuildInfo.editBox:SetBackdropBorderColor(.2, .2, .2, 1)
+		astralGuildInfo.editBox:SetFontObject(InterUIRegular_Normal)
+		astralGuildInfo.editBox:SetText('www.astralguild.com')
+		astralGuildInfo.editBox:HighlightText()
+		astralGuildInfo.editBox:SetScript('OnChar', function(self, char)
+			self:SetText('www.astralguild.com')
+			self:HighlightText()
+
+		astralGuildInfo.editBox:SetScript("OnEscapePressed", function(self)
+			astralGuildInfo:Hide()
+		end)
+
+			end)
+		astralGuildInfo.editBox:SetScript('OnEditFocusLost', function(self)
+			self:SetText('www.astralguild.com')
+			self:HighlightText()
+			end)
+
+		local button = CreateFrame('BUTTON', nil, astralGuildInfo)
+		button:SetSize(40, 20)
+		button:SetNormalFontObject(InterUIRegular_Normal)
+		button:SetText('Close')
+		button:SetBackdrop(BACKDROPBUTTON)
+		button:SetBackdropBorderColor(.2, .2, .2, 1)
+		button:SetPoint('BOTTOM', astralGuildInfo, 'BOTTOM', 0, 10)
+		
+		button:SetScript('OnClick', function(self)
+			astralGuildInfo:Hide() end)
+
+		e.AddEscHandler(astralGuildInfo)
+	else
+		astralGuildInfo:Show()
+		astralGuildInfo:SetPropagateKeyboardInput(true)
+end
+	end)
+
+--[[
 local guildVersionString = characterFrame:CreateFontString(nil, 'OVERLAY', 'InterUIRegular_Small')
-guildVersionString:SetFormattedText('Astral Turalyon (US) %s', 'v3')
+guildVersionString:SetFormattedText('Astral - Turalyon (US) %s', e.CLIENT_VERSION)
 guildVersionString:SetJustifyH('CENTER')
 guildVersionString:SetPoint('BOTTOM', characterFrame, 'BOTTOM', 0, 20)
 guildVersionString:SetAlpha(0.2)
-
+]]
 characterFrame.background = characterFrame:CreateTexture(nil, 'BACKGROUND')
 characterFrame.background:SetColorTexture(33/255, 33/255, 33/255, 0.8)
 characterFrame.background:SetAllPoints(characterFrame)
@@ -732,7 +822,7 @@ _G[characterScrollBar:GetName() .. 'ScrollUpButton']:Hide()
 local scrollButton = _G[characterScrollBar:GetName() .. 'ThumbTexture']
 scrollButton:SetHeight(50)
 scrollButton:SetWidth(4)
-scrollButton:SetVertexColor(1, 1, 1, SCROLL_TEXTURE_ALPHA_MIN)
+scrollButton:SetColorTexture(204/255, 204/255, 204/255, SCROLL_TEXTURE_ALPHA_MAX)
 
 characterScrollFrame.buttonHeight = 45
 characterScrollFrame.update = CharacterScrollFrame_Update
@@ -801,7 +891,9 @@ _G[listScrollBar:GetName() .. 'ScrollUpButton']:Hide()
 local listScrollButton = _G[listScrollBar:GetName() .. 'ThumbTexture']
 listScrollButton:SetHeight(50)
 listScrollButton:SetWidth(4)
-listScrollButton:SetVertexColor(1, 1, 1, SCROLL_TEXTURE_ALPHA_MIN)
+listScrollButton:SetColorTexture(204/255, 204/255, 204/255, SCROLL_TEXTURE_ALPHA_MIN)
+listScrollButton:SetAlpha(SCROLL_TEXTURE_ALPHA_MIN)
+--listScrollButton:SetVertexColor(1, 1, 1, SCROLL_TEXTURE_ALPHA_MIN)
 listScrollFrame.buttonHeight = 15
 
 local contentFrame = CreateFrame('FRAME', 'AstralContentFrame', AstralKeyFrame)
@@ -861,16 +953,7 @@ weeklyBestButton:SetText(L['WEEKLY_BEST'])
 weeklyBestButton:SetAlpha(0.5)
 weeklyBestButton:SetPoint('LEFT', characterButton, 'RIGHT')
 weeklyBestButton:SetScript('OnClick', function(self) ListButton_OnClick(self) end)
---[[
-local weeklyButton = CreateFrame('BUTTON', '$parentWeeklyButton', contentFrame)
-weeklyButton.sortMethod = 'weekly_cache'
-weeklyButton:SetSize(30, 20)
-weeklyButton:SetNormalFontObject(InterUIBlack_Small)
-weeklyButton:SetText(L['10+'])
-weeklyButton:SetAlpha(0.5)
-weeklyButton:SetPoint('LEFT', characterButton, 'RIGHT', 10, 0)
-weeklyButton:SetScript('OnClick', function(self) ListButton_OnClick(self) end)
-]]
+
 function AstralKeyFrame:OnUpdate(elapsed)
 	self.updateDelay = self.updateDelay + elapsed
 
@@ -889,6 +972,7 @@ function AstralKeyFrame:ToggleLists()
 		AstralKeyFrameTabFrameTabFRIENDS:Hide()
 		if e.FrameListShown() == 'FRIENDS' then
 			e.SetFrameListShown('GUILD')
+			UpdateTabs()
 			e.UpdateFrames()
 			HybridScrollFrame_SetOffset(AstralKeyFrameListContainer, 0)
 			AstralKeyFrameListContainer.scrollBar:SetValue(0)
@@ -928,12 +1012,13 @@ local init = false
 local function InitializeFrame()
 	init = true
 
+
 	if AstralKeysSettings.frameOptions.viewMode == 1 then
-		collapseButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\collapse.tga')
+		collapseButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline-first_page-24px@2x')
 		AstralKeyFrame:SetWidth(FRAME_WIDTH_MINIMIZED)
 		AstralKeyFrameCharacterFrame:Hide()
 	else
-		collapseButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\expand.tga')
+		collapseButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline-last_page-24px@2x')
 	end
 
 	if not AstralKeysSettings.options.friendSync then

@@ -8,8 +8,6 @@ COLOUR[3] = 'ffa335ee' -- Epic
 COLOUR[4] = 'ffff8000' -- Legendary
 COLOUR[5] = 'ffe6cc80' -- Artifact
 
-e.CACHE_LEVEL = 10 -- Weekly M+ requirement for class hall cache
-
 local function Weekly()
 	e.UpdateCharacterBest()
 	local characterID = e.GetCharacterID(e.Player())
