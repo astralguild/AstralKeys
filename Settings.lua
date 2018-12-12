@@ -59,6 +59,7 @@ if not AstralKeysSettings then
 			['announce_party'] = true,
 			['announce_guild'] = false,
 			['showOffline'] = true,
+			['mingle_offline'] = false,
 			['showTooltip'] = true,
 			['whisperClick'] = false,
 			['showMiniMapButton'] = true,
@@ -96,6 +97,7 @@ frame:SetScript('OnEvent', function(self, event, addon)
 		MixInSetting('options', 'showTooltip', true)
 		MixInSetting('frameOptions', 'frame_list', 'GUILD')
 		MixInSetting('frameOptions', 'sorth_method', 'character_name')
+		MixInSetting('options', 'mingle_offline', false)
 
 		if not AstralKeysSettings['resetVersion'] or AstralKeysSettings['resetVersion'] ~= RESET_VERSION then
 			wipe(AstralKeys)
@@ -114,6 +116,7 @@ frame:SetScript('OnEvent', function(self, event, addon)
 					['announce_party'] = true,
 					['announce_guild'] = false,
 					['showOffline'] = true,
+					['mingle_offline'] = false,
 					['whisperClick'] = false,
 					['showTooltip'] = true,
 					['showMiniMapButton'] = true,

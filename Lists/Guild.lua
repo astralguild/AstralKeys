@@ -117,6 +117,8 @@ local function SyncReceive(entry, sender)
 			if id then
 				if weekly_best > AstralKeys[id][5] then
 					AstralKeys[id][5] = weekly_best
+				else
+					weekly_best = AstralKeys[id][5]
 				end
 				if AstralKeys[id][7] < timeStamp then
 					AstralKeys[id][3] = dungeonID
@@ -177,6 +179,10 @@ local function GuildListSort(A, v)
 		table.sort(A, function(a, b)
 			local aOnline = e.GuildMemberOnline(a.character_name) and 1 or 0
 			local bOnline = e.GuildMemberOnline(b.character_name) and 1 or 0
+			if not AstralKeysSettings.options.mingle_offline then
+				aOnline = true
+				bOnline = true
+			end
 			if aOnline == bOnline then
 				if AstralKeysSettings.frameOptions.orientation == 0 then
 					if e.GetMapName(a.mapID) > e.GetMapName(b.mapID) then
@@ -219,6 +225,10 @@ local function GuildListSort(A, v)
 		table.sort(A, function(a, b)
 			local aOnline = e.GuildMemberOnline(a.character_name) and 1 or 0
 			local bOnline = e.GuildMemberOnline(b.character_name) and 1 or 0
+			if not AstralKeysSettings.options.mingle_offline then
+				aOnline = true
+				bOnline = true
+			end
 			if aOnline == bOnline then
 				if AstralKeysSettings.frameOptions.orientation == 0 then
 					if a[v] > b[v] then

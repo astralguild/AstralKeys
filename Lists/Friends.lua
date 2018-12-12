@@ -488,6 +488,10 @@ local function FriendSort(A, v)
 		table.sort(A, function(a, b)
 			local aOnline = e.IsFriendOnline(a.character_name) and 1 or 0
 			local bOnline = e.IsFriendOnline(b.character_name) and 1 or 0
+			if not AstralKeysSettings.options.mingle_offline then
+				aOnline = true
+				bOnline = true
+			end
 			if aOnline == bOnline then
 				if AstralKeysSettings.frameOptions.orientation == 0 then
 					if e.GetMapName(a.mapID) > e.GetMapName(b.mapID) then
@@ -515,6 +519,10 @@ local function FriendSort(A, v)
 			table.sort(A, function(a, b)
 				local aOnline = e.IsFriendOnline(a.character_name) and 1 or 0
 				local bOnline = e.IsFriendOnline(b.character_name) and 1 or 0
+				if not AstralKeysSettings.options.mingle_offline then
+					aOnline = true
+					bOnline = true
+				end
 				if aOnline == bOnline then
 					return CompareFriendNames(a, b)
 				else
@@ -525,6 +533,10 @@ local function FriendSort(A, v)
 			table.sort(A, function(a, b) 
 				local aOnline = e.IsFriendOnline(a.character_name) and 1 or 0
 				local bOnline = e.IsFriendOnline(b.character_name) and 1 or 0
+				if not AstralKeysSettings.options.mingle_offline then
+					aOnline = true
+					bOnline = true
+				end
 				if aOnline == bOnline then
 					if AstralKeysSettings.frameOptions.orientation == 0 then
 						if a[v] > b[v] then

@@ -32,12 +32,7 @@ AstralOptionsFrame:SetScript('OnDragStart', function(self)
 AstralOptionsFrame:SetScript('OnDragStop', function(self)
 	self:StopMovingOrSizing()
 	end)
---[[
-local logo = AstralOptionsFrame:CreateTexture(nil, 'ARTWORK')
-logo:SetSize(64, 64)
-logo:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\Astral.tga')
-logo:SetPoint('TOPLEFT', AstralOptionsFrame, 'TOPLEFT', 10, -10)
-]]
+
 local logo_Key = menuBar:CreateTexture(nil, 'ARTWORK')
 logo_Key:SetSize(32, 32)
 logo_Key:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\key-white@2x')
@@ -108,6 +103,13 @@ showTooltip:SetScript('OnClick', function(self)
 	AstralKeysSettings.options.showTooltip = self:GetChecked()
 	end)
 
+local mingleOffline = e.CreateCheckBox(contentFrame, L['Display offline below online'])
+mingleOffline:SetPoint('LEFT', showTooltip, 'RIGHT', 10, 0)
+mingleOffline:SetScript('OnClick', function(self)
+	AstralKeysSettings.options.mingle_offline = not AstralKeysSettings.options.mingle_offline
+	e.UpdateFrames()
+	end)
+
 local announceParty = e.CreateCheckBox(contentFrame, L['Announce new keys to party'])
 announceParty:SetPoint('TOPLEFT', showTooltip, 'BOTTOMLEFT', 0, -5)
 announceParty:SetScript('OnClick', function(self)
@@ -161,6 +163,7 @@ function InitData()
 	announceGuild:SetChecked(AstralKeysSettings.options.announce_guild)
 	showTooltip:SetChecked(AstralKeysSettings.options.showTooltip)
 	syncFriends:SetChecked(AstralKeysSettings.options.friendSync)
+	mingleOffline:SetChecked(AstralKeysSettings.options.mingle_offline)
 
 	for i = 1, GuildControlGetNumRanks() do
 		_ranks[i]:SetText(GuildControlGetRankName(i))
@@ -200,6 +203,7 @@ AstralOptionsFrame:SetScript('OnShow', function(self)
 	self:SetPropagateKeyboardInput(true)
 	otherFaction:SetChecked(AstralKeysSettings.options.showOtherFaction)
 	showOffLine:SetChecked(AstralKeysSettings.options.showOffline)
+	mingleOffline:SetChecked(AstralKeysSettings.options.mingle_offline)
 	showMinimap:SetChecked(AstralKeysSettings.options.showMiniMapButton)
 	announceParty:SetChecked(AstralKeysSettings.options.announce_party)
 	announceGuild:SetChecked(AstralKeysSettings.options.announce_guild)
