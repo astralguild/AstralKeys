@@ -51,7 +51,7 @@ if not AstralKeysSettings then
 		['initTime'] = e.DataResetTime(),
 		['frameOptions'] = {
 			['orientation'] = 1,
-			['sortMethod'] = 'character_name',
+			['sorth_method'] = 'character_name',
 			['viewMode'] = 0,
 			['list'] = 'GUILD',
 			},
@@ -95,6 +95,7 @@ frame:SetScript('OnEvent', function(self, event, addon)
 
 		MixInSetting('options', 'showTooltip', true)
 		MixInSetting('frameOptions', 'frame_list', 'GUILD')
+		MixInSetting('frameOptions', 'sorth_method', 'character_name')
 
 		if not AstralKeysSettings['resetVersion'] or AstralKeysSettings['resetVersion'] ~= RESET_VERSION then
 			wipe(AstralKeys)
@@ -105,7 +106,7 @@ frame:SetScript('OnEvent', function(self, event, addon)
 				['initTime'] = e.DataResetTime(),
 				['frameOptions'] = {
 					['orientation'] = 1,
-					['sortMethod'] = 'character_name',
+					['sorth_method'] = 'character_name',
 					['viewMode'] = 0,
 					['frame_list'] = 'GUILD',
 					},

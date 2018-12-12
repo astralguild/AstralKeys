@@ -904,13 +904,13 @@ local function ListButton_OnClick(self)
 	HybridScrollFrame_SetOffset(AstralKeyFrameListContainer, 0)
 	AstralKeyFrameListContainer.scrollBar:SetValue(0)
 
-	if self.sortMethod == AstralKeysSettings.frameOptions.sortMethod then
+	if self.sortMethod == AstralKeysSettings.frameOptions.sorth_method then
 		AstralKeysSettings.frameOptions.orientation = 1 - AstralKeysSettings.frameOptions.orientation
 	else
 		AstralKeysSettings.frameOptions.orientation = 0
 	end
-	AstralKeysSettings.frameOptions.sortMethod = self.sortMethod
-	e.SortTable(sortedTable[e.FrameListShown()], AstralKeysSettings.frameOptions.sortMethod)
+	AstralKeysSettings.frameOptions.sorth_method = self.sortMethod
+	e.SortTable(sortedTable[e.FrameListShown()], AstralKeysSettings.frameOptions.sorth_method)
 	e.UpdateFrames()
 end
 
@@ -1059,7 +1059,7 @@ function e.UpdateFrames()
 	if not init or not AstralKeyFrame:IsShown() then return end
 
 	e.UpdateTable(sortedTable)
-	e.SortTable(sortedTable[e.FrameListShown()], AstralKeysSettings.frameOptions.sortMethod)
+	e.SortTable(sortedTable[e.FrameListShown()], AstralKeysSettings.frameOptions.sorth_method)
 
 	e.UpdateLines()
 end
