@@ -124,7 +124,7 @@ end
 local function SendWhisper(self)
 	if not self.isConnected then return end
 
-	if AstralKeysSettings.frameOptions.list == 'GUILD' then
+	if AstralKeysSettings.frameOptions.frame_list == 'GUILD' then
 		ChatFrame_SendTell(e.Unit(AstralMenuFrame.unit))
 	else
 		if AstralFriends[AstralMenuFrame.unit][2] then

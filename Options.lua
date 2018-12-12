@@ -181,7 +181,7 @@ function InitData()
 
 		_ranks[i]:SetScript('OnClick', function(self)
 			AstralKeysSettings.options.rankFilters[self.id] = self:GetChecked()
-			if AstralKeysSettings.frameOptions.list == 'GUILD' then
+			if AstralKeysSettings.frameOptions.frame_list == 'GUILD' then
 				e.UpdateFrames()
 			end
 			end)

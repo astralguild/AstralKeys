@@ -170,8 +170,7 @@ AstralComs:RegisterPrefix('GUILD', 'request', PushKeyList)
 
 
 -- Guild sorting/Filtering
-local function GuildListSort(A, v)
-	
+local function GuildListSort(A, v)	
 	if v == 'dungeon_name' then
 		table.sort(A, function(a, b)
 			local aOnline = e.GuildMemberOnline(a.character_name) and 1 or 0
