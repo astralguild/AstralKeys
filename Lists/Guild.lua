@@ -58,11 +58,11 @@ local messageStack = {}
 local function UpdateUnitKey(msg)
 	local timeStamp = e.WeekTime() -- part of the week we got this key update, used to determine if a key got de-leveled or not
 
-	local unit, class, dungeonID, keyLevel, weekly, week = strsplit(':', msg)
+	local unit, class, dungeonID, keyLevel, weekly_best, week = strsplit(':', msg)
 	
 	dungeonID = tonumber(dungeonID)
 	keyLevel = tonumber(keyLevel)
-	weekly = tonumber(weekly)
+	weekly_best = tonumber(weekly_best)
 	week = tonumber(week)
 
 	local id = e.UnitID(unit) -- Is this unit in the db already?
@@ -70,16 +70,16 @@ local function UpdateUnitKey(msg)
 	if id then -- Yep, just change the values then
 		AstralKeys[id][3] = dungeonID
 		AstralKeys[id][4] = keyLevel
-		AstralKeys[id][5] = weekly
+		AstralKeys[id][5] = weekly_best
 		AstralKeys[id][6] = week
 		AstralKeys[id][7] = timeStamp
 	else -- Nope, let's add them to the DB and index their position
-		AstralKeys[#AstralKeys + 1] = {unit, class, dungeonID, keyLevel, weekly, week, timeStamp}
+		AstralKeys[#AstralKeys + 1] = {unit, class, dungeonID, keyLevel, weekly_best, week, timeStamp}
 		e.SetUnitID(unit, #AstralKeys)
 	end
 
 	e.UpdateFrames()
-	e.AddUnitToTable(unit, class, faction, 'GUILD', dungeonID, keyLevel, weekly)
+	e.AddUnitToTable(unit, class, faction, 'GUILD', dungeonID, keyLevel, weekly_best)
 	
 	-- Update character frames if we received our own key
 	if unit == e.Player() then
@@ -89,7 +89,7 @@ end
 AstralComs:RegisterPrefix('GUILD', e.UPDATE_VERSION, UpdateUnitKey)
 
 local function SyncReceive(entry, sender)
-	local unit, class, dungeonID, keyLevel, weekly, week, timeStamp
+	local unit, class, dungeonID, keyLevel, weekly_best, week, timeStamp
 	if AstralKeyFrame:IsShown() then
 		AstralKeyFrame:SetScript('OnUpdate', AstralKeyFrame.OnUpdate)
 		AstralKeyFrame.updateDelay = 0
@@ -98,16 +98,16 @@ local function SyncReceive(entry, sender)
 	local _pos = 0
 	while find(entry, '_', _pos) do
 		
-		--unit, class, dungeonID, keyLevel, weekly, week, timeStamp = string.split(':', entry:sub(_pos, entry:find('_', _pos) - 1))
+		--unit, class, dungeonID, keyLevel, weekly_best, week, timeStamp = string.split(':', entry:sub(_pos, entry:find('_', _pos) - 1))
 
-		class, dungeonID, keyLevel, weekly, week, timeStamp = entry:match(':(%a+):(%d+):(%d+):(%d+):(%d+):(%d)', entry:find(':', _pos))
+		class, dungeonID, keyLevel, weekly_best, week, timeStamp = entry:match(':(%a+):(%d+):(%d+):(%d+):(%d+):(%d)', entry:find(':', _pos))
 		unit = entry:sub(_pos, entry:find(':', _pos) - 1)
 		
 		_pos = find(entry, '_', _pos) + 1
 
 		dungeonID = tonumber(dungeonID)
 		keyLevel = tonumber(keyLevel)
-		weekly = tonumber(weekly)
+		weekly_best = tonumber(weekly_best)
 		week = tonumber(week)
 		timeStamp = tonumber(timeStamp)
 
@@ -116,28 +116,27 @@ local function SyncReceive(entry, sender)
 			local id = e.UnitID(unit)
 			if id then
 				if AstralKeys[id][7] < timeStamp then
-					if weekly == 1 then AstralKeys[id][5] = 1 end
-
 					AstralKeys[id][3] = dungeonID
 					AstralKeys[id][4] = keyLevel
+					AstralKeys[id][5] = weekly_best
 					AstralKeys[id][6] = week
 					AstralKeys[id][7] = timeStamp
 				end
 			else
-				AstralKeys[#AstralKeys + 1] = {unit, class, dungeonID, keyLevel, weekly, week, timeStamp}
+				AstralKeys[#AstralKeys + 1] = {unit, class, dungeonID, keyLevel, weekly_best, week, timeStamp}
 				e.SetUnitID(unit, #AstralKeys)
 			end
-			e.AddUnitToTable(unit, class, faction, 'GUILD', dungeonID, keyLevel, weekly)
+			e.AddUnitToTable(unit, class, faction, 'GUILD', dungeonID, keyLevel, weekly_best)
 		end
 	end
-	unit, class, dungeonID, keyLevel, weekly, week, timeStamp = nil, nil, nil, nil, nil, nil, nil
+	unit, class, dungeonID, keyLevel, weekly_best, week, timeStamp = nil, nil, nil, nil, nil, nil, nil
 end
 AstralComs:RegisterPrefix('GUILD', SYNC_VERSION, SyncReceive)
 
-local function UpdateWeekly(weekly, sender)
+local function UpdateWeekly(weekly_best, sender)
 	local id = e.UnitID(sender)
 	if id then
-		AstralKeys[id][5] = tonumber(weekly)
+		AstralKeys[id][5] = tonumber(weekly_best)
 		AstralKeys[id][7] = e.WeekTime()
 		e.UpdateFrames()
 	end
@@ -269,14 +268,18 @@ end
 e.AddListFilter('GUILD', GuildListFilter)
 
 -- Guild list function for displaying character information
-local function GuildUnitFunction(self, unit, unitClass, mapID, keyLevel, cache, faction, btag)
-	local bestKey = 0 --e.UnitBestKey(id)
+local function GuildUnitFunction(self, unit, unitClass, mapID, keyLevel, weekly_best, faction, btag)
 	self.unitID = e.UnitID(unit)
 	self.levelString:SetText(keyLevel)
 	self.dungeonString:SetText(e.GetMapName(mapID))
 	self.nameString:SetText(WrapTextInColorCode(Ambiguate(unit, 'GUILD') , select(4, GetClassColor(unitClass))))
-	--self.bestString:SetText(bestKey)
-	self.weeklyTexture:SetShown(cache == 1 or bestKey >= e.CACHE_LEVEL)
+	if weekly_best and weekly_best > 1 then
+		local color_code = e.GetDifficultyColour(weekly_best)
+		self.bestString:SetText(WrapTextInColorCode(weekly_best, color_code))
+	else
+		self.bestString:SetText(nil)
+	end
+	--self.weeklyTexture:SetShown(cache == 1 or bestKey >= e.CACHE_LEVEL)
 	if e.GuildMemberOnline(unit) then
 		self:SetAlpha(1)
 	else

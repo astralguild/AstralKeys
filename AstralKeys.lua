@@ -50,7 +50,6 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 		wipe(AstralKeys)
 		wipe(AstralFriends)
 		AstralKeysSettings.initTime = e.DataResetTime()
-		e.FindKeyStone(true, false)
 	end
 
 	if d.wday == 3 and d.hour < (16 + hourOffset + (d.isdst and 1 or 0)) and region ~= 3 then
@@ -133,7 +132,8 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 		e.AddUnitToTable(AstralFriends[i][1], AstralFriends[i][3], AstralFriends[i][8], 'FRIENDS',  AstralFriends[i][4], AstralFriends[i][5], AstralFriends[i][9], AstralFriends[i][2])
 	end
 
-	C_MythicPlus.RequestCurrentAffixes()
+	C_MythicPlus.RequestMapInfo() -- Gets info on affixes and current season...
+	C_MythicPlus.RequestCurrentAffixes() -- Who knows what this actually does...
 	C_MythicPlus.RequestRewards()
 
 end, 'login')

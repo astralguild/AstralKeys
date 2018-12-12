@@ -106,6 +106,12 @@ end
 
 
 function AstralComs:NewMessage(prefix, text, channel, target)
+	if channel == 'GUILD' then
+		if not IsInGuild() then
+			return
+		end
+	end
+
 	local msg = newMsg()
 
 	if channel == 'BNET' then
@@ -139,7 +145,7 @@ function AstralComs:SendMessage()
 		if e.IsFriendOnline(msg[4]) then -- Are they still logged into that toon
 			msg.method(unpack(msg, 1, #msg))
 		end
-	else -- Guild/raid message, just send it
+	else-- Guild/raid message, just send it
 		msg.method(unpack(msg, 1, #msg))
 		delMsg(msg)
 	end
@@ -256,8 +262,7 @@ AstralEvents:Register('GROUP_ROSTER_UPDATE', GroupVersionCheckOnJoin, 'versionCh
 
 local receivedVersionMessage = false
 local function VersionCheck(version, sender)
-	print(version, sender)
-	--if sender == e.Player() then return end
+	if sender == e.Player() then return end
 	if not version then return end
 	if not receivedVersionMessage and (tonumber(version) > tonumber(e.CLIENT_VERSION)) then
 		receivedVersionMessage = true
@@ -316,7 +321,10 @@ function e.AnnounceCharacterKeys(channel)
 end
 
 function e.AnnounceNewKey(keyLink, level)
-	if not IsInGroup() then return end
-	if not AstralKeysSettings.options.announceKey then return end
-	SendChatMessage(strformat(ANNOUNCE_MESSAGE, keyLink, level), 'PARTY')
+	if AstralKeysSettings.options.announce_party and IsInGroup() then
+		SendChatMessage(strformat(ANNOUNCE_MESSAGE, keyLink, level), 'PARTY')
+	end
+	if AstralKeysSettings.options.announce_guild and IsInGuild() then
+		SendChatMessage(strformat(ANNOUNCE_MESSAGE, keyLink, level), 'GUILD')
+	end
 end

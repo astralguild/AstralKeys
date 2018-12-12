@@ -12,115 +12,6 @@ edgeFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 
 insets = {left = 0, right = 0, top = 0, bottom = 0}
 }
 
-e.FONT = {}
-e.FONT.HEADER = "Interface\\AddOns\\AstralKeys\\Media\\big_noodle_titling.TTF"
-e.FONT.CONTENT = "Interface\\AddOns\\AstralKeys\\Media\\Lato-Regular.TTF"
-e.FONT.SIZE = 13
-e.FONT.OBJECT = {}
-
-local FONT_HEADER = e.FONT.HEADER
-
---local FONT_HEADER = "Interface\\AddOns\\AstralKeys\\Media\\stop.ttf"
-local FONT_CONTENT = e.FONT.CONTENT
-local FONT_SIZE = e.FONT.SIZE
-local BACKDROP = e.BACKDROP
-
-local FONT_OBJECT_EDITBOX = CreateFont("FONTOBJECT_EDITBOX")
-FONTOBJECT_EDITBOX:SetFont(FONT_CONTENT, FONT_SIZE - 1)
-FONTOBJECT_EDITBOX:SetJustifyH('RIGHT')
-FONTOBJECT_EDITBOX:SetTextColor(1, 1, 1)
-
-local FONT_OBJECT_RIGHT = CreateFont("FONT_OBJECT_RIGHT")
-FONT_OBJECT_RIGHT:SetFont(FONT_CONTENT, FONT_SIZE)
-FONT_OBJECT_RIGHT:SetJustifyH('RIGHT')
-FONT_OBJECT_RIGHT:SetTextColor(1, 1, 1)
-
-local FONT_OBJECT_LEFT = CreateFont("FONT_OBJECT_LEFT")
-FONT_OBJECT_LEFT:SetFont(FONT_CONTENT, FONT_SIZE)
-FONT_OBJECT_LEFT:SetJustifyH('LEFT')
-FONT_OBJECT_LEFT:SetTextColor(1, 1, 1)
-
-local FONT_OBJECT_CENTRE = CreateFont("FONT_OBJECT_CENTRE")
-FONT_OBJECT_CENTRE:SetFont(FONT_CONTENT, FONT_SIZE)
-FONT_OBJECT_CENTRE:SetJustifyH('CENTER')
-FONT_OBJECT_CENTRE:SetTextColor(1, 1, 1)
-
-local FONT_OBJECT_HIGHLIGHT = CreateFont("FONT_OBJECT_HIGHLIGHT")
-FONT_OBJECT_HIGHLIGHT:SetFont(FONT_CONTENT, FONT_SIZE)
-FONT_OBJECT_HIGHLIGHT:SetJustifyH('CENTER')
-FONT_OBJECT_HIGHLIGHT:SetTextColor(192/255, 192/255, 192/255)
-
-local FONT_OBJECT_DISABLED = CreateFont("FONT_OBJECT_DISABLED")
-FONT_OBJECT_DISABLED:SetFont(FONT_CONTENT, FONT_SIZE)
-FONT_OBJECT_DISABLED:SetJustifyH('CENTER')
-FONT_OBJECT_DISABLED:SetTextColor(122/255, 122/255, 122/255)
-
-function e.CreateLabel(parent, text, pos)
-	local label = parent:CreateFontString(nil, 'ARTWORK', 'InterUIRegular_Normal')
-	if pos == 'LEFT' then
-		label:SetPoint('RIGHT', parent, 'LEFT', -5, 0)
-	elseif pos == 'RIGHT' then
-		label:SetPoint('LEFT', parent, 'RIGHT', 5, 0)
-	end
-	label:SetText(text)
-
-	return label
-
-end
-
-function e.CreateEditBox(parent, width, label, minValue, maxValue, labelPos)
-	local editBox = CreateFrame('EditBox', nil, parent)
-	editBox.maxValue = maxValue
-	editBox.minValue = minValue
-	editBox:SetSize(width, 18)
-	editBox:SetBackdrop({
-						bgFile = nil,
-						edgeFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = e:Scale(16), edgeSize = e:Scale(2),
-						insets = {left = e:Scale(2), right = e:Scale(2), top = e:Scale(2), bottom = e:Scale(2)}
-						})
-	editBox:SetBackdropBorderColor(85/255, 85/255, 85/255)
-	--editBox:SetFontObject(FONT_OBJECT_EDITBOX)
-	editBox:SetFontObject(InterUIRegular_Normal)
-	editBox:SetTextInsets(2, 2, 0, 0)
-	editBox:SetAutoFocus(false)
-	editBox:SetNumeric(true)
-	editBox:SetScript("OnEnterPressed", function(self)
-		self:ClearFocus()
-		end)
-	editBox:SetScript("OnEscapePressed", function(self)
-		self:ClearFocus()
-		end)
-
-	if label then
-		editBox.label = e.CreateLabel(editBox, label, labelPos)
-	end
-
-	function editBox:SetValue(value)
-		self:SetNumber(value)
-	end
-
-	editBox:SetScript('OnDisable', function(self)
-		self.label:SetTextColor(122/255, 122/255, 122/255)
-		end)
-
-	editBox:SetScript('OnEnable', function(self)
-		self.label:SetTextColor(1, 1, 1)
-		end)
-
-
-	editBox:SetScript("OnEditFocusLost", function(self)
-		if self:GetNumber() < self.minValue then
-			self:SetNumber(self.minValue)
-		end
-		if self:GetNumber() > self.maxValue then
-			self:SetNumber(self.maxValue)
-		end
-		end)
-
-	return editBox
-
-end
-
 function e.CreateCheckBox(parent, label, width)
 	local checkbox = CreateFrame('CheckButton', nil, parent)
 	checkbox:SetSize(width or 200, 20)
@@ -166,9 +57,9 @@ menuFrame.dtbl = {}
 menuFrame:SetFrameStrata('TOOLTIP')
 menuFrame:SetWidth(150)
 menuFrame:SetHeight(40)
-menuFrame:SetBackdrop(BACKDROP2)
-menuFrame:SetBackdropBorderColor(0, 0, 0)
-menuFrame:SetBackdropColor(35/255, 35/255, 35/255)
+menuFrame.background = menuFrame:CreateTexture(nil, 'BACKGROUND')
+menuFrame.background:SetAllPoints(menuFrame)
+menuFrame.background:SetColorTexture(0, 0, 0, 1)
 menuFrame:EnableKeyboard(true)
 
 menuFrame:SetScript('OnKeyDown', function(self, key)
@@ -236,6 +127,60 @@ function menuFrame:AddSelection(name, onClick, onShow)
 
 	dtbl[#dtbl]:SetPoint('TOPLEFT', self, 'TOPLEFT', 15, -20*(#dtbl) -5)
 end
+
+local reportFrame = CreateFrame('FRAME', 'AstralReportFrame', UIParent)
+reportFrame:Hide()
+reportFrame.dtbl = {}
+
+reportFrame:SetFrameStrata('TOOLTIP')
+reportFrame:SetWidth(100)
+reportFrame:SetHeight(50)
+reportFrame.background = reportFrame:CreateTexture(nil, 'BACKGROUND')
+reportFrame.background:SetAllPoints(reportFrame)
+reportFrame.background:SetColorTexture(0, 0, 0, 1)
+reportFrame:EnableKeyboard(true)
+
+local partyButton = CreateFrame('BUTTON', nil, reportFrame)
+partyButton:SetSize(90, 20)
+partyButton:SetBackdrop(BACKDROP2)
+partyButton:SetBackdropBorderColor(0, 0, 0, 0)
+partyButton:SetBackdropColor(25/255, 25/255, 25/255)
+partyButton:SetNormalFontObject(InterUIBlack_Normal)
+
+local partyHighlightTexture = partyButton:CreateTexture()
+partyHighlightTexture:SetColorTexture(0.5, 0.5, 0.5, .2)
+partyHighlightTexture:SetPoint('TOPLEFT', 1, -1)
+partyHighlightTexture:SetPoint('BOTTOMRIGHT', -1, 1)
+partyButton:SetHighlightTexture(partyHighlightTexture)
+
+partyButton:SetPoint('TOPLEFT', reportFrame, 'TOPLEFT', 5, -5)
+
+partyButton:SetText(L['PARTY'])
+partyButton:SetScript('OnClick', function()
+	e.AnnounceCharacterKeys('PARTY')
+	reportFrame:Hide()
+	end)
+
+local guildButton = CreateFrame('BUTTON', nil, reportFrame)
+guildButton:SetSize(90, 20)
+guildButton:SetBackdrop(BACKDROP2)
+guildButton:SetBackdropBorderColor(0, 0, 0, 0)
+guildButton:SetBackdropColor(25/255, 25/255, 25/255)
+guildButton:SetNormalFontObject(InterUIBlack_Normal)
+
+local partyHighlightTexture = guildButton:CreateTexture()
+partyHighlightTexture:SetColorTexture(0.5, 0.5, 0.5, .2)
+partyHighlightTexture:SetPoint('TOPLEFT', 1, -1)
+partyHighlightTexture:SetPoint('BOTTOMRIGHT', -1, 1)
+guildButton:SetHighlightTexture(partyHighlightTexture)
+
+guildButton:SetPoint('TOPLEFT', partyButton, 'BOTTOMLEFT', 0, -1)
+
+guildButton:SetText(L['GUILD'])
+guildButton:SetScript('OnClick', function()
+	e.AnnounceCharacterKeys('GUILD')
+	reportFrame:Hide()
+	end)
 
 function e.AddEscHandler(frame)
 	if not frame and type(frame) ~= 'table' then

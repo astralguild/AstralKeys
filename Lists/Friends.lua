@@ -169,12 +169,12 @@ local function RecieveKey(msg, sender)
 	end
 
 	local timeStamp = e.WeekTime()
-	local unit, class, dungeonID, keyLevel, weekly, week, faction = strsplit(':', msg)
+	local unit, class, dungeonID, keyLevel, weekly_best, week, faction = strsplit(':', msg)
 
 	dungeonID = tonumber(dungeonID)
 	keyLevel = tonumber(keyLevel)
 	week = tonumber(week)
-	weekly = tonumber(weekly)
+	weekly_best = tonumber(weekly_best)
 
 	local id = e.FriendID(unit)
 
@@ -183,16 +183,16 @@ local function RecieveKey(msg, sender)
 		AstralFriends[id][5] = keyLevel
 		AstralFriends[id][6] = week
 		AstralFriends[id][7] = timeStamp
-		AstralFriends[id][9] = weekly
+		AstralFriends[id][9] = weekly_best
 	else
-		AstralFriends[#AstralFriends + 1] = {unit, btag, class, dungeonID, keyLevel, week, timeStamp, faction, weekly}
+		AstralFriends[#AstralFriends + 1] = {unit, btag, class, dungeonID, keyLevel, week, timeStamp, faction, weekly_best}
 		e.SetFriendID(unit, #AstralFriends)
 		ShowFriends()
 	end
 
-	e.AddUnitToTable(unit, class, faction, 'FRIENDS', dungeonID, keyLevel, weekly, btag)
+	e.AddUnitToTable(unit, class, faction, 'FRIENDS', dungeonID, keyLevel, weekly_best, btag)
 
-	if e.FrameListShown() == 'friends' then 
+	if e.FrameListShown() == 'FRIENDS' then 
 		e.UpdateFrames()
 	end
 end
@@ -223,36 +223,30 @@ local function SyncFriendUpdate(entry, sender)
 	local _pos = 0
 	while find(entry, '_', _pos) do
 
-		class, dungeonID, keyLevel, week, timeStamp, faction, weekly = entry:match(':(%a+):(%d+):(%d+):(%d+):(%d+):(%d+):(%d+)', entry:find(':', _pos))
+		class, dungeonID, keyLevel, week, timeStamp, faction, weekly_best = entry:match(':(%a+):(%d+):(%d+):(%d+):(%d+):(%d+):(%d+)', entry:find(':', _pos))
 		unit = entry:sub(_pos, entry:find(':', _pos) - 1)
-
 		_pos = find(entry, '_', _pos) + 1
 
 		dungeonID = tonumber(dungeonID)
 		keyLevel = tonumber(keyLevel)
 		week = tonumber(week)
 		timeStamp = tonumber(timeStamp)
-		weekly = tonumber(weekly)
+		weekly_best = tonumber(weekly_best)
 
-		if week >= e.Week then 
-
+		if week >= e.Week then
 			local id = e.FriendID(unit)
 			if id then
-				if weekly == 1 then
-					AstralFriends[id][9] = 1
-				end
-				if AstralFriends[id][7] < timeStamp then
-					AstralFriends[id][4] = dungeonID
-					AstralFriends[id][5] = keyLevel
-					AstralFriends[id][6] = week
-					AstralFriends[id][7] = timeStamp
-				end
+				AstralFriends[id][4] = dungeonID
+				AstralFriends[id][5] = keyLevel
+				AstralFriends[id][6] = week
+				AstralFriends[id][7] = timeStamp
+				AstralFriends[id][9] = weekly_best
 			else
-				AstralFriends[#AstralFriends + 1] = {unit, btag, class, dungeonID, keyLevel, week, timeStamp, faction}
+				AstralFriends[#AstralFriends + 1] = {unit, btag, class, dungeonID, keyLevel, week, timeStamp, faction, weekly_best}
 				e.SetFriendID(unit, #AstralFriends)
 				ShowFriends()
 			end
-			e.AddUnitToTable(unit, class, faction, 'FRIENDS', dungeonID, keyLevel, weekly, btag)
+			e.AddUnitToTable(unit, class, faction, 'FRIENDS', dungeonID, keyLevel, weekly_best, btag)
 		end
 	end
 end
@@ -260,11 +254,11 @@ AstralComs:RegisterPrefix('BNET', SYNC_VERSION, SyncFriendUpdate)
 AstralComs:RegisterPrefix('WHISPER', SYNC_VERSION, SyncFriendUpdate)
 
 local function UpdateWeekly(msg)
-	local unit, weekly = strsplit(':', msg)
+	local unit, weekly_best = strsplit(':', msg)
 
 	local id = e.FriendID(unit)
 	if id then
-		AstralFriends[id][9] = weekly
+		AstralFriends[id][9] = tonumber(weekly_best)
 		AstralFriends[id][7] = e.WeekTime()
 	end
 end
@@ -279,15 +273,11 @@ local function PushKeysToFriends(target)
 	wipe(messageStack)
 	wipe(messageQueue)
 
-	local minKeyLevel = AstralKeysSettings.options.minFriendSync or 2
 	for i = 1, #AstralCharacters do
 		local id = e.UnitID(AstralCharacters[i].unit)
 		if id then -- We have a key for this character, let's get the message and queue it up
-			local map, level = e.UnitMapID(id), e.UnitKeyLevel(id)
-			local weekly = AstralCharacters[i].level >= e.CACHE_LEVEL and 1 or 0
-			if level >= minKeyLevel then
-				messageStack[#messageStack + 1] = strformat('%s_', strformat('%s:%s:%d:%d:%d:%d:%d:%d', AstralCharacters[i].unit, e.UnitClass(id), map, level, e.Week, AstralKeys[id][7], AstralCharacters[i].faction, weekly)) -- name-server:class:mapID:keyLevel:week#:weekTime:faction:weekly
-			end
+			local map, level = e.UnitMapID(id), e.UnitKeyLevel(id)			
+			messageStack[#messageStack + 1] = strformat('%s_', strformat('%s:%s:%d:%d:%d:%d:%d:%d', AstralCharacters[i].unit, e.UnitClass(id), map, level, e.Week, AstralKeys[id][7], AstralCharacters[i].faction, AstralCharacters[i].weekly_best)) -- name-server:class:mapID:keyLevel:week#:weekTime:faction:weekly
 		end
 	end
 
@@ -707,11 +697,17 @@ end
 
 GameTooltip:HookScript('OnTooltipSetUnit', TooltipHook)
 
-local function FriendUnitFunction(self, unit, class, mapID, keyLevel, cache, faction, btag)
+local function FriendUnitFunction(self, unit, class, mapID, keyLevel, weekly_best, faction, btag)
 	self.unitID = e.FriendID(unit)
 	self.levelString:SetText(keyLevel)
 	self.dungeonString:SetText(e.GetMapName(mapID))
-	self.weeklyTexture:SetShown(cache == 1)
+	if weekly_best and weekly_best > 1 then
+		local color_code = e.GetDifficultyColour(weekly_best)
+		self.bestString:SetText(WrapTextInColorCode(weekly_best, color_code))
+	else
+		self.bestString:SetText(nil)
+	end
+	--self.weeklyTexture:SetShown(cache == 1)
 	if btag then
 		if tonumber(faction) == e.FACTION then
 			self.nameString:SetText( string.format('%s (%s)', WrapTextInColorCode(btag:sub(1, btag:find('#') - 1), COLOR_BLUE_BNET), WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), select(4, GetClassColor(class)))))

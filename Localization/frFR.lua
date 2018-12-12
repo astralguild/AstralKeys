@@ -3,6 +3,7 @@ local L = select(2, ...)[2]('frFR')
 -- Default tab names
 L['GUILD'] = GUILD
 L['FRIENDS'] = FRIENDS
+L['PARTY'] = PARTY
 
 -- Column Headers
 L['LEVEL'] = LEVEL

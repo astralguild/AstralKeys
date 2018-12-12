@@ -175,7 +175,7 @@ local function InviteUnit(self)
 				BNRequestInviteFriend(e.GetFriendGaID(AstralFriends[AstralMenuFrame.unit][2]))
 			elseif self.inviteType == 'SUGGEST_INVITE' then
 				BNInviteFriend(e.GetFriendGaID(AstralFriends[AstralMenuFrame.unit][2]))
-			end			
+			end
 		else
 			if self.inviteType == 'INVITE' then
 				BNInviteFriend(e.FriendGUID(e.Friend(AstralMenuFrame.unit)))
@@ -183,7 +183,7 @@ local function InviteUnit(self)
 				BNRequestInviteFriend(e.FriendGUID(e.Friend(AstralMenuFrame.unit)))
 			elseif self.inviteType == 'SUGGEST_INVITE' then
 				BNInviteFriend(e.FriendGUID(e.Friend(AstralMenuFrame.unit)))
-			end			
+			end
 		end
 	end
 end
@@ -264,8 +264,9 @@ end)
 reportButton:SetScript('OnLeave', function(self)
 	self:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
 end)
-reportButton:SetScript('OnClick', function()
-	AstralOptionsFrame:SetShown( not AstralOptionsFrame:IsShown())
+reportButton:SetScript('OnClick', function(self)
+	AstralReportFrame:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 10, -3)
+	AstralReportFrame:SetShown( not AstralReportFrame:IsShown())
 	end)
 
 local settingsButton = CreateFrame('BUTTON', '$parentSettingsButton', menuBar)
@@ -286,7 +287,7 @@ settingsButton:SetScript('OnClick', function()
 local logo_Astral = menuBar:CreateTexture(nil, 'ARTWORK')
 logo_Astral:SetAlpha(0.8)
 logo_Astral:SetSize(32, 32)
-logo_Astral:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\Logo@2x2.tga')
+logo_Astral:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\Logo@2x-2.tga')
 logo_Astral:SetPoint('BOTTOMLEFT', menuBar, 'BOTTOMLEFT', 10, 10)
 
 local collapseButton = CreateFrame('BUTTON', '$parentCollapseButton', menuBar)
@@ -485,8 +486,10 @@ do
 		frame.icon:SetAllPoints(frame)
 
 		function frame:UpdateInfo(affixID)
-			self.affixID = affixID
-			self.icon:SetTexture(select(3, C_ChallengeMode.GetAffixInfo(affixID)))
+			if affixID and affixID ~= -1 then
+				self.affixID = affixID
+				self.icon:SetTexture(select(3, C_ChallengeMode.GetAffixInfo(affixID)))
+			end
 		end
 
 		frame:SetScript('OnEnter', function(self)
@@ -501,7 +504,7 @@ do
 end
 
 
--- Potential Affix frame for coming week's affixes
+-- Affix frame for coming week's affixes
 ----------------------------------------------------
 AstralKeyFrame.affixesExpanded = false
 local affixFrame = CreateFrame('FRAME', '$parentAffixFrame', AstralKeyFrameCharacterFrame)
@@ -573,6 +576,8 @@ affixExpand:SetDuration(.12)
 affixExpand:SetSmoothing('IN_OUT')
 
 affixExpand:SetScript('OnPlay', function(self)
+	affixExpandButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline_keyboard_arrow_up_black_18dp.tga')
+	affixExpandButton:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
 	AstralKeyFrame.affixesExpanded = true
 	end)
 
@@ -605,6 +610,9 @@ affixIconsExpand:SetScript('OnUpdate', function(self)
 	end
 	end)
 
+affixIconsExpand:SetScript('OnFinished', function()
+	end)
+
 affixFrame.collapse = affixFrame:CreateAnimationGroup()
 
 local affixIconsCollapse = affixFrame.collapse:CreateAnimation('Alpha')
@@ -634,6 +642,8 @@ affixCollapse:SetDuration(.12)
 affixCollapse:SetSmoothing('IN_OUT')
 
 affixCollapse:SetScript('OnPlay', function(self)
+	affixExpandButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline_keyboard_arrow_down_black_18dp.tga')
+	affixExpandButton:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
 	AstralKeyFrame.affixesExpanded = false
 	end)
 
@@ -653,9 +663,6 @@ affixExpandButton:SetScript('OnClick', function(self)
 		affixFrame.expand:Play()
 	end
 	end)
-
--- Potential Affix frame for coming week's affixes
-----------------------------------------------------
 
 -- Character Frames
 ----------------------------------------------------------------
@@ -749,7 +756,7 @@ function ListScrollFrame_Update()
 			if sortedTable[list][j+offset] and sortedTable[list][j+offset].isShown then
 				usedHeight = usedHeight + height
 				lastIndex = j + 1
-				buttons[i]:SetUnit(sortedTable[list][j+offset].character_name, sortedTable[list][j+offset].character_class, sortedTable[list][j+offset].mapID, sortedTable[list][j+offset].key_level, sortedTable[list][j+offset].weekly_cache, sortedTable[list][j+offset]['faction'], sortedTable[list][j+offset]['btag'])
+				buttons[i]:SetUnit(sortedTable[list][j+offset].character_name, sortedTable[list][j+offset].character_class, sortedTable[list][j+offset].mapID, sortedTable[list][j+offset].key_level, sortedTable[list][j+offset].weekly_best, sortedTable[list][j+offset]['faction'], sortedTable[list][j+offset]['btag'])
 				buttons[i]:Show()
 				break
 			end
@@ -844,17 +851,17 @@ characterButton:SetText(L['CHARACTER'])
 characterButton:SetAlpha(0.5)
 characterButton:SetPoint('LEFT', dungeonButton, 'RIGHT')
 characterButton:SetScript('OnClick', function(self) ListButton_OnClick(self) end)
---[[
+
 local weeklyBestButton = CreateFrame('BUTTON', '$parentWeeklyBestButton', contentFrame)
-weeklyBestButton.sortMethod = 'weekly_best_level'
-weeklyBestButton:SetSize(50, 20)
+weeklyBestButton.sortMethod = 'weekly_best'
+weeklyBestButton:SetSize(40, 20)
 weeklyBestButton:SetNormalFontObject(InterUIBlack_Small)
 characterButton:GetNormalFontObject():SetJustifyH('CENTER')
-weeklyBestButton:SetText(L['WKLY BEST'])
+weeklyBestButton:SetText(L['WEEKLY_BEST'])
 weeklyBestButton:SetAlpha(0.5)
 weeklyBestButton:SetPoint('LEFT', characterButton, 'RIGHT')
 weeklyBestButton:SetScript('OnClick', function(self) ListButton_OnClick(self) end)
-]]
+--[[
 local weeklyButton = CreateFrame('BUTTON', '$parentWeeklyButton', contentFrame)
 weeklyButton.sortMethod = 'weekly_cache'
 weeklyButton:SetSize(30, 20)
@@ -863,7 +870,7 @@ weeklyButton:SetText(L['10+'])
 weeklyButton:SetAlpha(0.5)
 weeklyButton:SetPoint('LEFT', characterButton, 'RIGHT', 10, 0)
 weeklyButton:SetScript('OnClick', function(self) ListButton_OnClick(self) end)
-
+]]
 function AstralKeyFrame:OnUpdate(elapsed)
 	self.updateDelay = self.updateDelay + elapsed
 
@@ -877,8 +884,9 @@ end
 
 function AstralKeyFrame:ToggleLists()
 	if AstralKeysSettings.options.friendSync then
-
+		AstralKeyFrameTabFrameTabFRIENDS:Show()
 	else
+		AstralKeyFrameTabFrameTabFRIENDS:Hide()
 		if e.FrameListShown() == 'FRIENDS' then
 			e.SetFrameListShown('GUILD')
 			e.UpdateFrames()
@@ -928,6 +936,10 @@ local function InitializeFrame()
 		collapseButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\expand.tga')
 	end
 
+	if not AstralKeysSettings.options.friendSync then
+		AstralKeyFrameTabFrameTabFRIENDS:Hide()
+	end
+
 	offLineButton:SetChecked(AstralKeysSettings.options.showOffline)
 	HybridScrollFrame_CreateButtons(AstralKeyFrameCharacterFrameCharacterContainer, 'AstralCharacterFrameTemplate', 0, 0, 'TOPLEFT', 'TOPLEFT', 0, -10)
 	HybridScrollFrame_CreateButtons(AstralKeyFrameListContainer, 'AstralListFrameTemplate', 0, 0, 'TOPLEFT', 'TOPLEFT', 0, -10)
@@ -939,13 +951,10 @@ local function InitializeFrame()
 end
 
 function e.UpdateAffixes()
-	if not init then return end
 	AstralKeyFrameCharacterFrameAffix1:UpdateInfo(e.AffixOne())
 	AstralKeyFrameCharacterFrameAffix2:UpdateInfo(e.AffixTwo())
 	AstralKeyFrameCharacterFrameAffix3:UpdateInfo(e.AffixThree())
 	AstralKeyFrameCharacterFrameAffix4:UpdateInfo(e.AffixFour())
-
-	-- Prototype code
 
 	for i = 1, 8 do
 		_G['AstralKeyFrameCharacterFrameAffixFrameAffix' .. i]:UpdateInfo()
@@ -983,7 +992,7 @@ function e.UpdateCharacterFrames()
 	CharacterScrollFrame_Update()
 end
 
-function e.AddUnitToTable(unit, class, faction, listType, mapID, level, weekly, btag)
+function e.AddUnitToTable(unit, class, faction, listType, mapID, level, weekly_best, btag)
 	if not sortedTable[listType] then
 		sortedTable[listType] = {}
 	end
@@ -992,14 +1001,14 @@ function e.AddUnitToTable(unit, class, faction, listType, mapID, level, weekly, 
 		if sortedTable[listType][i].character_name == unit then
 			sortedTable[listType][i].mapID = mapID
 			sortedTable[listType][i].key_level = level
-			sortedTable[listType][i].weekly_cache = weekly or 0
+			sortedTable[listType][i].weekly_best = weekly_best
 			found = true
 			break
 		end
 	end
 
 	if not found then
-		sortedTable[listType][#sortedTable[listType] + 1] = {character_name = unit, character_class = class, mapID = mapID, key_level = level, weekly_cache = weekly or 0, faction = faction, btag = btag}
+		sortedTable[listType][#sortedTable[listType] + 1] = {character_name = unit, character_class = class, mapID = mapID, key_level = level, weekly_best = weekly_best, faction = faction, btag = btag}
 	end
 end
 

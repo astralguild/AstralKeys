@@ -1,23 +1,9 @@
 local e, L = unpack(select(2, ...))
 
 local RESET_VERSION = 20200
-e.CLIENT_VERSION = '2.0'
+e.CLIENT_VERSION = '3.0'
 -- Reset time 15:00 UTC AMERICAS
 -- 07:00 UTC EU
-
-
-local uiScale, mult
-
-function e:SetUIScale()
-	local screenHeight = UIParent:GetHeight()
-	local scale = string.match( GetCVar( "gxWindowedResolution" ), "%d+x(%d+)" )
-	uiScale = UIParent:GetScale()
-	mult = 768/scale/uiScale
-end
-
-function e:Scale(x)
-	return mult * floor(x/mult+.5)
-end
 
 function e.DataResetTime()
 	local region = GetCurrentRegion()
@@ -65,12 +51,13 @@ if not AstralKeysSettings then
 		['initTime'] = e.DataResetTime(),
 		['frameOptions'] = {
 			['orientation'] = 1,
-			['sortMethod'] = 4,
+			['sortMethod'] = 'character_name',
 			['viewMode'] = 0,
 			['list'] = 'GUILD',
 			},
 		['options'] = {
-			['announceKey'] = true,
+			['announce_party'] = true,
+			['announce_guild'] = false,
 			['showOffline'] = true,
 			['showTooltip'] = true,
 			['whisperClick'] = false,
@@ -99,8 +86,6 @@ local function MixInSetting(section, name, value)
 	end
 end
 
-
---return AstralKeysSettings.options.friends.GetMinFriendSyncLevel
 local frame = CreateFrame('FRAME')
 frame:RegisterEvent('ADDON_LOADED')
 frame:SetScript('OnEvent', function(self, event, addon)
@@ -119,12 +104,13 @@ frame:SetScript('OnEvent', function(self, event, addon)
 				['initTime'] = e.DataResetTime(),
 				['frameOptions'] = {
 					['orientation'] = 1,
-					['sortMethod'] = 4,
+					['sortMethod'] = 'character_name',
 					['viewMode'] = 0,
 					['list'] = 'GUILD',
 					},
 				['options'] = {
-					['announceKey'] = true,
+					['announce_party'] = true,
+					['announce_guild'] = false,
 					['showOffline'] = true,
 					['whisperClick'] = false,
 					['showTooltip'] = true,

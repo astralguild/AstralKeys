@@ -86,7 +86,6 @@ Character Frame Template
 						<Anchor point="LEFT" relativeTo="$parentDungeonString" relativePoint="RIGHT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
-				<!--
 				<FontString name="$parentBestString" inherits="InterUIBlack_Normal" justifyH='RIGHT' wordwrap="false" parentKey="bestString">
 					<Size>
 						<AbsDimension x="20" y="15"/>
@@ -95,15 +94,6 @@ Character Frame Template
 						<Anchor point="LEFT" relativeTo="$parentNameString" relativePoint="RIGHT" x="10" y="0"/>
 					</Anchors>
 				</FontString>
-				-->
-				<Texture name="$parentWeekly" file="Interface\AddOns\AstralKeys\Media\Texture\baseline-done-small@2x.tga" parentKey='weeklyTexture'>
-					<Size>
-						<AbsDimension x="12" y="12"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentNameString" relativePoint="RIGHT" x="13" y="0"/>
-					</Anchors>
-				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>

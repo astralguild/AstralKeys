@@ -25,18 +25,3 @@ end
 function e.SortTable(A, v)
 	SORT_MEDTHOD[e.FrameListShown()](A, v)
 end
-
-function e.DeepCopy(orig)
-    local orig_type = type(orig)
-    local copy
-    if orig_type == 'table' then
-    	copy = {}
-        for orig_key, orig_value in next, orig, nil do
-            copy[e.DeepCopy(orig_key)] = e.DeepCopy(orig_value)
-        end
-        setmetatable(copy, e.DeepCopy(getmetatable(orig)))
-    else -- number, string, boolean, etc
-        copy = orig
-    end
-    return copy
-end

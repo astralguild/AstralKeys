@@ -5,8 +5,11 @@ local addon = LibStub("AceAddon-3.0"):NewAddon("AstralKeys", "AceConsole-3.0")
 local astralkeysLDB = LibStub("LibDataBroker-1.1"):NewDataObject("AstralKeys", {
 	type = "data source",
 	text = "AstralKeys",
-	icon = "Interface\\AddOns\\AstralKeys\\Media\\Astral_minimap.tga",
+	icon = "Interface\\AddOns\\AstralKeys\\Media\\Texture\\Logo@2x-2.tga",
 	OnClick = function() e.AstralToggle() end,
+	OnTooltipShow = function(tooltip)
+		tooltip:AddLine("Astral Keys")
+	end,
 })
 
 e.icon = LibStub("LibDBIcon-1.0")

@@ -46,7 +46,7 @@ end
 -- @return int Highest mythic+ ran for the week
 -- @return int 0 implies no key run for the week
 function e.GetCharacterBestLevel(id)
-	return AstralCharacters[id].level or 0
+	return AstralCharacters[id].weekly_best or 0
 end
 
 -- Retrieves character's mapID for highest ran mythic+ for the week

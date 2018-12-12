@@ -39,15 +39,20 @@ local AFFIX_INFO = {}
 local SEASON_AFFIX
 
 local function UpdateMythicPlusAffixes()
-	SEASON_AFFIX = select(4, unpack(C_MythicPlus.GetCurrentAffixes())) -- 4 entry in the table is the season affix.
+	local affixes = C_MythicPlus.GetCurrentAffixes()
+	if not affixes then return end
+	
+	SEASON_AFFIX = affixes[4].id
+
 	local affixId = 1
 	while (C_ChallengeMode.GetAffixInfo(affixId)) do
 		local name, desc = C_ChallengeMode.GetAffixInfo(affixId)
 		AFFIX_INFO[affixId] = {name = name, description = desc}
 		affixId = affixId + 1
 	end
+	AstralEvents:Unregister('CHALLENGE_MODE_MAPS_UPDATE', 'updateAffixes')
 end
-AstralEvents:Register('MYTHIC_PLUS_CURRENT_AFFIX_UPDATE', UpdateMythicPlusAffixes, 'updateAffixes')
+AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', UpdateMythicPlusAffixes, 'updateAffixes')
 
 function e.AffixOne(weekOffSet)
 	local offSet = weekOffSet or 0
@@ -77,11 +82,19 @@ function e.AffixFour()
 end
 
 function e.AffixName(id)
-	return AFFIX_INFO[id].name
+	if id ~= -1 then
+		return AFFIX_INFO[id].name
+	else
+		return nil
+	end
 end
 
 function e.AffixDescription(id)
-	return AFFIX_INFO[id].description
+	if id ~= -1 then
+		return AFFIX_INFO[id].description
+	else
+		return nil
+	end
 end
 
 function e.GetAffixID(id, weekOffSet)
