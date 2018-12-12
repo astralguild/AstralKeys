@@ -1005,7 +1005,7 @@ AstralKeyFrame:SetScript('OnDragStop', function(self)
 
 AstralKeyFrame:SetScript('OnHide', function(self)
 	AstralMenuFrame:Hide()
-
+	AstralReportFrame:Hide()
 	end)
 
 local init = false
