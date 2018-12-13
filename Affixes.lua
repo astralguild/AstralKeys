@@ -36,11 +36,15 @@ local AFFIX_ROTATION = {
 }
 
 local AFFIX_INFO = {}
-local SEASON_AFFIX
+local SEASON_AFFIX = 0
 
 local function UpdateMythicPlusAffixes()
 	local affixes = C_MythicPlus.GetCurrentAffixes()
-	if not affixes then return end
+	if not affixes or not C_ChallengeMode.GetAffixInfo(1) then
+		C_MythicPlus.RequestMapInfo()
+		C_MythicPlus.RequestCurrentAffixes()
+		return
+	end
 	
 	SEASON_AFFIX = affixes[4].id
 
@@ -51,8 +55,10 @@ local function UpdateMythicPlusAffixes()
 		affixId = affixId + 1
 	end
 	AstralEvents:Unregister('CHALLENGE_MODE_MAPS_UPDATE', 'updateAffixes')
+	AstralEvents:Unregister('MYTHIC_PLUS_CURRENT_AFFIX_UPDATE', 'updateAffixes')
 end
 AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', UpdateMythicPlusAffixes, 'updateAffixes')
+AstralEvents:Register('MYTHIC_PLUS_CURRENT_AFFIX_UPDATE', UpdateMythicPlusAffixes, 'UpdateAffixes')
 
 function e.AffixOne(weekOffSet)
 	local offSet = weekOffSet or 0
@@ -82,8 +88,8 @@ function e.AffixFour()
 end
 
 function e.AffixName(id)
-	if id ~= -1 then
-		return AFFIX_INFO[id].name
+	if id ~= 0 then
+		return AFFIX_INFO[id] and AFFIX_INFO[id].name
 	else
 		return nil
 	end
@@ -91,7 +97,7 @@ end
 
 function e.AffixDescription(id)
 	if id ~= -1 then
-		return AFFIX_INFO[id].description
+		return AFFIX_INFO[id] and AFFIX_INFO[id].description
 	else
 		return nil
 	end

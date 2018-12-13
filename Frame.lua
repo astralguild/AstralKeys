@@ -501,13 +501,15 @@ do
 		frame.icon:SetAllPoints(frame)
 
 		function frame:UpdateInfo(affixID)
-			if affixID and affixID ~= -1 then
+			if affixID and affixID ~= 0 then
 				self.affixID = affixID
-				self.icon:SetTexture(select(3, C_ChallengeMode.GetAffixInfo(affixID)))
+				local _, _, texture = C_ChallengeMode.GetAffixInfo(affixID)
+				self.icon:SetTexture(texture)
 			end
 		end
 
 		frame:SetScript('OnEnter', function(self)
+			if not self.affixID then return end
 			AstralKeyToolTip:SetOwner(self, 'ANCHOR_BOTTOMLEFT', 7, -2)
 			AstralKeyToolTip:AddLine(e.AffixName(self.affixID), 1, 1, 1)
 			AstralKeyToolTip:Show()
@@ -565,13 +567,14 @@ do
 
 		function frame:UpdateInfo()
 			self.affixID = e.GetAffixID(self.id, self.weekOffset)
-			self.texture:SetTexture(select(3, C_ChallengeMode.GetAffixInfo(self.affixID)))
+			local _, _, texture = C_ChallengeMode.GetAffixInfo(self.affixID)
+			self.texture:SetTexture(texture)
 		end
 
 		frame:SetScript('OnEnter', function(self)
+			if not self.affixID then return end
 			AstralKeyToolTip:SetOwner(self, 'ANCHOR_BOTTOMLEFT', 7, -2)			
 			AstralKeyToolTip:AddLine(e.AffixName(self.affixID), 1, 1, 1)
-			--AstralKeyToolTip:AddLine(e.AffixDescription(self.affixID), 1, 1, 1, true)
 			AstralKeyToolTip:Show()
 			end)
 		frame:SetScript('OnLeave', function(self)
@@ -758,13 +761,6 @@ button:SetScript('OnClick', function(self)
 
 e.AddEscHandler(astralGuildInfo)
 
---[[
-local guildVersionString = characterFrame:CreateFontString(nil, 'OVERLAY', 'InterUIRegular_Small')
-guildVersionString:SetFormattedText('Astral - Turalyon (US) %s', e.CLIENT_VERSION)
-guildVersionString:SetJustifyH('CENTER')
-guildVersionString:SetPoint('BOTTOM', characterFrame, 'BOTTOM', 0, 20)
-guildVersionString:SetAlpha(0.2)
-]]
 characterFrame.background = characterFrame:CreateTexture(nil, 'BACKGROUND')
 characterFrame.background:SetColorTexture(33/255, 33/255, 33/255, 0.8)
 characterFrame.background:SetAllPoints(characterFrame)
@@ -868,7 +864,7 @@ local function ListScrollFrame_OnLeave()
 end
 
 local listScrollFrame = CreateFrame('ScrollFrame', '$parentListContainer', AstralKeyFrame, 'HybridScrollFrameTemplate')
-listScrollFrame:SetSize(415, 390)
+listScrollFrame:SetSize(415, 375)
 listScrollFrame:SetPoint('TOPLEFT', tabFrame, 'BOTTOMLEFT', 10, -35)
 listScrollFrame.update = ListScrollFrame_Update
 listScrollFrame:SetScript('OnEnter',  ListScrollFrame_OnEnter)
@@ -892,7 +888,6 @@ listScrollButton:SetHeight(50)
 listScrollButton:SetWidth(4)
 listScrollButton:SetColorTexture(204/255, 204/255, 204/255, SCROLL_TEXTURE_ALPHA_MIN)
 listScrollButton:SetAlpha(SCROLL_TEXTURE_ALPHA_MIN)
---listScrollButton:SetVertexColor(1, 1, 1, SCROLL_TEXTURE_ALPHA_MIN)
 listScrollFrame.buttonHeight = 15
 
 local contentFrame = CreateFrame('FRAME', 'AstralContentFrame', AstralKeyFrame)
