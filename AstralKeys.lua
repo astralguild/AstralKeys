@@ -134,6 +134,5 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 
 	C_MythicPlus.RequestMapInfo() -- Gets info on affixes and current season...
 	C_MythicPlus.RequestCurrentAffixes() -- Who knows what this actually does...
-	C_MythicPlus.RequestRewards()
 
 end, 'login')

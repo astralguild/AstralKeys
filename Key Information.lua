@@ -24,7 +24,14 @@ local function Weekly()
 	e.UpdateCharacterFrames()
 end
 
+-- Blizzard has the same event being triggered for requesting the map information and the current M+ rewards. 
+local rewardsRequested = false
 local function InitData()
+	if not rewardsRequested then
+		rewardsRequested = true
+		C_MythicPlus.RequestRewards()
+		return
+	end
 	AstralEvents:Unregister('CHALLENGE_MODE_MAPS_UPDATE', 'initData')
 	C_ChatInfo.RegisterAddonMessagePrefix('AstralKeys')
 	e.FindKeyStone(true, false)

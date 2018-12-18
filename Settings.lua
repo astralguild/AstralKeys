@@ -1,7 +1,6 @@
 local e, L = unpack(select(2, ...))
 
 local RESET_VERSION = 20200
-e.CLIENT_VERSION = '3.0'
 -- Reset time 15:00 UTC AMERICAS
 -- 07:00 UTC EU
 
@@ -91,6 +90,7 @@ local frame = CreateFrame('FRAME')
 frame:RegisterEvent('ADDON_LOADED')
 frame:SetScript('OnEvent', function(self, event, addon)
 	if addon == 'AstralKeys' then
+		e.CLIENT_VERSION = GetAddOnMetadata('AstralKeys', 'Version')
 		e:SetUIScale()
 		_G['AstralEngine'] = e
 

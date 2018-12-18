@@ -31,3 +31,7 @@ L['CANCEL'] = CANCEL
 
 -- Announce messages
 L['ANNOUNCE_NEW_KEY'] = 'Astral Keys: New key %s + %d'
+
+
+-- Search field texts
+L['FILTER_TEXT_DUNGEON'] = 'Search for dungeon'

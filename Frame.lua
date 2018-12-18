@@ -692,7 +692,6 @@ local guildVersionString = CreateFrame('BUTTON', nil, characterFrame)
 guildVersionString:SetNormalFontObject(InterUIRegular_Small)
 guildVersionString:SetSize(110, 20)
 guildVersionString:SetPoint('BOTTOM', characterFrame, 'BOTTOM', 0, 10)
-guildVersionString:SetFormattedText('Astral - Turalyon (US) %s', e.CLIENT_VERSION)
 guildVersionString:SetAlpha(0.2)
 
 guildVersionString:SetScript('OnEnter', function(self)
@@ -705,7 +704,6 @@ guildVersionString:SetScript('OnLeave', function(self)
 guildVersionString:SetScript('OnClick', function()
 	astralGuildInfo:SetShown(not astralGuildInfo:IsShown())
 end)
-
 
 local astralGuildInfo = CreateFrame('FRAME', 'astralGuildInfo', AstralKeyFrame)
 astralGuildInfo:Hide()
@@ -928,6 +926,52 @@ dungeonButton:SetAlpha(0.5)
 dungeonButton:SetPoint('LEFT', keyLevelButton, 'RIGHT', 10, 0)
 dungeonButton:SetScript('OnClick', function(self) ListButton_OnClick(self) end)
 
+--[[
+local dungeonSearchButton = CreateFrame('BUTTON', '$parentSearch', dungeonButton)
+dungeonSearchButton:SetSize(16, 16)
+dungeonSearchButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline_search_white_18dp')
+dungeonSearchButton:SetPoint('RIGHT', dungeonButton, 'RIGHT', -5, 0)
+dungeonSearchButton:SetAlpha(0)
+dungeonSearchButton:SetFrameLevel(dungeonButton:GetFrameLevel() + 1)
+
+
+local dungeonSearchTextInput = CreateFrame('EditBox', '%parentSearchInput', dungeonButton)
+dungeonSearchTextInput:SetSize(140, 20)
+dungeonSearchTextInput:SetPoint('RIGHT', dungeonSearchButton, 'RIGHT')
+--dungeonSearchTextInput:SetFontObject(InterUIRegular_Normal)
+dungeonSearchTextInput:SetFontObject(InterUIBlack_Small)
+dungeonSearchTextInput:SetText(L['FILTER_TEXT_DUNGEON'])
+dungeonSearchTextInput:SetTextColor(1, 1, 1, 0.8)
+dungeonSearchTextInput:SetAutoFocus(false)
+dungeonSearchTextInput:Hide()
+
+dungeonSearchTextInput:SetScript('OnShow', function(self)
+	self:SetText(L['FILTER_TEXT_DUNGEON'])
+	end)
+
+
+--dungeonSearchTextInput:SetScript('OnChar', )
+
+dungeonSearchButton:SetScript('OnClick', function()
+	print('Clicked dungeon search button')
+	dungeonSearchTextInput:SetShown(not dungeonSearchTextInput:IsShown())
+	end)
+
+dungeonSearchButton:SetScript('OnEnter', function(self)
+	self:SetAlpha(0.8)
+	end)
+dungeonSearchButton:SetScript('OnLeave', function(self)
+	self:SetAlpha(0)
+	end)
+
+dungeonButton:SetScript('OnEnter', function()
+	dungeonSearchButton:SetAlpha(0.8)
+	end)
+dungeonButton:SetScript('OnLeave', function()
+	dungeonSearchButton:SetAlpha(0)
+	end)
+	]]
+
 local characterButton = CreateFrame('BUTTON', '$parentCharacterButton', contentFrame)
 characterButton.sortMethod = 'character_name'
 characterButton:SetSize(153, 20)
@@ -1005,7 +1049,7 @@ AstralKeyFrame:SetScript('OnHide', function(self)
 local init = false
 local function InitializeFrame()
 	init = true
-
+	guildVersionString:SetFormattedText('Astral - Turalyon (US) %s', e.CLIENT_VERSION)
 
 	if AstralKeysSettings.frameOptions.viewMode == 1 then
 		collapseButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline-first_page-24px@2x')

@@ -73,8 +73,3 @@ DUNGEON_TABLE[353]['name'] = 'Siege of Boralus'
 function e.GetMapName(mapID)
 	return DUNGEON_TABLE[tonumber(mapID)]
 end
-
---[[
-function e.GetMapName(mapID)
-	return DUNGEON_TABLE[tonumber(mapID)]['name']
-end]]

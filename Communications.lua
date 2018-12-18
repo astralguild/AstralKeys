@@ -218,7 +218,9 @@ PrintVersion = function()
 			upToDate = upToDate .. WrapTextInColorCode(Ambiguate(k, 'GUILD'), select(4, GetClassColor(v.class))) .. '(' .. v.version .. ') '
 		end
 	end
-	for i = 1, select(2, GetNumGuildMembers()) do
+
+	local _, numGuildMembers = GetNumGuildMembers()
+	for i = 1, numGuildMembers do
 		local unit = GetGuildRosterInfo(i)
 		local class = select(11, GetGuildRosterInfo(i))
 		if not versionList[unit] then
