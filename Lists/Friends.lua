@@ -437,23 +437,42 @@ end
 ----------------------------------------------------
 ----------------------------------------------------
 -- Friend Filtering and sorting
+-- Needs non-generic filering for names as well!
+local function FriendFilter(A, filters)
+	if not type(A) == 'table' then return end
 
-local function FriendFilter(tbl)
-	if not type(tbl) == 'table' then return end
-
-	for i = 1, #tbl.FRIENDS do
+	for i = 1, #A.FRIENDS do
 		if AstralKeysSettings.options.showOffline then
-			tbl.FRIENDS[i].isShown = true
+			A.FRIENDS[i].isShown = true
 		else
-			tbl.FRIENDS[i].isShown = e.IsFriendOnline(tbl.FRIENDS[i].character_name)
+			A.FRIENDS[i].isShown = e.IsFriendOnline(A.FRIENDS[i].character_name)
 		end
 
 		if not AstralKeysSettings.options.showOtherFaction then
-			tbl.FRIENDS[i].isShown = tbl.FRIENDS[i].isShown and tonumber(tbl.FRIENDS[i].faction) == e.FACTION
+			A.FRIENDS[i].isShown = A.FRIENDS[i].isShown and tonumber(A.FRIENDS[i].faction) == e.FACTION
 		end
 
-		if tbl.FRIENDS[i].isShown then
-			tbl.numShown = tbl.numShown + 1
+		local isShownInFilter = true -- Assume there is no filter taking place
+		--[[
+		for field, filterText in pairs(filters) do
+			if filterText ~= '' then
+				isShownInFilter = false -- There is a filter, now assume this unit is not to be shown
+				if field == 'dungeon_name' then
+					local mapName = e.GetMapName(A.FRIENDS[i][field])
+					if strfind(strlower(mapName), strlower(filterText)) then
+						isShownInFilter = true
+					end
+				else
+					if strfind(strlower(A.FRIENDS[i][field]), strlower(filterText)) then
+						isShownInFilter = true
+					end
+				end
+			end
+			A.FRIENDS[i].isShown = A.FRIENDS[i].isShown and isShownInFilter
+		end]]
+
+		if A.FRIENDS[i].isShown then
+			A.numShown = A.numShown + 1
 		end
 	end
 end

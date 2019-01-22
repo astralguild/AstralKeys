@@ -18,6 +18,12 @@ local SCROLL_TEXTURE_ALPHA_MAX = 0.6
 local FRAME_WIDTH_EXPANDED = 725
 local FRAME_WIDTH_MINIMIZED = 500
 
+local FILTER_FIELDS = {}
+FILTER_FIELDS['key_level'] = ''
+FILTER_FIELDS['mapID'] = ''
+FILTER_FIELDS['character_name'] = ''
+FILTER_FIELDS['weekly_best'] = ''
+
 -- Used for filtering, sorting, and displaying units on lists
 local sortedTable = {}
 sortedTable.numShown = 0
@@ -915,7 +921,103 @@ keyLevelButton:SetText(L['LEVEL'])
 keyLevelButton:SetAlpha(0.5)
 keyLevelButton:SetPoint('TOPLEFT', tabFrame, 'BOTTOMLEFT', 16, -5)
 keyLevelButton:SetScript('OnClick', function(self) ListButton_OnClick(self) end)
+--[[
+local keyLevelSearchButton = CreateFrame('BUTTON', '$parentKeyLevelSearch', contentFrame)
+keyLevelSearchButton:SetSize(14, 14)
+keyLevelSearchButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline_search_white_18dp')
+keyLevelSearchButton:SetPoint('LEFT', keyLevelButton, 'RIGHT', -5, 0)
+keyLevelSearchButton:SetAlpha(0)
+keyLevelSearchButton:SetFrameLevel(keyLevelButton:GetFrameLevel() + 1)
 
+local keyLevelSearchCloseButton = CreateFrame('BUTTON', '$parentDungeonSearch', contentFrame)
+keyLevelSearchCloseButton.filterMethod = 'key_level'
+keyLevelSearchCloseButton:SetSize(8, 8)
+keyLevelSearchCloseButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline-close-24px@2x')
+keyLevelSearchCloseButton:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
+keyLevelSearchCloseButton:SetPoint('LEFT', keyLevelButton, 'RIGHT', -5, 1)
+keyLevelSearchCloseButton:SetFrameLevel(keyLevelButton:GetFrameLevel() + 1)
+keyLevelSearchCloseButton:Hide()
+
+local keyLevelSearchTextString = contentFrame:CreateFontString(nil, 'OVERLAY', 'InterUIBlack_Small')
+keyLevelSearchTextString:SetJustifyH('LEFT')
+keyLevelSearchTextString:SetPoint('LEFT', keyLevelButton, 'LEFT')
+keyLevelSearchTextString:SetTextColor(1, 1, 1, 0.5)
+keyLevelSearchTextString:Hide()
+
+local keyLevelSearchTextInput = CreateFrame('EditBox', '%parentSearchInput', contentFrame)
+keyLevelSearchTextInput.filterMethod = 'key_level'
+keyLevelSearchTextInput:SetSize(30, 20)
+keyLevelSearchTextInput:SetPoint('RIGHT', keyLevelSearchButton, 'LEFT')
+keyLevelSearchTextInput:SetFontObject(InterUIBlack_Small)
+keyLevelSearchTextInput:SetJustifyH('LEFT')
+keyLevelSearchTextInput:SetTextColor(1, 1, 1, 0.5)
+keyLevelSearchTextInput:SetAutoFocus(false)
+keyLevelSearchTextInput:EnableKeyboard(true)
+keyLevelSearchTextInput:Hide()
+
+keyLevelSearchTextInput:SetScript('OnEscapePressed', function(self)
+	self:ClearFocus()
+	keyLevelSearchTextString:Hide()
+	keyLevelSearchTextInput:Hide()
+	keyLevelButton:Show()
+	keyLevelSearchCloseButton:Hide()
+	keyLevelSearchButton:Show()
+	end)
+
+keyLevelSearchTextInput:SetScript('OnEnterPressed', function(self)
+	self:ClearFocus()
+	filterText = self:GetText() or ''
+	FILTER_FIELDS[self.filterMethod] = filterText
+	e.UpdateFrames()
+	end)
+
+keyLevelSearchTextInput:SetScript('OnTextChanged', function(self)
+	if not self:GetText() or self:GetText() ~= '' then
+		keyLevelSearchTextString:Hide()
+	else
+		keyLevelSearchTextString:Show()
+	end
+	filterText = self:GetText() or ''
+	FILTER_FIELDS[self.filterMethod] = filterText
+	e.UpdateFrames()
+	end)
+
+keyLevelSearchButton:SetScript('OnClick', function(self)
+	keyLevelSearchTextString:Show()
+	self:Hide()
+	keyLevelSearchCloseButton:Show()
+	keyLevelButton:Hide()
+	keyLevelSearchTextInput:Show()
+	keyLevelSearchTextInput:SetFocus(true)
+	keyLevelSearchTextInput:SetText('')
+	end)
+
+keyLevelSearchButton:SetScript('OnEnter', function(self)
+	self:SetAlpha(0.8)
+	end)
+keyLevelSearchButton:SetScript('OnLeave', function(self)
+	self:SetAlpha(0)
+	end)
+
+keyLevelButton:SetScript('OnEnter', function()
+	keyLevelSearchButton:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
+	keyLevelSearchButton:SetAlpha(0.8)
+	end)
+
+keyLevelButton:SetScript('OnLeave', function()
+	keyLevelSearchButton:SetAlpha(0)
+	end)
+
+keyLevelSearchCloseButton:SetScript('OnClick', function(self)
+	FILTER_FIELDS[self.filterMethod] = ''
+	keyLevelSearchCloseButton:Hide()
+	keyLevelSearchButton:Show()
+	keyLevelSearchTextInput:Hide()
+	keyLevelSearchTextString:Hide()
+	keyLevelButton:Show()
+	e.UpdateFrames()
+	end)
+]]
 local dungeonButton = CreateFrame('BUTTON', '$parentDungeonButton', contentFrame)
 dungeonButton.sortMethod = 'dungeon_name'
 dungeonButton:SetSize(155, 20)
@@ -925,36 +1027,76 @@ dungeonButton:SetText(L['DUNGEON'])
 dungeonButton:SetAlpha(0.5)
 dungeonButton:SetPoint('LEFT', keyLevelButton, 'RIGHT', 10, 0)
 dungeonButton:SetScript('OnClick', function(self) ListButton_OnClick(self) end)
-
 --[[
-local dungeonSearchButton = CreateFrame('BUTTON', '$parentSearch', dungeonButton)
-dungeonSearchButton:SetSize(16, 16)
+local dungeonSearchButton = CreateFrame('BUTTON', '$parentDungeonSearch', contentFrame)
+dungeonSearchButton:SetSize(14, 14)
 dungeonSearchButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline_search_white_18dp')
 dungeonSearchButton:SetPoint('RIGHT', dungeonButton, 'RIGHT', -5, 0)
 dungeonSearchButton:SetAlpha(0)
 dungeonSearchButton:SetFrameLevel(dungeonButton:GetFrameLevel() + 1)
 
+local dungeonSearchCloseButton = CreateFrame('BUTTON', '$parentDungeonSearch', contentFrame)
+dungeonSearchCloseButton.filterMethod = 'dungeon_name'
+dungeonSearchCloseButton:SetSize(8, 8)
+dungeonSearchCloseButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline-close-24px@2x')
+dungeonSearchCloseButton:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
+dungeonSearchCloseButton:SetPoint('RIGHT', dungeonButton, 'RIGHT', -8, 1)
+dungeonSearchCloseButton:SetFrameLevel(dungeonButton:GetFrameLevel() + 1)
+dungeonSearchCloseButton:Hide()
 
-local dungeonSearchTextInput = CreateFrame('EditBox', '%parentSearchInput', dungeonButton)
-dungeonSearchTextInput:SetSize(140, 20)
-dungeonSearchTextInput:SetPoint('RIGHT', dungeonSearchButton, 'RIGHT')
---dungeonSearchTextInput:SetFontObject(InterUIRegular_Normal)
+local dungeonSearchTextString = contentFrame:CreateFontString(nil, 'OVERLAY', 'InterUIBlack_Small')
+dungeonSearchTextString:SetJustifyH('LEFT')
+dungeonSearchTextString:SetPoint('LEFT', dungeonButton, 'LEFT')
+dungeonSearchTextString:SetTextColor(1, 1, 1, 0.5)
+dungeonSearchTextString:SetText(L['FILTER_TEXT_DUNGEON'])
+dungeonSearchTextString:Hide()
+
+local dungeonSearchTextInput = CreateFrame('EditBox', '%parentSearchInput', contentFrame)
+dungeonSearchTextInput.filterMethod = 'dungeon_name'
+dungeonSearchTextInput:SetSize(135, 20)
+dungeonSearchTextInput:SetPoint('RIGHT', dungeonSearchButton, 'LEFT')
 dungeonSearchTextInput:SetFontObject(InterUIBlack_Small)
-dungeonSearchTextInput:SetText(L['FILTER_TEXT_DUNGEON'])
-dungeonSearchTextInput:SetTextColor(1, 1, 1, 0.8)
+dungeonSearchTextInput:SetJustifyH('LEFT')
+dungeonSearchTextInput:SetTextColor(1, 1, 1, 0.5)
 dungeonSearchTextInput:SetAutoFocus(false)
+dungeonSearchTextInput:EnableKeyboard(true)
 dungeonSearchTextInput:Hide()
 
-dungeonSearchTextInput:SetScript('OnShow', function(self)
-	self:SetText(L['FILTER_TEXT_DUNGEON'])
+dungeonSearchTextInput:SetScript('OnEscapePressed', function(self)
+	self:ClearFocus()
+	dungeonSearchTextString:Hide()
+	dungeonSearchTextInput:Hide()
+	dungeonButton:Show()
+	dungeonSearchCloseButton:Hide()
+	dungeonSearchButton:Show()
 	end)
 
+dungeonSearchTextInput:SetScript('OnEnterPressed', function(self)
+	self:ClearFocus()
+	filterText = self:GetText() or ''
+	FILTER_FIELDS[self.filterMethod] = filterText
+	e.UpdateFrames()
+	end)
 
---dungeonSearchTextInput:SetScript('OnChar', )
+dungeonSearchTextInput:SetScript('OnTextChanged', function(self)
+	if not self:GetText() or self:GetText() ~= '' then
+		dungeonSearchTextString:Hide()
+	else
+		dungeonSearchTextString:Show()
+	end
+	filterText = self:GetText()
+	FILTER_FIELDS[self.filterMethod] = filterText
+	e.UpdateFrames()
+	end)
 
-dungeonSearchButton:SetScript('OnClick', function()
-	print('Clicked dungeon search button')
-	dungeonSearchTextInput:SetShown(not dungeonSearchTextInput:IsShown())
+dungeonSearchButton:SetScript('OnClick', function(self)
+	dungeonSearchTextString:Show()
+	self:Hide()
+	dungeonSearchCloseButton:Show()
+	dungeonButton:Hide()
+	dungeonSearchTextInput:Show()
+	dungeonSearchTextInput:SetFocus(true)
+	dungeonSearchTextInput:SetText('')
 	end)
 
 dungeonSearchButton:SetScript('OnEnter', function(self)
@@ -965,13 +1107,23 @@ dungeonSearchButton:SetScript('OnLeave', function(self)
 	end)
 
 dungeonButton:SetScript('OnEnter', function()
+	dungeonSearchButton:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
 	dungeonSearchButton:SetAlpha(0.8)
 	end)
+
 dungeonButton:SetScript('OnLeave', function()
 	dungeonSearchButton:SetAlpha(0)
 	end)
-	]]
 
+dungeonSearchCloseButton:SetScript('OnClick', function()
+	dungeonSearchCloseButton:Hide()
+	dungeonSearchButton:Show()
+	dungeonSearchTextInput:Hide()
+	dungeonSearchTextString:Hide()
+	dungeonButton:Show()
+	e.UpdateFrames()
+	end)
+]]
 local characterButton = CreateFrame('BUTTON', '$parentCharacterButton', contentFrame)
 characterButton.sortMethod = 'character_name'
 characterButton:SetSize(153, 20)
@@ -1096,9 +1248,8 @@ end
 function e.UpdateFrames()
 	if not init or not AstralKeyFrame:IsShown() then return end
 
-	e.UpdateTable(sortedTable)
+	e.UpdateTable(sortedTable, FILTER_FIELDS)
 	e.SortTable(sortedTable[e.FrameListShown()], AstralKeysSettings.frameOptions.sorth_method)
-
 	e.UpdateLines()
 end
 

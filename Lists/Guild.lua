@@ -1,6 +1,6 @@
 local e, L = unpack(select(2, ...))
 
-local find, sub, strformat = string.find, string.sub, string.format
+local find, sub, strformat, strlower, strfind = string.find, string.sub, string.format, string.lower, string.find
 
 local GUILD_LIST = {}
 
@@ -78,8 +78,8 @@ local function UpdateUnitKey(msg)
 		e.SetUnitID(unit, #AstralKeys)
 	end
 
-	e.UpdateFrames()
 	e.AddUnitToTable(unit, class, faction, 'GUILD', dungeonID, keyLevel, weekly_best)
+	e.UpdateFrames()
 	
 	-- Update character frames if we received our own key
 	if unit == e.Player() then
@@ -172,7 +172,6 @@ end
 
 AstralComs:RegisterPrefix('GUILD', 'request', PushKeyList)
 
-
 -- Guild sorting/Filtering
 local function GuildListSort(A, v)	
 	if v == 'dungeon_name' then
@@ -255,8 +254,28 @@ local function GuildListSort(A, v)
 end
 e.AddListSort('GUILD', GuildListSort)
 
-local function GuildListFilter(A)
+local function GuildListFilter(A, filters)
 	if not type(A) == 'table' then return end
+
+	local keyLevelLowerBound, keyLevelUpperBound
+	--[[
+	if filters['key_level'] ~= '' then
+		local keyFilterText = fitlers['key_level']
+		if tonumber(keyFilterText) then -- only input a single key level
+			keyLevelLowerBound = keyFilterText
+			keyLevelUpperBound = keyFilterText
+		elseif string.match(keyFilterText, '%d+%+') -- Text input is <number>+, looking for any key at least <numnber>
+			keyLevelLowerBound = string.match(keyFilterText, '%d+')
+			keyLevelUpperBound = 999 -- Pseudo non-limit. No key should ever get this high
+		elseif string.find(keyFilterText, '-') then -- Either they are looking for an upper bound or a range.
+			if string.match(keyFilterText, '%d+%-') then -- Upper bound input
+				keyLevelUpperBound = string.match(keyFilterText, '%d+')
+				keyLevelLowerBound = 2 -- Lower level a key can be
+			elseif string.match(keyFilterText, '%d+-%d+') -- Looking for a range of keys
+				keyLevelLowerBound, keyLevelUpperBound = string.match(keyFilterText, '(%d+)-(%d+)')
+			end
+		end
+	end]]
 
 	for i = 1, #A.GUILD do
 		if e.UnitInGuild(A.GUILD[i].character_name) then
@@ -268,6 +287,38 @@ local function GuildListFilter(A)
 
 			A.GUILD[i].isShown = A.GUILD[i].isShown and AstralKeysSettings.options.rankFilters[e.GuildMemberRank(A.GUILD[i].character_name)]
 
+			local isShownInFilter = true -- Assume there is no filter taking place
+			--[[
+			for field, filterText in pairs(filters) do
+				if filterText ~= '' then
+					isShownInFilter = false -- There is a filter, now assume this unit is not to be shown
+					if field == 'dungeon_name' then
+						local mapName = e.GetMapName(A.GUILD[i]['mapID'])
+						Console:AddLine('map', mapName)
+						if strfind(strlower(mapName), strlower(filterText)) then
+							isShownInFilter = true
+						end
+					elseif field == 'key_level' then
+						if tonumber(filterText) then -- only entered in a number
+							if strfind(strlower(A.GUILD[i][field]), strlower(filterText)) then
+								isShownInFilter = true
+							end
+						elseif string.match(filterText, '%d+%+') then
+							local keyLevel = string.match(filterText, '%d+')
+							if keyLevel <= tonumber(A.GUILD[i][field]) then
+								isShownInFilter = true
+							end
+						elseif string.match(filterText, '%d+%-')
+
+
+					else
+						if strfind(strlower(A.GUILD[i][field]), strlower(filterText)) then
+							isShownInFilter = true
+						end
+					end
+				end
+				A.GUILD[i].isShown = A.GUILD[i].isShown and isShownInFilter
+			end]]
 			if A.GUILD[i].isShown then
 				A.numShown = A.numShown + 1
 			end

@@ -17,9 +17,9 @@ function e.AddListSort(list, f)
 	SORT_MEDTHOD[list] = f
 end
 
-function e.UpdateTable(tbl)
+function e.UpdateTable(tbl, filters)
 	tbl.numShown = 0
-	FILTER_METHOD[e.FrameListShown()](tbl)
+	FILTER_METHOD[e.FrameListShown()](tbl, filters)
 end
 
 function e.SortTable(A, v)

@@ -66,17 +66,18 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 					self.first = false
 				end
 
-				if time(date('*t', GetServerTime())) > AstralKeysSettings.initTime then
+				if time(date('*t', GetServerTime())) > AstralKeysSettings.initTime then					
 					e.WipeCharacterList()
 					e.WipeUnitList()
+					e.WipeFriendList()
+					wipe(AstralFriends)
+					C_MythicPlus.RequestRewards()
 					AstralCharacters = {}
 					AstralKeys = {}
-					wipe(AstralFriends)
-					e.WipeFriendList()
 					AstralKeysSettings.initTime = e.DataResetTime()
 					e.Week = math.floor((GetServerTime() - initializeTime[1]) / 604800)
 					e.FindKeyStone(true, false)
-					e.GetBestClear()
+					e.UpdateAffixes()
 					self:SetScript('OnUpdate', nil)
 					self = nil
 					return nil
@@ -101,14 +102,15 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 				if time(date('*t', GetServerTime())) > AstralKeysSettings.initTime then
 					e.WipeCharacterList()
 					e.WipeUnitList()
+					e.WipeFriendList()
+					wipe(AstralFriends)
+					C_MythicPlus.RequestRewards()
 					AstralCharacters = {}
 					AstralKeys = {}
-					wipe(AstralFriends)
-					e.WipeFriendList()
 					AstralKeysSettings.initTime = e.DataResetTime()
 					e.FindKeyStone(true, false)
-					e.GetBestClear()
 					e.Week = math.floor((GetServerTime() - initializeTime[2]) / 604800)
+					e.UpdateAffixes()
 					self:SetScript('OnUpdate', nil)
 					self = nil
 					return nil
