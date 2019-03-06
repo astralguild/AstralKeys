@@ -246,9 +246,9 @@ end
 
 -- Testing
 local function GuildVersionCheckOnLogin()
-	--AstralComs:NewMessage('AstralKeys', 'versionCheck ' .. e.CLIENT_VERSION, 'GUILD')
+	AstralComs:NewMessage('AstralKeys', 'versionCheck ' .. e.CLIENT_VERSION, 'GUILD')
 end
-AstralEvents:Register('PLAYER_LOGIN', GuildVersionCheckOnLogin, 'versionCheck_login_guild')
+--AstralEvents:Register('PLAYER_LOGIN', GuildVersionCheckOnLogin, 'versionCheck_login_guild')
 
 local function GroupVersionCheckOnJoin()
 	if IsInRaid() then
@@ -257,7 +257,7 @@ local function GroupVersionCheckOnJoin()
 		AstralComs:NewMessage('AstralKeys', 'versionCheck ' .. e.CLIENT_VERSION, 'PARTY')
 	end
 end
-AstralEvents:Register('GROUP_ROSTER_UPDATE', GroupVersionCheckOnJoin, 'versionCheck_login_group')
+--AstralEvents:Register('GROUP_ROSTER_UPDATE', GroupVersionCheckOnJoin, 'versionCheck_login_group')
 
 local receivedVersionMessage = false
 local function VersionCheck(version, sender)
@@ -280,7 +280,7 @@ local function VersionCheck(version, sender)
 		end
 	end
 end
-AstralComs:RegisterPrefix('GUILD', 'versionCheck', VersionCheck)
+--AstralComs:RegisterPrefix('GUILD', 'versionCheck', VersionCheck)
 
 -- Let's just disable sending information if we are doing a boss fight
 -- but keep updating individual keys if we receive them
@@ -292,7 +292,6 @@ AstralEvents:Register('ENCOUNTER_START', function()
 AstralEvents:Register('ENCOUNTER_END', function()
 	AstralComs:RegisterPrefix('GUID', 'request', PushKeyList)
 	end, 'encStop')
-
 
 -- Checks to see if we zone into a raid instance,
 -- Let's increase the send interval if we are raiding, client sync can wait, dc's can't
@@ -327,3 +326,53 @@ function e.AnnounceNewKey(keyLink, level)
 		SendChatMessage(strformat(L['ANNOUNCE_NEW_KEY'], keyLink, level), 'GUILD')
 	end
 end
+
+local function ParseGuildChatCommands(text, unit)
+	if text == '!keys' then
+		if AstralKeysSettings.options.report_on_message['guild'] then
+			local unitID = e.UnitID(e.Player())
+			if unitID then
+				local link = e.CreateKeyLink(e.UnitMapID(unitID), e.UnitKeyLevel(unitID))
+				if not link then return end -- something went wrong
+				SendChatMessage(string.format('%s +%d', link, e.UnitKeyLevel(unitID)), 'GUILD')
+			else
+				SendChatMessage('No key', 'GUILD')
+			end
+		end
+	end
+end
+AstralEvents:Register('CHAT_MSG_GUILD', ParseGuildChatCommands, 'parseguildchat')
+
+local function ParsePartyChatCommands(text, unit)
+	if text == '!keys' then
+		if AstralKeysSettings.options.report_on_message['party'] then
+			local unitID = e.UnitID(e.Player())
+			if unitID then
+				local link = e.CreateKeyLink(e.UnitMapID(unitID), e.UnitKeyLevel(unitID))
+				if not link then return end -- something went wrong
+				SendChatMessage(link, 'PARTY')
+			else
+				SendChatMessage('No key', 'PARTY')
+			end
+		end
+	end
+end
+AstralEvents:Register('CHAT_MSG_PARTY', ParsePartyChatCommands, 'parsepartychat')
+AstralEvents:Register('CHAT_MSG_PARTY_LEADER', ParsePartyChatCommands, 'parsepartychat')
+
+local function ParseRaidChatCommands(text, unit)
+	if text == '!keys' then
+		if AstralKeysSettings.options.report_on_message['raid'] then
+			local unitID = e.UnitID(e.Player())
+			if unitID then
+				local link = e.CreateKeyLink(e.UnitMapID(unitID), e.UnitKeyLevel(unitID))
+				if not link then return end -- something went wrong
+				SendChatMessage(link, 'RAID')			
+			else
+				SendChatMessage('No key', 'RAID')
+			end
+		end
+	end
+end
+AstralEvents:Register('CHAT_MSG_RAID', ParseRaidChatCommands, 'parseraidchat')
+AstralEvents:Register('CHAT_MSG_RAID_LEADER', ParseRaidChatCommands, 'parseraidchat')

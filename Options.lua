@@ -122,9 +122,35 @@ announceGuild:SetScript('OnClick', function(self)
 	AstralKeysSettings.options.announce_guild = not AstralKeysSettings.options.announce_guild
 	end)
 
+local chatHeader = contentFrame:CreateFontString(nil, 'OVERLAY', 'InterUIBold_Normal')
+chatHeader:SetText(L['!keys chat command'])
+chatHeader:SetPoint('TOPLEFT', announceParty, 'BOTTOMLEFT', -10, -20)
+
+local chatDesc = contentFrame:CreateFontString(nil, 'OVERLAY', 'InterUIRegular_Small')
+chatDesc:SetText(L['!KEYS_DESC'])
+chatDesc:SetPoint('TOPLEFT', chatHeader, 'BOTTOMLEFT', 5, -5)
+
+local commandRespondParty = e.CreateCheckBox(contentFrame, L['PARTY'])
+commandRespondParty:SetPoint('TOPLEFT', chatDesc, 'BOTTOMLEFT', 5, -10)
+commandRespondParty:SetScript('OnClick', function (self)
+	AstralKeysSettings.options.report_on_message['party'] = not AstralKeysSettings.options.report_on_message['party']
+end)
+
+local commandRespondGuild = e.CreateCheckBox(contentFrame, L['GUILD'])
+commandRespondGuild:SetPoint('LEFT', commandRespondParty, 'RIGHT', 10, 0)
+commandRespondGuild:SetScript('OnClick', function (self)
+	AstralKeysSettings.options.report_on_message['guild'] = not AstralKeysSettings.options.report_on_message['guild']
+end)
+
+local commandRespondRaid = e.CreateCheckBox(contentFrame, L['RAID'])
+commandRespondRaid:SetPoint('LEFT', commandRespondGuild, 'RIGHT', 10, 0)
+commandRespondRaid:SetScript('OnClick', function (self)
+	AstralKeysSettings.options.report_on_message['raid'] = not AstralKeysSettings.options.report_on_message['raid']
+end)
+
 local syncHeader = contentFrame:CreateFontString(nil, 'OVERLAY', 'InterUIBold_Normal')
 syncHeader:SetText(L['SYNC OPTIONS'])
-syncHeader:SetPoint('TOPLEFT', announceParty, 'BOTTOMLEFT', -10, -20)
+syncHeader:SetPoint('TOPLEFT', commandRespondParty, 'BOTTOMLEFT', -10, -20)
 
 local syncFriends = e.CreateCheckBox(contentFrame, L['Sync with friends'])
 syncFriends:SetPoint('TOPLEFT', syncHeader, 'BOTTOMLEFT', 10, -10)
@@ -164,6 +190,9 @@ function InitData()
 	showTooltip:SetChecked(AstralKeysSettings.options.showTooltip)
 	syncFriends:SetChecked(AstralKeysSettings.options.friendSync)
 	mingleOffline:SetChecked(AstralKeysSettings.options.mingle_offline)
+	commandRespondParty:SetChecked(AstralKeysSettings.options.report_on_message['party'])
+	commandRespondGuild:SetChecked(AstralKeysSettings.options.report_on_message['guild'])
+	commandRespondRaid:SetChecked(AstralKeysSettings.options.report_on_message['raid'])
 
 	for i = 1, GuildControlGetNumRanks() do
 		_ranks[i]:SetText(GuildControlGetRankName(i))
@@ -209,4 +238,7 @@ AstralOptionsFrame:SetScript('OnShow', function(self)
 	announceGuild:SetChecked(AstralKeysSettings.options.announce_guild)
 	showTooltip:SetChecked(AstralKeysSettings.options.showTooltip)
 	syncFriends:SetChecked(AstralKeysSettings.options.friendSync)
+	commandRespondParty:SetChecked(AstralKeysSettings.options.report_on_message['party'])
+	commandRespondGuild:SetChecked(AstralKeysSettings.options.report_on_message['guild'])
+	commandRespondRaid:SetChecked(AstralKeysSettings.options.report_on_message['raid'])
 	end)

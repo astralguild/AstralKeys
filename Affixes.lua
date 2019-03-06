@@ -54,6 +54,10 @@ local function UpdateMythicPlusAffixes()
 		AFFIX_INFO[affixId] = {name = name, description = desc}
 		affixId = affixId + 1
 	end
+
+	local name, desc = C_ChallengeMode.GetAffixInfo(SEASON_AFFIX)
+	AFFIX_INFO[SEASON_AFFIX] = {name = name, description = desc}
+	
 	AstralEvents:Unregister('CHALLENGE_MODE_MAPS_UPDATE', 'updateAffixes')
 	AstralEvents:Unregister('MYTHIC_PLUS_CURRENT_AFFIX_UPDATE', 'updateAffixes')
 end

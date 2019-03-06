@@ -964,9 +964,20 @@ keyLevelSearchTextInput:SetScript('OnEscapePressed', function(self)
 	keyLevelSearchButton:Show()
 	end)
 
+-- Avaiable search patterns:
+--	x-		Looks for key levels equal to or less than x
+--	x+		Looks for key levels equal to or greater than x
+--	x-y		Looks for key levels between x and y inclusive
+-- x,y,z	Looks for keys equallying x, y, or z
+--
+-- Spaces will be removed from input text on search, space characters will not effect search results.
+-- Leading or trailing commas will be removed as well.
+-- 
 keyLevelSearchTextInput:SetScript('OnEnterPressed', function(self)
 	self:ClearFocus()
 	filterText = self:GetText() or ''
+	filterText = filterText:gsub('%s', '') -- remove all space characters
+	if filterText:
 	FILTER_FIELDS[self.filterMethod] = filterText
 	e.UpdateFrames()
 	end)

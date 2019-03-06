@@ -45,10 +45,10 @@ local function InitData()
 end
 AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', InitData, 'initData')
 
---|cffa335ee|Hkeystone:138019:206:13:5:3:9:0|h[Keystone: Neltharion's Lair (13)]|h|r 5
+--|cffa335ee|Hkeystone:158923:251:12:10:5:13:117|h[Keystone: The Underrot (12)]|h|r
 -- COLOUR[3] returns epic color hex code
 function e.CreateKeyLink(mapID, keyLevel)
-	return strformat('\124c' .. COLOUR[3] .. '\124Hkeystone:138019:%d:%d:%d:%d:%d:%d|h[Keystone: %s]\124h\124r', mapID, keyLevel, e.AffixOne(), e.AffixTwo(), e.AffixThree(), e.AffixFour(), e.GetMapName(mapID))--:gsub('\124\124', '\124')
+	return strformat('\124c' .. COLOUR[3] .. '\124Hkeystone:158923:%d:%d:%d:%d:%d:%d|h[Keystone: %s]\124h\124r', mapID, keyLevel, e.AffixOne(), e.AffixTwo(), e.AffixThree(), e.AffixFour(), e.GetMapName(mapID))--:gsub('\124\124', '\124')
 end
 
 AstralEvents:Register('CHALLENGE_MODE_COMPLETED', function()

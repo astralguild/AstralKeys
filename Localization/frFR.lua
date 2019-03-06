@@ -31,3 +31,6 @@ L['CANCEL'] = CANCEL
 
 -- Announce messages
 L['ANNOUNCE_NEW_KEY'] = 'Astral Keys: New key %s + %d'
+
+-- Options
+L['!KEYS_DESC'] = 'Respong to !keys command in the following chat channels'

@@ -64,6 +64,11 @@ if not AstralKeysSettings then
 			['showMiniMapButton'] = true,
 			['friendSync'] = true,
 			['showOtherFaction'] = false,
+			['report_on_message'] ={
+				['party'] = true,
+				['raid'] = false,
+				['guild'] = false,
+			},
 			['rankFilters'] = {
 				[1] = true,
 				[2] = true,
@@ -98,6 +103,7 @@ frame:SetScript('OnEvent', function(self, event, addon)
 		MixInSetting('frameOptions', 'frame_list', 'GUILD')
 		MixInSetting('frameOptions', 'sorth_method', 'character_name')
 		MixInSetting('options', 'mingle_offline', false)
+		MixInSetting('options', 'report_on_message', {['party'] = true, ['guild'] = false, ['raid'] = false})
 
 		if not AstralKeysSettings['resetVersion'] or AstralKeysSettings['resetVersion'] ~= RESET_VERSION then
 			wipe(AstralKeys)
@@ -121,7 +127,11 @@ frame:SetScript('OnEvent', function(self, event, addon)
 					['showTooltip'] = true,
 					['showMiniMapButton'] = true,
 					['friendSync'] = true,
-					['showOtherFaction'] = false,
+					['showOtherFaction'] = false,['report_on_message'] ={
+						['party'] = true,
+						['raid'] = false,
+						['guild'] = false,
+					},
 					['rankFilters'] = {
 						[1] = true,
 						[2] = true,

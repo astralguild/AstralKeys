@@ -4,6 +4,7 @@ local L = select(2, ...)[2]('enUS')
 L['GUILD'] = GUILD
 L['FRIENDS'] = FRIENDS
 L['PARTY'] = PARTY
+L['RAID'] = RAID
 
 -- Column Headers
 L['LEVEL'] = LEVEL
@@ -35,3 +36,6 @@ L['ANNOUNCE_NEW_KEY'] = 'Astral Keys: New key %s + %d'
 
 -- Search field texts
 L['FILTER_TEXT_DUNGEON'] = 'Filter by dungeon'
+
+-- Options
+L['!KEYS_DESC'] = 'Respong to !keys command in the following chat channels'
