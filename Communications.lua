@@ -7,6 +7,7 @@ local BNSendGameData, SendAddonMessage, SendChatMessage = BNSendGameData, C_Chat
 -- Will only accept information from other clients with same version settings
 local SYNC_VERSION = 'sync5'
 e.UPDATE_VERSION = 'updateV8'
+local MYTHICKEY_ITEMID = 158923
 
 local versionList = {}
 local highestVersion = 0
@@ -332,11 +333,21 @@ local function ParseGuildChatCommands(text, unit)
 		if AstralKeysSettings.options.report_on_message['guild'] then
 			local unitID = e.UnitID(e.Player())
 			if unitID then
-				local link = e.CreateKeyLink(e.UnitMapID(unitID), e.UnitKeyLevel(unitID))
+				local link
+				for bag = 0, NUM_BAG_SLOTS do
+					local numSlots = GetContainerNumSlots(bag)
+					for slot = 1, numSlots do
+						if (GetContainerItemID(bag, slot) == MYTHICKEY_ITEMID) then						
+							link = GetContainerItemLink(bag, slot)
+							break
+						end
+					end
+				end
+
 				if not link then return end -- something went wrong
-				SendChatMessage(string.format('%s +%d', link, e.UnitKeyLevel(unitID)), 'GUILD')
+				SendChatMessage(string.format('Astral Keys: %s +%d', link, e.UnitKeyLevel(unitID)), 'GUILD')
 			else
-				SendChatMessage('No key', 'GUILD')
+				SendChatMessage(strformat('%s: %s', 'Astral Keys', L['NO_KEY']), 'GUILD')
 			end
 		end
 	end
@@ -348,11 +359,20 @@ local function ParsePartyChatCommands(text, unit)
 		if AstralKeysSettings.options.report_on_message['party'] then
 			local unitID = e.UnitID(e.Player())
 			if unitID then
-				local link = e.CreateKeyLink(e.UnitMapID(unitID), e.UnitKeyLevel(unitID))
+				local link
+				for bag = 0, NUM_BAG_SLOTS do
+					local numSlots = GetContainerNumSlots(bag)
+					for slot = 1, numSlots do
+						if (GetContainerItemID(bag, slot) == MYTHICKEY_ITEMID) then
+							link = GetContainerItemLink(bag, slot)
+							break
+						end
+					end
+				end
 				if not link then return end -- something went wrong
-				SendChatMessage(link, 'PARTY')
+				SendChatMessage(string.format('Astral Keys: %s +%d', link, e.UnitKeyLevel(unitID)), 'PARTY')
 			else
-				SendChatMessage('No key', 'PARTY')
+				SendChatMessage(strformat('%s: %s', 'Astral Keys', L['NO_KEY']), 'PARTY')
 			end
 		end
 	end
@@ -365,11 +385,20 @@ local function ParseRaidChatCommands(text, unit)
 		if AstralKeysSettings.options.report_on_message['raid'] then
 			local unitID = e.UnitID(e.Player())
 			if unitID then
-				local link = e.CreateKeyLink(e.UnitMapID(unitID), e.UnitKeyLevel(unitID))
+				local link
+				for bag = 0, NUM_BAG_SLOTS do
+					local numSlots = GetContainerNumSlots(bag)
+					for slot = 1, numSlots do
+						if (GetContainerItemID(bag, slot) == MYTHICKEY_ITEMID) then
+							link = GetContainerItemLink(bag, slot)
+							break
+						end
+					end
+				end
 				if not link then return end -- something went wrong
-				SendChatMessage(link, 'RAID')			
+				SendChatMessage(string.format('Astral Keys: %s +%d', link, e.UnitKeyLevel(unitID)), 'RAID')	
 			else
-				SendChatMessage('No key', 'RAID')
+				SendChatMessage(strformat('%s: %s', 'Astral Keys', L['NO_KEY']), 'RAID')
 			end
 		end
 	end

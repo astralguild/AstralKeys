@@ -80,7 +80,7 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 	local weeklyBest = C_MythicPlus.GetWeeklyChestRewardLevel() or 0
 
 	local msg = ''
---	'Exie-Illidan:DEMONHUNTER:245:9:13:73:1'
+
 	if mapID then 
 		msg = string.format('%s:%s:%d:%d:%d:%d:%s', e.Player(), e.PlayerClass(), mapID, keyLevel, weeklyBest, e.Week, e.FACTION)
 	end
@@ -119,7 +119,17 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 	if tonumber(oldMap) == tonumber(mapID) and tonumber(oldLevel) == tonumber(keyLevel) then return end
 
 	if anounceKey then
-		e.AnnounceNewKey(e.CreateKeyLink(mapID, keyLevel), keyLevel)
+		local link
+		for bag = 0, NUM_BAG_SLOTS do
+			local numSlots = GetContainerNumSlots(bag)
+			for slot = 1, numSlots do
+				if (GetContainerItemID(bag, slot) == MYTHICKEY_ITEMID) then
+					link = GetContainerItemLink(bag, slot)
+					break
+				end
+			end
+		end
+		e.AnnounceNewKey(link, keyLevel)
 	end
 end
 
