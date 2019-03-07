@@ -39,4 +39,4 @@ L['NO_KEY'] = 'No key'
 L['FILTER_TEXT_DUNGEON'] = 'Filter by dungeon'
 
 -- Options
-L['!KEYS_DESC'] = 'Respong to !keys command in the following chat channels'
+L['!KEYS_DESC'] = 'Respond to !keys command in the following chat channels'
