@@ -7,7 +7,6 @@ local BNSendGameData, SendAddonMessage, SendChatMessage = BNSendGameData, C_Chat
 -- Will only accept information from other clients with same version settings
 local SYNC_VERSION = 'sync5'
 e.UPDATE_VERSION = 'updateV8'
-local MYTHICKEY_ITEMID = 158923
 
 local versionList = {}
 local highestVersion = 0
@@ -337,7 +336,7 @@ local function ParseGuildChatCommands(text, unit)
 				for bag = 0, NUM_BAG_SLOTS do
 					local numSlots = GetContainerNumSlots(bag)
 					for slot = 1, numSlots do
-						if (GetContainerItemID(bag, slot) == MYTHICKEY_ITEMID) then						
+						if (GetContainerItemID(bag, slot) == e.MYTHICKEY_ITEMID) then						
 							link = GetContainerItemLink(bag, slot)
 							break
 						end
@@ -363,7 +362,7 @@ local function ParsePartyChatCommands(text, unit)
 				for bag = 0, NUM_BAG_SLOTS do
 					local numSlots = GetContainerNumSlots(bag)
 					for slot = 1, numSlots do
-						if (GetContainerItemID(bag, slot) == MYTHICKEY_ITEMID) then
+						if (GetContainerItemID(bag, slot) == e.MYTHICKEY_ITEMID) then
 							link = GetContainerItemLink(bag, slot)
 							break
 						end
@@ -389,7 +388,7 @@ local function ParseRaidChatCommands(text, unit)
 				for bag = 0, NUM_BAG_SLOTS do
 					local numSlots = GetContainerNumSlots(bag)
 					for slot = 1, numSlots do
-						if (GetContainerItemID(bag, slot) == MYTHICKEY_ITEMID) then
+						if (GetContainerItemID(bag, slot) == e.MYTHICKEY_ITEMID) then
 							link = GetContainerItemLink(bag, slot)
 							break
 						end

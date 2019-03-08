@@ -8,6 +8,8 @@ COLOUR[3] = 'ffa335ee' -- Epic
 COLOUR[4] = 'ffff8000' -- Legendary
 COLOUR[5] = 'ffe6cc80' -- Artifact
 
+e.MYTHICKEY_ITEMID = 158923
+
 local function Weekly()
 	e.UpdateCharacterBest()
 	local characterID = e.GetCharacterID(e.Player())
@@ -123,7 +125,7 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 		for bag = 0, NUM_BAG_SLOTS do
 			local numSlots = GetContainerNumSlots(bag)
 			for slot = 1, numSlots do
-				if (GetContainerItemID(bag, slot) == MYTHICKEY_ITEMID) then
+				if (GetContainerItemID(bag, slot) == e.MYTHICKEY_ITEMID) then
 					link = GetContainerItemLink(bag, slot)
 					break
 				end

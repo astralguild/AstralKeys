@@ -31,7 +31,7 @@ L['REQUEST_INVITE'] = REQUEST_INVITE
 L['CANCEL'] = CANCEL
 
 -- Announce messages
-L['ANNOUNCE_NEW_KEY'] = 'Astral Keys: New key %s + %d'
+L['ANNOUNCE_NEW_KEY'] = 'Astral Keys: New key %s +%d'
 L['NO_KEY'] = 'No key'
 
 
