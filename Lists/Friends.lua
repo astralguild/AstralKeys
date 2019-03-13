@@ -161,7 +161,7 @@ AstralEvents:Register('FRIENDLIST_UPDATE', UpdateNonBNetFriendList, 'update_non_
 -- Friend Syncing
 
 local function RecieveKey(msg, sender)
-	if not AstralKeysSettings.options.friendSync then return end
+	if not AstralKeysSettings.friendOptions.friend_sync then return end
 	local btag
 	if type(sender) == 'number' then
 		local bnetID = select(17, BNGetGameAccountInfo(sender))
@@ -200,7 +200,7 @@ AstralComs:RegisterPrefix('BNET', UPDATE_VERSION, RecieveKey)
 AstralComs:RegisterPrefix('WHISPER', UPDATE_VERSION, RecieveKey)
 
 local function SyncFriendUpdate(entry, sender)
-	if not AstralKeysSettings.options.friendSync then return end
+	if not AstralKeysSettings.friendOptions.friend_sync then return end
 
 	if AstralKeyFrame:IsShown() then
 		AstralKeyFrame:SetScript('OnUpdate', AstralKeyFrame.OnUpdate)
@@ -269,7 +269,7 @@ local messageStack = {}
 local messageQueue = {}
 
 local function PushKeysToFriends(target)
-	if not AstralKeysSettings.options.friendSync then return end
+	if not AstralKeysSettings.friendOptions.friend_sync then return end
 	wipe(messageStack)
 	wipe(messageQueue)
 
@@ -338,7 +338,7 @@ end
 
 -- Let's find out which friends are using Astral Keys, no need to spam every friend, just the ones using Astral keys
 local function PingFriendsForAstralKeys()
-	if not AstralKeysSettings.options.friendSync then return end
+	if not AstralKeysSettings.friendOptions.friend_sync then return end
 	for i = 1, select(2, GetNumFriends()) do -- Only parse over online friends
 		local name = strformat('%s-%s', GetFriendInfo(i), e.PlayerRealm())
 		NonBNFriend_List[name] = {isBtag = false}
@@ -412,7 +412,7 @@ AstralEvents:Register('PLAYER_ENTERING_WORLD', Init, 'InitFriends')
 AstralEvents:Register('FRIENDLIST_UPDATE', PingFriendsForAstralKeys, 'pingFriends')
 
 function e.ToggleFriendSync()
-	if AstralKeysSettings.options.friendSync then
+	if AstralKeysSettings.friendOptions.friend_sync then
 		AstralComs:RegisterPrefix('WHISPER', 'BNet_query', PingResponse)
 		AstralComs:RegisterPrefix('BNET', 'BNet_query', PingResponse)
 		AstralComs:RegisterPrefix('BNET', SYNC_VERSION, SyncFriendUpdate)
@@ -442,13 +442,13 @@ local function FriendFilter(A, filters)
 	if not type(A) == 'table' then return end
 
 	for i = 1, #A.FRIENDS do
-		if AstralKeysSettings.options.showOffline then
+		if AstralKeysSettings.frame.show_offline then
 			A.FRIENDS[i].isShown = true
 		else
 			A.FRIENDS[i].isShown = e.IsFriendOnline(A.FRIENDS[i].character_name)
 		end
 
-		if not AstralKeysSettings.options.showOtherFaction then
+		if not AstralKeysSettings.friendOptions.show_other_faction then
 			A.FRIENDS[i].isShown = A.FRIENDS[i].isShown and tonumber(A.FRIENDS[i].faction) == e.FACTION
 		end
 
@@ -481,7 +481,7 @@ e.AddListFilter('FRIENDS', FriendFilter)
 local function CompareFriendNames(a, b)
 	local s = string.lower(a.btag) or '|'
 	local t = string.lower(b.btag) or '|'
-	if AstralKeysSettings.frameOptions.orientation == 0 then
+	if AstralKeysSettings.frame.orientation == 0 then
 		if s > t then
 			return true
 		elseif
@@ -507,12 +507,12 @@ local function FriendSort(A, v)
 		table.sort(A, function(a, b)
 			local aOnline = e.IsFriendOnline(a.character_name) and 1 or 0
 			local bOnline = e.IsFriendOnline(b.character_name) and 1 or 0
-			if not AstralKeysSettings.options.mingle_offline then
+			if not AstralKeysSettings.frame.mingle_offline then
 				aOnline = true
 				bOnline = true
 			end
 			if aOnline == bOnline then
-				if AstralKeysSettings.frameOptions.orientation == 0 then
+				if AstralKeysSettings.frame.orientation == 0 then
 					if e.GetMapName(a.mapID) > e.GetMapName(b.mapID) then
 						return true
 					elseif e.GetMapName(b.mapID) > e.GetMapName(a.mapID) then
@@ -538,7 +538,7 @@ local function FriendSort(A, v)
 			table.sort(A, function(a, b)
 				local aOnline = e.IsFriendOnline(a.character_name) and 1 or 0
 				local bOnline = e.IsFriendOnline(b.character_name) and 1 or 0
-				if not AstralKeysSettings.options.mingle_offline then
+				if not AstralKeysSettings.frame.mingle_offline then
 					aOnline = true
 					bOnline = true
 				end
@@ -552,12 +552,12 @@ local function FriendSort(A, v)
 			table.sort(A, function(a, b) 
 				local aOnline = e.IsFriendOnline(a.character_name) and 1 or 0
 				local bOnline = e.IsFriendOnline(b.character_name) and 1 or 0
-				if not AstralKeysSettings.options.mingle_offline then
+				if not AstralKeysSettings.frame.mingle_offline then
 					aOnline = true
 					bOnline = true
 				end
 				if aOnline == bOnline then
-					if AstralKeysSettings.frameOptions.orientation == 0 then
+					if AstralKeysSettings.frame.orientation == 0 then
 						if a[v] > b[v] then
 							return true
 						elseif
@@ -598,7 +598,7 @@ do
 	local OnEnter, OnHide
 	function OnEnter(self)
 		if not self.id then return end -- Friend Groups adds fake units with no ide for group heeaders
-		if not AstralKeysSettings.options.showTooltip then return end
+		if not AstralKeysSettings.general.show_tooltip_key then return end
 
 		local left = FRIENDS_TOOLTIP_MAX_WIDTH - FRIENDS_TOOLTIP_MARGIN_WIDTH - FriendsTooltipAstralKeysInfo1:GetWidth()
 		local stringShown = false
@@ -700,7 +700,7 @@ do
 end
 
 local function TooltipHook(self)
-    if not AstralKeysSettings.options.showTooltip then return end
+    if not AstralKeysSettings.general.show_tooltip_key then return end
 
     local _, uid = self:GetUnit()
     if not UnitIsPlayer(uid) then return end

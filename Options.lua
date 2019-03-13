@@ -3,7 +3,7 @@ local e, L = unpack(select(2, ...))
 local AstralOptionsFrame = CreateFrame('FRAME', 'AstralOptionsFrame', UIParent)
 AstralOptionsFrame:SetFrameStrata('DIALOG')
 AstralOptionsFrame:SetFrameLevel(5)
-AstralOptionsFrame:SetHeight(385)
+AstralOptionsFrame:SetHeight(455)
 AstralOptionsFrame:SetWidth(650)
 AstralOptionsFrame:SetPoint('CENTER', UIParent, 'CENTER')
 AstralOptionsFrame:SetMovable(true)
@@ -19,7 +19,7 @@ AstralOptionsFrame:Hide()
 
 local menuBar = CreateFrame('FRAME', '$parentMenuBar', AstralOptionsFrame)
 menuBar:SetWidth(50)
-menuBar:SetHeight(385)
+menuBar:SetHeight(455)
 menuBar:SetPoint('TOPLEFT', AstralOptionsFrame, 'TOPLEFT')
 menuBar.texture = menuBar:CreateTexture(nil, 'BACKGROUND')
 menuBar.texture:SetAllPoints(menuBar)
@@ -69,7 +69,7 @@ end)
 -- 
 local contentFrame = CreateFrame('FRAME', 'AstralFrame_OptionContent', AstralOptionsFrame)
 contentFrame:SetPoint('TOPLEFT', menuBar, 'TOPRIGHT', 15, -15)
-contentFrame:SetSize(550, 335)
+contentFrame:SetSize(550, 360)
 
 local generalHeader = contentFrame:CreateFontString(nil, 'OVERLAY', 'InterUIBold_Normal')
 generalHeader:SetText(L['GENERAL OPTIONS'])
@@ -78,7 +78,7 @@ generalHeader:SetPoint('TOPLEFT', contentFrame, 'TOPLEFT')
 local showOffLine = e.CreateCheckBox(contentFrame, L['Show offline players'])
 showOffLine:SetPoint('TOPLEFT', generalHeader, 'BOTTOMLEFT', 10, -10)
 showOffLine:SetScript('OnClick', function(self)
-	AstralKeysSettings.options.showOffline = self:GetChecked()
+	AstralKeysSettings.frame.show_offline = self:GetChecked()
 	e.UpdateFrames()
 	HybridScrollFrame_SetOffset(AstralKeyFrameListContainer, 0)
 	end)
@@ -86,8 +86,8 @@ showOffLine:SetScript('OnClick', function(self)
 local showMinimap = e.CreateCheckBox(contentFrame, L['Show Minimap button'])
 showMinimap:SetPoint('LEFT', showOffLine, 'RIGHT', 10, 0)
 showMinimap:SetScript('OnClick', function(self)
-	AstralKeysSettings.options.showMiniMapButton = self:GetChecked()
-	if AstralKeysSettings.options.showMiniMapButton then
+	AstralKeysSettings.general.show_minimap_button = self:GetChecked()
+	if AstralKeysSettings.general.show_minimap_button then
 		e.icon:Show('AstralKeys')
 	else
 		e.icon:Hide('AstralKeys')
@@ -100,31 +100,37 @@ showMinimap:SetScript('OnClick', function(self)
 local showTooltip = e.CreateCheckBox(contentFrame, L['Show current key in tooltip'])
 showTooltip:SetPoint('TOPLEFT', showOffLine, 'BOTTOMLEFT', 0, -5)
 showTooltip:SetScript('OnClick', function(self)
-	AstralKeysSettings.options.showTooltip = self:GetChecked()
+	AstralKeysSettings.frame.show_tooltip_key = self:GetChecked()
 	end)
 
 local mingleOffline = e.CreateCheckBox(contentFrame, L['Display offline below online'])
 mingleOffline:SetPoint('LEFT', showTooltip, 'RIGHT', 10, 0)
 mingleOffline:SetScript('OnClick', function(self)
-	AstralKeysSettings.options.mingle_offline = not AstralKeysSettings.options.mingle_offline
+	AstralKeysSettings.frame.mingle_offline = not AstralKeysSettings.frame.mingle_offline
 	e.UpdateFrames()
 	end)
 
 local announceParty = e.CreateCheckBox(contentFrame, L['Announce new keys to party'])
 announceParty:SetPoint('TOPLEFT', showTooltip, 'BOTTOMLEFT', 0, -5)
 announceParty:SetScript('OnClick', function(self)
-	AstralKeysSettings.options.announce_party = not AstralKeysSettings.options.announce_party
+	AstralKeysSettings.general.announce_party = not AstralKeysSettings.general.announce_party
 	end)
 
 local announceGuild = e.CreateCheckBox(contentFrame, L['Announce new keys to guild'])
 announceGuild:SetPoint('LEFT', announceParty, 'RIGHT', 10, 0)
 announceGuild:SetScript('OnClick', function(self)
-	AstralKeysSettings.options.announce_guild = not AstralKeysSettings.options.announce_guild
+	AstralKeysSettings.general.announce_guild = not AstralKeysSettings.general.announce_guild
 	end)
+
+local expandedTooltip = e.CreateCheckBox(contentFrame, L['EXPANDED_TOOLTIP'])
+expandedTooltip:SetPoint('TOPLEFT', announceParty, 'BOTTOMLEFT', 0, -5)
+expandedTooltip:SetScript('OnClick', function (self)
+	AstralKeysSettings.general.expanded_tooltip = not AstralKeysSettings.general.expanded_tooltip
+end)
 
 local chatHeader = contentFrame:CreateFontString(nil, 'OVERLAY', 'InterUIBold_Normal')
 chatHeader:SetText(L['!keys chat command'])
-chatHeader:SetPoint('TOPLEFT', announceParty, 'BOTTOMLEFT', -10, -20)
+chatHeader:SetPoint('TOPLEFT', expandedTooltip, 'BOTTOMLEFT', -10, -20)
 
 local chatDesc = contentFrame:CreateFontString(nil, 'OVERLAY', 'InterUIRegular_Small')
 chatDesc:SetText(L['!KEYS_DESC'])
@@ -133,29 +139,36 @@ chatDesc:SetPoint('TOPLEFT', chatHeader, 'BOTTOMLEFT', 5, -5)
 local commandRespondParty = e.CreateCheckBox(contentFrame, L['PARTY'])
 commandRespondParty:SetPoint('TOPLEFT', chatDesc, 'BOTTOMLEFT', 5, -10)
 commandRespondParty:SetScript('OnClick', function (self)
-	AstralKeysSettings.options.report_on_message['party'] = not AstralKeysSettings.options.report_on_message['party']
+	AstralKeysSettings.general.report_on_message['party'] = not AstralKeysSettings.general.report_on_message['party']
 end)
 
 local commandRespondGuild = e.CreateCheckBox(contentFrame, L['GUILD'])
 commandRespondGuild:SetPoint('LEFT', commandRespondParty, 'RIGHT', 10, 0)
 commandRespondGuild:SetScript('OnClick', function (self)
-	AstralKeysSettings.options.report_on_message['guild'] = not AstralKeysSettings.options.report_on_message['guild']
+	AstralKeysSettings.general.report_on_message['guild'] = not AstralKeysSettings.general.report_on_message['guild']
 end)
 
 local commandRespondRaid = e.CreateCheckBox(contentFrame, L['RAID'])
 commandRespondRaid:SetPoint('LEFT', commandRespondGuild, 'RIGHT', 10, 0)
 commandRespondRaid:SetScript('OnClick', function (self)
-	AstralKeysSettings.options.report_on_message['raid'] = not AstralKeysSettings.options.report_on_message['raid']
+	AstralKeysSettings.general.report_on_message['raid'] = not AstralKeysSettings.general.report_on_message['raid']
 end)
+
+local commandRespondNoKey = e.CreateCheckBox(contentFrame, L['KEYS_RESPOND_ON_NO_KEY'])
+commandRespondNoKey:SetPoint('TOPLEFT', commandRespondParty, 'BOTTOMLEFT', 0, -5)
+commandRespondNoKey:SetScript('OnClick', function (self)
+	AstralKeysSettings.general.report_on_message['no_key'] = not AstralKeysSettings.general.report_on_message['no_key']
+end)
+
 
 local syncHeader = contentFrame:CreateFontString(nil, 'OVERLAY', 'InterUIBold_Normal')
 syncHeader:SetText(L['SYNC OPTIONS'])
-syncHeader:SetPoint('TOPLEFT', commandRespondParty, 'BOTTOMLEFT', -10, -20)
+syncHeader:SetPoint('TOPLEFT', commandRespondNoKey, 'BOTTOMLEFT', -10, -20)
 
 local syncFriends = e.CreateCheckBox(contentFrame, L['Sync with friends'])
 syncFriends:SetPoint('TOPLEFT', syncHeader, 'BOTTOMLEFT', 10, -10)
 syncFriends:SetScript('OnClick', function(self)
-	AstralKeysSettings.options.friendSync = self:GetChecked()
+	AstralKeysSettings.friendOptions.friend_sync = self:GetChecked()
 	AstralKeyFrame:ToggleLists()
 	e.ToggleFriendSync()
 	end)
@@ -163,7 +176,7 @@ syncFriends:SetScript('OnClick', function(self)
 local otherFaction = e.CreateCheckBox(contentFrame, L['Show other faction'])
 otherFaction:SetPoint('LEFT', syncFriends, 'RIGHT', 10, 0)
 otherFaction:SetScript('OnClick', function(self)
-	AstralKeysSettings.options.showOtherFaction = self:GetChecked()
+	AstralKeysSettings.friendOptions.show_other_faction = self:GetChecked()
 	e.UpdateFrames()
 	end)
 
@@ -181,18 +194,22 @@ for i = 1, 10 do
 	_ranks[i].id = i
 end
 
-function InitData()
-	otherFaction:SetChecked(AstralKeysSettings.options.showOtherFaction)
-	showOffLine:SetChecked(AstralKeysSettings.options.showOffline)
-	showMinimap:SetChecked(AstralKeysSettings.options.showMiniMapButton)
-	announceParty:SetChecked(AstralKeysSettings.options.announce_party)
-	announceGuild:SetChecked(AstralKeysSettings.options.announce_guild)
-	showTooltip:SetChecked(AstralKeysSettings.options.showTooltip)
-	syncFriends:SetChecked(AstralKeysSettings.options.friendSync)
-	mingleOffline:SetChecked(AstralKeysSettings.options.mingle_offline)
-	commandRespondParty:SetChecked(AstralKeysSettings.options.report_on_message['party'])
-	commandRespondGuild:SetChecked(AstralKeysSettings.options.report_on_message['guild'])
-	commandRespondRaid:SetChecked(AstralKeysSettings.options.report_on_message['raid'])
+function InitializeOptionSettings()
+	showMinimap:SetChecked(AstralKeysSettings.general.show_minimap_button)
+	showTooltip:SetChecked(AstralKeysSettings.general.show_tooltip_key)
+	announceParty:SetChecked(AstralKeysSettings.general.announce_party)
+	announceGuild:SetChecked(AstralKeysSettings.general.announce_guild)
+	expandedTooltip:SetChecked(AstralKeysSettings.general.expanded_tooltip)
+	commandRespondParty:SetChecked(AstralKeysSettings.general.report_on_message['party'])
+	commandRespondGuild:SetChecked(AstralKeysSettings.general.report_on_message['guild'])
+	commandRespondRaid:SetChecked(AstralKeysSettings.general.report_on_message['raid'])
+	commandRespondNoKey:SetChecked(AstralKeysSettings.general.report_on_message['no_key'])
+
+	showOffLine:SetChecked(AstralKeysSettings.frame.show_offline)
+	mingleOffline:SetChecked(AstralKeysSettings.frame.mingle_offline)
+
+	syncFriends:SetChecked(AstralKeysSettings.friendOptions.friend_sync)
+	otherFaction:SetChecked(AstralKeysSettings.friendOptions.show_other_faction)
 
 	for i = 1, GuildControlGetNumRanks() do
 		_ranks[i]:SetText(GuildControlGetRankName(i))
@@ -209,17 +226,17 @@ function InitData()
 			_ranks[i]:SetPoint('LEFT', _ranks[i-1], 'RIGHT', 10, 0)
 		end
 
-		_ranks[i]:SetChecked(AstralKeysSettings.options.rankFilters[i])
+		_ranks[i]:SetChecked(AstralKeysSettings.frame.rank_filter[i])
 
 		_ranks[i]:SetScript('OnClick', function(self)
-			AstralKeysSettings.options.rankFilters[self.id] = self:GetChecked()
-			if AstralKeysSettings.frameOptions.frame_list == 'GUILD' then
+			AstralKeysSettings.frame.rank_filter[self.id] = self:GetChecked()
+			if AstralKeysSettings.frame.list_shown == 'GUILD' then
 				e.UpdateFrames()
 			end
 			end)
 	end
 end
-AstralEvents:Register('PLAYER_LOGIN', InitData, 'initOptions')
+AstralEvents:Register('PLAYER_LOGIN', InitializeOptionSettings, 'initOptions')
 
 AstralOptionsFrame:SetScript('OnKeyDown', function(self, key)
 	if key == 'ESCAPE' then
@@ -230,15 +247,20 @@ AstralOptionsFrame:SetScript('OnKeyDown', function(self, key)
 
 AstralOptionsFrame:SetScript('OnShow', function(self)
 	self:SetPropagateKeyboardInput(true)
-	otherFaction:SetChecked(AstralKeysSettings.options.showOtherFaction)
-	showOffLine:SetChecked(AstralKeysSettings.options.showOffline)
-	mingleOffline:SetChecked(AstralKeysSettings.options.mingle_offline)
-	showMinimap:SetChecked(AstralKeysSettings.options.showMiniMapButton)
-	announceParty:SetChecked(AstralKeysSettings.options.announce_party)
-	announceGuild:SetChecked(AstralKeysSettings.options.announce_guild)
-	showTooltip:SetChecked(AstralKeysSettings.options.showTooltip)
-	syncFriends:SetChecked(AstralKeysSettings.options.friendSync)
-	commandRespondParty:SetChecked(AstralKeysSettings.options.report_on_message['party'])
-	commandRespondGuild:SetChecked(AstralKeysSettings.options.report_on_message['guild'])
-	commandRespondRaid:SetChecked(AstralKeysSettings.options.report_on_message['raid'])
+
+	showMinimap:SetChecked(AstralKeysSettings.general.show_minimap_button)
+	showTooltip:SetChecked(AstralKeysSettings.general.show_tooltip_key)
+	announceParty:SetChecked(AstralKeysSettings.general.announce_party)
+	announceGuild:SetChecked(AstralKeysSettings.general.announce_guild)
+	expandedTooltip:SetChecked(AstralKeysSettings.general.expanded_tooltip)
+	commandRespondParty:SetChecked(AstralKeysSettings.general.report_on_message['party'])
+	commandRespondGuild:SetChecked(AstralKeysSettings.general.report_on_message['guild'])
+	commandRespondRaid:SetChecked(AstralKeysSettings.general.report_on_message['raid'])
+	commandRespondNoKey:SetChecked(AstralKeysSettings.general.report_on_message['no_key'])
+
+	showOffLine:SetChecked(AstralKeysSettings.frame.show_offline)
+	mingleOffline:SetChecked(AstralKeysSettings.frame.mingle_offline)
+
+	syncFriends:SetChecked(AstralKeysSettings.friendOptions.friend_sync)
+	otherFaction:SetChecked(AstralKeysSettings.friendOptions.show_other_faction)
 	end)

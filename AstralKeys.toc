@@ -21,9 +21,9 @@ Localization\zhTW.lua
 
 embeds.xml
 fonts.xml
-Settings.lua
 Events.lua
 Tables.lua
+Settings.lua
 Communications.lua
 
 Lists.lua

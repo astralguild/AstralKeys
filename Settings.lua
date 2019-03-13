@@ -1,6 +1,6 @@
+local ADDON_NAME = ...
 local e, L = unpack(select(2, ...))
 
-local RESET_VERSION = 20200
 -- Reset time 15:00 UTC AMERICAS
 -- 07:00 UTC EU
 
@@ -45,116 +45,97 @@ function e.DataResetTime()
 end
 
 if not AstralKeysSettings then
-	AstralKeysSettings = {
-		['resetVersion'] = RESET_VERSION,
-		['initTime'] = e.DataResetTime(),
-		['frameOptions'] = {
-			['orientation'] = 1,
-			['sorth_method'] = 'character_name',
-			['viewMode'] = 0,
-			['list'] = 'GUILD',
-			},
-		['options'] = {
-			['announce_party'] = true,
-			['announce_guild'] = false,
-			['showOffline'] = true,
-			['mingle_offline'] = false,
-			['showTooltip'] = true,
-			['whisperClick'] = false,
-			['showMiniMapButton'] = true,
-			['friendSync'] = true,
-			['showOtherFaction'] = false,
-			['report_on_message'] ={
-				['party'] = true,
-				['raid'] = false,
-				['guild'] = false,
-			},
-			['rankFilters'] = {
-				[1] = true,
-				[2] = true,
-				[3] = true,
-				[4] = true,
-				[5] = true,
-				[6] = true,
-				[7] = true,
-				[8] = true,
-				[9] = true,
-				[10] = true,
-				},
-			},
-		}
+	AstralKeysSettings = {}
 end
 
-local function MixInSetting(section, name, value)
-	if AstralKeysSettings[section][name] == nil then
-		AstralKeysSettings[section][name] = value
+function e:AddDefaultSettings(category, name, data)
+	if not category or type(category) ~= 'string' then
+		error('AddDefaultSettings(category, name, data) category: string expected, received ' .. type(category))
+	end
+	if data == nil then
+		error('AddDefaultSettings(data, name, data) data expected, received ' .. type(data))
+	end
+
+	if not AstralKeysSettings[category] then
+		AstralKeysSettings[category] = {}
+	end
+
+	if not AstralKeysSettings[category][name] then
+		AstralKeysSettings[category][name] = data
+	else
+		if type(data) == 'table' then
+			for newKey, newValue in pairs(data) do
+				local found = false
+				for oldKey in pairs(AstralKeysSettings[category][name]) do
+					if oldKey == newKey then
+						found = true
+						break
+					end
+				end
+
+				if not found then
+					AstralKeysSettings[category][name][newKey] = newValue
+				end
+			end
+		end
 	end
 end
 
-local frame = CreateFrame('FRAME')
-frame:RegisterEvent('ADDON_LOADED')
-frame:SetScript('OnEvent', function(self, event, addon)
-	if addon == 'AstralKeys' then
-		e.CLIENT_VERSION = GetAddOnMetadata('AstralKeys', 'Version')
-		e:SetUIScale()
-		_G['AstralEngine'] = e
+local function LoadDefaultSettings(addon)
+	if addon ~= ADDON_NAME then return end
 
-		MixInSetting('options', 'showTooltip', true)
-		MixInSetting('frameOptions', 'frame_list', 'GUILD')
-		MixInSetting('frameOptions', 'sorth_method', 'character_name')
-		MixInSetting('options', 'mingle_offline', false)
-		MixInSetting('options', 'report_on_message', {['party'] = true, ['guild'] = false, ['raid'] = false})
+	e.CLIENT_VERSION = GetAddOnMetadata('AstralKeys', 'Version')
+	e:SetUIScale()
+	_G['AstralEngine'] = e
 
-		if not AstralKeysSettings['resetVersion'] or AstralKeysSettings['resetVersion'] ~= RESET_VERSION then
-			wipe(AstralKeys)
-			wipe(AstralCharacters)
-			wipe(AstralFriends)
-			AstralKeysSettings = {
-				['resetVersion'] = RESET_VERSION,
-				['initTime'] = e.DataResetTime(),
-				['frameOptions'] = {
-					['orientation'] = 1,
-					['sorth_method'] = 'character_name',
-					['viewMode'] = 0,
-					['frame_list'] = 'GUILD',
-					},
-				['options'] = {
-					['announce_party'] = true,
-					['announce_guild'] = false,
-					['showOffline'] = true,
-					['mingle_offline'] = false,
-					['whisperClick'] = false,
-					['showTooltip'] = true,
-					['showMiniMapButton'] = true,
-					['friendSync'] = true,
-					['showOtherFaction'] = false,['report_on_message'] ={
-						['party'] = true,
-						['raid'] = false,
-						['guild'] = false,
-					},
-					['rankFilters'] = {
-						[1] = true,
-						[2] = true,
-						[3] = true,
-						[4] = true,
-						[5] = true,
-						[6] = true,
-						[7] = true,
-						[8] = true,
-						[9] = true,
-						[10] = true,
-						},
-					},
-				}
-		end
-		end
-		frame:UnregisterEvent('ADDON_LOADED')
-	end)
+	-- General options
+	e:AddDefaultSettings('general', 'init_time', e.DataResetTime())
+	e:AddDefaultSettings('general', 'show_minimap_button', true)
+	e:AddDefaultSettings('general', 'show_tooltip_key', true)
+	e:AddDefaultSettings('general', 'announce_party', true)
+	e:AddDefaultSettings('general', 'announce_guild', false)
+	e:AddDefaultSettings('general', 'report_on_message', 
+	{
+		['party'] = true,
+		['raid'] = false,
+		['guild'] = false,
+		['no_key'] = false,
+	})
+	e:AddDefaultSettings('general', 'expanded_tooltip', true)
 
-function e.FrameListShown()
-	return AstralKeysSettings.frameOptions.frame_list
+	--Frame settings, collapsed, saved sorting, etc
+	e:AddDefaultSettings('frame', 'orientation', 1)
+	e:AddDefaultSettings('frame', 'sorth_method', 'character_name')
+	e:AddDefaultSettings('frame', 'isCollapsed', false)
+	e:AddDefaultSettings('frame', 'current_list', 'GUILD')
+	e:AddDefaultSettings('frame', 'show_offline', true)
+	e:AddDefaultSettings('frame', 'mingle_offline', false)
+	e:AddDefaultSettings('frame', 'rank_filter', 
+	{
+		[1] = true,
+		[2] = true,
+		[3] = true,
+		[4] = true,
+		[5] = true,
+		[6] = true,
+		[7] = true,
+		[8] = true,
+		[9] = true,
+		[10] = true,
+	})
+
+	-- Friend syncing options
+	e:AddDefaultSettings('friendOptions', 'friend_sync', true)
+	e:AddDefaultSettings('friendOptions', 'show_other_faction', true)
+	AstralEvents:Unregister('ADDON_LOADED', 'LoadDefaultSettings')
 end
 
-function e.SetFrameListShown(data)
-	AstralKeysSettings.frameOptions.frame_list = data
+AstralEvents:Register('ADDON_LOADED', LoadDefaultSettings, 'LoadDefaultSettings')
+
+function e.FrameListShown()
+	return AstralKeysSettings.frame.current_list
+end
+
+function e.SetFrameListShown(listName)
+	AstralKeysSettings.frame.current_list = listName
 end

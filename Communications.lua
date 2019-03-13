@@ -319,17 +319,19 @@ function e.AnnounceCharacterKeys(channel)
 end
 
 function e.AnnounceNewKey(keyLink, level)
-	if AstralKeysSettings.options.announce_party and IsInGroup() then
+	if AstralKeysSettings.general.announce_party and IsInGroup() then
 		SendChatMessage(strformat(L['ANNOUNCE_NEW_KEY'], keyLink, level), 'PARTY')
 	end
-	if AstralKeysSettings.options.announce_guild and IsInGuild() then
+	if AstralKeysSettings.general.announce_guild and IsInGuild() then
 		SendChatMessage(strformat(L['ANNOUNCE_NEW_KEY'], keyLink, level), 'GUILD')
 	end
 end
 
-local function ParseGuildChatCommands(text, unit)
+local function ParseGuildChatCommands(text)
+	if UnitLevel('player') ~= 120 then return end -- Don't bother checking anything if the unit is unable to acquire a key
 	if text == '!keys' then
-		if AstralKeysSettings.options.report_on_message['guild'] then
+		local guild = GetGuildInfo('player')
+		if AstralKeysSettings.general.report_on_message['guild'] or (guild == 'Astral' and e.PlayerRealm() == 'Turalyon') then -- Guild leader for Astral desires this setting to be foreced on for members.
 			local unitID = e.UnitID(e.Player())
 			if unitID then
 				local link
@@ -344,18 +346,21 @@ local function ParseGuildChatCommands(text, unit)
 				end
 
 				if not link then return end -- something went wrong
-				SendChatMessage(string.format('Astral Keys: %s +%d', link, e.UnitKeyLevel(unitID)), 'GUILD')
+				SendChatMessage(string.format('Astral Keys: %s', link), 'GUILD')
 			else
-				SendChatMessage(strformat('%s: %s', 'Astral Keys', L['NO_KEY']), 'GUILD')
+				if AstralKeysSettings.general.report_on_message.no_key then
+					SendChatMessage(strformat('%s: %s', 'Astral Keys', L['NO_KEY']), 'GUILD')
+				end
 			end
 		end
 	end
 end
 AstralEvents:Register('CHAT_MSG_GUILD', ParseGuildChatCommands, 'parseguildchat')
 
-local function ParsePartyChatCommands(text, unit)
+local function ParsePartyChatCommands(text)
+	if UnitLevel('player') ~= 120 then return end -- Don't bother checking anything if the unit is unable to acquire a key
 	if text == '!keys' then
-		if AstralKeysSettings.options.report_on_message['party'] then
+		if AstralKeysSettings.general.report_on_message['party'] then
 			local unitID = e.UnitID(e.Player())
 			if unitID then
 				local link
@@ -369,9 +374,11 @@ local function ParsePartyChatCommands(text, unit)
 					end
 				end
 				if not link then return end -- something went wrong
-				SendChatMessage(string.format('Astral Keys: %s +%d', link, e.UnitKeyLevel(unitID)), 'PARTY')
+				SendChatMessage(string.format('Astral Keys: %s', link), 'PARTY')
 			else
-				SendChatMessage(strformat('%s: %s', 'Astral Keys', L['NO_KEY']), 'PARTY')
+				if AstralKeysSettings.general.report_on_message.no_key then
+					SendChatMessage(strformat('%s: %s', 'Astral Keys', L['NO_KEY']), 'PARTY')
+				end
 			end
 		end
 	end
@@ -379,9 +386,10 @@ end
 AstralEvents:Register('CHAT_MSG_PARTY', ParsePartyChatCommands, 'parsepartychat')
 AstralEvents:Register('CHAT_MSG_PARTY_LEADER', ParsePartyChatCommands, 'parsepartychat')
 
-local function ParseRaidChatCommands(text, unit)
+local function ParseRaidChatCommands(text)
+	if UnitLevel('player') ~= 120 then return end -- Don't bother checking anything if the unit is unable to acquire a key
 	if text == '!keys' then
-		if AstralKeysSettings.options.report_on_message['raid'] then
+		if AstralKeysSettings.general.report_on_message['raid'] then
 			local unitID = e.UnitID(e.Player())
 			if unitID then
 				local link
@@ -395,9 +403,11 @@ local function ParseRaidChatCommands(text, unit)
 					end
 				end
 				if not link then return end -- something went wrong
-				SendChatMessage(string.format('Astral Keys: %s +%d', link, e.UnitKeyLevel(unitID)), 'RAID')	
+				SendChatMessage(string.format('Astral Keys: %s', link), 'RAID')	
 			else
-				SendChatMessage(strformat('%s: %s', 'Astral Keys', L['NO_KEY']), 'RAID')
+				if AstralKeysSettings.general.report_on_message.no_key then
+					SendChatMessage(strformat('%s: %s', 'Astral Keys', L['NO_KEY']), 'RAID')
+				end
 			end
 		end
 	end

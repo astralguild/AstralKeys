@@ -130,7 +130,7 @@ end
 local function SendWhisper(self)
 	if not self.isConnected then return end
 
-	if AstralKeysSettings.frameOptions.frame_list == 'GUILD' then
+	if AstralKeysSettings.frame.current_list == 'GUILD' then
 		ChatFrame_SendTell(e.Unit(AstralMenuFrame.unit))
 	else
 		if AstralFriends[AstralMenuFrame.unit][2] then
@@ -237,7 +237,7 @@ offLineButton:SetNormalFontObject(InterUIRegular_Small)
 offLineButton:SetPoint('BOTTOMRIGHT', AstralKeyFrame, 'BOTTOMRIGHT', -15, 10)
 offLineButton:SetAlpha(0.5)
 offLineButton:SetScript('OnClick', function(self)
-	AstralKeysSettings.options.showOffline = self:GetChecked()
+	AstralKeysSettings.frame.show_offline = self:GetChecked()
 	HybridScrollFrame_SetOffset(AstralKeyFrameListContainer, 0)
 	e.UpdateFrames()
 end)
@@ -408,10 +408,6 @@ local function CreateNewTab(name, parent, ...)
 	table.insert(buttons, self)
 end
 
-CreateNewTab('GUILD', tabFrame)
-CreateNewTab('FRIENDS', tabFrame)
-UpdateTabs()
-
 -- Middle panel construction, Affixe info, character info, guild/version string
 local characterFrame = CreateFrame('FRAME', '$parentCharacterFrame', AstralKeyFrame)
 characterFrame:SetSize(225, 490)
@@ -459,19 +455,19 @@ characterExpand:SetScript('OnUpdate', function(self, elapsed)
 	end)
 
 collapseButton:SetScript('OnClick', function(self)
-	if AstralKeysSettings.frameOptions.viewMode == 0 then
+	if not AstralKeysSettings.frame.isCollapsed then
 		if AstralKeyFrameCharacterFrame.expand:IsPlaying() then
 			AstralKeyFrameCharacterFrame.expand:Stop()
 		end
 		AstralKeyFrameCharacterFrame.collapse:Play()
-		AstralKeysSettings.frameOptions.viewMode = 1
+		AstralKeysSettings.frame.isCollapsed = true
 		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline-first_page-24px@2x')
 	else
 		if AstralKeyFrameCharacterFrame.collapse:IsPlaying() then
 			AstralKeyFrameCharacterFrame.collapse:Stop()
 		end
 		AstralKeyFrameCharacterFrame.expand:Play()
-		AstralKeysSettings.frameOptions.viewMode = 0
+		AstralKeysSettings.frame.isCollapsed = false
 		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline-last_page-24px@2x')
 	end
 	end)
@@ -518,6 +514,9 @@ do
 			if not self.affixID then return end
 			AstralKeyToolTip:SetOwner(self, 'ANCHOR_BOTTOMLEFT', 7, -2)
 			AstralKeyToolTip:AddLine(e.AffixName(self.affixID), 1, 1, 1)
+			if AstralKeysSettings.general.expanded_tooltip then
+				AstralKeyToolTip:AddLine(e.AffixDescription(self.affixID), 1, 1, 1, true)
+			end
 			AstralKeyToolTip:Show()
 			end)
 		frame:SetScript('OnLeave', function(self)
@@ -581,6 +580,9 @@ do
 			if not self.affixID then return end
 			AstralKeyToolTip:SetOwner(self, 'ANCHOR_BOTTOMLEFT', 7, -2)			
 			AstralKeyToolTip:AddLine(e.AffixName(self.affixID), 1, 1, 1)
+			if AstralKeysSettings.general.expanded_tooltip then
+				AstralKeyToolTip:AddLine(e.AffixDescription(self.affixID), 1, 1, 1, true)
+			end
 			AstralKeyToolTip:Show()
 			end)
 		frame:SetScript('OnLeave', function(self)
@@ -902,13 +904,13 @@ local function ListButton_OnClick(self)
 	HybridScrollFrame_SetOffset(AstralKeyFrameListContainer, 0)
 	AstralKeyFrameListContainer.scrollBar:SetValue(0)
 
-	if self.sortMethod == AstralKeysSettings.frameOptions.sorth_method then
-		AstralKeysSettings.frameOptions.orientation = 1 - AstralKeysSettings.frameOptions.orientation
+	if self.sortMethod == AstralKeysSettings.frame.sorth_method then
+		AstralKeysSettings.frame.orientation = 1 - AstralKeysSettings.frame.orientation
 	else
-		AstralKeysSettings.frameOptions.orientation = 0
+		AstralKeysSettings.frame.orientation = 0
 	end
-	AstralKeysSettings.frameOptions.sorth_method = self.sortMethod
-	e.SortTable(sortedTable[e.FrameListShown()], AstralKeysSettings.frameOptions.sorth_method)
+	AstralKeysSettings.frame.sorth_method = self.sortMethod
+	e.SortTable(sortedTable[e.FrameListShown()], AstralKeysSettings.frame.sorth_method)
 	e.UpdateFrames()
 end
 
@@ -1167,7 +1169,7 @@ function AstralKeyFrame:OnUpdate(elapsed)
 end
 
 function AstralKeyFrame:ToggleLists()
-	if AstralKeysSettings.options.friendSync then
+	if AstralKeysSettings.friendOptions.friend_sync then
 		AstralKeyFrameTabFrameTabFRIENDS:Show()
 	else
 		AstralKeyFrameTabFrameTabFRIENDS:Hide()
@@ -1190,7 +1192,7 @@ AstralKeyFrame:SetScript('OnKeyDown', function(self, key)
 	end)
 
 AstralKeyFrame:SetScript('OnShow', function(self)
-	offLineButton:SetChecked(AstralKeysSettings.options.showOffline)
+	offLineButton:SetChecked(AstralKeysSettings.frame.show_offline)
 	e.UpdateFrames()
 	e.UpdateCharacterFrames()
 	self:SetPropagateKeyboardInput(true)
@@ -1212,9 +1214,14 @@ AstralKeyFrame:SetScript('OnHide', function(self)
 local init = false
 local function InitializeFrame()
 	init = true
+
+	CreateNewTab('GUILD', tabFrame)
+	CreateNewTab('FRIENDS', tabFrame)
+	UpdateTabs()
+
 	guildVersionString:SetFormattedText('Astral - Turalyon (US) %s', e.CLIENT_VERSION)
 
-	if AstralKeysSettings.frameOptions.viewMode == 1 then
+	if AstralKeysSettings.frame.isCollapsed then
 		collapseButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline-first_page-24px@2x')
 		AstralKeyFrame:SetWidth(FRAME_WIDTH_MINIMIZED)
 		AstralKeyFrameCharacterFrame:Hide()
@@ -1222,11 +1229,11 @@ local function InitializeFrame()
 		collapseButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline-last_page-24px@2x')
 	end
 
-	if not AstralKeysSettings.options.friendSync then
+	if not AstralKeysSettings.friendOptions.friend_sync then
 		AstralKeyFrameTabFrameTabFRIENDS:Hide()
 	end
 
-	offLineButton:SetChecked(AstralKeysSettings.options.showOffline)
+	offLineButton:SetChecked(AstralKeysSettings.frame.show_offline)
 	HybridScrollFrame_CreateButtons(AstralKeyFrameCharacterFrameCharacterContainer, 'AstralCharacterFrameTemplate', 0, 0, 'TOPLEFT', 'TOPLEFT', 0, -10)
 	HybridScrollFrame_CreateButtons(AstralKeyFrameListContainer, 'AstralListFrameTemplate', 0, 0, 'TOPLEFT', 'TOPLEFT', 0, -10)
 
@@ -1260,7 +1267,7 @@ function e.UpdateFrames()
 	if not init or not AstralKeyFrame:IsShown() then return end
 
 	e.UpdateTable(sortedTable, FILTER_FIELDS)
-	e.SortTable(sortedTable[e.FrameListShown()], AstralKeysSettings.frameOptions.sorth_method)
+	e.SortTable(sortedTable[e.FrameListShown()], AstralKeysSettings.frame.sorth_method)
 	e.UpdateLines()
 end
 

@@ -178,12 +178,12 @@ local function GuildListSort(A, v)
 		table.sort(A, function(a, b)
 			local aOnline = e.GuildMemberOnline(a.character_name) and 1 or 0
 			local bOnline = e.GuildMemberOnline(b.character_name) and 1 or 0
-			if not AstralKeysSettings.options.mingle_offline then
+			if not AstralKeysSettings.frame.mingle_offline then
 				aOnline = true
 				bOnline = true
 			end
 			if aOnline == bOnline then
-				if AstralKeysSettings.frameOptions.orientation == 0 then
+				if AstralKeysSettings.frame.orientation == 0 then
 					if e.GetMapName(a.mapID) > e.GetMapName(b.mapID) then
 						if bOnline then
 							return true
@@ -224,12 +224,12 @@ local function GuildListSort(A, v)
 		table.sort(A, function(a, b)
 			local aOnline = e.GuildMemberOnline(a.character_name) and 1 or 0
 			local bOnline = e.GuildMemberOnline(b.character_name) and 1 or 0
-			if not AstralKeysSettings.options.mingle_offline then
+			if not AstralKeysSettings.frame.mingle_offline then
 				aOnline = true
 				bOnline = true
 			end
 			if aOnline == bOnline then
-				if AstralKeysSettings.frameOptions.orientation == 0 then
+				if AstralKeysSettings.frame.orientation == 0 then
 					if a[v] > b[v] then
 						return true
 					elseif a[v] < b[v] then
@@ -279,13 +279,13 @@ local function GuildListFilter(A, filters)
 
 	for i = 1, #A.GUILD do
 		if e.UnitInGuild(A.GUILD[i].character_name) then
-			if AstralKeysSettings.options.showOffline then
+			if AstralKeysSettings.frame.show_offline then
 				A.GUILD[i].isShown = true
 			else
 				A.GUILD[i].isShown = e.GuildMemberOnline(A.GUILD[i].character_name)
 			end
 
-			A.GUILD[i].isShown = A.GUILD[i].isShown and AstralKeysSettings.options.rankFilters[e.GuildMemberRank(A.GUILD[i].character_name)]
+			A.GUILD[i].isShown = A.GUILD[i].isShown and AstralKeysSettings.frame.rank_filter[e.GuildMemberRank(A.GUILD[i].character_name)]
 
 			local isShownInFilter = true -- Assume there is no filter taking place
 			--[[

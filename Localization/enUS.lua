@@ -33,6 +33,7 @@ L['CANCEL'] = CANCEL
 -- Announce messages
 L['ANNOUNCE_NEW_KEY'] = 'Astral Keys: New key %s +%d'
 L['NO_KEY'] = 'No key'
+L['KEYS_RESPOND_ON_NO_KEY'] = 'Respond even if you do not have a key'
 
 
 -- Search field texts
@@ -40,3 +41,4 @@ L['FILTER_TEXT_DUNGEON'] = 'Filter by dungeon'
 
 -- Options
 L['!KEYS_DESC'] = 'Respond to !keys command in the following chat channels'
+L['EXPANDED_TOOLTIP'] = 'Show affix description in the tooltip'

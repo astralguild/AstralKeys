@@ -45,11 +45,11 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 	e.SetPlayerNameRealm()
 	e.SetPlayerClass()
 
-	if currentTime > AstralKeysSettings.initTime then
+	if currentTime > AstralKeysSettings.general.init_time then
 		wipe(AstralCharacters)
 		wipe(AstralKeys)
 		wipe(AstralFriends)
-		AstralKeysSettings.initTime = e.DataResetTime()
+		AstralKeysSettings.general.init_time = e.DataResetTime()
 	end
 
 	if d.wday == 3 and d.hour < (16 + hourOffset + (d.isdst and 1 or 0)) and region ~= 3 then
@@ -66,7 +66,7 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 					self.first = false
 				end
 
-				if time(date('*t', GetServerTime())) > AstralKeysSettings.initTime then					
+				if time(date('*t', GetServerTime())) > AstralKeysSettings.general.init_time then					
 					e.WipeCharacterList()
 					e.WipeUnitList()
 					e.WipeFriendList()
@@ -74,7 +74,7 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 					C_MythicPlus.RequestRewards()
 					AstralCharacters = {}
 					AstralKeys = {}
-					AstralKeysSettings.initTime = e.DataResetTime()
+					AstralKeysSettings.general.init_time = e.DataResetTime()
 					e.Week = math.floor((GetServerTime() - initializeTime[1]) / 604800)
 					e.FindKeyStone(true, false)
 					e.UpdateAffixes()
@@ -99,7 +99,7 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 					self.first = false
 				end
 
-				if time(date('*t', GetServerTime())) > AstralKeysSettings.initTime then
+				if time(date('*t', GetServerTime())) > AstralKeysSettings.general.init_time then
 					e.WipeCharacterList()
 					e.WipeUnitList()
 					e.WipeFriendList()
@@ -107,7 +107,7 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 					C_MythicPlus.RequestRewards()
 					AstralCharacters = {}
 					AstralKeys = {}
-					AstralKeysSettings.initTime = e.DataResetTime()
+					AstralKeysSettings.general.init_time = e.DataResetTime()
 					e.FindKeyStone(true, false)
 					e.Week = math.floor((GetServerTime() - initializeTime[2]) / 604800)
 					e.UpdateAffixes()
