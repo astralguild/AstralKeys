@@ -313,16 +313,16 @@ function e.AnnounceCharacterKeys(channel)
 		if id then
 			local link = e.CreateKeyLink(e.UnitMapID(id), e.UnitKeyLevel(id))
 			if channel == 'PARTY' and not IsInGroup() then return end
-			SendChatMessage(strformat('%s %s +%d',e.CharacterName(i), link, e.UnitKeyLevel(id)), channel)
+			SendChatMessage(strformat('%s %s',e.CharacterName(i), link), channel)
 		end
 	end
 end
 
 function e.AnnounceNewKey(keyLink, level)
-	if AstralKeysSettings.general.announce_party and IsInGroup() then
+	if AstralKeysSettings.general.announce_party.isEnabled and IsInGroup() then
 		SendChatMessage(strformat(L['ANNOUNCE_NEW_KEY'], keyLink, level), 'PARTY')
 	end
-	if AstralKeysSettings.general.announce_guild and IsInGuild() then
+	if AstralKeysSettings.general.announce_guild.isEnabled and IsInGuild() then
 		SendChatMessage(strformat(L['ANNOUNCE_NEW_KEY'], keyLink, level), 'GUILD')
 	end
 end
@@ -334,19 +334,9 @@ local function ParseGuildChatCommands(text)
 		if AstralKeysSettings.general.report_on_message['guild'] or (guild == 'Astral' and e.PlayerRealm() == 'Turalyon') then -- Guild leader for Astral desires this setting to be foreced on for members.
 			local unitID = e.UnitID(e.Player())
 			if unitID then
-				local link
-				for bag = 0, NUM_BAG_SLOTS do
-					local numSlots = GetContainerNumSlots(bag)
-					for slot = 1, numSlots do
-						if (GetContainerItemID(bag, slot) == e.MYTHICKEY_ITEMID) then						
-							link = GetContainerItemLink(bag, slot)
-							break
-						end
-					end
-				end
-
-				if not link then return end -- something went wrong
-				SendChatMessage(string.format('Astral Keys: %s', link), 'GUILD')
+				local keyLink = e.CreateKeyLink(e.UnitMapID(unitID), e.UnitKeyLevel(unitID))
+				if not keyLink then return end -- Something went wrong
+				SendChatMessage(string.format('Astral Keys: %s', keyLink), 'GUILD')
 			else
 				if AstralKeysSettings.general.report_on_message.no_key then
 					SendChatMessage(strformat('%s: %s', 'Astral Keys', L['NO_KEY']), 'GUILD')
@@ -363,18 +353,9 @@ local function ParsePartyChatCommands(text)
 		if AstralKeysSettings.general.report_on_message['party'] then
 			local unitID = e.UnitID(e.Player())
 			if unitID then
-				local link
-				for bag = 0, NUM_BAG_SLOTS do
-					local numSlots = GetContainerNumSlots(bag)
-					for slot = 1, numSlots do
-						if (GetContainerItemID(bag, slot) == e.MYTHICKEY_ITEMID) then
-							link = GetContainerItemLink(bag, slot)
-							break
-						end
-					end
-				end
-				if not link then return end -- something went wrong
-				SendChatMessage(string.format('Astral Keys: %s', link), 'PARTY')
+				local keyLink = e.CreateKeyLink(e.UnitMapID(unitID), e.UnitKeyLevel(unitID))
+				if not keyLink then return end -- Something went wrong
+				SendChatMessage(string.format('Astral Keys: %s', keyLink), 'PARTY')
 			else
 				if AstralKeysSettings.general.report_on_message.no_key then
 					SendChatMessage(strformat('%s: %s', 'Astral Keys', L['NO_KEY']), 'PARTY')

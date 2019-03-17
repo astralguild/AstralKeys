@@ -50,7 +50,7 @@ AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', InitData, 'initData')
 --|cffa335ee|Hkeystone:158923:251:12:10:5:13:117|h[Keystone: The Underrot (12)]|h|r
 -- COLOUR[3] returns epic color hex code
 function e.CreateKeyLink(mapID, keyLevel)
-	return strformat('\124c' .. COLOUR[3] .. '\124Hkeystone:158923:%d:%d:%d:%d:%d:%d|h[Keystone: %s]\124h\124r', mapID, keyLevel, e.AffixOne(), e.AffixTwo(), e.AffixThree(), e.AffixFour(), e.GetMapName(mapID))--:gsub('\124\124', '\124')
+	return strformat('|c' .. COLOUR[3] .. '|Hkeystone:158923:%d:%d:%d:%d:%d:%d|h[Keystone: %s (%d)]|h|r', mapID, keyLevel, e.AffixOne(), e.AffixTwo(), e.AffixThree(), e.AffixFour(), e.GetMapName(mapID), keyLevel):gsub('\124\124', '\124')
 end
 
 AstralEvents:Register('CHALLENGE_MODE_COMPLETED', function()
@@ -121,17 +121,7 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 	if tonumber(oldMap) == tonumber(mapID) and tonumber(oldLevel) == tonumber(keyLevel) then return end
 
 	if anounceKey then
-		local link
-		for bag = 0, NUM_BAG_SLOTS do
-			local numSlots = GetContainerNumSlots(bag)
-			for slot = 1, numSlots do
-				if (GetContainerItemID(bag, slot) == e.MYTHICKEY_ITEMID) then
-					link = GetContainerItemLink(bag, slot)
-					break
-				end
-			end
-		end
-		e.AnnounceNewKey(link, keyLevel)
+		e.AnnounceNewKey(e.CreateKeyLink(mapID, keyLevel))
 	end
 end
 

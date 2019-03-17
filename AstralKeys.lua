@@ -8,6 +8,7 @@ if not AstralFriends then AstralFriends = {} end
 local initializeTime = {} 
 initializeTime[1] = 1500390000 -- US Tuesday at reset
 initializeTime[2] = 1500447600 -- EU Wednesday at reset
+initializeTime[3] = 1500505200 -- CN Thursday at reset
 initializeTime[4] = 0
 
 function e.WeekTime()

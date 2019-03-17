@@ -22,7 +22,6 @@ local FILTER_FIELDS = {}
 FILTER_FIELDS['key_level'] = ''
 FILTER_FIELDS['mapID'] = ''
 FILTER_FIELDS['character_name'] = ''
-FILTER_FIELDS['weekly_best'] = ''
 
 -- Used for filtering, sorting, and displaying units on lists
 local sortedTable = {}
@@ -237,7 +236,7 @@ offLineButton:SetNormalFontObject(InterUIRegular_Small)
 offLineButton:SetPoint('BOTTOMRIGHT', AstralKeyFrame, 'BOTTOMRIGHT', -15, 10)
 offLineButton:SetAlpha(0.5)
 offLineButton:SetScript('OnClick', function(self)
-	AstralKeysSettings.frame.show_offline = self:GetChecked()
+	AstralKeysSettings.frame.show_offline.isEnabled = self:GetChecked()
 	HybridScrollFrame_SetOffset(AstralKeyFrameListContainer, 0)
 	e.UpdateFrames()
 end)
@@ -377,9 +376,9 @@ end
 local function Tab_OnClick(self)	
     if e.FrameListShown() ~= self.listName then
         e.SetFrameListShown(self.listName)
+        HybridScrollFrame_SetOffset(AstralKeyFrameListContainer, 0)
         UpdateTabs()
         e.UpdateFrames()
-        HybridScrollFrame_SetOffset(AstralKeyFrameListContainer, 0)
         AstralKeyFrameListContainer.scrollBar:SetValue(0)
     end
 end
@@ -455,19 +454,19 @@ characterExpand:SetScript('OnUpdate', function(self, elapsed)
 	end)
 
 collapseButton:SetScript('OnClick', function(self)
-	if not AstralKeysSettings.frame.isCollapsed then
+	if not AstralKeysSettings.frame.isCollapsed.isEnabled then
 		if AstralKeyFrameCharacterFrame.expand:IsPlaying() then
 			AstralKeyFrameCharacterFrame.expand:Stop()
 		end
 		AstralKeyFrameCharacterFrame.collapse:Play()
-		AstralKeysSettings.frame.isCollapsed = true
+		AstralKeysSettings.frame.isCollapsed.isEnabled = true
 		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline-first_page-24px@2x')
 	else
 		if AstralKeyFrameCharacterFrame.collapse:IsPlaying() then
 			AstralKeyFrameCharacterFrame.collapse:Stop()
 		end
 		AstralKeyFrameCharacterFrame.expand:Play()
-		AstralKeysSettings.frame.isCollapsed = false
+		AstralKeysSettings.frame.isCollapsed.isEnabled = false
 		self:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline-last_page-24px@2x')
 	end
 	end)
@@ -514,7 +513,7 @@ do
 			if not self.affixID then return end
 			AstralKeyToolTip:SetOwner(self, 'ANCHOR_BOTTOMLEFT', 7, -2)
 			AstralKeyToolTip:AddLine(e.AffixName(self.affixID), 1, 1, 1)
-			if AstralKeysSettings.general.expanded_tooltip then
+			if AstralKeysSettings.general.expanded_tooltip.isEnabled then
 				AstralKeyToolTip:AddLine(e.AffixDescription(self.affixID), 1, 1, 1, true)
 			end
 			AstralKeyToolTip:Show()
@@ -580,7 +579,7 @@ do
 			if not self.affixID then return end
 			AstralKeyToolTip:SetOwner(self, 'ANCHOR_BOTTOMLEFT', 7, -2)			
 			AstralKeyToolTip:AddLine(e.AffixName(self.affixID), 1, 1, 1)
-			if AstralKeysSettings.general.expanded_tooltip then
+			if AstralKeysSettings.general.expanded_tooltip.isEnabled then
 				AstralKeyToolTip:AddLine(e.AffixDescription(self.affixID), 1, 1, 1, true)
 			end
 			AstralKeyToolTip:Show()
@@ -923,7 +922,7 @@ keyLevelButton:SetText(L['LEVEL'])
 keyLevelButton:SetAlpha(0.5)
 keyLevelButton:SetPoint('TOPLEFT', tabFrame, 'BOTTOMLEFT', 16, -5)
 keyLevelButton:SetScript('OnClick', function(self) ListButton_OnClick(self) end)
---[[
+
 local keyLevelSearchButton = CreateFrame('BUTTON', '$parentKeyLevelSearch', contentFrame)
 keyLevelSearchButton:SetSize(14, 14)
 keyLevelSearchButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline_search_white_18dp')
@@ -931,7 +930,7 @@ keyLevelSearchButton:SetPoint('LEFT', keyLevelButton, 'RIGHT', -5, 0)
 keyLevelSearchButton:SetAlpha(0)
 keyLevelSearchButton:SetFrameLevel(keyLevelButton:GetFrameLevel() + 1)
 
-local keyLevelSearchCloseButton = CreateFrame('BUTTON', '$parentDungeonSearch', contentFrame)
+local keyLevelSearchCloseButton = CreateFrame('BUTTON', '$parentKeyLevelSearchCloseButton', contentFrame)
 keyLevelSearchCloseButton.filterMethod = 'key_level'
 keyLevelSearchCloseButton:SetSize(8, 8)
 keyLevelSearchCloseButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline-close-24px@2x')
@@ -946,7 +945,7 @@ keyLevelSearchTextString:SetPoint('LEFT', keyLevelButton, 'LEFT')
 keyLevelSearchTextString:SetTextColor(1, 1, 1, 0.5)
 keyLevelSearchTextString:Hide()
 
-local keyLevelSearchTextInput = CreateFrame('EditBox', '%parentSearchInput', contentFrame)
+local keyLevelSearchTextInput = CreateFrame('EditBox', '%parentKeyLevelSearchInput', contentFrame)
 keyLevelSearchTextInput.filterMethod = 'key_level'
 keyLevelSearchTextInput:SetSize(30, 20)
 keyLevelSearchTextInput:SetPoint('RIGHT', keyLevelSearchButton, 'LEFT')
@@ -958,6 +957,8 @@ keyLevelSearchTextInput:EnableKeyboard(true)
 keyLevelSearchTextInput:Hide()
 
 keyLevelSearchTextInput:SetScript('OnEscapePressed', function(self)
+	FILTER_FIELDS[self.filterMethod] = ''
+	e.UpdateFrames()
 	self:ClearFocus()
 	keyLevelSearchTextString:Hide()
 	keyLevelSearchTextInput:Hide()
@@ -967,21 +968,24 @@ keyLevelSearchTextInput:SetScript('OnEscapePressed', function(self)
 	end)
 
 -- Avaiable search patterns:
+--	x		Looks for key level equalling to x
 --	x-		Looks for key levels equal to or less than x
 --	x+		Looks for key levels equal to or greater than x
---	x-y		Looks for key levels between x and y inclusive
--- x,y,z	Looks for keys equallying x, y, or z
 --
 -- Spaces will be removed from input text on search, space characters will not effect search results.
--- Leading or trailing commas will be removed as well.
 -- 
+
 keyLevelSearchTextInput:SetScript('OnEnterPressed', function(self)
 	self:ClearFocus()
-	filterText = self:GetText() or ''
-	filterText = filterText:gsub('%s', '') -- remove all space characters
-	if filterText:
-	FILTER_FIELDS[self.filterMethod] = filterText
+	FILTER_FIELDS[self.filterMethod] = self:GetText():gsub('%s', '')
 	e.UpdateFrames()
+	if self:GetText() == '' then
+		keyLevelSearchTextString:Hide()
+		keyLevelSearchTextInput:Hide()
+		keyLevelButton:Show()
+		keyLevelSearchCloseButton:Hide()
+		keyLevelSearchButton:Show()
+	end
 	end)
 
 keyLevelSearchTextInput:SetScript('OnTextChanged', function(self)
@@ -990,8 +994,7 @@ keyLevelSearchTextInput:SetScript('OnTextChanged', function(self)
 	else
 		keyLevelSearchTextString:Show()
 	end
-	filterText = self:GetText() or ''
-	FILTER_FIELDS[self.filterMethod] = filterText
+	FILTER_FIELDS[self.filterMethod] = self:GetText()
 	e.UpdateFrames()
 	end)
 
@@ -1030,7 +1033,7 @@ keyLevelSearchCloseButton:SetScript('OnClick', function(self)
 	keyLevelButton:Show()
 	e.UpdateFrames()
 	end)
-]]
+
 local dungeonButton = CreateFrame('BUTTON', '$parentDungeonButton', contentFrame)
 dungeonButton.sortMethod = 'dungeon_name'
 dungeonButton:SetSize(155, 20)
@@ -1040,7 +1043,7 @@ dungeonButton:SetText(L['DUNGEON'])
 dungeonButton:SetAlpha(0.5)
 dungeonButton:SetPoint('LEFT', keyLevelButton, 'RIGHT', 10, 0)
 dungeonButton:SetScript('OnClick', function(self) ListButton_OnClick(self) end)
---[[
+
 local dungeonSearchButton = CreateFrame('BUTTON', '$parentDungeonSearch', contentFrame)
 dungeonSearchButton:SetSize(14, 14)
 dungeonSearchButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline_search_white_18dp')
@@ -1048,7 +1051,7 @@ dungeonSearchButton:SetPoint('RIGHT', dungeonButton, 'RIGHT', -5, 0)
 dungeonSearchButton:SetAlpha(0)
 dungeonSearchButton:SetFrameLevel(dungeonButton:GetFrameLevel() + 1)
 
-local dungeonSearchCloseButton = CreateFrame('BUTTON', '$parentDungeonSearch', contentFrame)
+local dungeonSearchCloseButton = CreateFrame('BUTTON', '$parentDungeonSearchCloseButton', contentFrame)
 dungeonSearchCloseButton.filterMethod = 'dungeon_name'
 dungeonSearchCloseButton:SetSize(8, 8)
 dungeonSearchCloseButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline-close-24px@2x')
@@ -1064,7 +1067,7 @@ dungeonSearchTextString:SetTextColor(1, 1, 1, 0.5)
 dungeonSearchTextString:SetText(L['FILTER_TEXT_DUNGEON'])
 dungeonSearchTextString:Hide()
 
-local dungeonSearchTextInput = CreateFrame('EditBox', '%parentSearchInput', contentFrame)
+local dungeonSearchTextInput = CreateFrame('EditBox', '%parentDungeonSearchInput', contentFrame)
 dungeonSearchTextInput.filterMethod = 'dungeon_name'
 dungeonSearchTextInput:SetSize(135, 20)
 dungeonSearchTextInput:SetPoint('RIGHT', dungeonSearchButton, 'LEFT')
@@ -1076,6 +1079,8 @@ dungeonSearchTextInput:EnableKeyboard(true)
 dungeonSearchTextInput:Hide()
 
 dungeonSearchTextInput:SetScript('OnEscapePressed', function(self)
+	FILTER_FIELDS[self.filterMethod] = ''
+	e.UpdateFrames()
 	self:ClearFocus()
 	dungeonSearchTextString:Hide()
 	dungeonSearchTextInput:Hide()
@@ -1086,9 +1091,15 @@ dungeonSearchTextInput:SetScript('OnEscapePressed', function(self)
 
 dungeonSearchTextInput:SetScript('OnEnterPressed', function(self)
 	self:ClearFocus()
-	filterText = self:GetText() or ''
-	FILTER_FIELDS[self.filterMethod] = filterText
+	FILTER_FIELDS[self.filterMethod] = self:GetText()
 	e.UpdateFrames()
+	if self:GetText() == '' then
+		dungeonSearchCloseButton:Hide()
+		dungeonSearchButton:Show()
+		dungeonSearchTextInput:Hide()
+		dungeonSearchTextString:Hide()
+		dungeonButton:Show()
+	end
 	end)
 
 dungeonSearchTextInput:SetScript('OnTextChanged', function(self)
@@ -1097,8 +1108,7 @@ dungeonSearchTextInput:SetScript('OnTextChanged', function(self)
 	else
 		dungeonSearchTextString:Show()
 	end
-	filterText = self:GetText()
-	FILTER_FIELDS[self.filterMethod] = filterText
+	FILTER_FIELDS[self.filterMethod] = self:GetText()
 	e.UpdateFrames()
 	end)
 
@@ -1128,7 +1138,8 @@ dungeonButton:SetScript('OnLeave', function()
 	dungeonSearchButton:SetAlpha(0)
 	end)
 
-dungeonSearchCloseButton:SetScript('OnClick', function()
+dungeonSearchCloseButton:SetScript('OnClick', function(self)
+	FILTER_FIELDS[self.filterMethod] = ''
 	dungeonSearchCloseButton:Hide()
 	dungeonSearchButton:Show()
 	dungeonSearchTextInput:Hide()
@@ -1136,7 +1147,7 @@ dungeonSearchCloseButton:SetScript('OnClick', function()
 	dungeonButton:Show()
 	e.UpdateFrames()
 	end)
-]]
+
 local characterButton = CreateFrame('BUTTON', '$parentCharacterButton', contentFrame)
 characterButton.sortMethod = 'character_name'
 characterButton:SetSize(153, 20)
@@ -1146,6 +1157,111 @@ characterButton:SetText(L['CHARACTER'])
 characterButton:SetAlpha(0.5)
 characterButton:SetPoint('LEFT', dungeonButton, 'RIGHT')
 characterButton:SetScript('OnClick', function(self) ListButton_OnClick(self) end)
+
+
+local characterSearchButton = CreateFrame('BUTTON', '$parentCharacterSearch', contentFrame)
+characterSearchButton:SetSize(14, 14)
+characterSearchButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline_search_white_18dp')
+characterSearchButton:SetPoint('RIGHT', characterButton, 'RIGHT', -10, 0)
+characterSearchButton:SetAlpha(0)
+characterSearchButton:SetFrameLevel(characterButton:GetFrameLevel() + 1)
+
+local characterSearchCloseButton = CreateFrame('BUTTON', '$parentCharacterSearchCloseButton', contentFrame)
+characterSearchCloseButton.filterMethod = 'character_name'
+characterSearchCloseButton:SetSize(8, 8)
+characterSearchCloseButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline-close-24px@2x')
+characterSearchCloseButton:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
+characterSearchCloseButton:SetPoint('RIGHT', characterButton, 'RIGHT', -13, 1)
+characterSearchCloseButton:SetFrameLevel(characterButton:GetFrameLevel() + 1)
+characterSearchCloseButton:Hide()
+
+local characterSearchTextString = contentFrame:CreateFontString(nil, 'OVERLAY', 'InterUIBlack_Small')
+characterSearchTextString:SetJustifyH('LEFT')
+characterSearchTextString:SetPoint('LEFT', characterButton, 'LEFT')
+characterSearchTextString:SetTextColor(1, 1, 1, 0.5)
+characterSearchTextString:SetText(L['FILTER_TEXT_CHARACTER'])
+characterSearchTextString:Hide()
+
+local characterSearchTextInput = CreateFrame('EditBox', '%parentCharacterSearchInput', contentFrame)
+characterSearchTextInput.filterMethod = 'character_name'
+characterSearchTextInput:SetSize(133, 20)
+characterSearchTextInput:SetPoint('RIGHT', characterSearchButton, 'LEFT')
+characterSearchTextInput:SetFontObject(InterUIBlack_Small)
+characterSearchTextInput:SetJustifyH('LEFT')
+characterSearchTextInput:SetTextColor(1, 1, 1, 0.5)
+characterSearchTextInput:SetAutoFocus(false)
+characterSearchTextInput:EnableKeyboard(true)
+characterSearchTextInput:Hide()
+
+characterSearchTextInput:SetScript('OnEscapePressed', function(self)
+	FILTER_FIELDS[self.filterMethod] = ''
+	e.UpdateFrames()
+	self:ClearFocus()
+	characterSearchTextString:Hide()
+	characterSearchTextInput:Hide()
+	characterButton:Show()
+	characterSearchCloseButton:Hide()
+	characterSearchButton:Show()
+	end)
+
+characterSearchTextInput:SetScript('OnEnterPressed', function(self)
+	self:ClearFocus()
+	FILTER_FIELDS[self.filterMethod] = self:GetText()
+	e.UpdateFrames()
+	if self:GetText() == '' then
+		characterSearchCloseButton:Hide()
+		characterSearchButton:Show()
+		characterSearchTextInput:Hide()
+		characterSearchTextString:Hide()
+		characterButton:Show()
+	end
+	end)
+
+characterSearchTextInput:SetScript('OnTextChanged', function(self)
+	if not self:GetText() or self:GetText() ~= '' then
+		characterSearchTextString:Hide()
+	else
+		characterSearchTextString:Show()
+	end
+	FILTER_FIELDS[self.filterMethod] = self:GetText()
+	e.UpdateFrames()
+	end)
+
+characterSearchButton:SetScript('OnClick', function(self)
+	characterSearchTextString:Show()
+	self:Hide()
+	characterSearchCloseButton:Show()
+	characterButton:Hide()
+	characterSearchTextInput:Show()
+	characterSearchTextInput:SetFocus(true)
+	characterSearchTextInput:SetText('')
+	end)
+
+characterSearchButton:SetScript('OnEnter', function(self)
+	self:SetAlpha(0.8)
+	end)
+characterSearchButton:SetScript('OnLeave', function(self)
+	self:SetAlpha(0)
+	end)
+
+characterButton:SetScript('OnEnter', function()
+	characterSearchButton:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
+	characterSearchButton:SetAlpha(0.8)
+	end)
+
+characterButton:SetScript('OnLeave', function()
+	characterSearchButton:SetAlpha(0)
+	end)
+
+characterSearchCloseButton:SetScript('OnClick', function(self)
+	FILTER_FIELDS[self.filterMethod] = ''
+	characterSearchCloseButton:Hide()
+	characterSearchButton:Show()
+	characterSearchTextInput:Hide()
+	characterSearchTextString:Hide()
+	characterButton:Show()
+	e.UpdateFrames()
+	end)
 
 local weeklyBestButton = CreateFrame('BUTTON', '$parentWeeklyBestButton', contentFrame)
 weeklyBestButton.sortMethod = 'weekly_best'
@@ -1169,7 +1285,7 @@ function AstralKeyFrame:OnUpdate(elapsed)
 end
 
 function AstralKeyFrame:ToggleLists()
-	if AstralKeysSettings.friendOptions.friend_sync then
+	if AstralKeysSettings.friendOptions.friend_sync.isEnabled then
 		AstralKeyFrameTabFrameTabFRIENDS:Show()
 	else
 		AstralKeyFrameTabFrameTabFRIENDS:Hide()
@@ -1192,7 +1308,7 @@ AstralKeyFrame:SetScript('OnKeyDown', function(self, key)
 	end)
 
 AstralKeyFrame:SetScript('OnShow', function(self)
-	offLineButton:SetChecked(AstralKeysSettings.frame.show_offline)
+	offLineButton:SetChecked(AstralKeysSettings.frame.show_offline.isEnabled)
 	e.UpdateFrames()
 	e.UpdateCharacterFrames()
 	self:SetPropagateKeyboardInput(true)
@@ -1221,7 +1337,7 @@ local function InitializeFrame()
 
 	guildVersionString:SetFormattedText('Astral - Turalyon (US) %s', e.CLIENT_VERSION)
 
-	if AstralKeysSettings.frame.isCollapsed then
+	if AstralKeysSettings.frame.isCollapsed.isEnabled then
 		collapseButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline-first_page-24px@2x')
 		AstralKeyFrame:SetWidth(FRAME_WIDTH_MINIMIZED)
 		AstralKeyFrameCharacterFrame:Hide()
@@ -1229,11 +1345,11 @@ local function InitializeFrame()
 		collapseButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline-last_page-24px@2x')
 	end
 
-	if not AstralKeysSettings.friendOptions.friend_sync then
+	if not AstralKeysSettings.friendOptions.friend_sync.isEnabled then
 		AstralKeyFrameTabFrameTabFRIENDS:Hide()
 	end
 
-	offLineButton:SetChecked(AstralKeysSettings.frame.show_offline)
+	offLineButton:SetChecked(AstralKeysSettings.frame.show_offline.isEnabled)
 	HybridScrollFrame_CreateButtons(AstralKeyFrameCharacterFrameCharacterContainer, 'AstralCharacterFrameTemplate', 0, 0, 'TOPLEFT', 'TOPLEFT', 0, -10)
 	HybridScrollFrame_CreateButtons(AstralKeyFrameListContainer, 'AstralListFrameTemplate', 0, 0, 'TOPLEFT', 'TOPLEFT', 0, -10)
 

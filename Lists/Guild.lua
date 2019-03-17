@@ -178,7 +178,7 @@ local function GuildListSort(A, v)
 		table.sort(A, function(a, b)
 			local aOnline = e.GuildMemberOnline(a.character_name) and 1 or 0
 			local bOnline = e.GuildMemberOnline(b.character_name) and 1 or 0
-			if not AstralKeysSettings.frame.mingle_offline then
+			if not AstralKeysSettings.frame.mingle_offline.isEnabled then
 				aOnline = true
 				bOnline = true
 			end
@@ -224,7 +224,7 @@ local function GuildListSort(A, v)
 		table.sort(A, function(a, b)
 			local aOnline = e.GuildMemberOnline(a.character_name) and 1 or 0
 			local bOnline = e.GuildMemberOnline(b.character_name) and 1 or 0
-			if not AstralKeysSettings.frame.mingle_offline then
+			if not AstralKeysSettings.frame.mingle_offline.isEnabled then
 				aOnline = true
 				bOnline = true
 			end
@@ -257,29 +257,23 @@ e.AddListSort('GUILD', GuildListSort)
 local function GuildListFilter(A, filters)
 	if not type(A) == 'table' then return end
 
-	local keyLevelLowerBound, keyLevelUpperBound
-	--[[
-	if filters['key_level'] ~= '' then
-		local keyFilterText = fitlers['key_level']
+	local keyLevelLowerBound, keyLevelUpperBound = 2, 999
+
+	if filters['key_level'] ~= '' and filters['key_level'] ~= '1' then
+		local keyFilterText = filters['key_level']
 		if tonumber(keyFilterText) then -- only input a single key level
-			keyLevelLowerBound = keyFilterText
-			keyLevelUpperBound = keyFilterText
-		elseif string.match(keyFilterText, '%d+%+') -- Text input is <number>+, looking for any key at least <numnber>
-			keyLevelLowerBound = string.match(keyFilterText, '%d+')
-			keyLevelUpperBound = 999 -- Pseudo non-limit. No key should ever get this high
-		elseif string.find(keyFilterText, '-') then -- Either they are looking for an upper bound or a range.
-			if string.match(keyFilterText, '%d+%-') then -- Upper bound input
-				keyLevelUpperBound = string.match(keyFilterText, '%d+')
-				keyLevelLowerBound = 2 -- Lower level a key can be
-			elseif string.match(keyFilterText, '%d+-%d+') -- Looking for a range of keys
-				keyLevelLowerBound, keyLevelUpperBound = string.match(keyFilterText, '(%d+)-(%d+)')
-			end
+			keyLevelLowerBound = tonumber(keyFilterText)
+			keyLevelUpperBound = tonumber(keyFilterText)
+		elseif string.match(keyFilterText, '%d+%+') then -- Text input is <number>+, looking for any key at least <number>
+			keyLevelLowerBound = tonumber(string.match(keyFilterText, '%d+'))
+		elseif string.match(keyFilterText, '%d+%-') then -- Text input is <number>-, looking for a key no higher than <number>
+			keyLevelUpperBound = tonumber(string.match(keyFilterText, '%d+'))
 		end
-	end]]
+	end
 
 	for i = 1, #A.GUILD do
 		if e.UnitInGuild(A.GUILD[i].character_name) then
-			if AstralKeysSettings.frame.show_offline then
+			if AstralKeysSettings.frame.show_offline.isEnabled then
 				A.GUILD[i].isShown = true
 			else
 				A.GUILD[i].isShown = e.GuildMemberOnline(A.GUILD[i].character_name)
@@ -288,37 +282,27 @@ local function GuildListFilter(A, filters)
 			A.GUILD[i].isShown = A.GUILD[i].isShown and AstralKeysSettings.frame.rank_filter[e.GuildMemberRank(A.GUILD[i].character_name)]
 
 			local isShownInFilter = true -- Assume there is no filter taking place
-			--[[
+			
 			for field, filterText in pairs(filters) do
 				if filterText ~= '' then
 					isShownInFilter = false -- There is a filter, now assume this unit is not to be shown
 					if field == 'dungeon_name' then
 						local mapName = e.GetMapName(A.GUILD[i]['mapID'])
-						Console:AddLine('map', mapName)
 						if strfind(strlower(mapName), strlower(filterText)) then
 							isShownInFilter = true
 						end
 					elseif field == 'key_level' then
-						if tonumber(filterText) then -- only entered in a number
-							if strfind(strlower(A.GUILD[i][field]), strlower(filterText)) then
-								isShownInFilter = true
-							end
-						elseif string.match(filterText, '%d+%+') then
-							local keyLevel = string.match(filterText, '%d+')
-							if keyLevel <= tonumber(A.GUILD[i][field]) then
-								isShownInFilter = true
-							end
-						elseif string.match(filterText, '%d+%-')
-
-
+						if A.GUILD[i][field] >= keyLevelLowerBound and A.GUILD[i][field] <= keyLevelUpperBound then
+							isShownInFilter = true
+						end
 					else
-						if strfind(strlower(A.GUILD[i][field]), strlower(filterText)) then
+						if strfind(strlower(A.GUILD[i][field]):sub(1, A.GUILD[i][field]:find('-') - 1), strlower(filterText)) then
 							isShownInFilter = true
 						end
 					end
 				end
 				A.GUILD[i].isShown = A.GUILD[i].isShown and isShownInFilter
-			end]]
+			end
 			if A.GUILD[i].isShown then
 				A.numShown = A.numShown + 1
 			end

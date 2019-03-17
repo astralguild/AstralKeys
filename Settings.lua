@@ -83,6 +83,10 @@ end
 
 local function LoadDefaultSettings(addon)
 	if addon ~= ADDON_NAME then return end
+	if not AstralKeysSettings.new_settings_config then
+		wipe(AstralKeysSettings)
+		AstralKeysSettings.new_settings_config = true
+	end
 
 	e.CLIENT_VERSION = GetAddOnMetadata('AstralKeys', 'Version')
 	e:SetUIScale()
@@ -90,10 +94,19 @@ local function LoadDefaultSettings(addon)
 
 	-- General options
 	e:AddDefaultSettings('general', 'init_time', e.DataResetTime())
-	e:AddDefaultSettings('general', 'show_minimap_button', true)
-	e:AddDefaultSettings('general', 'show_tooltip_key', true)
-	e:AddDefaultSettings('general', 'announce_party', true)
-	e:AddDefaultSettings('general', 'announce_guild', false)
+	e:AddDefaultSettings('general', 'show_minimap_button', 
+	{
+		isEnabled = true,
+	})
+	e:AddDefaultSettings('general', 'show_tooltip_key', {
+		isEnabled = true,
+	})
+	e:AddDefaultSettings('general', 'announce_party', {
+		isEnabled = true,
+	})
+	e:AddDefaultSettings('general', 'announce_guild', {
+		isEnabled = false,
+	})
 	e:AddDefaultSettings('general', 'report_on_message', 
 	{
 		['party'] = true,
@@ -101,15 +114,23 @@ local function LoadDefaultSettings(addon)
 		['guild'] = false,
 		['no_key'] = false,
 	})
-	e:AddDefaultSettings('general', 'expanded_tooltip', true)
+	e:AddDefaultSettings('general', 'expanded_tooltip', {
+		isEnabled = true,
+	})
 
 	--Frame settings, collapsed, saved sorting, etc
 	e:AddDefaultSettings('frame', 'orientation', 1)
 	e:AddDefaultSettings('frame', 'sorth_method', 'character_name')
-	e:AddDefaultSettings('frame', 'isCollapsed', false)
+	e:AddDefaultSettings('frame', 'isCollapsed', {
+		isEnabled = false,
+	})
 	e:AddDefaultSettings('frame', 'current_list', 'GUILD')
-	e:AddDefaultSettings('frame', 'show_offline', true)
-	e:AddDefaultSettings('frame', 'mingle_offline', false)
+	e:AddDefaultSettings('frame', 'show_offline', {
+		isEnabled = true,
+	})
+	e:AddDefaultSettings('frame', 'mingle_offline', {
+		isEnabled = false,
+	})
 	e:AddDefaultSettings('frame', 'rank_filter', 
 	{
 		[1] = true,
@@ -125,8 +146,12 @@ local function LoadDefaultSettings(addon)
 	})
 
 	-- Friend syncing options
-	e:AddDefaultSettings('friendOptions', 'friend_sync', true)
-	e:AddDefaultSettings('friendOptions', 'show_other_faction', true)
+	e:AddDefaultSettings('friendOptions', 'friend_sync', {
+		isEnabled = true,
+	})
+	e:AddDefaultSettings('friendOptions', 'show_other_faction', {
+		isEnabled = true,
+	})
 	AstralEvents:Unregister('ADDON_LOADED', 'LoadDefaultSettings')
 end
 
