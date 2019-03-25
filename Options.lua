@@ -100,7 +100,7 @@ showMinimap:SetScript('OnClick', function(self)
 local showTooltip = e.CreateCheckBox(contentFrame, L['Show current key in tooltip'])
 showTooltip:SetPoint('TOPLEFT', showOffLine, 'BOTTOMLEFT', 0, -5)
 showTooltip:SetScript('OnClick', function(self)
-	AstralKeysSettings.frame.show_tooltip_key.isEnabled = self:GetChecked()
+	AstralKeysSettings.general.show_tooltip_key.isEnabled = self:GetChecked()
 	end)
 
 local mingleOffline = e.CreateCheckBox(contentFrame, L['Display offline below online'])

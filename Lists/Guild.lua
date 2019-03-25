@@ -260,7 +260,7 @@ local function GuildListFilter(A, filters)
 	local keyLevelLowerBound, keyLevelUpperBound = 2, 999
 
 	if filters['key_level'] ~= '' and filters['key_level'] ~= '1' then
-		local keyFilterText = filters['key_level']
+		local keyFilterText = filters['key_level']:gsub('[^0-9%+%-]', '')
 		if tonumber(keyFilterText) then -- only input a single key level
 			keyLevelLowerBound = tonumber(keyFilterText)
 			keyLevelUpperBound = tonumber(keyFilterText)

@@ -9,7 +9,7 @@ local SYNC_VERSION = 'sync5'
 e.UPDATE_VERSION = 'updateV8'
 
 local versionList = {}
-local highestVersion = 0
+local highestSubVersion, highestMajorVersion = 0, 0
 
 local messageStack = {}
 
@@ -197,11 +197,14 @@ end
 AstralComs:RegisterPrefix('GUILD', 'versionRequest', VersionRequest)
 
 local function VersionPush(msg, sender)
-	local version, class = msg:match('(%d+):(%a+)')
-	if tonumber(version) > highestVersion then
-		highestVersion = tonumber(version)
+	local majorVersion, subVersion, class = msg:match('(%d+).(%d+):(%a+)')
+	if tonumber(subVersion) > highestSubVersion then
+		highestSubVersion = tonumber(subVersion)
 	end
-	versionList[sender] = {version = version, class = class}
+	if tonumber(majorVersion) > highestMajorVersion then
+		highestMajorVersion = tonumber(majorVersion)
+	end
+	versionList[sender] = {subVersion = tonumber(subVersion), majorVersion = tonumber(majorVersion), class = class}
 end
 AstralComs:RegisterPrefix('GUILD', 'versionPush', VersionPush)
 
@@ -212,10 +215,10 @@ PrintVersion = function()
 
 	local i = 1
 	for k,v in pairs(versionList) do
-		if tonumber(v.version) < highestVersion then
-			outOfDate = outOfDate .. WrapTextInColorCode(Ambiguate(k, 'GUILD'), select(4, GetClassColor(v.class))) .. '(' .. v.version .. ') '
+		if v.majorVersion <= highestMajorVersion and tonumber(v.subVersion) < highestSubVersion then
+			outOfDate = outOfDate .. strformat('%s(%d.%d)', WrapTextInColorCode(Ambiguate(k, 'GUILD'), select(4, GetClassColor(v.class))), v.majorVersion, v.subVersion)
 		else
-			upToDate = upToDate .. WrapTextInColorCode(Ambiguate(k, 'GUILD'), select(4, GetClassColor(v.class))) .. '(' .. v.version .. ') '
+			upToDate = upToDate .. strformat('%s(%d.%d)', WrapTextInColorCode(Ambiguate(k, 'GUILD'), select(4, GetClassColor(v.class))), v.majorVersion, v.subVersion)
 		end
 	end
 
@@ -318,12 +321,12 @@ function e.AnnounceCharacterKeys(channel)
 	end
 end
 
-function e.AnnounceNewKey(keyLink, level)
+function e.AnnounceNewKey(keyLink)
 	if AstralKeysSettings.general.announce_party.isEnabled and IsInGroup() then
-		SendChatMessage(strformat(L['ANNOUNCE_NEW_KEY'], keyLink, level), 'PARTY')
+		SendChatMessage(strformat(L['ANNOUNCE_NEW_KEY'], keyLink), 'PARTY')
 	end
 	if AstralKeysSettings.general.announce_guild.isEnabled and IsInGuild() then
-		SendChatMessage(strformat(L['ANNOUNCE_NEW_KEY'], keyLink, level), 'GUILD')
+		SendChatMessage(strformat(L['ANNOUNCE_NEW_KEY'], keyLink), 'GUILD')
 	end
 end
 
