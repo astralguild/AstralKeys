@@ -60,7 +60,7 @@ function e:AddDefaultSettings(category, name, data)
 		AstralKeysSettings[category] = {}
 	end
 
-	if not AstralKeysSettings[category][name] then
+	if AstralKeysSettings[category][name] == nil then
 		AstralKeysSettings[category][name] = data
 	else
 		if type(data) == 'table' then

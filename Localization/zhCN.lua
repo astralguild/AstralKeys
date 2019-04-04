@@ -1,4 +1,4 @@
-local L = select(2, ...)[2]('enUS')
+local L = select(2, ...)[2]('zhCN')
 
 -- Default tab names
 L['GUILD'] = GUILD

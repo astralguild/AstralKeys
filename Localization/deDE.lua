@@ -1,4 +1,4 @@
-local L = select(2, ...)[2]('enUS')
+local L = select(2, ...)[2]('deDE')
 
 -- Default tab names
 L['GUILD'] = GUILD
@@ -38,6 +38,7 @@ L['KEYS_RESPOND_ON_NO_KEY'] = 'Respond even if you do not have a key'
 
 -- Search field texts
 L['FILTER_TEXT_DUNGEON'] = 'Filter by dungeon'
+L['FILTER_TEXT_CHARACTER'] = 'Filter by character name'
 
 -- Options
 L['!KEYS_DESC'] = 'Respond to !keys command in the following chat channels'

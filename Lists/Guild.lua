@@ -115,12 +115,8 @@ local function SyncReceive(entry, sender)
 
 			local id = e.UnitID(unit)
 			if id then
-				if weekly_best > AstralKeys[id][5] then
-					AstralKeys[id][5] = weekly_best
-				else
-					weekly_best = AstralKeys[id][5]
-				end
 				if AstralKeys[id][7] < timeStamp then
+					AstralKeys[id][5] = weekly_best >= AstralKeys[id][5] and weekly_best or AstralKeys[id][5]
 					AstralKeys[id][3] = dungeonID
 					AstralKeys[id][4] = keyLevel
 					AstralKeys[id][6] = week
