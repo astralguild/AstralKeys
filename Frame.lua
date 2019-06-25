@@ -226,7 +226,7 @@ AstralKeyToolTip:SetScript('OnShow', function(self)
 end)
 
 -- Skin the tooltip.
-for i = 1, 8 do
+for i = 1, 2 do
 	_G['AstralKeyToolTipTextRight' .. i]:SetFontObject(InterUIBold_Tiny)
 	_G['AstralKeyToolTipTextLeft' .. i]:SetFontObject(InterUIBold_Tiny)
 end
