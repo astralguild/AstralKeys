@@ -10,6 +10,8 @@ COLOUR[5] = 'ffe6cc80' -- Artifact
 
 e.MYTHICKEY_ITEMID = 158923
 
+MapIds = {}
+
 local function Weekly()
 	e.UpdateCharacterBest()
 	local characterID = e.GetCharacterID(e.Player())
@@ -29,6 +31,7 @@ end
 -- Blizzard has the same event being triggered for requesting the map information and the current M+ rewards. 
 local rewardsRequested = false
 local function InitData()
+	MapIds = C_ChallengeMode.GetMapTable()
 	if not rewardsRequested then
 		rewardsRequested = true
 		C_MythicPlus.RequestRewards()
@@ -129,7 +132,17 @@ end
 -- updates the information, else creates new entry for character
 function e.UpdateCharacterBest()
 	if UnitLevel('player') < 120 then return end
-	local bestLevel = C_MythicPlus.GetWeeklyChestRewardLevel() and not C_MythicPlus.IsWeeklyRewardAvailable() or 0
+
+	local bestLevel = 0
+
+	for _, map in pairs(MapIds) do
+		local _, weeklyBest = C_MythicPlus.GetWeeklyBestForMap(map)
+		if weeklyBest and weeklyBest > bestLevel then
+			bestLevel = weeklyBest
+		end
+	end
+
+	--local bestLevel = C_MythicPlus.GetWeeklyChestRewardLevel() and not C_MythicPlus.IsWeeklyRewardAvailable() or 0
 
 	local found = false
 
