@@ -79,7 +79,7 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 
 	local mapID = C_MythicPlus.GetOwnedKeystoneChallengeMapID()
 	local keyLevel = C_MythicPlus.GetOwnedKeystoneLevel()
-	local weeklyBest = C_MythicPlus.GetWeeklyChestRewardLevel() or 0
+	local weeklyBest = C_MythicPlus.GetWeeklyChestRewardLevel() and not C_MythicPlus.IsWeeklyRewardAvailable() or 0
 
 	local msg = ''
 
@@ -129,7 +129,7 @@ end
 -- updates the information, else creates new entry for character
 function e.UpdateCharacterBest()
 	if UnitLevel('player') < 120 then return end
-	local bestLevel = C_MythicPlus.GetWeeklyChestRewardLevel() or 0
+	local bestLevel = C_MythicPlus.GetWeeklyChestRewardLevel() and not C_MythicPlus.IsWeeklyRewardAvailable() or 0
 
 	local found = false
 
@@ -154,6 +154,7 @@ function e.UpdateCharacterBest()
 		e.SetCharacterID(e.Player(), #AstralCharacters)
 	end]]
 end
+AstralEvents:Register('BAG_UPDATE', e.UpdateCharacterBest, 'updateBestByBag')
 
 local function MythicPlusStart()
 	e.FindKeyStone(true, false)
