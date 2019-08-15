@@ -10,9 +10,9 @@ COLOUR[5] = 'ffe6cc80' -- Artifact
 
 e.MYTHICKEY_ITEMID = 158923
 
-MapIds = {}
+local MapIds = {}
 
-local function Weekly()
+local function UpdateWeekly()
 	e.UpdateCharacterBest()
 	local characterID = e.GetCharacterID(e.Player())
 	local characterWeeklyBest = e.GetCharacterBestLevel(characterID)
@@ -40,13 +40,13 @@ local function InitData()
 	AstralEvents:Unregister('CHALLENGE_MODE_MAPS_UPDATE', 'initData')
 	C_ChatInfo.RegisterAddonMessagePrefix('AstralKeys')
 	e.FindKeyStone(true, false)
-	e.UpdateCharacterBest()
+	e.UpdateCharacterBest() 	
 	if IsInGuild() then
 		AstralComs:NewMessage('AstralKeys', 'request', 'GUILD')
 	end
 
 	if UnitLevel('player') < 120 then return end
-	AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', Weekly, 'weeklyCheck')
+	AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', UpdateWeekly, 'weeklyCheck')
 end
 AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', InitData, 'initData')
 
@@ -82,7 +82,16 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 
 	local mapID = C_MythicPlus.GetOwnedKeystoneChallengeMapID()
 	local keyLevel = C_MythicPlus.GetOwnedKeystoneLevel()
-	local weeklyBest = C_MythicPlus.GetWeeklyChestRewardLevel() and not C_MythicPlus.IsWeeklyRewardAvailable() or 0
+	local weeklyBest = C_MythicPlus.GetWeeklyChestRewardLevel()
+	local isChestAvailable = C_MythicPlus.IsWeeklyRewardAvailable()
+	
+	--[[
+	Since the GetWeeklyChestRewardLevel() API calls returns the unopened chest over any key the player may have ran for the current week
+	this is a workaround for that.
+	]]
+	if isChestAvailable then
+		weeklyBest = 0
+	end
 
 	local msg = ''
 
@@ -133,29 +142,29 @@ end
 function e.UpdateCharacterBest()
 	if UnitLevel('player') < 120 then return end
 
-	local bestLevel = 0
-
-	for _, map in pairs(MapIds) do
-		local _, weeklyBest = C_MythicPlus.GetWeeklyBestForMap(map)
-		if weeklyBest and weeklyBest > bestLevel then
-			bestLevel = weeklyBest
-		end
+	local weeklyBest = C_MythicPlus.GetWeeklyChestRewardLevel()
+	local isChestAvailable = C_MythicPlus.IsWeeklyRewardAvailable()
+	
+	--[[
+	Since the GetWeeklyChestRewardLevel() API calls returns the unopened chest over any key the player may have ran for the current week
+	this is a workaround for that.
+	]]
+	if isChestAvailable then
+		weeklyBest = 0
 	end
-
-	--local bestLevel = C_MythicPlus.GetWeeklyChestRewardLevel() and not C_MythicPlus.IsWeeklyRewardAvailable() or 0
 
 	local found = false
 
 	for i = 1, #AstralCharacters do
 		if AstralCharacters[i].unit == e.Player() then
 			found = true
-			AstralCharacters[i].weekly_best = bestLevel
+			AstralCharacters[i].weekly_best = weeklyBest
 			break
 		end
 	end
 
 	if not found then
-		table.insert(AstralCharacters, {unit = e.Player(), class = e.PlayerClass(), weekly_best = bestLevel, faction = e.FACTION})
+		table.insert(AstralCharacters, {unit = e.Player(), class = e.PlayerClass(), weekly_best = weeklyBest, faction = e.FACTION})
 		e.SetCharacterID(e.Player(), #AstralCharacters)
 	end
 --[[
@@ -167,7 +176,6 @@ function e.UpdateCharacterBest()
 		e.SetCharacterID(e.Player(), #AstralCharacters)
 	end]]
 end
-AstralEvents:Register('BAG_UPDATE', e.UpdateCharacterBest, 'updateBestByBag')
 
 local function MythicPlusStart()
 	e.FindKeyStone(true, false)
