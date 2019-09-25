@@ -37,15 +37,17 @@ end
 -- @paremt index int Friend's list index that was updated
 function e.BNFriendUpdate(index)
 	if not index then return end -- No index, event fired from player
-	local presID, pName, battleTag, _, toonName, gaID, client = BNGetFriendInfo(index) -- Let's get some fresh info, client != 'WoW' when on character list it seems
 
-	if not gaID then return end -- No game pressence ID, can't talk to them then
-
-	local gameAccountInfo = C_BattleNet.GetGameAccountInfoByID(gaID)
+	local gameAccountInfo = C_BattleNet.GetFriendAccountInfo(index)
+	if not gameAccountInfo.gameAccountID then return end
 	if gameAccountInfo.wowProjectID ~= 1 then return end
 
-	if client == BNET_CLIENT_WOW and gameAccountInfo.wowProjectID == 1 and toonName then
-		local fullName = toonName .. '-' .. gameAccountInfo.realmName
+	if not gameAccountInfo.realmName then
+		gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(gameAccountInfo.gameAccountID)
+	end
+
+	if client == BNET_CLIENT_WOW and gameAccountInfo.wowProjectID == 1 then
+		local fullName = gameAccountInfo.characterName .. '-' .. gameAccountInfo.realmName
 		if FRIEND_LIST[fullName] then
 			FRIEND_LIST[fullName].guid = gameAccountInfo.playerGuid
 			FRIEND_LIST[fullName].pName = pName
@@ -162,6 +164,7 @@ AstralEvents:Register('FRIENDLIST_UPDATE', UpdateNonBNetFriendList, 'update_non_
 -- Friend Syncing
 
 local function RecieveKey(msg, sender)
+	print(sender)
 	if not AstralKeysSettings.friendOptions.friend_sync.isEnabled then return end
 	local btag
 	if type(sender) == 'number' then
