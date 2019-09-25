@@ -19,7 +19,6 @@ local FRIEND_LIST = {}
 -- Collect and store pressence, game pressence IDs
 
 local BNGetFriendInfo = BNGetFriendInfo
-local BNGetGameAccountInfo = BNGetGameAccountInfo
 
 -- BNGetNumFOF(BNetID) -- Seems to take first return value from BNGetFriendInfo
 
@@ -42,12 +41,13 @@ function e.BNFriendUpdate(index)
 
 	if not gaID then return end -- No game pressence ID, can't talk to them then
 
-	local guid = select(20, BNGetGameAccountInfo(gaID))
+	local gameAccountInfo = C_BattleNet.GetGameAccountInfoByID(gaID)
+	if gameAccountInfo.wowProjectID ~= 1 then return end
 
-	if client == BNET_CLIENT_WOW and toonName then
-		local fullName = toonName .. '-' .. select(4, BNGetGameAccountInfo(gaID))
+	if client == BNET_CLIENT_WOW and gameAccountInfo.wowProjectID == 1 and toonName then
+		local fullName = toonName .. '-' .. gameAccountInfo.realmName
 		if FRIEND_LIST[fullName] then
-			FRIEND_LIST[fullName].guid = guid
+			FRIEND_LIST[fullName].guid = gameAccountInfo.playerGuid
 			FRIEND_LIST[fullName].pName = pName
 			FRIEND_LIST[fullName].isConnected = true
 		end
@@ -56,7 +56,7 @@ function e.BNFriendUpdate(index)
 		end
 	end
 
-	if not BNFriendList[battleTag] then		
+	if not BNFriendList[battleTag] then
 		BNFriendList[battleTag] = {toonName = toonName, client = client, gaID = gaID, usingAK = false}
 	else
 		BNFriendList[battleTag].client = client --Update client, did they log off WoW?
@@ -138,16 +138,17 @@ local function UpdateNonBNetFriendList()
 	for i = 1, BNGetNumFriends() do
 		local presID, pName, battleTag, _, toonName, gaID, client = BNGetFriendInfo(i)
 		if gaID and toonName then
-		local guid = select(20, BNGetGameAccountInfo(gaID))
+			local gameAccountInfo = C_BattleNet.GetGameAccountInfoByID(gaID)
+			if gameAccountInfo.wowProjectID ~= 1 then return end
 			BNFriendList[battleTag] = {toonName = toonName, client = client, gaID = gaID, usingAK = false}
-			if client == BNET_CLIENT_WOW then
-				local fullName = toonName .. '-' .. select(4, BNGetGameAccountInfo(gaID))	
+			if client == BNET_CLIENT_WOW and gameAccountInfo.wowProjectID == 1 then -- 1 denotes retail wow project id compared to 2 for classic
+				local fullName = toonName .. '-' .. gameAccountInfo.realmName -- Character-Server
 				if NonBNFriend_List[fullName] then
 					NonBNFriend_List[fullName].isBtag = true -- don't need to send people on WoW friend and bnet friend the same data.
 				end
 				if FRIEND_LIST[fullName] then
 					FRIEND_LIST[fullName].isConnected = true
-					FRIEND_LIST[fullName].guid = guid
+					FRIEND_LIST[fullName].guid = gameAccountInfo.playerGuid
 					FRIEND_LIST[fullName].pName = pName
 				end
 			end
@@ -164,8 +165,9 @@ local function RecieveKey(msg, sender)
 	if not AstralKeysSettings.friendOptions.friend_sync.isEnabled then return end
 	local btag
 	if type(sender) == 'number' then
-		local bnetID = select(17, BNGetGameAccountInfo(sender))
-		btag = select(3, BNGetFriendInfo(BNGetFriendIndex(bnetID)))
+		local gameAccountInfo = C_BattleNet.GetAccountInfoByID(sender)
+		local accountInfo = C_BattleNet.GetAccountInfoByGUID(gameAccountInfo.playerGuid)
+		btag = accountInfo.battleTag
 	end
 
 	local timeStamp = e.WeekTime()
@@ -208,9 +210,10 @@ local function SyncFriendUpdate(entry, sender)
 	end
 
 	local btag
-	if type(sender) == 'number' then	
-		local bnetID = select(17, BNGetGameAccountInfo(sender))
-		btag = select(3, BNGetFriendInfo(BNGetFriendIndex(bnetID)))
+	if type(sender) == 'number' then
+		local gameAccountInfo = C_BattleNet.GetAccountInfoByID(sender)
+		local accountInfo = C_BattleNet.GetAccountInfoByGUID(gameAccountInfo.playerGuid)
+		btag = accountInfo.battleTag
 	end
 
 	if AstralKeyFrame:IsShown() then
@@ -346,12 +349,13 @@ local function PingFriendsForAstralKeys()
 
 	for i = 1, BNGetNumFriends() do
 		local presID, pName, battleTag, _, toonName, gaID, client = BNGetFriendInfo(i)
-
+		local gameAccountInfo = C_BattleNet.GetGameAccountInfoByID(gaID)
+		if gameAccountInfo.wowProjectID ~= 1 then return end
+		
 		if gaID then
-			local guid = select(20, BNGetGameAccountInfo(gaID))
-			BNFriendList[battleTag] = {toonName = toonName, client = client, gaID = gaID, usingAK = false}
+			BNFriendList[battleTag] = {toonName = toonName, client = client, gaID = gameAccountInfo.playerGuid, usingAK = false}
 			if client == BNET_CLIENT_WOW then
-				local fullName = toonName .. '-' .. select(4, BNGetGameAccountInfo(gaID))
+				local fullName = toonName .. '-' .. gameAccountInfo.realmName
 				if NonBNFriend_List[fullName] then
 					NonBNFriend_List[fullName].isBtag = true -- don't need to send people on WoW friend and bnet friend the same data.
 				end
@@ -383,8 +387,9 @@ end
 local function PingResponse(msg, sender)
 	local btag
 	if type(sender) == 'number' then
-		local bnetID = select(17, BNGetGameAccountInfo(sender))
-		btag = select(3, BNGetFriendInfoByID(BNGetFriendIndex(bnetID)))
+		local gameAccountInfo = C_BattleNet.GetAccountInfoByID(sender)
+		local accountInfo = C_BattleNet.GetAccountInfoByGUID(gameAccountInfo.playerGuid)
+		btag = accountInfo.battleTag
 	end
 
 	if BNFriendList[btag] then
@@ -631,10 +636,11 @@ do
 		local numGameAccounts = 0 
 
 		if bnetIDGameAccount then
-			local hasFocus, characterName, client, realmName, realmID, faction, race, class, _, zoneName, level, gameText = BNGetGameAccountInfo(bnetIDGameAccount)
+			local gameAccountInfo = C_BattleNet.GetGameAccountInfoByID(bnetIDGameAccount)
+			if gameAccountInfo.wowProjectID ~= 1 then return end
 
 			if client == BNET_CLIENT_WOW then
-				local characterName = characterName .. '-' .. realmName:gsub('%s+', '')
+				local characterName = gameAccountInfo.characterName .. '-' .. gameAccountInfo.realmName
 				local id = e.FriendID(characterName)
 
 				if id then
@@ -666,12 +672,14 @@ do
 		local characterNameString, gameInfoString, astralKeyString
 		if numGameAccounts > 1 then
 			for i = 1, numGameAccounts do
-				local hasFocus, characterName, client, realmName, realmID, faction, race, class, _, zoneName, level, gameText = BNGetFriendGameAccountInfo(self.id, i);
+				local gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(self.id, i)
+				--local hasFocus, characterName, client, realmName, realmID, faction, race, class, _, zoneName, level, gameText = BNGetFriendGameAccountInfo(self.id, i);
+
 				characterNameString = _G['FriendsTooltipGameAccount' .. i .. 'Name']
 				gameInfoString = _G['FriendsTooltipGameAccount' .. i .. 'Info']
 				astralKeyString = _G['FriendsTooltipAstralKeysInfo' .. i]
 				if client == BNET_CLIENT_WOW then
-					local characterName = characterName .. '-' .. realmName:gsub('%s+', '')
+					local characterName = gameAccountInfo.characterName .. '-' .. gameAccountInfo.realmName
 					local id = e.FriendID(characterName)
 					if id then
 						local keyLevel, dungeonID = AstralFriends[id][5], AstralFriends[id][4]
@@ -707,14 +715,15 @@ do
 		FriendsTooltipAstralKeysInfo1:Hide()
 	end
 
-	local buttons = FriendsFrameFriendsScrollFrame.buttons
+	local buttons = FriendsListFrameScrollFrame.buttons
 	for i = 1, #buttons do
 		local button = buttons[i]
 		button:HookScript("OnEnter", OnEnter)
 	end
 
 	FriendsTooltip:HookScript('OnHide', OnHide)
-	hooksecurefunc('FriendsFrameTooltip_Show', OnEnter)
+	FriendsTooltip:HookScript('OnShow', OnEnter)
+	--hooksecurefunc('FriendsFrameTooltip_Show', OnEnter)
 end
 
 local function TooltipHook(self)
