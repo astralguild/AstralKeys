@@ -353,7 +353,7 @@ local function PingFriendsForAstralKeys()
 		if gameAccountInfo.wowProjectID ~= 1 then return end
 
 		if gaID then
-			BNFriendList[battleTag] = {toonName = toonName, client = client, gaID = gameAccountInfo.playerGuid, usingAK = false}
+			BNFriendList[battleTag] = {toonName = toonName, client = client, gaID = gaID, usingAK = false}
 			if client == BNET_CLIENT_WOW then
 				local fullName = toonName .. '-' .. gameAccountInfo.realmName
 				if NonBNFriend_List[fullName] then
