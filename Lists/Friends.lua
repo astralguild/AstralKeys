@@ -351,7 +351,7 @@ local function PingFriendsForAstralKeys()
 		local presID, pName, battleTag, _, toonName, gaID, client = BNGetFriendInfo(i)
 		local gameAccountInfo = C_BattleNet.GetGameAccountInfoByID(gaID)
 		if gameAccountInfo.wowProjectID ~= 1 then return end
-		
+
 		if gaID then
 			BNFriendList[battleTag] = {toonName = toonName, client = client, gaID = gameAccountInfo.playerGuid, usingAK = false}
 			if client == BNET_CLIENT_WOW then
@@ -673,6 +673,7 @@ do
 		if numGameAccounts > 1 then
 			for i = 1, numGameAccounts do
 				local gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(self.id, i)
+				if gameAccountInfo.wowProjectID ~= 1 then return end
 				--local hasFocus, characterName, client, realmName, realmID, faction, race, class, _, zoneName, level, gameText = BNGetFriendGameAccountInfo(self.id, i);
 
 				characterNameString = _G['FriendsTooltipGameAccount' .. i .. 'Name']
