@@ -176,11 +176,11 @@ local function InviteUnit(self)
 	if e.FrameListShown() == 'FRIENDS' then
 		if AstralFriends[AstralMenuFrame.unit][2] then -- bnet friend
 			if self.inviteType == 'INVITE' then
-				BNInviteFriend(e.FriendGAID(e.Friend(AstralMenuFrame.unit)))
+				BNInviteFriend(e.GetFriendGaID(e.Friend(AstralMenuFrame.unit)))
 			elseif self.inviteType == 'REQUEST_INVITE' then
-				BNRequestInviteFriend(e.GetFriendGaID(AstralFriends[AstralMenuFrame.unit][2]))
+				BNRequestInviteFriend(e.GetFriendGaID(e.Friend(AstralMenuFrame.unit)))
 			elseif self.inviteType == 'SUGGEST_INVITE' then
-				BNInviteFriend(e.GetFriendGaID(AstralFriends[AstralMenuFrame.unit][2]))
+				BNInviteFriend(e.GetFriendGaID(e.Friend(AstralMenuFrame.unit)))
 			end
 		else
 			if self.inviteType == 'INVITE' then
