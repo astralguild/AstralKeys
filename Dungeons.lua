@@ -7,6 +7,10 @@ local function SetDungeonTable()
 
 	for _, mapID in pairs(dungeonTable) do
 		local name = C_ChallengeMode.GetMapUIInfo(mapID)
+		if not name then 
+			C_MythicPlus.RequestMapInfo()
+			break
+		end
 		DUNGEON_TABLE[mapID] = name
 	end
 	AstralEvents:Unregister('CHALLENGE_MODE_MAPS_UPDATE', 'SetDungeonTable')

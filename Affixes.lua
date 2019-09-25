@@ -18,21 +18,35 @@ Affix names corresponding to ID
 14 QUAKING
 15 RELENTLESS
 16 Infested
+
+Fortified	Bolstering	Grievous	Void
+Tyrannical	Raging	Explosive	Tides
+Fortified	Sanguine	Grievous	Enchanted
+Tyrannical	Teeming	Volcanic	Void
+Fortified	Bolstering	Skittish	Tides
+Tyrannical	Bursting	Necrotic	Enchanted
+Fortified	Sanguine	Quaking	Void
+Tyrannical	Bolstering	Explosive	Tides
+Fortified	Bursting	Volcanic	Enchanted
+Tyrannical	Raging	Necrotic	Void
+Fortified	Teeming	Quaking	Tides
+Tyrannical	Bursting	Skittish	Enchanted
+
 ]]
 
 local AFFIX_ROTATION = {
-	{10, 5, 14},
-	{9, 6, 4},
-	{10, 7, 2},
-	{9, 5, 3},
-	{10, 8, 12},
-	{9, 7, 13},
-	{10, 11, 14},
-	{9, 6, 3},
-	{10, 5, 13},
-	{9, 7, 12},
-	{10, 8, 4},
-	{9, 11, 2},
+	{10, 8, 14}, -- FORTIFIED, SANGUINE, QUAKING
+	{9, 7,13}, -- TYRANNICAL, BOLSTERING,EXPLOSIVE
+	{10, 11, 3}, -- FORTIFIED, BURSTING, VOLCANIC
+	{9, 6, 4}, -- TYRANNICAL, RAGING, NECROTIC
+	{10, 5, 14}, -- FORTIFIED, TEEMING, QUAKING
+	{9, 11, 2}, -- TYRANNICAL, BURSTING, SKITTISH
+	{10, 7, 12}, -- FORTIFIED, BOLSTERING, GRiEVOUS
+	{9, 6, 13}, -- TYRANNICAL, RAGING, EXPLOSIVE
+	{10, 8, 12}, -- FORTIFIED, SANGUINE, GRiEVOUS
+	{9, 5, 3}, -- TYRANNICAL, TEEMING, VOLCANIC
+	{10, 7, 2}, -- FORTIFIED, BOLSTERING, SKITTISH
+	{9, 11, 4}, -- TYRANNICAL, BURSTING, NECROTIC
 }
 
 local AFFIX_INFO = {}

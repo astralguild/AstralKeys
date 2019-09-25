@@ -44,7 +44,18 @@ function e.BNFriendUpdate(index)
 			BNFriendList[gameAccountInfo.gameAccountID] = nil
 		end
 		if gameAccountInfo and gameAccountInfo.clientProgram == BNET_CLIENT_WOW and gameAccountInfo.wowProjectID == 1 then
-			local fullName = gameAccountInfo.characterName .. '-' .. gameAccountInfo.realmName
+			local realmName
+			if gameAccountInfo.realmName then
+				realmName = gameAccountInfo.realmName
+			elseif gameAccountInfo.realmDisplayName then
+				realmName = gameAccountInfo.realmDisplayName:gsub('%s+', '')
+			elseif gameAccountInfo.richPresence and gameAccountInfo.richPresence:find('-') then
+				realmName = gameAccountInfo.richPresence:sub(gameAccountInfo.richPresence:find('-') + 1, -1):gsub('%s+', '') -- Character - Realm Name stripped down to RealmName
+			else
+				return
+			end
+
+			local fullName = gameAccountInfo.characterName .. '-' .. realmName
 			BNFriendList[gameAccountInfo.gameAccountID] = fullName
 			if FRIEND_LIST[fullName] then
 				local accountInfo = C_BattleNet.GetFriendAccountInfo(index)
@@ -131,7 +142,17 @@ local function UpdateNonBNetFriendList()
 				BNFriendList[gameAccountInfo.gameAccountID] = nil
 			end
 			if gameAccountInfo and gameAccountInfo.clientProgram == BNET_CLIENT_WOW and gameAccountInfo.wowProjectID == 1 then
-				local fullName = gameAccountInfo.characterName .. '-' .. gameAccountInfo.realmName
+				local realmName
+				if gameAccountInfo.realmName then
+					realmName = gameAccountInfo.realmName
+				elseif gameAccountInfo.realmDisplayName then
+					realmName = gameAccountInfo.realmDisplayName:gsub('%s+', '')
+				elseif gameAccountInfo.richPresence and gameAccountInfo.richPresence:find('-') then
+					realmName = gameAccountInfo.richPresence:sub(gameAccountInfo.richPresence:find('-') + 1, -1):gsub('%s+', '') -- Character - Realm Name stripped down to RealmName
+				else
+					return
+				end
+				local fullName = gameAccountInfo.characterName .. '-' .. realmName
 				BNFriendList[gameAccountInfo.gameAccountID] = fullName
 				if FRIEND_LIST[fullName] then
 					local accountInfo = C_BattleNet.GetFriendAccountInfo(index)
@@ -343,6 +364,9 @@ local function PingFriendsForAstralKeys()
 				BNFriendList[gameAccountInfo.gameAccountID] = nil
 			end
 			if gameAccountInfo and gameAccountInfo.clientProgram == BNET_CLIENT_WOW and gameAccountInfo.wowProjectID == 1 then
+				if not gameAccountInfo.realmName then
+					gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(index, gameIndex)
+				end
 				local fullName = gameAccountInfo.characterName .. '-' .. gameAccountInfo.realmName
 				BNFriendList[gameAccountInfo.gameAccountID] = fullName
 				if FRIEND_LIST[fullName] then
@@ -624,6 +648,9 @@ do
 			local astralKeyString = _G['FriendsTooltipAstralKeysInfo' .. gameIndex]
 
 			if gameAccountInfo.gameAccountID then
+				if not gameAccountInfo.realmName then
+					gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(index, gameIndex)
+				end
 				local fullName = gameAccountInfo.characterName .. '-' .. gameAccountInfo.realmName
 				local id = e.FriendID(fullName)
 
