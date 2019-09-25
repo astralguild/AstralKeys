@@ -47,7 +47,10 @@ function e.BNFriendUpdate(index)
 			local fullName = gameAccountInfo.characterName .. '-' .. gameAccountInfo.realmName
 			BNFriendList[gameAccountInfo.gameAccountID] = fullName
 			if FRIEND_LIST[fullName] then
+				local accountInfo = C_BattleNet.GetFriendAccountInfo(index)
+				FRIEND_LIST[fullName].accountName = accountInfo.accountName
 				FRIEND_LIST[fullName].guid = gameAccountInfo.playerGuid
+				FRIEND_LIST[fullName].isConnected = true
 			end
 			if NonBNFriend_List[fullName] then
 				NonBNFriend_List[fullName] = nil
@@ -83,6 +86,10 @@ end
 
 function e.FriendGUID(unit)
 	return FRIEND_LIST[unit].guid
+end
+
+function e.FriendPresName(unit)
+	return FRIEND_LIST[unit].accountName
 end
 
 function e.WipeFriendList()
@@ -127,7 +134,10 @@ local function UpdateNonBNetFriendList()
 				local fullName = gameAccountInfo.characterName .. '-' .. gameAccountInfo.realmName
 				BNFriendList[gameAccountInfo.gameAccountID] = fullName
 				if FRIEND_LIST[fullName] then
+					local accountInfo = C_BattleNet.GetFriendAccountInfo(index)
+					FRIEND_LIST[fullName].accountName = accountInfo.accountName
 					FRIEND_LIST[fullName].guid = gameAccountInfo.playerGuid
+					FRIEND_LIST[fullName].isConnected = true
 				end
 				if NonBNFriend_List[fullName] then
 					NonBNFriend_List[fullName] = nil
@@ -287,25 +297,21 @@ end
 function e.PushKeyDataToFriends(data, target)
 	if not target then
 		for gaID in pairs(BNFriendList) do
-			if unit.client == BNET_CLIENT_WOW then --and unit.usingAk then -- Only send if they are in WoW
-				if type(data) == 'table' then
-					for i = 1, #data do
-						AstralComs:NewMessage('AstralKeys', strformat('%s %s', SYNC_VERSION, data[i]), 'BNET', gaID)
-					end
-				else
-					AstralComs:NewMessage('AstralKeys', strformat('%s %s', UPDATE_VERSION, data), 'BNET', gaID)
+			if type(data) == 'table' then
+				for i = 1, #data do
+					AstralComs:NewMessage('AstralKeys', strformat('%s %s', SYNC_VERSION, data[i]), 'BNET', gaID)
 				end
+			else
+				AstralComs:NewMessage('AstralKeys', strformat('%s %s', UPDATE_VERSION, data), 'BNET', gaID)
 			end
 		end
 		for player in pairs(NonBNFriend_List) do
-			if not player.isBtag then
-				if type(data) == 'table' then
-					for i = 1, #data do
-						AstralComs:NewMessage('AstralKeys', strformat('%s %s', SYNC_VERSION, data[i]), 'WHISPER', player)
-					end
-				else
-					AstralComs:NewMessage('AstralKeys', strformat('%s %s', UPDATE_VERSION, data), 'WHISPER', player)
+			if type(data) == 'table' then
+				for i = 1, #data do
+					AstralComs:NewMessage('AstralKeys', strformat('%s %s', SYNC_VERSION, data[i]), 'WHISPER', player)
 				end
+			else
+				AstralComs:NewMessage('AstralKeys', strformat('%s %s', UPDATE_VERSION, data), 'WHISPER', player)
 			end
 		end
 	else
@@ -340,7 +346,10 @@ local function PingFriendsForAstralKeys()
 				local fullName = gameAccountInfo.characterName .. '-' .. gameAccountInfo.realmName
 				BNFriendList[gameAccountInfo.gameAccountID] = fullName
 				if FRIEND_LIST[fullName] then
+					local accountInfo = C_BattleNet.GetFriendAccountInfo(index)
+					FRIEND_LIST[fullName].accountName = accountInfo.accountName
 					FRIEND_LIST[fullName].guid = gameAccountInfo.playerGuid
+					FRIEND_LIST[fullName].isConnected = true
 				end
 				if NonBNFriend_List[fullName] then
 					NonBNFriend_List[fullName] = nil
