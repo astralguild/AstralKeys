@@ -60,6 +60,7 @@ function e.BNFriendUpdate(index)
 			if FRIEND_LIST[fullName] then
 				local accountInfo = C_BattleNet.GetFriendAccountInfo(index)
 				FRIEND_LIST[fullName].accountName = accountInfo.accountName
+				FRIEND_LIST[fullName].battleTag = accountInfo.battleTag
 				FRIEND_LIST[fullName].guid = gameAccountInfo.playerGuid
 				FRIEND_LIST[fullName].isConnected = true
 			end
@@ -157,6 +158,7 @@ local function UpdateNonBNetFriendList()
 				if FRIEND_LIST[fullName] then
 					local accountInfo = C_BattleNet.GetFriendAccountInfo(index)
 					FRIEND_LIST[fullName].accountName = accountInfo.accountName
+					FRIEND_LIST[fullName].battleTag = accountInfo.battleTag
 					FRIEND_LIST[fullName].guid = gameAccountInfo.playerGuid
 					FRIEND_LIST[fullName].isConnected = true
 				end
@@ -169,17 +171,42 @@ local function UpdateNonBNetFriendList()
 end
 AstralEvents:Register('FRIENDLIST_UPDATE', UpdateNonBNetFriendList, 'update_non_bnet_list')
 
+local function GetBattleTagFromGameAccountID(gaID)
+	if not gaID or type(gaID) == 'number' then
+		error('GetBattleTagFromGameAccountID(gaID) number expected, received ' .. type(gaID))
+	end
+
+	for index = 1, BNGetNumFriends() do
+		for gameIndex = 1, C_BattleNet.GetFriendNumGameAccounts(index) do
+			local gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(index, gameIndex)		
+			if gameAccountInfo and gameAccountInfo.gameAccountID and gameAccountInfo.gameAccountID == gaID then
+				local accountInfo = C_BattleNet.GetFriendAccountInfo(index)
+				if  accountInfo then 
+					return accountInfo.battleTag
+				end
+			end
+		end
+	end
+	return nil
+end
+
+
 ----------------------------------------------------
 ----------------------------------------------------
 -- Friend Syncing
 
 local function RecieveKey(msg, sender)
 	if not AstralKeysSettings.friendOptions.friend_sync.isEnabled then return end
-	local btag
-	if type(sender) == 'number' then
+	local btag = FRIEND_LIST[fullName].battleTag
+	if not btag then
 		local gameAccountInfo = C_BattleNet.GetGameAccountInfoByID(sender)
-		local accountInfo = C_BattleNet.GetAccountInfoByGUID(gameAccountInfo.playerGuid)
-		btag = accountInfo.battleTag
+		if not gameAccountInfo.playerGuid then
+			btag = GetBattleTagFromGameAccountID(gaID)
+			if not btag then
+				-- I have no clue here but dip out because we need the battleTag for other stuff
+				return
+			end
+		end
 	end
 
 	local timeStamp = e.WeekTime()
@@ -364,16 +391,24 @@ local function PingFriendsForAstralKeys()
 				BNFriendList[gameAccountInfo.gameAccountID] = nil
 			end
 			if gameAccountInfo and gameAccountInfo.clientProgram == BNET_CLIENT_WOW and gameAccountInfo.wowProjectID == 1 then
-				if not gameAccountInfo.realmName then
-					gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(index, gameIndex)
+				local realmName
+				if gameAccountInfo.realmName then
+					realmName = gameAccountInfo.realmName
+				elseif gameAccountInfo.realmDisplayName then
+					realmName = gameAccountInfo.realmDisplayName:gsub('%s+', '')
+				elseif gameAccountInfo.richPresence and gameAccountInfo.richPresence:find('-') then
+					realmName = gameAccountInfo.richPresence:sub(gameAccountInfo.richPresence:find('-') + 1, -1):gsub('%s+', '') -- Character - Realm Name stripped down to RealmName
+				else
+					return
 				end
-				local fullName = gameAccountInfo.characterName .. '-' .. gameAccountInfo.realmName
+				local fullName = gameAccountInfo.characterName .. '-' .. realmName
 				BNFriendList[gameAccountInfo.gameAccountID] = fullName
 				if FRIEND_LIST[fullName] then
 					local accountInfo = C_BattleNet.GetFriendAccountInfo(index)
 					FRIEND_LIST[fullName].accountName = accountInfo.accountName
 					FRIEND_LIST[fullName].guid = gameAccountInfo.playerGuid
 					FRIEND_LIST[fullName].isConnected = true
+					FRIEND_LIST[fullName].battleTag = accountInfo.battleTag
 				end
 				if NonBNFriend_List[fullName] then
 					NonBNFriend_List[fullName] = nil
@@ -648,10 +683,17 @@ do
 			local astralKeyString = _G['FriendsTooltipAstralKeysInfo' .. gameIndex]
 
 			if gameAccountInfo.gameAccountID then
-				if not gameAccountInfo.realmName then
-					gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(index, gameIndex)
+				local realmName
+				if gameAccountInfo.realmName then
+					realmName = gameAccountInfo.realmName
+				elseif gameAccountInfo.realmDisplayName then
+					realmName = gameAccountInfo.realmDisplayName:gsub('%s+', '')
+				elseif gameAccountInfo.richPresence and gameAccountInfo.richPresence:find('-') then
+					realmName = gameAccountInfo.richPresence:sub(gameAccountInfo.richPresence:find('-') + 1, -1):gsub('%s+', '') -- Character - Realm Name stripped down to RealmName
+				else
+					return
 				end
-				local fullName = gameAccountInfo.characterName .. '-' .. gameAccountInfo.realmName
+				local fullName = gameAccountInfo.characterName .. '-' .. realmName
 				local id = e.FriendID(fullName)
 
 				if id then
