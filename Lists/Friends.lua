@@ -172,7 +172,7 @@ end
 AstralEvents:Register('FRIENDLIST_UPDATE', UpdateNonBNetFriendList, 'update_non_bnet_list')
 
 local function GetBattleTagFromGameAccountID(gaID)
-	if not gaID or type(gaID) == 'number' then
+	if not gaID or not type(gaID) == 'number' then
 		error('GetBattleTagFromGameAccountID(gaID) number expected, received ' .. type(gaID))
 	end
 
