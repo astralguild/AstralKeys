@@ -75,9 +75,9 @@ AstralEvents:Register('BN_FRIEND_INFO_CHANGED', e.BNFriendUpdate, 'update_BNFrie
 ----------------------------------------------------
 ----------------------------------------------------
 -- Friend Indexing
-
-function e.SetFriendID(unit, id)
-	FRIEND_LIST[unit] = {id = id, isConnected = false}
+-- accountName is not stored, battleTag is.
+function e.SetFriendID(unit, id, battleTag, accountName)
+	FRIEND_LIST[unit] = {id = id, isConnected = false, battleTag = battleTag, accountName = accountName}
 end
 
 function e.FriendID(unit)
@@ -119,6 +119,20 @@ end
 ----------------------------------------------------
 ---- Non BNet Friend stuff
 
+local function serverRequestRespond(gameAccountID)
+	if not gameAccountID or type(gameAccountID) ~= 'number' then
+		return
+	end
+
+	local realm = unitRealm('player')
+
+	if realm then
+		realm = realm:gsub('%s+', '')
+	end
+
+	AstralComs:NewMessage('AstralKeys', 'serverRespond', realm, gameAccountID)
+end
+
 local function UpdateNonBNetFriendList()
 	wipe(NonBNFriend_List)
 
@@ -152,6 +166,7 @@ local function UpdateNonBNetFriendList()
 					realmName = gameAccountInfo.richPresence:sub(gameAccountInfo.richPresence:find('-') + 1, -1):gsub('%s+', '') -- Character - Realm Name stripped down to RealmName
 				else
 					return
+					--AstralComs:NewMessage('AstralKeys', 'serverRequest', 'BNET', gameAccountInfo.gameAccountID) -- Let's just ask them for their ID since Blizzard is refusing to give it to us.
 				end
 				local fullName = gameAccountInfo.characterName .. '-' .. realmName
 				BNFriendList[gameAccountInfo.gameAccountID] = fullName
@@ -197,20 +212,37 @@ end
 
 local function RecieveKey(msg, sender)
 	if not AstralKeysSettings.friendOptions.friend_sync.isEnabled then return end
-	local btag = FRIEND_LIST[fullName].battleTag
+	
+	local timeStamp = e.WeekTime()
+	local unit, class, dungeonID, keyLevel, weekly_best, week, faction = strsplit(':', msg)
+
+	local btag
+	local gameAccountInfo = C_BattleNet.GetGameAccountInfoByID(sender)
+	local accountInfo = C_BattleNet.GetAccountInfoByGUID(gameAccountInfo.playerGuid)
+
+	if FRIEND_LIST[unit] then 
+		btag = FRIEND_LIST[unit].battleTag
+	end
+
 	if not btag then
-		local gameAccountInfo = C_BattleNet.GetGameAccountInfoByID(sender)
+		gameAccountInfo = C_BattleNet.GetGameAccountInfoByID(sender)
 		if not gameAccountInfo.playerGuid then
 			btag = GetBattleTagFromGameAccountID(gaID)
 			if not btag then
 				-- I have no clue here but dip out because we need the battleTag for other stuff
 				return
 			end
+		else
+			accountInfo = C_BattleNet.GetAccountInfoByGUID(gameAccountInfo.playerGuid)
+			btag = accountInfo.battleTag
 		end
 	end
 
-	local timeStamp = e.WeekTime()
-	local unit, class, dungeonID, keyLevel, weekly_best, week, faction = strsplit(':', msg)
+	if not btag then
+		-- Cry in a cornner and ask why Blizzard's API isn't returning values
+		-- Seriously, just ask them for their btag, queue the information to be added, and then
+		return
+	end
 
 	dungeonID = tonumber(dungeonID)
 	keyLevel = tonumber(keyLevel)
@@ -227,7 +259,7 @@ local function RecieveKey(msg, sender)
 		AstralFriends[id][9] = weekly_best
 	else
 		AstralFriends[#AstralFriends + 1] = {unit, btag, class, dungeonID, keyLevel, week, timeStamp, faction, weekly_best}
-		e.SetFriendID(unit, #AstralFriends)
+		e.SetFriendID(unit, #AstralFriends, btag, accountInfo.accountName)
 		ShowFriends()
 	end
 
@@ -673,50 +705,51 @@ do
 
 		for gameIndex = 1, C_BattleNet.GetFriendNumGameAccounts(self.id) do
 			local gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(self.id, gameIndex)
-
-			if (not gameAccountInfo) or (gameAccountInfo.clientProgram ~= BNET_CLIENT_WOW) or (gameAccountInfo.wowProjectID ~= 1) then return end -- They aren't using retail wow
-
-			if not FriendsTooltip.maxWidth then return end -- Why? Who knows
-
 			local characterNameString = _G['FriendsTooltipGameAccount' .. gameIndex .. 'Name']
 			local gameInfoString = _G['FriendsTooltipGameAccount' .. gameIndex .. 'Info']
 			local astralKeyString = _G['FriendsTooltipAstralKeysInfo' .. gameIndex]
+			--if not FriendsTooltip.maxWidth then return end -- Why? Who knows
 
-			if gameAccountInfo.gameAccountID then
-				local realmName
-				if gameAccountInfo.realmName then
-					realmName = gameAccountInfo.realmName
-				elseif gameAccountInfo.realmDisplayName then
-					realmName = gameAccountInfo.realmDisplayName:gsub('%s+', '')
-				elseif gameAccountInfo.richPresence and gameAccountInfo.richPresence:find('-') then
-					realmName = gameAccountInfo.richPresence:sub(gameAccountInfo.richPresence:find('-') + 1, -1):gsub('%s+', '') -- Character - Realm Name stripped down to RealmName
-				else
-					return
-				end
-				local fullName = gameAccountInfo.characterName .. '-' .. realmName
-				local id = e.FriendID(fullName)
+			if (gameAccountInfo) and (gameAccountInfo.clientProgram == BNET_CLIENT_WOW) and (gameAccountInfo.wowProjectID == 1) then -- They are playing retail WoW
 
-				if id then
-					local keyLevel, dungeonID = AstralFriends[id][5], AstralFriends[id][4]
-					astralKeyString:SetWordWrap(false)
-					astralKeyString:SetFormattedText("|cffffd200Current Keystone|r\n%d - %s", keyLevel, e.GetMapName(dungeonID))
-					astralKeyString:SetWordWrap(true)
-					astralKeyString:SetPoint('TOP', characterNameString, 'BOTTOM', 3, -4)
-					gameInfoString:SetPoint('TOP', astralKeyString, 'BOTTOM', 0, 0)
-					astralKeyString:Show()
-					stringShown = true
-					FriendsTooltip.height = FriendsTooltip:GetHeight() + astralKeyString:GetStringHeight()
-					FriendsTooltip.maxWidth = max(FriendsTooltip.maxWidth, astralKeyString:GetStringWidth() + left)
-				else
-					astralKeyString:SetText('')
-					astralKeyString:Hide()
-					gameInfoString:SetPoint('TOP', characterNameString, 'BOTTOM', 0, -4)
+				if gameAccountInfo.gameAccountID then
+					local realmName
+					if gameAccountInfo.realmName then
+						realmName = gameAccountInfo.realmName
+					elseif gameAccountInfo.realmDisplayName then
+						realmName = gameAccountInfo.realmDisplayName:gsub('%s+', '')
+					elseif gameAccountInfo.richPresence and gameAccountInfo.richPresence:find('-') then
+						realmName = gameAccountInfo.richPresence:sub(gameAccountInfo.richPresence:find('-') + 1, -1):gsub('%s+', '') -- Character - Realm Name stripped down to RealmName
+					else
+						print('I still don\'t have a realm name')
+					end
+					local fullName = gameAccountInfo.characterName .. '-' .. realmName
+					local id = e.FriendID(fullName)
+					if id then
+						local keyLevel, dungeonID = AstralFriends[id][5], AstralFriends[id][4]
+						astralKeyString:SetWordWrap(false)
+						astralKeyString:SetFormattedText("|cffffd200Current Keystone|r\n%d - %s", keyLevel, e.GetMapName(dungeonID))
+						astralKeyString:SetWordWrap(true)
+						astralKeyString:SetPoint('TOP', characterNameString, 'BOTTOM', 3, -4)
+						gameInfoString:SetPoint('TOP', astralKeyString, 'BOTTOM', 0, 0)
+						astralKeyString:Show()
+						stringShown = true
+						FriendsTooltip.height = FriendsTooltip:GetHeight() + astralKeyString:GetStringHeight() + 8
+						FriendsTooltip.maxWidth = max(FriendsTooltip.maxWidth, astralKeyString:GetStringWidth() + left)
+					else
+						astralKeyString:SetText('')
+						astralKeyString:Hide()
+						gameInfoString:SetPoint('TOP', characterNameString, 'BOTTOM', 0, -4)
+					end
 				end
+			else
+				astralKeyString:SetText('')
+				astralKeyString:Hide()
 			end
 		end
 		
 		FriendsTooltip:SetWidth(min(FRIENDS_TOOLTIP_MAX_WIDTH, FriendsTooltip.maxWidth + FRIENDS_TOOLTIP_MARGIN_WIDTH));
-		FriendsTooltip:SetHeight(FriendsTooltip.height + (stringShown and 0 or FRIENDS_TOOLTIP_MARGIN_WIDTH))
+		FriendsTooltip:SetHeight(FriendsTooltip.height + (stringShown and 0 or (FRIENDS_TOOLTIP_MARGIN_WIDTH + 8)))
 	end
 
 	function OnHide()
@@ -727,11 +760,16 @@ do
 	local buttons = FriendsListFrameScrollFrame.buttons
 	for i = 1, #buttons do
 		local button = buttons[i]
+		local oldOnEnter = button.OnEnter
+		function button:OnEnter()
+			oldOnEnter(self)
+			OnEnter(self)
+		end
 		button:HookScript("OnEnter", OnEnter)
 	end
 
 	FriendsTooltip:HookScript('OnHide', OnHide)
-	FriendsTooltip:HookScript('OnShow', OnEnter)
+	FriendsTooltip:HookScript('OnEnter', OnEnter)
 	--hooksecurefunc('FriendsFrameTooltip_Show', OnEnter)
 end
 

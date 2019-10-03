@@ -75,5 +75,9 @@ DUNGEON_TABLE[353] = {}
 DUNGEON_TABLE[353]['name'] = 'Siege of Boralus'
 
 function e.GetMapName(mapID)
-	return DUNGEON_TABLE[tonumber(mapID)]
+	if type(DUNGEON_TABLE[mapID]) == 'table' then
+		return DUNGEON_TABLE[mapID].name
+	else
+		return DUNGEON_TABLE[mapID]
+	end
 end
