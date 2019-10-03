@@ -721,25 +721,27 @@ do
 					elseif gameAccountInfo.richPresence and gameAccountInfo.richPresence:find('-') then
 						realmName = gameAccountInfo.richPresence:sub(gameAccountInfo.richPresence:find('-') + 1, -1):gsub('%s+', '') -- Character - Realm Name stripped down to RealmName
 					else
-						print('I still don\'t have a realm name')
+						-- I really don't know what is going on with their API....
 					end
-					local fullName = gameAccountInfo.characterName .. '-' .. realmName
-					local id = e.FriendID(fullName)
-					if id then
-						local keyLevel, dungeonID = AstralFriends[id][5], AstralFriends[id][4]
-						astralKeyString:SetWordWrap(false)
-						astralKeyString:SetFormattedText("|cffffd200Current Keystone|r\n%d - %s", keyLevel, e.GetMapName(dungeonID))
-						astralKeyString:SetWordWrap(true)
-						astralKeyString:SetPoint('TOP', characterNameString, 'BOTTOM', 3, -4)
-						gameInfoString:SetPoint('TOP', astralKeyString, 'BOTTOM', 0, 0)
-						astralKeyString:Show()
-						stringShown = true
-						FriendsTooltip.height = FriendsTooltip:GetHeight() + astralKeyString:GetStringHeight() + 8
-						FriendsTooltip.maxWidth = max(FriendsTooltip.maxWidth, astralKeyString:GetStringWidth() + left)
-					else
-						astralKeyString:SetText('')
-						astralKeyString:Hide()
-						gameInfoString:SetPoint('TOP', characterNameString, 'BOTTOM', 0, -4)
+					if realmName then
+						local fullName = gameAccountInfo.characterName .. '-' .. realmName
+						local id = e.FriendID(fullName)
+						if id then
+							local keyLevel, dungeonID = AstralFriends[id][5], AstralFriends[id][4]
+							astralKeyString:SetWordWrap(false)
+							astralKeyString:SetFormattedText("|cffffd200Current Keystone|r\n%d - %s", keyLevel, e.GetMapName(dungeonID))
+							astralKeyString:SetWordWrap(true)
+							astralKeyString:SetPoint('TOP', characterNameString, 'BOTTOM', 3, -4)
+							gameInfoString:SetPoint('TOP', astralKeyString, 'BOTTOM', 0, 0)
+							astralKeyString:Show()
+							stringShown = true
+							FriendsTooltip.height = FriendsTooltip:GetHeight() + astralKeyString:GetStringHeight() + 8
+							FriendsTooltip.maxWidth = max(FriendsTooltip.maxWidth, astralKeyString:GetStringWidth() + left)
+						else
+							astralKeyString:SetText('')
+							astralKeyString:Hide()
+							gameInfoString:SetPoint('TOP', characterNameString, 'BOTTOM', 0, -4)
+						end
 					end
 				end
 			else
