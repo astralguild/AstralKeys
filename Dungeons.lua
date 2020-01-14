@@ -5,6 +5,10 @@ local DUNGEON_TABLE = {}
 local function SetDungeonTable()
 	local dungeonTable = C_ChallengeMode.GetMapTable()
 
+	if not dungeonTable then
+		C_MythicPlus.RequestMapInfo()
+	end
+
 	for _, mapID in pairs(dungeonTable) do
 		local name = C_ChallengeMode.GetMapUIInfo(mapID)
 		if not name then 
@@ -73,6 +77,10 @@ DUNGEON_TABLE[252] = {}
 DUNGEON_TABLE[252]['name'] = 'Shrine of the Storm'
 DUNGEON_TABLE[353] = {}
 DUNGEON_TABLE[353]['name'] = 'Siege of Boralus'
+DUNGEON_TABLE[369] = {}
+DUNGEON_TABLE[369]['name'] = 'Operation Mechagon - Junkyard'
+DUNGEON_TABLE[370] = {}
+DUNGEON_TABLE[370]['name'] = 'Operation Mechagon - Workshop'
 
 function e.GetMapName(mapID)
 	if type(DUNGEON_TABLE[mapID]) == 'table' then

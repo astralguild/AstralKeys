@@ -135,6 +135,9 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 		e.AddUnitToTable(AstralFriends[i][1], AstralFriends[i][3], AstralFriends[i][8], 'FRIENDS',  AstralFriends[i][4], AstralFriends[i][5], AstralFriends[i][9], AstralFriends[i][2])
 	end
 
+	if AstralAffixes.season_start_week == 0 then -- Addon has just initialized for the fisrt time or saved variables have been lost. 
+		AstralAffixes.season_start_week = e.Week
+	end
 	C_MythicPlus.RequestMapInfo() -- Gets info on affixes and current season...
 	C_MythicPlus.RequestCurrentAffixes() -- Who knows what this actually does...
 

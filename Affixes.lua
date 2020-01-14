@@ -1,5 +1,12 @@
 local e, L = unpack(select(2, ...))
 
+if not AstralAffixes then
+	AstralAffixes = {}
+	AstralAffixes.rotation = {}
+	AstralAffixes.season_start_week = 0
+	AstralAffixes.season_affix = 0
+end
+
 --[[
 Affix names corresponding to ID
 1 OVERFLOWING
@@ -51,17 +58,67 @@ local AFFIX_ROTATION = {
 
 local AFFIX_INFO = {}
 local SEASON_AFFIX = 0
+local ROTATION_WEEK_POSITION = 0
+local AffixOneID, AffixTwoID, AffixThreeID = 0, 0, 0 -- Used to always show the current week's affixes irregardless if the rotation is known or not
+
+-- Checks to see if the current week's affixes have been stored already
+-- @param affixString string String representation of affixes, single digits are padded with leading 0's. ex. 100612 would be 10, 06, 12
+-- @return Boolean False by default, true the affixes are found within the db
+local function AreAffixesAlreadyStored(affixString)
+	local rotation = AstralAffixes.rotation
+	local rotationString
+
+	for i = 1, #rotation do
+		rotationString = string.format('%02d%02d%02d', rotation[i][1], rotation[i][2], rotation[i][3])
+		if rotationString == affixString then
+			return true
+		end
+	end
+
+	return false
+end
+
+
+-- Finds the index of the current week's affixes in the table
+-- @param affixOne Integers id for corresponding affix
+-- @param affixTwo Integers id for corresponding affix
+-- @param affixThree Integers id for corresponding affix
+-- @return returnIndex integer defaults to 0 if the affixes are not found in the table, else returns the index the rotation is found
+local function GetRotationPosition(affixOne, affixTwo, affixThree)
+	local returnIndex = 0
+
+	for i = 1, #AFFIX_ROTATION do
+		if AFFIX_ROTATION[i][1] == affixOne and AFFIX_ROTATION[i][2] == affixTwo and AFFIX_ROTATION[i][3] == affixThree then
+			returnIndex = i
+			break
+		end
+	end
+
+	return returnIndex
+end
 
 local function UpdateMythicPlusAffixes()
 	local affixes = C_MythicPlus.GetCurrentAffixes()
-	if not affixes or not C_ChallengeMode.GetAffixInfo(1) then
+	if not affixes or not C_ChallengeMode.GetAffixInfo(1) then -- affixes have not loaded, re-request the info
 		C_MythicPlus.RequestMapInfo()
 		C_MythicPlus.RequestCurrentAffixes()
 		return
 	end
 	
-	SEASON_AFFIX = affixes[4].id
+	SEASON_AFFIX = affixes[4].id -- Set the season affix id
+	AffixOneID = affixes[1].id
+	AffixTwoID = affixes[2].id
+	AffixThreeID = affixes[3].id
 
+	ROTATION_WEEK_POSITION = GetRotationPosition(affixes[1].id, affixes[2].id, affixes[3].id)
+
+	if SEASON_AFFIX ~= AstralAffixes.season_affix then -- Season has changed
+		AstralAffixes.rotation = {} -- Wipe the table
+		AstralAffixes.season_affix = SEASON_AFFIX -- Change the season affix
+		AstralAffixes.season_start_week = e.Week -- Set the starting week
+	end
+
+	-- Store the affix info for all the affixes, name, description
 	local affixId = 1
 	while (C_ChallengeMode.GetAffixInfo(affixId)) do
 		local name, desc = C_ChallengeMode.GetAffixInfo(affixId)
@@ -69,6 +126,7 @@ local function UpdateMythicPlusAffixes()
 		affixId = affixId + 1
 	end
 
+	-- Store the season affix info
 	local name, desc = C_ChallengeMode.GetAffixInfo(SEASON_AFFIX)
 	AFFIX_INFO[SEASON_AFFIX] = {name = name, description = desc}
 	
@@ -80,21 +138,38 @@ AstralEvents:Register('MYTHIC_PLUS_CURRENT_AFFIX_UPDATE', UpdateMythicPlusAffixe
 
 function e.AffixOne(weekOffSet)
 	local offSet = weekOffSet or 0
-	local week = (e.Week + offSet) % 12
+
+	if offSet == 0 then
+		return AffixOneID
+	end
+
+	local week = (ROTATION_WEEK_POSITION + weekOffSet) % 12
+	--local week = (e.Week + offSet) % 12
 	if week == 0 then week = 12 end
 	return AFFIX_ROTATION[week][1]
 end
 
 function e.AffixTwo(weekOffSet)
 	local offSet = weekOffSet or 0
-	local week = (e.Week + offSet) % 12
+
+	if offSet == 0 then
+		return AffixTwoID
+	end
+	local week = (ROTATION_WEEK_POSITION + weekOffSet) % 12
+--	local week = (e.Week + offSet) % 12
 	if week == 0 then week = 12 end
 	return AFFIX_ROTATION[week][2]
 end
 
 function e.AffixThree(weekOffSet)
 	local offSet = weekOffSet or 0
-	local week = (e.Week + offSet) % 12
+
+	if offSet == 0 then
+		return AffixThreeID
+	end
+
+	local week = (ROTATION_WEEK_POSITION + weekOffSet) % 12	
+--	local week = (e.Week + offSet) % 12
 	if week == 0 then week = 12 end
 	return AFFIX_ROTATION[week][3]
 
@@ -123,7 +198,8 @@ end
 
 function e.GetAffixID(id, weekOffSet)
 	local offSet = weekOffSet or 0
-	local week = (e.Week + offSet) % 12
+	--local week = (e.Week + offSet) % 12
+	local week = (ROTATION_WEEK_POSITION + weekOffSet) % 12	
 	if week == 0 then week = 12 end
 	return AFFIX_ROTATION[week][id] or SEASON_AFFIX
 end

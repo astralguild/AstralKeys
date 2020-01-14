@@ -96,7 +96,7 @@ function menuFrame:NewObject(name, func, onShow)
 	btn:SetSize(135, 20)
 	btn:SetBackdrop(BACKDROP2)
 	btn:SetBackdropBorderColor(0, 0, 0, 0)
-	btn:SetBackdropColor(25/255, 25/255, 25/255)
+	btn:SetBackdropColor(33/255, 33/255, 33/255)
 	btn:SetNormalFontObject(InterUIBlack_Normal)
 
 	local texture = btn:CreateTexture()
@@ -125,7 +125,7 @@ function menuFrame:AddSelection(name, onClick, onShow)
 		dtbl[#dtbl]:HookScript('OnClick', HideMenu)
 	end
 
-	dtbl[#dtbl]:SetPoint('TOPLEFT', self, 'TOPLEFT', 15, -20*(#dtbl) -5)
+	dtbl[#dtbl]:SetPoint('TOPLEFT', self, 'TOPLEFT', 12, -20*(#dtbl) -5)
 end
 
 local reportFrame = CreateFrame('FRAME', 'AstralReportFrame', UIParent)
