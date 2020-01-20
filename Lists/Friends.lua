@@ -66,7 +66,6 @@ function e.BNFriendUpdate(index)
 			if FRIEND_LIST[fullName] then
 				FRIEND_LIST[fullName].accountName = accountInfo.accountName
 				FRIEND_LIST[fullName].battleTag = accountInfo.battleTag
-				FRIEND_LIST[fullName].guid = gameAccountInfo.playerGuid
 				FRIEND_LIST[fullName].isConnected = true
 			end
 			if NonBNFriend_List[fullName] then
@@ -151,7 +150,7 @@ local function UpdateNonBNetFriendList()
 	for i = 1, select(2, GetNumFriends()) do -- Only parse over online friends
 		local name, _, _, _, isConnected, _, _, _, guid = GetFriendInfo(i)
 		name = strformat('%s-%s', GetFriendInfo(i), e.PlayerRealm())
-
+		NonBNFriend_List[name] = {isConnected = isConnected}
 		if FRIEND_LIST[name] then
 			FRIEND_LIST[name].isConnected = true
 			FRIEND_LIST[name].guid = guid
@@ -471,8 +470,8 @@ end
 e.AddListFilter('FRIENDS', FriendFilter)
 
 local function CompareFriendNames(a, b)
-	local s = string.lower(a.btag) or '|'
-	local t = string.lower(b.btag) or '|'
+	local s = string.lower(a.btag or '|')
+	local t = string.lower(b.btag or '|')
 	if AstralKeysSettings.frame.orientation == 0 then
 		if s > t then
 			return true
