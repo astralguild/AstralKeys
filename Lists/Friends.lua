@@ -217,8 +217,6 @@ local function SyncFriendUpdate(entry, sender)
 
 	local btag
 	if type(sender) == 'number' then
-		--local gameAccountInfo = C_BattleNet.GetGameAccountInfoByID(sender)
-		--local accountInfo = C_BattleNet.GetAccountInfoByGUID(gameAccountInfo.playerGuid)
 		btag = BNET_GAID_TO_BATTLETAG[sender]
 	end
 

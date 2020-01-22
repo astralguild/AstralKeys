@@ -15,7 +15,14 @@ local function SetDungeonTable()
 			C_MythicPlus.RequestMapInfo()
 			break
 		end
-		DUNGEON_TABLE[mapID] = name
+		if mapID == 369 then
+			DUNGEON_TABLE[mapID] = 'Mechagon - Junkyard'
+		elseif mapID == 370 then
+			DUNGEON_TABLE[mapID] = 'Mechagon - Workshop'
+		else
+			DUNGEON_TABLE[mapID] = name
+		end
+
 	end
 	AstralEvents:Unregister('CHALLENGE_MODE_MAPS_UPDATE', 'SetDungeonTable')
 end
@@ -78,9 +85,9 @@ DUNGEON_TABLE[252]['name'] = 'Shrine of the Storm'
 DUNGEON_TABLE[353] = {}
 DUNGEON_TABLE[353]['name'] = 'Siege of Boralus'
 DUNGEON_TABLE[369] = {}
-DUNGEON_TABLE[369]['name'] = 'Operation Mechagon - Junkyard'
+DUNGEON_TABLE[369]['name'] = 'Mechagon - Junkyard'
 DUNGEON_TABLE[370] = {}
-DUNGEON_TABLE[370]['name'] = 'Operation Mechagon - Workshop'
+DUNGEON_TABLE[370]['name'] = 'Mechagon - Workshop'
 
 function e.GetMapName(mapID)
 	if type(DUNGEON_TABLE[mapID]) == 'table' then
