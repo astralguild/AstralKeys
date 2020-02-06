@@ -90,6 +90,10 @@ DUNGEON_TABLE[370] = {}
 DUNGEON_TABLE[370]['name'] = 'Mechagon - Workshop'
 
 function e.GetMapName(mapID)
+	if mapID == 369 or mapID == 370 then
+		local name = C_ChallengeMode.GetMapUIInfo(mapID)
+		return name
+	end
 	if type(DUNGEON_TABLE[mapID]) == 'table' then
 		return DUNGEON_TABLE[mapID].name
 	else
