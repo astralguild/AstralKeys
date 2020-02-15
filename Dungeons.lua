@@ -16,9 +16,9 @@ local function SetDungeonTable()
 			break
 		end
 		if mapID == 369 then
-			DUNGEON_TABLE[mapID] = 'Mechagon - Junkyard'
+			DUNGEON_TABLE[mapID] = 'Junkyard'
 		elseif mapID == 370 then
-			DUNGEON_TABLE[mapID] = 'Mechagon - Workshop'
+			DUNGEON_TABLE[mapID] = 'Workshop'
 		else
 			DUNGEON_TABLE[mapID] = name
 		end
@@ -85,15 +85,11 @@ DUNGEON_TABLE[252]['name'] = 'Shrine of the Storm'
 DUNGEON_TABLE[353] = {}
 DUNGEON_TABLE[353]['name'] = 'Siege of Boralus'
 DUNGEON_TABLE[369] = {}
-DUNGEON_TABLE[369]['name'] = 'Mechagon - Junkyard'
+DUNGEON_TABLE[369]['name'] = 'Junkyard'
 DUNGEON_TABLE[370] = {}
-DUNGEON_TABLE[370]['name'] = 'Mechagon - Workshop'
+DUNGEON_TABLE[370]['name'] = 'Workshop'
 
 function e.GetMapName(mapID)
-	if mapID == 369 or mapID == 370 then
-		local name = C_ChallengeMode.GetMapUIInfo(mapID)
-		return name
-	end
 	if type(DUNGEON_TABLE[mapID]) == 'table' then
 		return DUNGEON_TABLE[mapID].name
 	else

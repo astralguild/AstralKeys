@@ -53,7 +53,13 @@ AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', InitData, 'initData')
 --|cffa335ee|Hkeystone:158923:251:12:10:5:13:117|h[Keystone: The Underrot (12)]|h|r
 -- COLOUR[3] returns epic color hex code
 function e.CreateKeyLink(mapID, keyLevel)
-	return strformat('|c' .. COLOUR[3] .. '|Hkeystone:158923:%d:%d:%d:%d:%d:%d|h[Keystone: %s (%d)]|h|r', mapID, keyLevel, e.AffixOne(), e.AffixTwo(), e.AffixThree(), e.AffixFour(), e.GetMapName(mapID), keyLevel):gsub('\124\124', '\124')
+	local mapName
+	if mapID == 369 or mapID == 370 then
+		mapName = C_ChallengeMode.GetMapUIInfo(mapID)		
+	else
+		mapName = e.GetMapName(mapID)
+	end
+	return strformat('|c' .. COLOUR[3] .. '|Hkeystone:158923:%d:%d:%d:%d:%d:%d|h[Keystone: %s (%d)]|h|r', mapID, keyLevel, e.AffixOne(), e.AffixTwo(), e.AffixThree(), e.AffixFour(), mapName, keyLevel):gsub('\124\124', '\124')
 end
 
 AstralEvents:Register('CHALLENGE_MODE_COMPLETED', function()
