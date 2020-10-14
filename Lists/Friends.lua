@@ -1,5 +1,4 @@
 local e, L = unpack(select(2, ...))
-local MAX_LEVEL = 120
 
 local SYNC_VERSION = 'sync4'
 local UPDATE_VERSION = 'update4'
@@ -23,7 +22,7 @@ local BNGetFriendInfo = BNGetFriendInfo
 
 -- BNGetNumFOF(BNetID) -- Seems to take first return value from BNGetFriendInfo
 
-local isConnected = BNConnected() -- Determine if connected to BNet, if not disable all comms, check for BN_CONNECTED to re-enable communications, BN_DISCONNECTED disable communications on this event
+--local isConnected = BNConnected() -- Determine if connected to BNet, if not disable all comms, check for BN_CONNECTED to re-enable communications, BN_DISCONNECTED disable communications on this event
 
 -- Returns a player's game account ID
 -- @param characterName string Full character name of the player being looked up
@@ -49,7 +48,7 @@ function e.BNFriendUpdate(index)
 		if BNFriendList[gameAccountInfo.gameAccountID] and gameAccountInfo.clientProgram ~= BNET_CLIENT_WOW and gameAccountInfo.wowProjectID ~= 1 then -- They are logged into the client, but they are not logged into retail WoW
 			BNFriendList[gameAccountInfo.gameAccountID] = nil
 		end
-		if gameAccountInfo and gameAccountInfo.clientProgram == BNET_CLIENT_WOW and gameAccountInfo.wowProjectID == 1 then
+		if gameAccountInfo and gameAccountInfo.clientProgram == BNET_CLIENT_WOW and gameAccountInfo.wowProjectID == 1 then --1 is used for retail
 			local realmName
 			if gameAccountInfo.realmName then
 				realmName = gameAccountInfo.realmName
@@ -64,8 +63,13 @@ function e.BNFriendUpdate(index)
 			local fullName = gameAccountInfo.characterName .. '-' .. realmName
 			BNFriendList[gameAccountInfo.gameAccountID] = fullName
 			if FRIEND_LIST[fullName] then
-				FRIEND_LIST[fullName].accountName = accountInfo.accountName
-				FRIEND_LIST[fullName].battleTag = accountInfo.battleTag
+				FRIEND_LIST[fullName].account_name = accountInfo.accountName
+				FRIEND_LIST[fullName].battle_tag = accountInfo.battleTag
+				FRIEND_LIST[fullName].isConnected = true
+			else
+				FRIEND_LIST[fullName] = {}
+				FRIEND_LIST[fullName].account_name = accountInfo.accountName
+				FRIEND_LIST[fullName].battle_tag = accountInfo.battleTag
 				FRIEND_LIST[fullName].isConnected = true
 			end
 			if NonBNFriend_List[fullName] then
@@ -81,34 +85,14 @@ AstralEvents:Register('BN_FRIEND_INFO_CHANGED', e.BNFriendUpdate, 'update_BNFrie
 
 ----------------------------------------------------
 ----------------------------------------------------
--- Friend Indexing
--- accountName is not stored, battleTag is.
-function e.SetFriendID(unit, id, battleTag)
-	FRIEND_LIST[unit] = {id = id, isConnected = false, battleTag = battleTag}
-end
-
-function e.FriendID(unit)
-	if FRIEND_LIST[unit] then
-		return FRIEND_LIST[unit].id
-	else
-		return nil
-	end
-end
-
-function e.Friend(id)
-	return AstralFriends[id][1]
-end
-
-function e.FriendName(id)
-	return AstralFriends[id][1]:sub(1, AstralFriends[id][1]:find('-') - 1)
-end
-
 function e.FriendGUID(unit)
+	if not FRIEND_LIST[unit] then return nil end
 	return FRIEND_LIST[unit].guid
 end
 
 function e.FriendPresName(unit)
-	return FRIEND_LIST[unit].accountName
+	if not FRIEND_LIST[unit] then return nil end
+	return FRIEND_LIST[unit].account_name
 end
 
 function e.WipeFriendList()
@@ -147,8 +131,8 @@ local function UpdateNonBNetFriendList()
 		v.isConnected = false
 	end
 
-	for i = 1, select(2, GetNumFriends()) do -- Only parse over online friends
-		local name, _, _, _, isConnected, _, _, _, guid = GetFriendInfo(i)
+	for i = 1, C_FriendList.GetNumOnlineFriends() do
+		local name, _, _, _, isConnected, _, _, _, guid = C_FriendList.GetFriendInfo(i)
 		name = strformat('%s-%s', GetFriendInfo(i), e.PlayerRealm())
 		NonBNFriend_List[name] = {isConnected = isConnected}
 		if FRIEND_LIST[name] then
@@ -184,22 +168,35 @@ local function RecieveKey(msg, sender)
 	week = tonumber(week)
 	weekly_best = tonumber(weekly_best)
 
-	local id = e.FriendID(unit)
+	local id = e.UnitID(unit)
 
 	if id then
-		AstralFriends[id][4] = dungeonID
-		AstralFriends[id][5] = keyLevel
-		AstralFriends[id][6] = week
-		AstralFriends[id][7] = timeStamp
-		AstralFriends[id][9] = weekly_best
+		AstralKeys[id].dungeon_id = dungeonID
+		AstralKeys[id].key_level = keyLevel
+		AstralKeys[id].week = week
+		AstralKeys[id].time_stamp = timeStamp
+		AstralKeys[id].weekly_best = weekly_best
+		AstralKeys[id].btag = btag
 	else
-		AstralFriends[#AstralFriends + 1] = {unit, btag, class, dungeonID, keyLevel, week, timeStamp, faction, weekly_best}
-		e.SetFriendID(unit, #AstralFriends, btag)
-		ShowFriends()
+		table.insert(AstralKeys, {
+			unit = unit,
+			btag = btag,
+			class = class,
+			dungeon_id = dungeonID,
+			key_level = keyLevel,
+			week = week,
+			time_stamp = timeStamp,
+			faction = faction,
+			weekly_best = weekly_best,
+			source = 'friend',
+		})
+		e.SetUnitID(unit, #AstralKeys)
+		C_FriendList.ShowFriends()
 	end
+	e.AddUnitToSortTable(unit, btag, class, faction, dungeonID, keyLevel, weekly_best, 'FRIENDS')
+	e.AddUnitToList(unit, 'FRIENDS', btag)
 
-	e.AddUnitToTable(unit, class, faction, 'FRIENDS', dungeonID, keyLevel, weekly_best, btag)
-
+	msg = nil
 	if e.FrameListShown() == 'FRIENDS' then 
 		e.UpdateFrames()
 	end
@@ -241,21 +238,36 @@ local function SyncFriendUpdate(entry, sender)
 		weekly_best = tonumber(weekly_best)
 
 		if week >= e.Week then
-			local id = e.FriendID(unit)
+			local id = e.UnitID(unit)
 			if id then
-				AstralFriends[id][4] = dungeonID
-				AstralFriends[id][5] = keyLevel
-				AstralFriends[id][6] = week
-				AstralFriends[id][7] = timeStamp
-				AstralFriends[id][9] = weekly_best
+				AstralKeys[id].dungeon_id = dungeonID
+				AstralKeys[id].key_level = keyLevel
+				AstralKeys[id].week = week
+				AstralKeys[id].time_stamp = timeStamp
+				AstralKeys[id].weekly_best = weekly_best
+				AstralKeys[id].btag = btag
 			else
-				AstralFriends[#AstralFriends + 1] = {unit, btag, class, dungeonID, keyLevel, week, timeStamp, faction, weekly_best}
-				e.SetFriendID(unit, #AstralFriends)
-				ShowFriends()
+				table.insert(AstralKeys, {
+					unit = unit,
+					btag = btag,
+					class = class,
+					dungeon_id = dungeonID,
+					key_level = keyLevel,
+					week = week,
+					time_stamp = timeStamp,
+					faction = faction,
+					weekly_best = weekly_best,
+					source = 'friend'
+				})
+				e.SetUnitID(unit, #AstralKeys)
+				C_FriendList.ShowFriends()
 			end
-			e.AddUnitToTable(unit, class, faction, 'FRIENDS', dungeonID, keyLevel, weekly_best, btag)
+			e.AddUnitToList(unit, 'FRIENDS', btag)
+			e.AddUnitToSortTable(unit, btag, class, faction, dungeonID, keyLevel, weekly_best, 'FRIENDS')
+			--e.AddUnitToTable(unit, class, faction, 'FRIENDS', dungeonID, keyLevel, weekly_best, btag)
 		end
 	end
+	entry = nil
 end
 AstralComs:RegisterPrefix('BNET', SYNC_VERSION, SyncFriendUpdate)
 AstralComs:RegisterPrefix('WHISPER', SYNC_VERSION, SyncFriendUpdate)
@@ -263,10 +275,10 @@ AstralComs:RegisterPrefix('WHISPER', SYNC_VERSION, SyncFriendUpdate)
 local function UpdateWeekly(msg)
 	local unit, weekly_best = strsplit(':', msg)
 
-	local id = e.FriendID(unit)
+	local id = e.UnitID(unit)
 	if id then
-		AstralFriends[id][9] = tonumber(weekly_best)
-		AstralFriends[id][7] = e.WeekTime()
+		AstralKeys[id].weekly_best = tonumber(weekly_best)
+		AstralKeys[id].time_stamp = e.WeekTime()
 	end
 end
 AstralComs:RegisterPrefix('BNET', 'friendWeekly', UpdateWeekly)
@@ -342,7 +354,7 @@ end
 -- Let's find out which friends are using Astral Keys, no need to spam every friend, just the ones using Astral keys
 local function PingFriendsForAstralKeys()
 	if not AstralKeysSettings.friendOptions.friend_sync.isEnabled then return end
-	for i = 1, select(2, GetNumFriends()) do -- Only parse over online friends
+	for i = 1, C_FriendList.GetNumOnlineFriends() do -- Only parse over online friends
 		local name, _, _, _, isConnected, _, _, _, guid = GetFriendInfo(i)
 		name = strformat('%s-%s', GetFriendInfo(i), e.PlayerRealm())
 
@@ -375,7 +387,7 @@ AstralComs:RegisterPrefix('WHISPER', 'BNet_query', PingResponse)
 AstralComs:RegisterPrefix('BNET', 'BNet_query', PingResponse)
 
 local function Init()
-	ShowFriends()
+	C_FriendList.ShowFriends()
 	AstralEvents:Unregister('PLAYER_ENTERING_WORLD', 'InitFriends')
 end
 AstralEvents:Register('FRIENDLIST_UPDATE', PingFriendsForAstralKeys, 'pingFriends')
@@ -426,15 +438,15 @@ local function FriendFilter(A, filters)
 		end
 	end
 
-	for i = 1, #A.FRIENDS do
+	for i = 1, #A do
 		if AstralKeysSettings.frame.show_offline.isEnabled then
-			A.FRIENDS[i].isShown = true
+			A[i].isShown = true
 		else
-			A.FRIENDS[i].isShown = e.IsFriendOnline(A.FRIENDS[i].character_name)
+			A[i].isShown = e.IsFriendOnline(A[i].character_name)
 		end
 
 		if not AstralKeysSettings.friendOptions.show_other_faction.isEnabled then
-			A.FRIENDS[i].isShown = A.FRIENDS[i].isShown and tonumber(A.FRIENDS[i].faction) == e.FACTION
+			A[i].isShown = A[i].isShown and tonumber(A[i].faction) == e.FACTION
 		end
 
 		local isShownInFilter = true -- Assume there is no filter taking place
@@ -443,25 +455,25 @@ local function FriendFilter(A, filters)
 				if filterText ~= '' then
 					isShownInFilter = false -- There is a filter, now assume this unit is not to be shown
 					if field == 'dungeon_name' then
-						local mapName = e.GetMapName(A.FRIENDS[i]['mapID'])
+						local mapName = e.GetMapName(A[i]['mapID'])
 						if strfind(strlower(mapName), strlower(filterText)) then
 							isShownInFilter = true
 						end
 					elseif field == 'key_level' then
-						if A.FRIENDS[i][field] >= keyLevelLowerBound and A.FRIENDS[i][field] <= keyLevelUpperBound then
+						if A[i][field] >= keyLevelLowerBound and A[i][field] <= keyLevelUpperBound then
 							isShownInFilter = true
 						end
 					else
-						if strfind(strlower(A.FRIENDS[i][field]):sub(1, A.FRIENDS[i][field]:find('-') - 1), strlower(filterText)) or strfind(strlower(A.FRIENDS[i].btag), strlower(filterText)) then
+						if strfind(strlower(A[i][field]):sub(1, A[i][field]:find('-') - 1), strlower(filterText)) or strfind(strlower(A[i].btag), strlower(filterText)) then
 							isShownInFilter = true
 						end
 					end
 				end
-				A.FRIENDS[i].isShown = A.FRIENDS[i].isShown and isShownInFilter
+				A[i].isShown = A[i].isShown and isShownInFilter
 			end
 
-		if A.FRIENDS[i].isShown then
-			A.numShown = A.numShown + 1
+		if A[i].isShown then
+			A.num_shown = A.num_shown + 1
 		end
 	end
 end
@@ -614,9 +626,9 @@ do
 					end
 					if realmName then
 						local fullName = gameAccountInfo.characterName .. '-' .. realmName
-						local id = e.FriendID(fullName)
+						local id = e.UnitID(fullName)
 						if id then
-							local keyLevel, dungeonID = AstralFriends[id][5], AstralFriends[id][4]
+							local keyLevel, dungeonID = AstralKeys[id].key_level, AstralKeys[id].dungeon_id
 							astralKeyString:SetWordWrap(false)
 							astralKeyString:SetFormattedText("|cffffd200Current Keystone|r\n%d - %s", keyLevel, e.GetMapName(dungeonID))
 							astralKeyString:SetWordWrap(true)
@@ -682,11 +694,11 @@ local function TooltipHook(self)
         return
     end
 
-    local id = e.FriendID(unit)
+    local id = e.UnitID(unit)
     if id then
     	GameTooltip:AddLine(' ')
         GameTooltip:AddLine('Current Keystone')
-        GameTooltip:AddDoubleLine(e.GetMapName(AstralFriends[id][4]), AstralFriends[id][5], 1, 1, 1, 1, 1, 1)
+        GameTooltip:AddDoubleLine(e.GetMapName(AstralKeys[id].dungeon_id), AstralKeys[id].key_level, 1, 1, 1, 1, 1, 1)
         return
     end
 end
@@ -694,7 +706,7 @@ end
 GameTooltip:HookScript('OnTooltipSetUnit', TooltipHook)
 
 local function FriendUnitFunction(self, unit, class, mapID, keyLevel, weekly_best, faction, btag)
-	self.unitID = e.FriendID(unit)
+	self.unitID = e.UnitID(unit)
 	self.levelString:SetText(keyLevel)
 	self.dungeonString:SetText(e.GetMapName(mapID))
 	if weekly_best and weekly_best > 1 then
@@ -713,7 +725,7 @@ local function FriendUnitFunction(self, unit, class, mapID, keyLevel, weekly_bes
 	else
 		self.nameString:SetText(WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), select(4, GetClassColor(class))))
 	end
-	if e.IsFriendOnline(unit) then
+	if e.IsUnitOnline(unit) then
 		self:SetAlpha(1)
 	else
 		self:SetAlpha(0.4)

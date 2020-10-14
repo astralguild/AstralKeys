@@ -45,7 +45,7 @@ local function InitData()
 		AstralComs:NewMessage('AstralKeys', 'request', 'GUILD')
 	end
 
-	if UnitLevel('player') < 120 then return end
+	if UnitLevel('player') < e.EXPANSION_LEVEL then return end
 	AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', UpdateWeekly, 'weeklyCheck')
 end
 AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', InitData, 'initData')
@@ -84,7 +84,7 @@ local function ParseLootMsgForKey(...)
 end
 
 function e.FindKeyStone(sendUpdate, anounceKey)
-	if UnitLevel('player') < 120 then return end
+	if UnitLevel('player') < e.EXPANSION_LEVEL then return end
 
 	local mapID = C_MythicPlus.GetOwnedKeystoneChallengeMapID()
 	local keyLevel = C_MythicPlus.GetOwnedKeystoneLevel()
@@ -146,7 +146,7 @@ end
 -- Finds best map clear fothe week for logged on character. If character already is in database
 -- updates the information, else creates new entry for character
 function e.UpdateCharacterBest()
-	if UnitLevel('player') < 120 then return end
+	if UnitLevel('player') < e.EXPANSION_LEVEL then return end
 
 	local weeklyBest = C_MythicPlus.GetWeeklyChestRewardLevel()
 	local isChestAvailable = C_MythicPlus.IsWeeklyRewardAvailable()

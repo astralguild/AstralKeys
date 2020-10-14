@@ -10,6 +10,7 @@ AstralKeysListMixin = {}
 -- Left #000000 ALPHA 0.8
 -- Right #212121 ALPHA 0.8
 local COLOR_GRAY = 'ff9d9d9d'
+local COLOR_BLUE_BNET = 'ff82c5ff'
 
 -- Scroll bar texture alpha settings
 local SCROLL_TEXTURE_ALPHA_MIN = 0.25
@@ -23,11 +24,22 @@ FILTER_FIELDS['key_level'] = ''
 FILTER_FIELDS['mapID'] = ''
 FILTER_FIELDS['character_name'] = ''
 
+local BACKDROPBUTTON = {
+bgFile = nil,
+edgeFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 16, edgeSize = 1,
+insets = {left = 0, right = 0, top = 0, bottom = 0}
+}
 -- Used for filtering, sorting, and displaying units on lists
-local sortedTable = {}
-sortedTable.numShown = 0
-sortedTable['GUILD'] = {}
-sortedTable['FRIENDS'] = {}
+local sortTable = {}
+sortTable.num_shown = 0
+
+local selectedUnits = {}
+
+local CreateNewTab, UpdateTabs, RemoveTab, tabFrame
+
+local function ClearSelectedUnits()
+	wipe(selectedUnits)
+end
 
 function AstralKeysCharacterMixin:UpdateUnit(characterID)
 	local unit = e.CharacterName(characterID)
@@ -73,27 +85,75 @@ function AstralKeysCharacterMixin:OnLoad()
 	self.keyString:SetText(L['CURRENT_KEY'])
 end
 
-function AstralKeysListMixin:SetUnit(...)
-	e.GetListFunction(e.FrameListShown())(self, ...)
+function AstralKeysListMixin:SetUnit(unit, class, mapID, keyLevel, weekly_best, faction, btag)
+	self.unitID = e.UnitID(unit)
+	self.levelString:SetText(keyLevel)
+	self.dungeonString:SetText(e.GetMapName(mapID))
+	if weekly_best and weekly_best > 1 then
+		local color_code = e.GetDifficultyColour(weekly_best)
+		self.bestString:SetText(WrapTextInColorCode(weekly_best, color_code))
+	else
+		self.bestString:SetText(nil)
+	end
+
+	if e.FrameListShown() == 'GUILD' then
+		self.nameString:SetText(WrapTextInColorCode(Ambiguate(unit, 'GUILD'), select(4, GetClassColor(class))))
+	else
+		if btag then
+			if tonumber(faction) == e.FACTION then
+				self.nameString:SetText( string.format('%s (%s)', WrapTextInColorCode(btag:sub(1, btag:find('#') - 1), COLOR_BLUE_BNET), WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), select(4, GetClassColor(class)))))
+			else
+				self.nameString:SetText( string.format('%s (%s)', WrapTextInColorCode(btag:sub(1, btag:find('#') - 1), COLOR_BLUE_BNET), WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), 'ff9d9d9d')))
+			end
+		else
+			self.nameString:SetText(WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), select(4, GetClassColor(class))))
+		end
+	end
+	
+	if e.IsUnitOnline(unit) then
+		self:SetAlpha(1)
+	else
+		self:SetAlpha(0.4)
+	end
 end
 
-function AstralKeysListMixin:OnClick()
-	AstralReportFrame:Hide()
-	AstralMenuFrame:ClearAllPoints()
-	local uiScale = UIParent:GetScale()
+function AstralKeysListMixin:OnClick(button)
+	if not IsModifierKeyDown() and button == 'RightButton' then
+		wipe(selectedUnits)
+		if AstralMenuFrameUnit1.unit == self.unitID then
+			ToggleFrame(AstralMenuFrameUnit1)
+		else
+			AstralMenuFrameReport1:Hide()
+			--AstralMenuFrameTabs1:Hide()
+			--AstralMenuFrameTabs2:Hide()
+			AstralMenuFrameUnit2:Hide()
+			AstralMenuFrameUnit1:ClearAllPoints()
+			local uiScale = UIParent:GetScale()
 
-	local cursorX, cursorY = GetCursorPosition()
-	local left, bottom, width, height = AstralKeyFrame:GetRect()
-	cursorX = cursorX/uiScale
-	cursorY =  cursorY/uiScale
-	xOffset, yOffset = 20, 0
+			local cursorX, cursorY = GetCursorPosition()
+			local left, bottom, width, height = AstralKeyFrame:GetRect()
+			cursorX = cursorX/uiScale
+			cursorY =  cursorY/uiScale
+			xOffset, yOffset = 20, 0
 
-	xOffset = cursorX + xOffset
-	yOffset = cursorY + yOffset
+			xOffset = cursorX + xOffset
+			yOffset = cursorY + yOffset
 
-	AstralMenuFrame:SetUnit(self.unitID)
-	AstralMenuFrame:SetPoint('TOPLEFT', UIParent, 'BOTTOMLEFT', xOffset, yOffset)
-	ToggleFrame(AstralMenuFrame)
+			AstralMenuFrameUnit1:SetUnit(self.unitID)
+			AstralMenuFrameUnit1:SetTitle(WrapTextInColorCode(e.UnitName(self.unitID), select(4, GetClassColor(e.UnitClass(self.unitID)))))
+			AstralMenuFrameUnit1:SetPoint('TOPLEFT', UIParent, 'BOTTOMLEFT', xOffset, yOffset)
+			AstralMenuFrameUnit1:Show()
+			selectedUnits[e.Unit(self.unitID)] = true
+		end
+	elseif IsModifierKeyDown() then
+		self.Highlight:SetShown(not self.Highlight:IsShown())
+
+		if self.Highlight:IsShown() then
+			selectedUnits[e.Unit(self.unitID)] = true
+		else
+			selectedUnits[e.Unit(self.unitID)] = nil
+		end
+	end
 end
 
 function AstralKeysListMixin:OnEnter()
@@ -109,92 +169,208 @@ function AstralKeysListMixin:OnLeave()
 end
 
 -- Unit dropdown mneu items, whisper and invite
-local function Whisper_OnShow(self)
-	local isConnected = true
-	if e.FrameListShown() == 'GUILD' then
-		isConnected = e.GuildMemberOnline(e.Unit(AstralMenuFrame.unit))
-	end
-	if e.FrameListShown() == 'FRIENDS' then
-		isConnected = e.IsFriendOnline(e.Friend(AstralMenuFrame.unit))
-	end
-	self.isConnected = isConnected
+local unitPopup = e.CreateDropDownFrame('Unit', 1, UIParent)
+local subUnitPopup = e.CreateDropDownFrame('Unit', 2, UIParent)
+subUnitPopup:SetTitle(L['LIST'])
 
-	if not self.isConnected then
+unitPopup:SetScript('OnHide', function(self)
+	wipe(selectedUnits)
+	self:SetUnit(nil)
+	local buttons = AstralKeyFrameListContainer.buttons
+	for _, button in pairs(buttons) do
+		button.Highlight:Hide()
+	end
+end)
+
+local function Whisper_OnShow(self)
+	if not e.IsUnitOnline(e.Unit(AstralMenuFrameUnit1.unit)) then
 		self:SetText(WrapTextInColorCode(self:GetText(), 'ff9d9d9d'))
 	else
 		self:SetText(L['Whisper'])
 	end
 end
+-- AddButton(name, onClick, onShow, onEnter, subMenu, subFrame)
 
 local function SendWhisper(self)
-	if not self.isConnected then return end
-
-	if AstralKeysSettings.frame.current_list == 'GUILD' then
-		ChatFrame_SendTell(e.Unit(AstralMenuFrame.unit))
+	if not e.IsUnitOnline(e.Unit(AstralMenuFrameUnit1.unit)) then return end
+	if e.UnitBTag(AstralMenuFrameUnit1.unit) then
+		ChatFrame_SendBNetTell(e.FriendPresName(e.Unit(AstralMenuFrameUnit1.unit)))
 	else
-		if AstralFriends[AstralMenuFrame.unit][2] then
-			ChatFrame_SendBNetTell(e.FriendPresName(e.Friend(AstralMenuFrame.unit)))
-		else
-			ChatFrame_SendTell(e.Friend(AstralMenuFrame.unit))
-		end
+		ChatFrame_SendTell(e.Unit(AstralMenuFrameUnit1.unit))
 	end
 end
-AstralMenuFrame:AddSelection('Whisper', SendWhisper, Whisper_OnShow)
+unitPopup:AddButton(L['Whisper'], SendWhisper, Whisper_OnShow)
 
 local function Invite_OnShow(self)
-	local inviteType
-	local isConnected = true
-	if e.FrameListShown() == 'GUILD' then
-		inviteType = GetDisplayedInviteType(e.GuildMemberGuid(e.Unit(AstralMenuFrame.unit)))
-		isConnected = e.GuildMemberOnline(e.Unit(AstralMenuFrame.unit))
-	end
-	if e.FrameListShown() == 'FRIENDS' then
-		inviteType = GetDisplayedInviteType(e.FriendGUID(e.Friend(AstralMenuFrame.unit)))
-		isConnected = e.IsFriendOnline(e.Friend(AstralMenuFrame.unit))
-	end
+	local inviteType = GetDisplayedInviteType(e.UnitGUID(e.Unit(AstralMenuFrameUnit1.unit)))
+
 	self:SetText(L[inviteType])
-	if not isConnected then
+	self:GetParent():AdjustWidth()
+	if not e.IsUnitOnline(e.Unit(AstralMenuFrameUnit1.unit)) then
 		self:SetText(WrapTextInColorCode(self:GetText(), 'ff9d9d9d'))
 	end
 
-	self.isConnected = isConnected
 	self.inviteType = inviteType
 end
 
 local function InviteUnit(self)
-	if not self.isConnected then return end
+	if not e.IsUnitOnline(e.Unit(AstralMenuFrameUnit1.unit)) then return end
 	
-	if e.FrameListShown() == 'GUILD' then
+	if e.UnitBTag(AstralMenuFrameUnit1.unit) then
 		if self.inviteType == 'INVITE' then
-			InviteToGroup(e.Unit(AstralMenuFrame.unit))
+			BNInviteFriend(e.GetFriendGaID(e.Unit(AstralMenuFrameUnit1.unit)))
 		elseif self.inviteType == 'REQUEST_INVITE' then
-			RequestInviteFromUnit(e.Unit(AstralMenuFrame.unit))
+			BNRequestInviteFriend(e.GetFriendGaID(e.Unit(AstralMenuFrameUnit1.unit)))
 		elseif self.inviteType == 'SUGGEST_INVITE' then
-			InviteToGroup(e.Unit(AstralMenuFrame.unit))
+			BNInviteFriend(e.GetFriendGaID(e.Unit(AstralMenuFrameUnit1.unit)))
 		end
-	end
-	if e.FrameListShown() == 'FRIENDS' then
-		if AstralFriends[AstralMenuFrame.unit][2] then -- bnet friend
-			if self.inviteType == 'INVITE' then
-				BNInviteFriend(e.GetFriendGaID(e.Friend(AstralMenuFrame.unit)))
-			elseif self.inviteType == 'REQUEST_INVITE' then
-				BNRequestInviteFriend(e.GetFriendGaID(e.Friend(AstralMenuFrame.unit)))
-			elseif self.inviteType == 'SUGGEST_INVITE' then
-				BNInviteFriend(e.GetFriendGaID(e.Friend(AstralMenuFrame.unit)))
-			end
-		else
-			if self.inviteType == 'INVITE' then
-				BNInviteFriend(e.FriendGUID(e.Friend(AstralMenuFrame.unit)))
-			elseif self.inviteType == 'REQUEST_INVITE' then
-				BNRequestInviteFriend(e.FriendGUID(e.Friend(AstralMenuFrame.unit)))
-			elseif self.inviteType == 'SUGGEST_INVITE' then
-				BNInviteFriend(e.FriendGUID(e.Friend(AstralMenuFrame.unit)))
-			end
+	else
+		if self.inviteType == 'INVITE' then
+			InviteToGroup(e.Unit(AstralMenuFrameUnit1.unit))
+		elseif self.inviteType == 'REQUEST_INVITE' then
+			RequestInviteFromUnit(e.Unit(AstralMenuFrameUnit1.unit))
+		elseif self.inviteType == 'SUGGEST_INVITE' then
+			InviteToGroup(e.Unit(AstralMenuFrameUnit1.unit))
 		end
 	end
 end
-AstralMenuFrame:AddSelection(L['INVITE'], InviteUnit, Invite_OnShow)
-AstralMenuFrame:AddSelection(L['CANCEL'], function() return AstralMenuFrame:Hide() end)
+unitPopup:AddButton(L['INVITE'],InviteUnit, Invite_OnShow)
+
+local function CreateList_OnEnter(self)
+	local text = self:GetText()
+
+	if text == '' then return end
+
+	local list = e.CreateNewList(text)
+
+	CreateNewTab(text, tabFrame)
+	UpdateTabs()
+
+	if list then
+		for unit in pairs(selectedUnits) do
+			e.AddUnitToList(unit, text)
+		end
+	end
+
+	self:Hide()
+	self.buttonParent:Show()
+	unitPopup:Hide()
+	subUnitPopup:Hide()
+	--AstralMenuFrameTabs1:Hide()
+	--AstralMenuFrameTabs2:Hide()
+end
+
+local createListEditBox = CreateFrame('EditBox', nil, UIParent, "BackdropTemplate")
+createListEditBox:SetFrameStrata('TOOLTIP')
+createListEditBox:SetFrameLevel(25)
+createListEditBox:Hide()
+createListEditBox:SetSize(150, 20)
+createListEditBox:SetFontObject(InterUIRegular_Normal)
+createListEditBox:SetAutoFocus(true)
+createListEditBox:SetMaxLetters(50)
+createListEditBox:SetBackdrop(BACKDROPBUTTON)
+createListEditBox:SetBackdropBorderColor(33/255, 33/255, 33/255, 0.8)
+
+createListEditBox.description = createListEditBox:CreateFontString(nil, 'OVERLAY', 'InterUIMedium_Normal')
+createListEditBox.description:SetHeight(20)
+createListEditBox.description:SetJustifyH('LEFT')
+createListEditBox.description:SetText(L['NEW_LIST_DESCRIPTION'])
+createListEditBox.description:SetTextColor(99/255, 99/255, 99/255, 1)
+createListEditBox.description:SetPoint('LEFT', createListEditBox, 'LEFT', 3, 0)
+createListEditBox.description:Hide()
+
+local createListOkayButton = CreateFrame('BUTTON', nil, createListEditBox, "BackdropTemplate")
+createListOkayButton:SetNormalFontObject(InterUIMedium_Normal)
+createListOkayButton:SetBackdrop(BACKDROPBUTTON)
+createListOkayButton:SetBackdropBorderColor(33/255, 33/255, 33/255, 0.8)
+createListOkayButton:SetHeight(20)
+createListOkayButton:SetText(L['OKAY'])
+createListOkayButton:GetFontString():SetTextColor(198/255, 198/255, 198/255, 1)
+createListOkayButton:SetWidth(createListOkayButton:GetFontString():GetUnboundedStringWidth() + 5)
+createListOkayButton:SetPoint('LEFT', createListEditBox, 'RIGHT', 5, 0)
+
+createListOkayButton:SetScript('OnClick', function()
+	CreateList_OnEnter(createListEditBox)
+end)
+
+createListEditBox:SetScript('OnTextChanged', function(self)
+	if not self:GetText() or self:GetText() ~= '' then
+		self.description:Hide()
+	else
+		self.description:Show()
+	end
+end)
+
+createListEditBox:SetScript('OnShow', function(self)
+	self:SetText('')
+	self.description:Show()
+	self.description:SetWidth(self.description:GetUnboundedStringWidth())
+	self:SetWidth(self.description:GetUnboundedStringWidth() + 5)
+end)
+
+createListEditBox:SetScript('OnEscapePressed', function(self)
+	self:Hide()
+	self.buttonParent:Show()
+	self.buttonParent:GetParent():AdjustWidth()
+end)
+
+createListEditBox:SetScript('OnEnterPressed', CreateList_OnEnter)
+
+local function CreateList(self)
+	createListEditBox:Hide()
+	createListEditBox.buttonParent = self
+	createListEditBox:ClearAllPoints()
+	createListEditBox:SetPoint('LEFT', self, 'LEFT')
+	createListEditBox:Show()
+	self:GetParent():AdjustWidth(math.max(createListEditBox:GetWidth(), createListEditBox.description:GetUnboundedStringWidth()) + createListOkayButton:GetWidth())
+	--self:GetParent():AdjustWidth()
+	self:Hide()
+end
+
+local function BuildLists(frame)
+	frame:ClearButtons()
+	for i = 1, #AstralLists do
+		if AstralLists[i].name ~= 'GUILD' and AstralLists[i].name ~= 'FRIENDS' then
+			frame:AddButton(AstralLists[i].name, function(self)
+				for unit in pairs(selectedUnits) do
+					local unit = unit
+					local btag e.UnitBTag(e.UnitID(unit))
+					local list = self:GetText()
+					e.AddUnitToList(unit, list, btag)
+				end
+			end, nil, nil, nil)
+		end
+	end
+	local newListButton = frame:AddButton(L['CREATE_NEW_LIST'], CreateList)
+	newListButton:SetScript('OnClick', function(self)
+		CreateList(self)
+	end)
+end
+
+--unitPopup:AddButton(L['ADD_TO_LIST'], nil, nil, function() BuildLists(subUnitPopup) end, true, subUnitPopup)
+
+local function RemoveUnitsFromList()
+	if e.FrameListShown() == 'GUILD' or e.FrameListShown() == 'FRIENDS' then return end
+	local list = e.FrameListShown()
+	for unit in pairs(selectedUnits) do
+		e.RemoveUnitFromList(unit, list)
+	end
+	e.UpdateSortTable()
+	e.UpdateFrames()
+end
+
+local function RemoveUnit_OnShow(self)
+	if e.FrameListShown() == 'GUILD' or e.FrameListShown() == 'FRIENDS' then
+		self:SetText(WrapTextInColorCode(self:GetText(), 'ff9d9d9d'))
+	else
+		self:SetText(L['REMOVE_UNIT_FROM_LIST'])
+	end
+end
+
+--unitPopup:AddButton(L['REMOVE_UNIT_FROM_LIST'], RemoveUnitsFromList, RemoveUnit_OnShow)
+
+
+unitPopup:AddButton(L['CANCEL'])
 
 local AstralKeyFrame = CreateFrame('FRAME', 'AstralKeyFrame', UIParent)
 AstralKeyFrame:SetFrameStrata('DIALOG')
@@ -259,6 +435,13 @@ divider:SetSize(20, 1)
 divider:SetColorTexture(.6, .6, .6, .8)
 divider:SetPoint('TOP', logo_Key, 'BOTTOM', 0, -20)
 
+-- Report Key(s) to party/guild popup menu
+local reportFrame = e.CreateDropDownFrame('Report', 1, UIParent)
+reportFrame:SetTitle(L['REPORT_TO'])
+reportFrame:AddButton(L['PARTY'], function() e.AnnounceCharacterKeys('PARTY') end)
+reportFrame:AddButton(L['GUILD'], function() e.AnnounceCharacterKeys('GUILD') end)
+reportFrame:AddButton(L['CANCEL'])
+
 local reportButton = CreateFrame('BUTTON', '$parentReportButton', menuBar)
 reportButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline-volume_up-24px@2x')
 reportButton:SetSize(20, 20)
@@ -271,9 +454,12 @@ reportButton:SetScript('OnLeave', function(self)
 	self:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
 end)
 reportButton:SetScript('OnClick', function(self)
-	AstralMenuFrame:Hide()
-	AstralReportFrame:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 10, -3)
-	AstralReportFrame:SetShown( not AstralReportFrame:IsShown())
+	AstralMenuFrameUnit1:Hide()
+	AstralMenuFrameUnit2:Hide()
+	--AstralMenuFrameTabs1:Hide()
+	--AstralMenuFrameTabs2:Hide()
+	AstralMenuFrameReport1:SetPoint('TOPLEFT', self, 'TOPRIGHT', 10, -3)
+	AstralMenuFrameReport1:SetShown( not AstralMenuFrameReport1:IsShown())
 	end)
 
 local settingsButton = CreateFrame('BUTTON', '$parentSettingsButton', menuBar)
@@ -288,7 +474,7 @@ settingsButton:SetScript('OnLeave', function(self)
 	self:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
 end)
 settingsButton:SetScript('OnClick', function()
-	AstralMenuFrame:Hide()
+	AstralMenuFrameUnit1:Hide()
 	AstralOptionsFrame:SetShown( not AstralOptionsFrame:IsShown())
 	end)
 
@@ -343,21 +529,75 @@ end)
 
 -- MenuBar 50px
 -- Middle Frame 215px
-local tabFrame = CreateFrame('FRAME', '$parentTabFrame', AstralKeyFrame)
-tabFrame:SetSize(450, 45)
-tabFrame:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', 0, 0)
+tabFrame = CreateFrame('FRAME', '$parentTabFrame', AstralKeyFrame)
+tabFrame.offSet = 0
+tabFrame:SetSize(420, 45)
+tabFrame:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', -30, 0)
 --tabFrame.t = tabFrame:CreateTexture(nil, 'ARTWORK')
 --tabFrame.t:SetAllPoints(tabFrame)
 --tabFrame.t:SetColorTexture(0, .5, 1)
 tabFrame.buttons = {}
+--[[
+local newTabButton = CreateFrame('BUTTON', '$parentNewListButton', tabFrame)
+newTabButton:SetSize(17, 17)
+newTabButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline_add_white_18dp')
+newTabButton:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
+newTabButton:SetPoint('RIGHT', tabFrame, 'RIGHT')
 
-local MIN_BUTTON_WIDTH = 50
-local MAX_BUTTON_WIDTH = 100
+newTabButton:SetScript('OnClick', function(self)
+	AstralMenuFrameUnit1:Hide()
+	AstralMenuFrameUnit2:Hide()
+	AstralMenuFrameReport1:Hide()
+	--AstralMenuFrameTabs2:Hide()
+	--AstralMenuFrameTabs1:SetPoint('TOPLEFT', self, 'TOPRIGHT', 10, -3)
+	--AstralMenuFrameTabs1:SetShown(not AstralMenuFrameTabs1:IsShown())
+end)
+]]
+-- Use arrows to display lists are on either side of curent offset
+--[[
+local tabFrameLeftButton = CreateFrame('BUTTON', '$parentLeftButton', tabFrame)
+tabFrameLeftButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline_keyboard_arrow_left_white_18dp')
+tabFrameLeftButton:SetSize(12, 12)
+tabFrameLeftButton:SetPoint('LEFT', tabFrame, 'LEFT', 10, -4)
+tabFrameLeftButton:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
+tabFrameLeftButton:SetScript('OnClick', function(self)
+	if self:GetParent().offSet < 1 then
+		return
+	else
+		self:GetParent().offSet = self:GetParent().offSet - 1
+		UpdateTabs()
+	end
+end)
 
-local function UpdateTabs()
+local tabFrameRightButton = CreateFrame('BUTTON', '$parentLeftButton', tabFrame)
+tabFrameRightButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline_keyboard_arrow_right_white_24dp')
+tabFrameRightButton:SetSize(12, 12)
+tabFrameRightButton:SetPoint('RIGHT', tabFrame, 'RIGHT', -5, -4)
+tabFrameRightButton:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
+tabFrameRightButton:SetScript('OnClick', function(self)
+	if self:GetParent().buttons[#self:GetParent().buttons]:IsShown() then
+	--if self:GetParent().offSet >= #self:GetParent().buttons then
+		return
+	else
+		self:GetParent().offSet = self:GetParent().offSet + 1
+		UpdateTabs()
+	end
+end)
+]]
+function UpdateTabs()
 	local buttons = AstralKeyFrameTabFrame.buttons
+	local offSet = AstralKeyFrameTabFrame.offSet
+
+	local maxPossibleWidth = 410 - 15 - 20 -- Tab frame, close button, new tab button width
+	local usedWidth = 0 -- initialize at 10 for padding on the left
+	local buttonsUsed = 0
 
 	for i = 1, #buttons do
+		buttons[i]:ClearAllPoints()
+		buttons[i]:Hide()
+	end
+
+	for i = 1 + offSet, #buttons do
 		if e.FrameListShown() == buttons[i].listName then
 			buttons[i].underline:Show()
 			buttons[i]:SetAlpha(1)
@@ -365,38 +605,55 @@ local function UpdateTabs()
 			buttons[i].underline:Hide()
 			buttons[i]:SetAlpha(0.5)
 		end
-		if i == 1 then
-			buttons[i]:SetPoint('TOPLEFT', AstralKeyFrameTabFrame, 'TOPLEFT', 10, -17)
+		if i == 1 + offSet then
+			usedWidth = usedWidth + buttons[i]:GetWidth() + 10 -- Padding between buttons
+			buttons[i]:SetPoint('TOPLEFT', AstralKeyFrameTabFrame, 'TOPLEFT', 25, -17)
+			buttons[i]:Show()
 		else
-			buttons[i]:SetPoint('LEFT', buttons[i-1], 'RIGHT', 10, 0)
+			usedWidth = usedWidth + buttons[i]:GetWidth() + 10 -- Padding between buttons
+			if usedWidth <= maxPossibleWidth then
+				buttons[i]:SetPoint('LEFT', buttons[i-1], 'RIGHT', 10, 0)
+				buttons[i]:Show()
+				buttonsUsed = i
+			end
 		end
+	end
+	--newTabButton:ClearAllPoints()
+	--newTabButton:SetPoint('LEFT', buttons[buttonsUsed], 'RIGHT', 10, 2)
+end
+
+local function Tab_OnClick(self, button)
+	if button == 'LeftButton' then
+		C_FriendList.ShowFriends()
+	    if e.FrameListShown() ~= self.listName then
+	    	ClearSelectedUnits()
+	        e.SetFrameListShown(self.listName)
+	        HybridScrollFrame_SetOffset(AstralKeyFrameListContainer, 0)
+	        UpdateTabs()
+			e.UpdateSortTable()
+	        e.UpdateFrames()
+	        AstralKeyFrameListContainer.scrollBar:SetValue(0)
+	    end
 	end
 end
 
-local function Tab_OnClick(self)	
-    if e.FrameListShown() ~= self.listName then
-        e.SetFrameListShown(self.listName)
-        HybridScrollFrame_SetOffset(AstralKeyFrameListContainer, 0)
-        UpdateTabs()
-        e.UpdateFrames()
-        AstralKeyFrameListContainer.scrollBar:SetValue(0)
-    end
-end
-
-local function CreateNewTab(name, parent, ...)
+function CreateNewTab(name, parent, ...)
 	if not name or type(name) ~= 'string' then
 		error('CreateNewTab(name, parent, ...) name: string expected, received ' .. type(name))
 	end
 	local buttons = parent.buttons
 	local self = CreateFrame('BUTTON', '$parentTab' .. name, parent)
+	self:RegisterForClicks('LeftButtonUp', 'RightButtonUp')
 	self.listName = name
 	self:SetNormalFontObject(InterUIBlack_Small)
 	self:SetText(L[name])
+	self:GetFontString():SetJustifyH('CENTER')
 	self:SetWidth(50)
 	self:SetHeight(15)
-	self:SetScript('OnClick', function(self) Tab_OnClick(self) end)
+	self:SetScript('OnClick', function(self, button) Tab_OnClick(self, button) end)
 
-	local textWidth = self:GetFontString():GetStringWidth()
+	local textWidth = self:GetFontString():GetUnboundedStringWidth()
+	self:SetWidth(textWidth + 10)
 	self.underline = self:CreateTexture(nil, 'ARTWORK')
 	self.underline:SetSize(textWidth, 2)
 	self.underline:SetColorTexture(214/255, 38/255, 38/255)
@@ -407,9 +664,49 @@ local function CreateNewTab(name, parent, ...)
 	table.insert(buttons, self)
 end
 
+function RemoveTab(name)
+	if not name or type(name) ~= 'string' then
+		error('RemoveTab(name) name: string expected, received ' .. type(name))
+	end
+	local buttons = AstralKeyFrameTabFrame.buttons
+
+	local targetName = 'AstralKeyFrameTabFrameTab' .. name
+
+	for i = 1, #buttons do
+		if buttons[i]:GetName() == targetName then
+			local btn = table.remove(buttons, i)
+			btn:Hide()
+			btn:SetParent(nil)
+			break
+		end
+	end
+end
+--[[
+local tabPopup = e.CreateDropDownFrame('Tabs', 1, UIParent)
+tabPopup:SetTitle(L['ADD_REMOVE_LIST'])
+local subTabPopup = e.CreateDropDownFrame('Tabs', 2, UIParent)
+subTabPopup:SetTitle(L['DELETE_LIST'])
+local tabFrameNewListButton = tabPopup:AddButton(L['CREATE_NEW_LIST'], CreateList)
+
+tabFrameNewListButton:SetScript('OnClick', CreateList)
+]]
+local function RemoveList(frame)
+	frame:ClearButtons()
+	for i = 1, #AstralLists do
+		if AstralLists[i].name ~= 'GUILD' and AstralLists[i].name ~= 'FRIENDS' then
+			frame:AddButton(AstralLists[i].name, function(self)
+				e.DeleteList(self:GetText())
+				RemoveTab(self:GetText(), tabFrame)
+				UpdateTabs()
+			end)
+		end
+	end
+end
+--tabPopup:AddButton(L['DELETE_LIST'], nil, nil, function () RemoveList(subTabPopup) end, true, subTabPopup)
+
 -- Middle panel construction, Affixe info, character info, guild/version string
 local characterFrame = CreateFrame('FRAME', '$parentCharacterFrame', AstralKeyFrame)
-characterFrame:SetSize(225, 490)
+characterFrame:SetSize(215, 490)
 characterFrame:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 51, 0)
 
 characterFrame.collapse = characterFrame:CreateAnimationGroup()
@@ -712,7 +1009,7 @@ guildVersionString:SetScript('OnClick', function()
 	astralGuildInfo:SetShown(not astralGuildInfo:IsShown())
 end)
 
-local astralGuildInfo = CreateFrame('FRAME', 'astralGuildInfo', AstralKeyFrame)
+local astralGuildInfo = CreateFrame('FRAME', 'astralGuildInfo', AstralKeyFrame, "BackdropTemplate")
 astralGuildInfo:Hide()
 astralGuildInfo:SetFrameLevel(8)
 astralGuildInfo:SetSize(200, 100)
@@ -725,7 +1022,7 @@ astralGuildInfo.text = astralGuildInfo:CreateFontString(nil, 'OVERLAY', 'InterUI
 astralGuildInfo.text:SetPoint('TOP', astralGuildInfo,'TOP', 0, -10)
 astralGuildInfo.text:SetText('Visit Astral at')
 
-astralGuildInfo.editBox = CreateFrame('EditBox', nil, astralGuildInfo)
+astralGuildInfo.editBox = CreateFrame('EditBox', nil, astralGuildInfo, "BackdropTemplate")
 astralGuildInfo.editBox:SetSize(180, 20)
 astralGuildInfo.editBox:SetPoint('TOP', astralGuildInfo.text, 'BOTTOM', 0, -10)
 
@@ -742,18 +1039,15 @@ astralGuildInfo.editBox:HighlightText()
 astralGuildInfo.editBox:SetScript('OnChar', function(self, char)
 	self:SetText('www.astralguild.com')
 	self:HighlightText()
-
+end)
 astralGuildInfo.editBox:SetScript("OnEscapePressed", function(self)
 	astralGuildInfo:Hide()
 end)
-
-	end)
 astralGuildInfo.editBox:SetScript('OnEditFocusLost', function(self)
 	self:SetText('www.astralguild.com')
 	self:HighlightText()
 	end)
-
-local button = CreateFrame('BUTTON', nil, astralGuildInfo)
+local button = CreateFrame('BUTTON', nil, astralGuildInfo, "BackdropTemplate")
 button:SetSize(40, 20)
 button:SetNormalFontObject(InterUIRegular_Normal)
 button:SetText('Close')
@@ -841,23 +1135,32 @@ function ListScrollFrame_Update()
 	local list = e.FrameListShown()
 	local lastIndex = 1
 
-	for i = 1, math.min(sortedTable.numShown, #buttons) do
-		for j = lastIndex, #sortedTable[list] do
-			if sortedTable[list][j+offset] and sortedTable[list][j+offset].isShown then
+	local selectCount = 0
+	for unit in pairs(selectedUnits) do
+		selectCount = selectCount + 1
+	end
+	for i = 1, math.min(sortTable.num_shown, #buttons) do
+		for j = lastIndex, #sortTable do
+			if sortTable[j+offset] and sortTable[j+offset].isShown then
 				usedHeight = usedHeight + height
 				lastIndex = j + 1
-				buttons[i]:SetUnit(sortedTable[list][j+offset].character_name, sortedTable[list][j+offset].character_class, sortedTable[list][j+offset].mapID, sortedTable[list][j+offset].key_level, sortedTable[list][j+offset].weekly_best, sortedTable[list][j+offset]['faction'], sortedTable[list][j+offset]['btag'])
+				buttons[i]:SetUnit(sortTable[j+offset].character_name, sortTable[j+offset].character_class, sortTable[j+offset].dungeon_id, sortTable[j+offset].key_level, sortTable[j+offset].weekly_best, sortTable[j+offset]['faction'], sortTable[j+offset]['btag'])
 				buttons[i]:Show()
+				if selectCount > 1 and selectedUnits[sortTable[j+offset].character_name] then
+					buttons[i].Highlight:Show()
+				else
+					buttons[i].Highlight:Hide()
+				end
 				break
 			end
 		end
 	end
 
-	for i = sortedTable.numShown + 1, #buttons do
+	for i = math.min(sortTable.num_shown, #buttons) + 1, #buttons do
 		buttons[i]:Hide()
 	end
-	AstralKeyFrameListContainer.stepSize = (sortedTable.numShown / #buttons) * height
-	HybridScrollFrame_Update(AstralKeyFrameListContainer, height * sortedTable.numShown, usedHeight)
+	AstralKeyFrameListContainer.stepSize = (sortTable.num_shown / #buttons) * height
+	HybridScrollFrame_Update(AstralKeyFrameListContainer, height * sortTable.num_shown, usedHeight)
 end
 
 local function ListScrollFrame_OnEnter()
@@ -874,7 +1177,14 @@ listScrollFrame:SetPoint('TOPLEFT', tabFrame, 'BOTTOMLEFT', 10, -35)
 listScrollFrame.update = ListScrollFrame_Update
 listScrollFrame:SetScript('OnEnter',  ListScrollFrame_OnEnter)
 listScrollFrame:SetScript('OnLeave', ListScrollFrame_OnLeave)
-
+--[[
+local listHelperText = AstralKeyFrame:CreateFontString('$parentListHelperText', 'OVERLAY', 'InterUIBlack_ExtraLarge')
+listHelperText:SetWidth(300)
+listHelperText:SetJustifyH('CENTER')
+listHelperText:SetPoint('TOP', AstralKeyFrameListContainer, 'TOP', 0, -100)
+listHelperText:SetText(L['LIST_ADD_HELPER_TEXT'])
+listHelperText:SetTextColor(1, 1, 1, 0.5)
+]]
 local listScrollBar = CreateFrame('Slider', '$parentScrollBar', listScrollFrame, 'HybridScrollBarTemplate')
 listScrollBar:SetWidth(10)
 listScrollBar:SetPoint('TOPLEFT', listScrollFrame, 'TOPRIGHT')
@@ -909,7 +1219,7 @@ local function ListButton_OnClick(self)
 		AstralKeysSettings.frame.orientation = 0
 	end
 	AstralKeysSettings.frame.sorth_method = self.sortMethod
-	e.SortTable(sortedTable[e.FrameListShown()], AstralKeysSettings.frame.sorth_method)
+	e.SortTable(sortTable, AstralKeysSettings.frame.sorth_method)
 	e.UpdateFrames()
 end
 
@@ -968,7 +1278,7 @@ keyLevelSearchTextInput:SetScript('OnEscapePressed', function(self)
 	end)
 
 -- Avaiable search patterns:
---	x		Looks for key level equalling to x
+--	x		Looks for key level equating x
 --	x-		Looks for key levels equal to or less than x
 --	x+		Looks for key levels equal to or greater than x
 --
@@ -1316,6 +1626,10 @@ AstralKeyFrame:SetScript('OnShow', function(self)
 
 AstralKeyFrame:SetScript('OnDragStart', function(self)
 	self:StartMoving()
+	unitPopup:Hide()
+	subUnitPopup:Hide()
+	--tabPopup:Hide()
+	AstralMenuFrameReport1:Hide()
 	end)
 
 AstralKeyFrame:SetScript('OnDragStop', function(self)
@@ -1323,16 +1637,18 @@ AstralKeyFrame:SetScript('OnDragStop', function(self)
 	end)
 
 AstralKeyFrame:SetScript('OnHide', function(self)
-	AstralMenuFrame:Hide()
-	AstralReportFrame:Hide()
+	wipe(selectedUnits)
+	AstralMenuFrameUnit1:Hide()
+	AstralMenuFrameReport1:Hide()
 	end)
 
 local init = false
 local function InitializeFrame()
 	init = true
 
-	CreateNewTab('GUILD', tabFrame)
-	CreateNewTab('FRIENDS', tabFrame)
+	for i = 1, #AstralLists do
+		CreateNewTab(AstralLists[i].name, tabFrame)
+	end
 	UpdateTabs()
 
 	guildVersionString:SetFormattedText('Astral - Turalyon (US) %s', e.CLIENT_VERSION)
@@ -1376,14 +1692,20 @@ end
 
 function e.UpdateLines()
 	if not init then return end
+	local list = e.FrameListShown()
+	if e.GetListCount(list) == 0 or list ~= 'GUILD' or list ~= 'FRIENDS' then -- There haven't been any units added to the list, show the helper text
+		--AstralKeyFrameListHelperText:Show()
+	else
+		--AstralKeyFrameListHelperText:Hide()
+	end
 	ListScrollFrame_Update()
 end
 
 function e.UpdateFrames()
 	if not init or not AstralKeyFrame:IsShown() then return end
 
-	e.UpdateTable(sortedTable, FILTER_FIELDS)
-	e.SortTable(sortedTable[e.FrameListShown()], AstralKeysSettings.frame.sorth_method)
+	e.UpdateTable(sortTable, FILTER_FIELDS)
+	e.SortTable(sortTable, AstralKeysSettings.frame.sorth_method)
 	e.UpdateLines()
 end
 
@@ -1400,6 +1722,87 @@ function e.UpdateCharacterFrames()
 	CharacterScrollFrame_Update()
 end
 
+-- To be used when switching lists maybe?
+function e.UpdateSortTable()
+	local currentList = e.FrameListShown()
+
+	wipe(sortTable)
+
+	for i = 1, #AstralLists do
+		if AstralLists[i].name == currentList then
+			for unit, bt in pairs(AstralLists[i].units) do
+				local unitID = e.UnitID(unit)
+
+				if unitID then
+					local btag
+					if type(bt) == 'string' then
+						btag = bt
+					end
+
+					local addToList = false
+
+					if currentList == 'GUILD' then
+						if e.UnitInGuild(unit) then
+							addToList = true
+						end
+					else
+						addToList = true
+					end
+
+					if addToList then
+						table.insert(sortTable, {
+							character_name = AstralKeys[unitID].unit,
+							character_class = AstralKeys[unitID].class,
+							dungeon_id =AstralKeys[unitID].dungeon_id,
+							key_level = AstralKeys[unitID].key_level,
+							weekly_best = AstralKeys[unitID].weekly_best,
+							faction = AstralKeys[unitID].faction,
+							btag = btag or AstralKeys[unitID].btag,
+							source = AstralKeys[unitID].source
+						})
+					end
+				end
+			end
+		end
+	end
+end
+
+function e.AddUnitToSortTable(unit, btag, class, faction, mapID, level, weekly_best, source)
+	if not e.DoesUnitBelongToList(unit, e.FrameListShown()) then return end
+
+	if e.FrameListShown() == 'GUILD' then
+		if not e.UnitInGuild(unit) then
+			return
+		end
+	end
+
+	local found = false
+	for i = 1, #sortTable do
+		if sortTable[i].character_name == unit then
+			sortTable[i].dungeon_id = mapID
+			sortTable[i].key_level = level
+			sortTable[i].weekly_best = weekly_best
+			found = true
+			break
+		end
+	end
+
+	if not found then
+		table.insert(sortTable, {
+				character_name = unit,
+				btag = btag,
+				character_class = class,
+				faction = faction,
+				dungeon_id =mapID,
+				key_level = level,
+				weekly_best = weekly_best,
+				source = source,
+			})
+	end
+end
+
+		
+-- Old function.
 function e.AddUnitToTable(unit, class, faction, listType, mapID, level, weekly_best, btag)
 	if not sortedTable[listType] then
 		sortedTable[listType] = {}

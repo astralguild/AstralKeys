@@ -114,7 +114,7 @@ function e.GetCharacterMapID(unit)
 	local id = e.UnitID(unit)
 	
 	if id then 
-		return AstralKeys[id][3]
+		return AstralKeys[id].dungeon_id
 	else
 		return nil
 	end
@@ -126,7 +126,7 @@ function e.GetCharacterKeyLevel(unit)
 	local id = e.UnitID(unit)
 
 	if id then 
-		return AstralKeys[id][4]
+		return AstralKeys[id].key_level
 	else
 		return nil
 	end

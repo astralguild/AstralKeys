@@ -95,10 +95,25 @@ Character Frame Template
 					</Anchors>
 				</FontString>
 			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Highlight" hidden='true'>
+					<Size>
+						<AbsDimension x="400" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r=".5" g=".5" b=".5" a="0.2"/>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				self:RegisterForClicks("RightButtonUp")
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 			</OnLoad>
 			<OnClick method="OnClick"/>
 			<OnEnter method="OnEnter"/>

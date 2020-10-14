@@ -39,10 +39,9 @@ function e.GuildMemberRank(unit)
 end
 
 function e.GuildMemberGuid(unit)
-	if not GUILD_LIST[unit] then return nil
-	else
-		return GUILD_LIST[unit].guid
-	end
+	if not GUILD_LIST[unit] then return nil end
+	
+	return GUILD_LIST[unit].guid
 end
 
 -- Variables for syncing information
@@ -68,19 +67,32 @@ local function UpdateUnitKey(msg)
 	local id = e.UnitID(unit) -- Is this unit in the db already?
 
 	if id then -- Yep, just change the values then
-		AstralKeys[id][3] = dungeonID
-		AstralKeys[id][4] = keyLevel
-		AstralKeys[id][5] = weekly_best
-		AstralKeys[id][6] = week
-		AstralKeys[id][7] = timeStamp
+		AstralKeys[id].dungeon_id = dungeonID
+		AstralKeys[id].key_level = keyLevel
+		AstralKeys[id].weekly_best = weekly_best
+		AstralKeys[id].week = week
+		AstralKeys[id].time_stamp = timeStamp
 	else -- Nope, let's add them to the DB and index their position
-		AstralKeys[#AstralKeys + 1] = {unit, class, dungeonID, keyLevel, weekly_best, week, timeStamp}
+		table.insert(AstralKeys, {
+			unit = unit,
+			btag = btag,
+			class = class,
+			dungeon_id = dungeonID,
+			key_level = keyLevel,
+			week = week,
+			time_stamp = timeStamp,
+			faction = e.FACTION,
+			weekly_best = weekly_best,
+			source = 'guild'
+		})
+		--AstralKeys[#AstralKeys + 1] = {unit, class, dungeonID, keyLevel, weekly_best, week, timeStamp}
 		e.SetUnitID(unit, #AstralKeys)
 	end
-
-	e.AddUnitToTable(unit, class, faction, 'GUILD', dungeonID, keyLevel, weekly_best)
+	e.AddUnitToList(unit, 'GUILD')
+	--e.AddUnitToTable(unit, class, faction, 'GUILD', dungeonID, keyLevel, weekly_best)
+	e.AddUnitToSortTable(unit, btag, class, e.FACTION, dungeonID, keyLevel, weekly_best, 'GUILD')
 	e.UpdateFrames()
-	
+	msg = nil
 	-- Update character frames if we received our own key
 	if unit == e.Player() then
 		e.UpdateCharacterFrames()
@@ -115,42 +127,57 @@ local function SyncReceive(entry, sender)
 
 			local id = e.UnitID(unit)
 			if id then
-				if AstralKeys[id][7] < timeStamp then
-					AstralKeys[id][5] = weekly_best >= AstralKeys[id][5] and weekly_best or AstralKeys[id][5]
-					AstralKeys[id][3] = dungeonID
-					AstralKeys[id][4] = keyLevel
-					AstralKeys[id][6] = week
-					AstralKeys[id][7] = timeStamp
+				if AstralKeys[id].time_stamp < timeStamp then
+					AstralKeys[id].weekly_best = weekly_best >= AstralKeys[id].weekly_best and weekly_best or AstralKeys[id].weekly_best
+					AstralKeys[id].dungeon_id = dungeonID
+					AstralKeys[id].key_level = keyLevel
+					AstralKeys[id].week = week
+					AstralKeys[id].time_stamp = timeStamp
 				end
 			else
-				AstralKeys[#AstralKeys + 1] = {unit, class, dungeonID, keyLevel, weekly_best, week, timeStamp}
+				table.insert(AstralKeys, {
+					unit = unit,
+					btag = btag,
+					class = class,
+					dungeon_id = dungeonID,
+					key_level = keyLevel,
+					week = week,
+					time_stamp = timeStamp,
+					faction = e.FACTION,
+					weekly_best = weekly_best,
+					source = 'guild'
+				})
 				e.SetUnitID(unit, #AstralKeys)
 			end
-			e.AddUnitToTable(unit, class, faction, 'GUILD', dungeonID, keyLevel, weekly_best)
+			e.AddUnitToList(unit, 'GUILD')
+			e.AddUnitToSortTable(unit, btag, class, e.FACTION, dungeonID, keyLevel, weekly_best, 'GUILD')
+			--e.AddUnitToTable(unit, class, faction, 'GUILD', dungeonID, keyLevel, weekly_best)
 		end
 	end
 	unit, class, dungeonID, keyLevel, weekly_best, week, timeStamp = nil, nil, nil, nil, nil, nil, nil
+	entry = nil
 end
 AstralComs:RegisterPrefix('GUILD', SYNC_VERSION, SyncReceive)
 
 local function UpdateWeekly(weekly_best, sender)
 	local id = e.UnitID(sender)
 	if id then
-		AstralKeys[id][5] = tonumber(weekly_best)
-		AstralKeys[id][7] = e.WeekTime()
+		AstralKeys[id].weekly_best = tonumber(weekly_best)
+		AstralKeys[id].time_stamp = e.WeekTime()
 		e.UpdateFrames()
 	end
 end
 AstralComs:RegisterPrefix('GUILD', 'updateWeekly', UpdateWeekly)
 
 local function PushKeyList(msg, sender)
-	if sender == e.Player() then return end
+	--if sender == e.Player() then return end
 
 	wipe(messageStack)
 	for i = 1, #AstralKeys do
-		if e.UnitInGuild(AstralKeys[i][1]) then -- Only send current guild keys, who wants keys from a different guild?
+		if e.UnitInGuild(AstralKeys[i].unit) then -- Only send current guild keys, who wants keys from a different guild?
+			messageStack[#messageStack + 1] = strformat('%s_', strformat('%s:%s:%d:%d:%d:%d:%d', AstralKeys[i].unit, AstralKeys[i].class, AstralKeys[i].dungeon_id, AstralKeys[i].key_level, AstralKeys[i].weekly_best, AstralKeys[i].week, AstralKeys[i].time_stamp))
 			--messageStack[#messageStack + 1] = strformat('%s_', strformat('%s:%s:%d:%d:%d:%d:%d', AstralKeys[i][1], AstralKeys[i][2], AstralKeys[i][3], AstralKeys[i][4], AstralKeys[i][5], AstralKeys[i][6], AstralKeys[i][7]))
-			messageStack[#messageStack + 1] = strformat('%s_', table.concat(AstralKeys[i], ':'))
+			--messageStack[#messageStack + 1] = strformat('%s_', table.concat(AstralKeys[i], ':'))
 		end
 	end
  
@@ -180,13 +207,13 @@ local function GuildListSort(A, v)
 			end
 			if aOnline == bOnline then
 				if AstralKeysSettings.frame.orientation == 0 then
-					if e.GetMapName(a.mapID) > e.GetMapName(b.mapID) then
+					if e.GetMapName(a.dungeon_id) > e.GetMapName(b.dungeon_id) then
 						if bOnline then
 							return true
 						else
 							return false
 						end
-					elseif e.GetMapName(a.mapID) < e.GetMapName(b.mapID) then
+					elseif e.GetMapName(a.dungeon_id) < e.GetMapName(b.dungeon_id) then
 						if aOnline then
 							return false
 						else
@@ -196,13 +223,13 @@ local function GuildListSort(A, v)
 						return a.character_name < b.character_name
 					end
 				else
-					if e.GetMapName(a.mapID) < e.GetMapName(b.mapID) then
+					if e.GetMapName(a.dungeon_id) < e.GetMapName(b.dungeon_id) then
 						if aOnline then
 							return true
 						else
 							return false
 						end
-					elseif e.GetMapName(a.mapID) > e.GetMapName(b.mapID) then
+					elseif e.GetMapName(a.dungeon_id) > e.GetMapName(b.dungeon_id) then
 						if bOnline then
 							return false
 						else
@@ -267,43 +294,43 @@ local function GuildListFilter(A, filters)
 		end
 	end
 
-	for i = 1, #A.GUILD do
-		if e.UnitInGuild(A.GUILD[i].character_name) then
+	for i = 1, #A do
+		if e.UnitInGuild(A[i].character_name) then
 			if AstralKeysSettings.frame.show_offline.isEnabled then
-				A.GUILD[i].isShown = true
+				A[i].isShown = true
 			else
-				A.GUILD[i].isShown = e.GuildMemberOnline(A.GUILD[i].character_name)
+				A[i].isShown = e.GuildMemberOnline(A[i].character_name)
 			end
 
-			A.GUILD[i].isShown = A.GUILD[i].isShown and AstralKeysSettings.frame.rank_filter[e.GuildMemberRank(A.GUILD[i].character_name)]
+			A[i].isShown = A[i].isShown and AstralKeysSettings.frame.rank_filter[e.GuildMemberRank(A[i].character_name)]
 
-			local isShownInFilter = true -- Assume there is no filter taking place
+			local isShownInFilter = true  -- Assume there is no filter taking place
 			
 			for field, filterText in pairs(filters) do
 				if filterText ~= '' then
 					isShownInFilter = false -- There is a filter, now assume this unit is not to be shown
 					if field == 'dungeon_name' then
-						local mapName = e.GetMapName(A.GUILD[i]['mapID'])
+						local mapName = e.GetMapName(A[i]['dungeon_id'])
 						if strfind(strlower(mapName), strlower(filterText)) then
 							isShownInFilter = true
 						end
 					elseif field == 'key_level' then
-						if A.GUILD[i][field] >= keyLevelLowerBound and A.GUILD[i][field] <= keyLevelUpperBound then
+						if A[i][field] >= keyLevelLowerBound and A[i][field] <= keyLevelUpperBound then
 							isShownInFilter = true
 						end
 					else
-						if strfind(strlower(A.GUILD[i][field]):sub(1, A.GUILD[i][field]:find('-') - 1), strlower(filterText)) then
+						if strfind(strlower(A[i][field]):sub(1, A[i][field]:find('-') - 1), strlower(filterText)) then
 							isShownInFilter = true
 						end
 					end
 				end
-				A.GUILD[i].isShown = A.GUILD[i].isShown and isShownInFilter
+				A[i].isShown = A[i].isShown and isShownInFilter
 			end
-			if A.GUILD[i].isShown then
-				A.numShown = A.numShown + 1
+			if A[i].isShown then
+				A.num_shown = A.num_shown + 1
 			end
 		else
-			A.GUILD[i].isShown = false
+			A[i].isShown = false
 		end
 	end
 end

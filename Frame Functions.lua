@@ -13,7 +13,7 @@ insets = {left = 0, right = 0, top = 0, bottom = 0}
 }
 
 function e.CreateCheckBox(parent, label, width)
-	local checkbox = CreateFrame('CheckButton', nil, parent)
+	local checkbox = CreateFrame('CheckButton', nil, parent, "BackdropTemplate")
 	checkbox:SetSize(width or 200, 20)
 	checkbox:SetBackdrop(nil)
 	checkbox:SetBackdropBorderColor(85/255, 85/255, 85/255)
@@ -50,157 +50,220 @@ edgeFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 
 insets = {left = 0, right = 0, top = 0, bottom = 0}
 }
 
-local menuFrame = CreateFrame('FRAME', 'AstralMenuFrame', UIParent)
-menuFrame:Hide()
-menuFrame.dtbl = {}
+local function AcquireButtonFromPool(parent)
+	local button
+	button = table.remove(parent.pool, 1)
 
-menuFrame:SetFrameStrata('TOOLTIP')
-menuFrame:SetWidth(150)
-menuFrame:SetHeight(40)
-menuFrame.background = menuFrame:CreateTexture(nil, 'BACKGROUND')
-menuFrame.background:SetAllPoints(menuFrame)
-menuFrame.background:SetColorTexture(0, 0, 0, 1)
-menuFrame:EnableKeyboard(true)
-
-menuFrame:SetScript('OnKeyDown', function(self, key)
-	if key == 'ESCAPE' then
-		AstralMenuFrame:Hide()
-	end
-	end)
-
-menuFrame:SetScript('OnShow', function(self)
-	self:SetPropagateKeyboardInput(true)
-	end)
-
-menuFrame.title = menuFrame:CreateFontString(nil, 'ARTWORK', 'InterUIMedium_Normal')
---menuFrame.title:SetFont(FONT_CONTENT, FONT_SIZE - 1)
-menuFrame.title:SetJustifyH('LEFT')
-menuFrame.title:SetSize(120, 15)
-menuFrame.title:SetPoint('TOPLEFT', menuFrame, 'TOPLEFT', 10, -5)
-
-local function HideMenu()
-	menuFrame:Hide()
+	return button
 end
 
-function menuFrame:SetUnit(unitID)
-	self.unit = unitID
-	if e.FrameListShown() == 'GUILD' then
-		self.title:SetText(e.UnitName(unitID))
-	else
-		self.title:SetText(e.FriendName(unitID))
+local function CreateButton(parent)
+	local button = AcquireButtonFromPool(parent)
+
+	if not button then
+		button = CreateFrame('BUTTON', nil, parent)
+		button:SetSize(140, 20)	
+
+		button:SetNormalFontObject(InterUIMedium_Normal)
+		local texture = button:CreateTexture()
+		texture:SetColorTexture(0.5, 0.5, 0.5, 1)
+		texture:SetBlendMode('BLEND')
+		texture:SetPoint('TOPLEFT', 1, -1)
+		texture:SetPoint('BOTTOMRIGHT', -1, 1)
+		texture:SetGradientAlpha('HORIZONTAL', .5, .5, .5, .8, .5, .5, .5, 0)
+		button:SetHighlightTexture(texture)
+
+		button.menuTexture = button:CreateTexture(nil, 'ARTWORK')
+		button.menuTexture:SetSize(16, 16)
+		button.menuTexture:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline_keyboard_arrow_right_white_24dp')
+		button.menuTexture:SetVertexColor(0.8, 0.8, 0.8, 0.8)
+		button.menuTexture:SetPoint('RIGHT', button, 'RIGHT', -5, 0)
+
+		function button:Recycle()
+			button:SetText(nil)
+			button:SetScript('OnClick', nil)
+			button:SetScript('OnShow', nil)
+		end
+	end
+
+	return button
+end
+
+local function CloseSubMenu(frame)
+	if not frame then return end
+
+	local nextTierFrame, tier = frame:GetName():match('([%a]+)(%d)')
+	nextTierFrame = nextTierFrame .. (tier + 1)
+	if _G[nextTierFrame] then _G[nextTierFrame]:Hide() end
+end
+
+local function CloseDropDownMenu(frame)
+	if not frame then return end
+
+	local baseFrame, tier = frame:GetName():match('([%a]+)(%d)')
+	for i = 1, tier do
+		if _G[baseFrame .. i] then _G[baseFrame .. i]:Hide() end
 	end
 end
 
-function menuFrame:NewObject(name, func, onShow)
-	local btn = CreateFrame('BUTTON', nil, menuFrame)
-	btn:SetSize(135, 20)
-	btn:SetBackdrop(BACKDROP2)
-	btn:SetBackdropBorderColor(0, 0, 0, 0)
-	btn:SetBackdropColor(33/255, 33/255, 33/255)
-	btn:SetNormalFontObject(InterUIBlack_Normal)
+function e.ClosePopupFrames(ignoredFrame)
 
-	local texture = btn:CreateTexture()
-	texture:SetColorTexture(0.5, 0.5, 0.5, .2)
-	texture:SetPoint('TOPLEFT', 1, -1)
-	texture:SetPoint('BOTTOMRIGHT', -1, 1)
-	btn:SetHighlightTexture(texture)
-
-	btn:SetText(name)
-
-	btn:SetScript('OnClick', func)
-
-	if onShow and type(onShow) == 'function' then
-		btn:SetScript('OnShow', onShow)
-	end
-
-	return btn
 end
 
-function menuFrame:AddSelection(name, onClick, onShow)
-	local dtbl = self.dtbl
-	dtbl[#dtbl + 1] = self:NewObject(name, onClick, onShow)
-	self:SetHeight(#dtbl * 20 + 30)
 
-	if onClick then
-		dtbl[#dtbl]:HookScript('OnClick', HideMenu)
+function e.CreateDropDownFrame(name, level, parent)
+	local frame = CreateFrame('FRAME', 'AstralMenuFrame' .. name .. level, parent, "BackdropTemplate")
+	frame:Hide()
+	frame.tier = level
+	frame.buttons = {}
+	frame.pool = {}
+	frame.unit = ''
+	frame.units = {}
+
+	frame:SetFrameStrata('TOOLTIP')
+	frame:SetWidth(10)
+	frame:SetHeight(40)
+	frame:SetFrameLevel(level * 5)
+
+	frame:SetBackdrop(BACKDROP2)
+	frame:SetBackdropBorderColor(33/255, 33/255, 33/255, 0.8)
+	frame:SetBackdropColor(0, 0, 0)
+
+	frame.background = frame:CreateTexture(nil, 'BACKGROUND')
+	frame.background:SetAllPoints(frame)
+	frame.background:SetColorTexture(0, 0, 0, 1)
+	frame:EnableKeyboard(true)
+	frame:SetPropagateKeyboardInput(true)
+
+	frame:SetScript('OnKeyDown', function(self, key)
+		if key == 'ESCAPE' then
+			if self.tier == 1 then
+				self:SetPropagateKeyboardInput(false)
+			end
+			self:Hide()
+		end
+	end)
+
+	frame:SetScript('OnShow', function(self)
+		self:SetPropagateKeyboardInput(true)
+	end)
+
+	frame.title = frame:CreateFontString(nil, 'ARTWORK', 'InterUIBlack_Normal')
+	frame.title:SetNonSpaceWrap(false)
+	frame.title:SetJustifyH('LEFT')
+	frame.title:SetSize(150, 15)
+	frame.title:SetPoint('TOPLEFT', frame, 'TOPLEFT', 5, -5)
+
+	function frame:SetTitle(text)
+		self.title:SetText(text)
+
+		local stringLength = self.title:GetUnboundedStringWidth()
+		self.title:SetWidth(stringLength + 10)
+		self:AdjustWidth(stringLength)
+
 	end
 
-	dtbl[#dtbl]:SetPoint('TOPLEFT', self, 'TOPLEFT', 12, -20*(#dtbl) -5)
+	function frame:AddUnit(unit)
+		self.units[unit] = true
+	end
+
+	function frame:RemoveUnit(unit)
+		self.units[unit] = nil
+	end
+
+	function frame:WipeUnits()
+		wipe(self.units)
+	end
+
+	function frame:GetUnits()
+		return self.units
+	end
+
+	function frame:SetUnit(unit)
+		self.unit = unit
+	end
+
+	function frame:AdjustWidth(overrideWidth)
+		local longestStringLength = 0
+		if not overrideWidth then
+			for i = 1, #self.buttons do
+				local btnStringLength = self.buttons[i]:GetFontString():GetUnboundedStringWidth() + (self.buttons[i].menuTexture:IsShown() and 20 or 0)
+				longestStringLength = math.max(longestStringLength, btnStringLength)
+			end
+			longestStringLength = math.max(longestStringLength, self.title:GetUnboundedStringWidth())
+		else
+			longestStringLength = overrideWidth
+		end
+
+		self:SetWidth(longestStringLength + 20)
+		for i = 1, #self.buttons do
+			self.buttons[i]:SetWidth(longestStringLength)
+		end
+	end
+
+	frame:SetScript('OnShow', function(self)
+		self:AdjustWidth()
+	end)
+
+	function frame:AddButton(name, onClick, onShow, onEnter, subMenu, subFrame)
+		local button = CreateButton(self)
+		button:SetWidth(self:GetWidth() - 20)
+		button:SetPoint('TOPLEFT', self.title, 'BOTTOMLEFT', 5, -20*(#self.buttons))
+		button:SetText(name)
+
+		local stringLength = button:GetFontString():GetUnboundedStringWidth()	
+
+		if not subMenu then
+			button.menuTexture:Hide()
+			button:SetScript('OnClick', function(self)
+				if onClick then onClick(self) end
+				CloseDropDownMenu(self:GetParent())
+			end)
+			button:SetScript('OnEnter', function(self)
+				CloseSubMenu(self:GetParent())
+			end)			
+		else
+			button:SetWidth(self:GetWidth() + 15)
+			stringLength = stringLength + 40 -- to account for sub menu texture and padding on both sides of it
+			button.menuTexture:Show()
+			button:SetScript('OnEnter', function(self)
+				subFrame:SetPoint('TOPLEFT', self, 'TOPRIGHT', -5, 0)
+				subFrame:SetShown(true)
+			end)
+			-- Show an arrow texture to indicate a menu
+			button:SetScript('OnClick', function(self)
+				if onClick then onClick(self) end
+				--subFrame:SetPoint('TOPLEFT', self, 'TOPRIGHT', -5, 0)
+				--subFrame:SetShown(not subFrame:IsShown())
+			end)
+		end
+
+		if onEnter then
+			button:HookScript('OnEnter', onEnter)
+		end
+
+		button:SetScript('OnShow', onShow)
+		table.insert(self.buttons, button)
+		self:SetHeight(#self.buttons * 20 + 30)
+
+		self:AdjustWidth()
+
+		return button
+	end
+
+	frame:SetScript('OnHide', function(self)
+		self:WipeUnits()
+	end)
+
+	function frame:ClearButtons()
+		for i = #self.buttons, 1, -1 do
+			self.buttons[i]:Recycle()
+			table.insert(self.pool, table.remove(self.buttons, i))
+		end
+	end
+
+	return frame
 end
-
-local reportFrame = CreateFrame('FRAME', 'AstralReportFrame', UIParent)
-reportFrame:Hide()
-
-reportFrame:SetFrameStrata('TOOLTIP')
-reportFrame:SetWidth(100)
-reportFrame:SetHeight(70)
-reportFrame.background = reportFrame:CreateTexture(nil, 'BACKGROUND')
-reportFrame.background:SetAllPoints(reportFrame)
-reportFrame.background:SetColorTexture(0, 0, 0, 1)
-reportFrame:EnableKeyboard(true)
-
-local partyButton = CreateFrame('BUTTON', nil, reportFrame)
-partyButton:SetSize(90, 20)
-partyButton:SetBackdrop(BACKDROP2)
-partyButton:SetBackdropBorderColor(0, 0, 0, 0)
-partyButton:SetBackdropColor(25/255, 25/255, 25/255)
-partyButton:SetNormalFontObject(InterUIBlack_Normal)
-
-local partyHighlightTexture = partyButton:CreateTexture()
-partyHighlightTexture:SetColorTexture(0.5, 0.5, 0.5, .2)
-partyHighlightTexture:SetPoint('TOPLEFT', 1, -1)
-partyHighlightTexture:SetPoint('BOTTOMRIGHT', -1, 1)
-partyButton:SetHighlightTexture(partyHighlightTexture)
-
-partyButton:SetPoint('TOPLEFT', reportFrame, 'TOPLEFT', 5, -5)
-
-partyButton:SetText(L['PARTY'])
-partyButton:SetScript('OnClick', function()
-	e.AnnounceCharacterKeys('PARTY')
-	reportFrame:Hide()
-	end)
-
-local guildButton = CreateFrame('BUTTON', nil, reportFrame)
-guildButton:SetSize(90, 20)
-guildButton:SetBackdrop(BACKDROP2)
-guildButton:SetBackdropBorderColor(0, 0, 0, 0)
-guildButton:SetBackdropColor(25/255, 25/255, 25/255)
-guildButton:SetNormalFontObject(InterUIBlack_Normal)
-
-local guildHighlightTexture = guildButton:CreateTexture()
-guildHighlightTexture:SetColorTexture(0.5, 0.5, 0.5, .2)
-guildHighlightTexture:SetPoint('TOPLEFT', 1, -1)
-guildHighlightTexture:SetPoint('BOTTOMRIGHT', -1, 1)
-guildButton:SetHighlightTexture(guildHighlightTexture)
-
-guildButton:SetPoint('TOPLEFT', partyButton, 'BOTTOMLEFT', 0, -1)
-
-guildButton:SetText(L['GUILD'])
-guildButton:SetScript('OnClick', function()
-	e.AnnounceCharacterKeys('GUILD')
-	reportFrame:Hide()
-	end)
-
-local cancelButton = CreateFrame('BUTTON', nil, reportFrame)
-cancelButton:SetSize(90, 20)
-cancelButton:SetBackdrop(BACKDROP2)
-cancelButton:SetBackdropBorderColor(0, 0, 0, 0)
-cancelButton:SetBackdropColor(25/255, 25/255, 25/255)
-cancelButton:SetNormalFontObject(InterUIBlack_Normal)
-
-local cancelHighlightTexture = cancelButton:CreateTexture()
-cancelHighlightTexture:SetColorTexture(0.5, 0.5, 0.5, .2)
-cancelHighlightTexture:SetPoint('TOPLEFT', 1, -1)
-cancelHighlightTexture:SetPoint('BOTTOMRIGHT', -1, 1)
-cancelButton:SetHighlightTexture(cancelHighlightTexture)
-
-cancelButton:SetPoint('TOPLEFT', guildButton, 'BOTTOMLEFT', 0, -1)
-
-cancelButton:SetText(L['CANCEL'])
-cancelButton:SetScript('OnClick', function()
-	reportFrame:Hide()
-	end)
-
 
 function e.AddEscHandler(frame)
 	if not frame and type(frame) ~= 'table' then

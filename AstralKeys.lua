@@ -1,9 +1,9 @@
 local e, L = unpack(select(2, ...))
 e.Week = 0
+e.EXPANSION_LEVEL = 50
 
 if not AstralKeys then AstralKeys = {} end
 if not AstralCharacters then AstralCharacters = {} end
-if not AstralFriends then AstralFriends = {} end
 
 local initializeTime = {} 
 initializeTime[1] = 1500390000 -- US Tuesday at reset
@@ -22,8 +22,17 @@ function e.WeekTime()
 end
 
 AstralEvents:Register('PLAYER_LOGIN', function()
+
+	local major, minor = string.match(GetAddOnMetadata('AstralKeys', 'version'), '(%d+).(%d+)')
+
+	if tonumber(major) == 3 and tonumber(minor) > 25 and not AstralKeysSettings.wipedOldTables then -- Changed to single table in 3.26
+		wipe(AstralKeys)
+		AstralFriends = nil
+		AstralKeysSettings.wipedOldTables = true
+	end
+
 	if IsInGuild() then
-		GuildRoster()
+		C_GuildInfo.GuildRoster()
 	end
 
 	if UnitFactionGroup('player') == 'Alliance' then
@@ -49,7 +58,6 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 	if currentTime > AstralKeysSettings.general.init_time then
 		wipe(AstralCharacters)
 		wipe(AstralKeys)
-		wipe(AstralFriends)
 		AstralKeysSettings.general.init_time = e.DataResetTime()
 	end
 
@@ -71,7 +79,6 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 					e.WipeCharacterList()
 					e.WipeUnitList()
 					e.WipeFriendList()
-					wipe(AstralFriends)
 					C_MythicPlus.RequestRewards()
 					AstralCharacters = {}
 					AstralKeys = {}
@@ -104,7 +111,6 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 					e.WipeCharacterList()
 					e.WipeUnitList()
 					e.WipeFriendList()
-					wipe(AstralFriends)
 					C_MythicPlus.RequestRewards()
 					AstralCharacters = {}
 					AstralKeys = {}
@@ -122,19 +128,15 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 	end
 
 	for i = 1, #AstralKeys do -- index guild units
-		e.SetUnitID(AstralKeys[i][1], i)
-		e.AddUnitToTable(AstralKeys[i][1], AstralKeys[i][2], nil, 'GUILD', AstralKeys[i][3], AstralKeys[i][4], AstralKeys[i][5])
+		e.SetUnitID(AstralKeys[i].unit, i)
+		e.AddUnitToSortTable(AstralKeys[i].unit, AstralKeys[i].btag, AstralKeys[i].class, AstralKeys[i].faction, AstralKeys[i].dungeon_id, AstralKeys[i].key_level, AstralKeys[i].weekly_best)
+		--e.AddUnitToTable(AstralKeys[i].unit, AstralKeys[i].class, AstralKeys[i].faction, 'GUILD', AstralKeys[i].dungeon_id, AstralKeys[i].key_level, AstralKeys[i].weekly_best)
 	end
 
 	for i = 1, #AstralCharacters do -- index player's characters
 		e.SetCharacterID(AstralCharacters[i].unit, i)
 	end	
-
-	for i = 1, #AstralFriends do
-		e.SetFriendID(AstralFriends[i][1], i, AstralFriends[i][2])
-		e.AddUnitToTable(AstralFriends[i][1], AstralFriends[i][3], AstralFriends[i][8], 'FRIENDS',  AstralFriends[i][4], AstralFriends[i][5], AstralFriends[i][9], AstralFriends[i][2])
-	end
-
+	
 	if AstralAffixes.season_start_week == 0 then -- Addon has just initialized for the fisrt time or saved variables have been lost. 
 		AstralAffixes.season_start_week = e.Week
 	end

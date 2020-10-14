@@ -24,11 +24,20 @@ L['CHARACTER_KEY_NOT_FOUND'] = 'No key found'
 
 
 -- Dropdown menu selections
+L['REPORT_TO'] = 'Report to'
 L['Whisper'] = WHISPER
 L['INVITE'] = INVITE
 L['SUGGEST_INVITE'] = SUGGEST_INVITE
 L['REQUEST_INVITE'] = REQUEST_INVITE
 L['CANCEL'] = CANCEL
+L['NEW_LIST_DESCRIPTION'] = 'New list name'
+L['CREATE_NEW_LIST'] = 'Create new list'
+L['REMOVE_UNIT_FROM_LIST'] = 'Remove from list'
+L['ADD_TO_LIST'] = 'Add unit(s) to list'
+L['ADD_REMOVE_LIST'] = 'Add or Delete List'
+L['DELETE_LIST'] = 'Delete List'
+L['LIST_ADD_HELPER_TEXT'] = 'Add units to list by right clicking a unit in your GUILD or FRIENDS list'
+L['OKAY'] = OKAY
 
 -- Announce messages
 L['ANNOUNCE_NEW_KEY'] = 'Astral Keys: New key %s'
