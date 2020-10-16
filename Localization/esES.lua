@@ -36,7 +36,7 @@ L['REMOVE_UNIT_FROM_LIST'] = 'Remove from list'
 L['ADD_TO_LIST'] = 'Add unit(s) to list'
 L['ADD_REMOVE_LIST'] = 'Add or Delete List'
 L['DELETE_LIST'] = 'Delete List'
-L['LIST_ADD_HELPER_TEXT'] = 'Add units to list by right clicking a unit in your Guild or Friends list'
+L['LIST_ADD_HELPER_TEXT'] = 'Add units to list by right clicking a unit in your Astral Key\'s Guild or Friends list'
 L['OKAY'] = OKAY
 
 -- Announce messages

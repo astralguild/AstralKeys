@@ -133,7 +133,7 @@ local function UpdateNonBNetFriendList()
 
 	for i = 1, C_FriendList.GetNumOnlineFriends() do
 		local name, _, _, _, isConnected, _, _, _, guid = C_FriendList.GetFriendInfo(i)
-		name = strformat('%s-%s', GetFriendInfo(i), e.PlayerRealm())
+		name = strformat('%s-%s', C_FriendList.GetFriendInfo(i), e.PlayerRealm())
 		NonBNFriend_List[name] = {isConnected = isConnected}
 		if FRIEND_LIST[name] then
 			FRIEND_LIST[name].isConnected = true
@@ -355,8 +355,8 @@ end
 local function PingFriendsForAstralKeys()
 	if not AstralKeysSettings.friendOptions.friend_sync.isEnabled then return end
 	for i = 1, C_FriendList.GetNumOnlineFriends() do -- Only parse over online friends
-		local name, _, _, _, isConnected, _, _, _, guid = GetFriendInfo(i)
-		name = strformat('%s-%s', GetFriendInfo(i), e.PlayerRealm())
+		local name, _, _, _, isConnected, _, _, _, guid = C_FriendList.GetFriendInfo(i)
+		name = strformat('%s-%s', C_FriendList.GetFriendInfo(i), e.PlayerRealm())
 
 		NonBNFriend_List[name] = {isConnected = isConnected}
 	end
