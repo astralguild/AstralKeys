@@ -54,7 +54,7 @@ local highestVersion = 0
 
 local messageStack = {}
 
-local function UpdateUnitKey(msg)
+local function UpdateUnitKey(msg, sender)
 	local timeStamp = e.WeekTime() -- part of the week we got this key update, used to determine if a key got de-leveled or not
 
 	local unit, class, dungeonID, keyLevel, weekly_best, week = strsplit(':', msg)

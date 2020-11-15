@@ -605,6 +605,7 @@ do
 		local stringShown = false
 
 		for gameIndex = 1, C_BattleNet.GetFriendNumGameAccounts(self.id) do
+			if gameIndex > FRIENDS_TOOLTIP_MAX_GAME_ACCOUNTS then break end -- Blizzard only wrote lines for 5 game indices
 			local gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(self.id, gameIndex)
 			local characterNameString = _G['FriendsTooltipGameAccount' .. gameIndex .. 'Name']
 			local gameInfoString = _G['FriendsTooltipGameAccount' .. gameIndex .. 'Info']

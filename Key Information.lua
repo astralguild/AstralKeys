@@ -95,6 +95,10 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 	Since the GetWeeklyChestRewardLevel() API calls returns the unopened chest over any key the player may have ran for the current week
 	this is a workaround for that.
 	]]
+	--[[
+	msg = AstralEngine.Player() .. ':' .. AstralEngine.PlayerClass() .. ':249:99:99:' .. AstralEngine.Week .. ':' .. AstralEngine.FACTION
+	AstralComs:NewMessage('AstralKeys', string.format('%s %s', AstralEngine.UPDATE_VERSION, msg), 'GUILD')
+	]]
 	if isChestAvailable then
 		weeklyBest = 0
 	end

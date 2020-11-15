@@ -127,14 +127,34 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 			end)
 	end
 
+	-- Check over saved variables, remove any entries that are incorrect
+	-- if any of these fields, remove it
+	-- unit, class, dungeon_id, key_level, faction
+	for i = #AstralKeys, 1, -1 do
+		if not (AstralKeys[i].unit and AstralKeys[i].class and AstralKeys[i].dungeon_id and AstralKeys[i].key_level) then -- Missing information from an entry, remove the entry
+			table.remove(AstralKeys, i)
+		end
+	end
+
+	-- Clean up any bad information for personal characters
+	for i = #AstralCharacters, 1, -1, do
+		if not (AstralCharacters[i].unit) then
+			table.remove(AstralCharacters, i)
+		end
+	end
+
 	for i = 1, #AstralKeys do -- index guild units
-		e.SetUnitID(AstralKeys[i].unit, i)
-		e.AddUnitToSortTable(AstralKeys[i].unit, AstralKeys[i].btag, AstralKeys[i].class, AstralKeys[i].faction, AstralKeys[i].dungeon_id, AstralKeys[i].key_level, AstralKeys[i].weekly_best)
-		--e.AddUnitToTable(AstralKeys[i].unit, AstralKeys[i].class, AstralKeys[i].faction, 'GUILD', AstralKeys[i].dungeon_id, AstralKeys[i].key_level, AstralKeys[i].weekly_best)
+		if AstralKeys[i] and AstralKeys[i].unit then
+			e.SetUnitID(AstralKeys[i].unit, i)
+			e.AddUnitToSortTable(AstralKeys[i].unit, AstralKeys[i].btag, AstralKeys[i].class, AstralKeys[i].faction, AstralKeys[i].dungeon_id, AstralKeys[i].key_level, AstralKeys[i].weekly_best)
+			--e.AddUnitToTable(AstralKeys[i].unit, AstralKeys[i].class, AstralKeys[i].faction, 'GUILD', AstralKeys[i].dungeon_id, AstralKeys[i].key_level, AstralKeys[i].weekly_best)
+		end
 	end
 
 	for i = 1, #AstralCharacters do -- index player's characters
-		e.SetCharacterID(AstralCharacters[i].unit, i)
+		if AstralCharacters[i] and AstralCharacters[i].unit then
+			e.SetCharacterID(AstralCharacters[i].unit, i)
+		end
 	end	
 	
 	if AstralAffixes.season_start_week == 0 then -- Addon has just initialized for the fisrt time or saved variables have been lost. 
