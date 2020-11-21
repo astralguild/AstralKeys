@@ -137,7 +137,7 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 	end
 
 	-- Clean up any bad information for personal characters
-	for i = #AstralCharacters, 1, -1, do
+	for i = #AstralCharacters, 1, -1 do
 		if not (AstralCharacters[i].unit) then
 			table.remove(AstralCharacters, i)
 		end

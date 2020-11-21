@@ -8,7 +8,7 @@ function e.SetCharacterID(unit, unitID)
 	characterList[unit] = unitID
 end
 
-function e.UpdateCharacterIDs()
+function e.UpdateCharacterIDs() 
 	wipe(characterList)
 	for i = 1, #AstralCharacters do
 		characterList[AstralCharacters[i].unit] = i
@@ -46,7 +46,11 @@ end
 -- @return int Highest mythic+ ran for the week
 -- @return int 0 implies no key run for the week
 function e.GetCharacterBestLevel(id)
-	return AstralCharacters[id].weekly_best
+	if AstralCharacters[id] and AstralCharacters[id.weekly_best] then
+		return AstralCharacters[id].weekly_best
+	else
+		return nil
+	end
 end
 
 -- Retrieves character's mapID for highest ran mythic+ for the week
@@ -54,7 +58,11 @@ end
 -- @return int mapID for the highest ran mythic+ for the week
 -- @return int 0 implies no key run for the week
 function e.GetCharacterBestMap(id)
-	return AstralCharacters[id].map 
+	if AstralCharacters[id] and AstralCharacters[id].map then
+		return AstralCharacters[id].map
+	else
+		return nil
+	end
 end
 
 -- Retrieves faction for character
