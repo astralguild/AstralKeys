@@ -1,6 +1,6 @@
 local e, L = unpack(select(2, ...))
 e.Week = 0
-e.EXPANSION_LEVEL = 50
+e.EXPANSION_LEVEL = 60
 
 if not AstralKeys then AstralKeys = {} end
 if not AstralCharacters then AstralCharacters = {} end

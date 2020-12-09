@@ -29,65 +29,23 @@ end
 
 AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', SetDungeonTable, 'SetDungeonTable')
 
---[[
-RUSSIAN
-Upper Kara   Верхний Каражан
-Lowre Kara   Нижний Каражан
-]]
-
--- Legion Dungeons
-DUNGEON_TABLE[197] = {}
-DUNGEON_TABLE[197]['name'] = 'Eye of Azshara'
-DUNGEON_TABLE[198] = {}
-DUNGEON_TABLE[198]['name'] = 'Darkheart Thicket'
-DUNGEON_TABLE[199] = {}
-DUNGEON_TABLE[199]['name'] = 'Black Rook Hold'
-DUNGEON_TABLE[200] = {}
-DUNGEON_TABLE[200]['name'] = 'Halls of Valor'
-DUNGEON_TABLE[206] = {}
-DUNGEON_TABLE[206]['name'] = 'Neltharion\'s Lair'
-DUNGEON_TABLE[207] = {}
-DUNGEON_TABLE[207]['name'] = 'Vault of the Wardens'
-DUNGEON_TABLE[208] = {}
-DUNGEON_TABLE[208]['name'] = 'Maw of Souls'
-DUNGEON_TABLE[209] = {}
-DUNGEON_TABLE[209]['name'] = 'The Arcway'
-DUNGEON_TABLE[210] = {}
-DUNGEON_TABLE[210]['name'] = 'Court of Stars'
-DUNGEON_TABLE[227] = {}
-DUNGEON_TABLE[227]['name'] = 'Karazhan: Lower'
-DUNGEON_TABLE[233] = {}
-DUNGEON_TABLE[233]['name'] = 'Cathedral'
-DUNGEON_TABLE[234] = {}
-DUNGEON_TABLE[234]['name'] = 'Karazhan: Upper'
-DUNGEON_TABLE[239] = {}
-DUNGEON_TABLE[239]['name'] = 'Seat, Triumvirate'
-
--- BfA Dungeons
-DUNGEON_TABLE[244] = {}
-DUNGEON_TABLE[244]['name'] = 'Atal\'dazar'
-DUNGEON_TABLE[245] = {}
-DUNGEON_TABLE[245]['name'] = 'Freehold'
-DUNGEON_TABLE[246] = {}
-DUNGEON_TABLE[246]['name'] = 'Tol Dagor'
-DUNGEON_TABLE[247] = {}
-DUNGEON_TABLE[247]['name'] = 'The Motherlode'
-DUNGEON_TABLE[248] = {}
-DUNGEON_TABLE[248]['name'] = 'Waycrest Manor'
-DUNGEON_TABLE[249] = {}
-DUNGEON_TABLE[249]['name'] = 'King\'s Rest'
-DUNGEON_TABLE[250] = {}
-DUNGEON_TABLE[250]['name'] = 'Temple of Sethraliss'
-DUNGEON_TABLE[251] = {}
-DUNGEON_TABLE[251]['name'] = 'The Underrot'
-DUNGEON_TABLE[252] = {}
-DUNGEON_TABLE[252]['name'] = 'Shrine of the Storm'
-DUNGEON_TABLE[353] = {}
-DUNGEON_TABLE[353]['name'] = 'Siege of Boralus'
-DUNGEON_TABLE[369] = {}
-DUNGEON_TABLE[369]['name'] = 'Junkyard'
-DUNGEON_TABLE[370] = {}
-DUNGEON_TABLE[370]['name'] = 'Workshop'
+-- Shadowlands Dungeons
+DUNGEON_TABLE[375] = {}
+DUNGEON_TABLE[375]['name'] = 'Mists of Tirna Scithe'
+DUNGEON_TABLE[376] = {}
+DUNGEON_TABLE[376]['name'] = 'The Necrotic Wake'
+DUNGEON_TABLE[377] = {}
+DUNGEON_TABLE[377]['name'] = 'De Other Side'
+DUNGEON_TABLE[378] = {}
+DUNGEON_TABLE[378]['name'] = 'Halls of Atonement'
+DUNGEON_TABLE[379] = {}
+DUNGEON_TABLE[379]['name'] = 'Plaguefall'
+DUNGEON_TABLE[380] = {}
+DUNGEON_TABLE[380]['name'] = 'Sanguine Depths'
+DUNGEON_TABLE[381] = {}
+DUNGEON_TABLE[381]['name'] = 'Spires of Ascension'
+DUNGEON_TABLE[382] = {}
+DUNGEON_TABLE[382]['name'] = 'Theater of Pain'
 
 function e.GetMapName(mapID)
 	if type(DUNGEON_TABLE[mapID]) == 'table' then
