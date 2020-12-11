@@ -88,19 +88,19 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 
 	local mapID = C_MythicPlus.GetOwnedKeystoneChallengeMapID()
 	local keyLevel = C_MythicPlus.GetOwnedKeystoneLevel()
-	local weeklyBest = C_MythicPlus.GetWeeklyChestRewardLevel()
+	local weeklyBest = 0
 	local isChestAvailable = C_MythicPlus.IsWeeklyRewardAvailable()
 	
-	--[[
-	Since the GetWeeklyChestRewardLevel() API calls returns the unopened chest over any key the player may have ran for the current week
-	this is a workaround for that.
-	]]
-	--[[
-	msg = AstralEngine.Player() .. ':' .. AstralEngine.PlayerClass() .. ':249:99:99:' .. AstralEngine.Week .. ':' .. AstralEngine.FACTION
-	AstralComs:NewMessage('AstralKeys', string.format('%s %s', AstralEngine.UPDATE_VERSION, msg), 'GUILD')
-	]]
-	if isChestAvailable then
-		weeklyBest = 0
+
+	local runHistory = C_MythicPlus.GetRunHistory(false, true)
+
+
+	for i = 1, #runHistory do
+		if runHistory[i].thisWeek then
+			if runHistory[i].level > weeklyBest then
+				weeklyBest = runHistory[i].level
+			end
+		end
 	end
 
 	local msg = ''
@@ -152,15 +152,16 @@ end
 function e.UpdateCharacterBest()
 	if UnitLevel('player') < e.EXPANSION_LEVEL then return end
 
-	local weeklyBest = C_MythicPlus.GetWeeklyChestRewardLevel()
-	local isChestAvailable = C_MythicPlus.IsWeeklyRewardAvailable()
-	
-	--[[
-	Since the GetWeeklyChestRewardLevel() API calls returns the unopened chest over any key the player may have ran for the current week
-	this is a workaround for that.
-	]]
-	if isChestAvailable then
-		weeklyBest = 0
+	local weeklyBest = 0
+	local runHistory = C_MythicPlus.GetRunHistory(false, true)
+
+
+	for i = 1, #runHistory do
+		if runHistory[i].thisWeek then
+			if runHistory[i].level > weeklyBest then
+				weeklyBest = runHistory[i].level
+			end
+		end
 	end
 
 	local found = false
@@ -177,14 +178,6 @@ function e.UpdateCharacterBest()
 		table.insert(AstralCharacters, {unit = e.Player(), class = e.PlayerClass(), weekly_best = weeklyBest, faction = e.FACTION})
 		e.SetCharacterID(e.Player(), #AstralCharacters)
 	end
---[[
-	local id = e.GetCharacterID(e.Player())
-	if id then
-		AstralCharacters[id].weekly_best = bestLevel
-	else
-		table.insert(AstralCharacters, {unit = e.Player(), class = e.PlayerClass(), map = bestMap, weekly_best = bestLevel, faction = e.FACTION})
-		e.SetCharacterID(e.Player(), #AstralCharacters)
-	end]]
 end
 
 local function MythicPlusStart()

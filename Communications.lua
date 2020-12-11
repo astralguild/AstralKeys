@@ -216,9 +216,9 @@ PrintVersion = function()
 	local i = 1
 	for k,v in pairs(versionList) do
 		if v.majorVersion <= highestMajorVersion and tonumber(v.subVersion) < highestSubVersion then
-			outOfDate = outOfDate .. strformat('%s(%d.%d)', WrapTextInColorCode(Ambiguate(k, 'GUILD'), select(4, GetClassColor(v.class))), v.majorVersion, v.subVersion)
+			outOfDate = outOfDate .. strformat('%s(%d.%d) ', WrapTextInColorCode(Ambiguate(k, 'GUILD'), select(4, GetClassColor(v.class))), v.majorVersion, v.subVersion)
 		else
-			upToDate = upToDate .. strformat('%s(%d.%d)', WrapTextInColorCode(Ambiguate(k, 'GUILD'), select(4, GetClassColor(v.class))), v.majorVersion, v.subVersion)
+			upToDate = upToDate .. strformat('%s(%d.%d) ', WrapTextInColorCode(Ambiguate(k, 'GUILD'), select(4, GetClassColor(v.class))), v.majorVersion, v.subVersion)
 		end
 	end
 
