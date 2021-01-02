@@ -5,8 +5,8 @@ local BNSendGameData, SendAddonMessage, SendChatMessage = BNSendGameData, C_Chat
 
 -- Variables for syncing information
 -- Will only accept information from other clients with same version settings
-local SYNC_VERSION = 'sync6'
-e.UPDATE_VERSION = 'updateV9'
+local SYNC_VERSION = 'sync5'
+e.UPDATE_VERSION = 'updateV8'
 
 local versionList = {}
 local highestSubVersion, highestMajorVersion = 0, 0
