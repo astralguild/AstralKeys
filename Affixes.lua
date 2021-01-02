@@ -120,7 +120,7 @@ local function UpdateMythicPlusAffixes()
 
 	-- Store the affix info for all the affixes, name, description
 	local affixId = 1
-	while (C_ChallengeMode.GetAffixInfo(affixId)) do
+	for affixId = 1, 300 do
 		local name, desc = C_ChallengeMode.GetAffixInfo(affixId)
 		AFFIX_INFO[affixId] = {name = name, description = desc}
 		affixId = affixId + 1
