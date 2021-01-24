@@ -293,7 +293,7 @@ AstralEvents:Register('ENCOUNTER_START', function()
 	end, 'encStart')
 
 AstralEvents:Register('ENCOUNTER_END', function()
-	AstralComs:RegisterPrefix('GUILD', 'request', PushKeyList)
+	AstralComs:RegisterPrefix('GUILD', 'request', AstralKeys_PushKeyList)
 	end, 'encStop')
 
 -- Checks to see if we zone into a raid instance,

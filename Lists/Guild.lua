@@ -169,7 +169,7 @@ local function UpdateWeekly(weekly_best, sender)
 end
 AstralComs:RegisterPrefix('GUILD', 'updateWeekly', UpdateWeekly)
 
-local function PushKeyList(msg, sender)
+function AstralKeys_PushKeyList(msg, sender)
 	--if sender == e.Player() then return end
 
 	wipe(messageStack)
@@ -193,7 +193,7 @@ local function PushKeyList(msg, sender)
 	end
 end
 
-AstralComs:RegisterPrefix('GUILD', 'request', PushKeyList)
+AstralComs:RegisterPrefix('GUILD', 'request', AstralKeys_PushKeyList)
 
 -- Guild sorting/Filtering
 local function GuildListSort(A, v)	
