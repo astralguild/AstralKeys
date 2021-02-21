@@ -12,7 +12,7 @@ L['DUNGEON'] = DUNGEONS
 L['CHARACTER'] = CHARAKTER
 
 -- Subsection Headers
-L['CHARACTERS'] = 'CHARAKTER'
+L['CHARACTERS'] = 'CHARAKTERE'
 L['AFFIXES'] = 'AFFIXE'
 
 -- Character Labels
