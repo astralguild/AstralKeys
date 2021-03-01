@@ -1,45 +1,45 @@
 local L = select(2, ...)[2]('deDE')
 
 -- Default tab names
-L['GUILD'] = GUILD
-L['FRIENDS'] = FRIENDS
+L['GUILD'] = GILDE
+L['FRIENDS'] = FREUNDE
 L['PARTY'] = PARTY
 L['RAID'] = RAID
 
 -- Column Headers
-L['LEVEL'] = LEVEL
+L['LEVEL'] = STUFE
 L['DUNGEON'] = DUNGEONS
-L['CHARACTER'] = CHARACTER
+L['CHARACTER'] = CHARAKTER
 
 -- Subsection Headers
-L['CHARACTERS'] = 'CHARACTERS'
-L['AFFIXES'] = 'AFFIXES'
+L['CHARACTERS'] = 'CHARAKTERE'
+L['AFFIXES'] = 'AFFIXE'
 
 -- Character Labels
-L['CURRENT_KEY'] = 'CURRENT'
-L['WEEKLY_BEST'] = 'WKLY BEST'
+L['CURRENT_KEY'] = 'AKTUELL'
+L['WEEKLY_BEST'] = 'WÖCH. BESTES'
 
-L['CHARACTER_DUNGEON_NOT_RAN'] = 'No mythic+ ran'
-L['CHARACTER_KEY_NOT_FOUND'] = 'No key found'
+L['CHARACTER_DUNGEON_NOT_RAN'] = 'Kein Mythisch+ abgeschlossen'
+L['CHARACTER_KEY_NOT_FOUND'] = 'Kein Schlüssel gefunden'
 
 
 -- Dropdown menu selections
-L['Whisper'] = WHISPER
-L['INVITE'] = INVITE
-L['SUGGEST_INVITE'] = SUGGEST_INVITE
-L['REQUEST_INVITE'] = REQUEST_INVITE
-L['CANCEL'] = CANCEL
+L['Whisper'] = FLÜSTERN
+L['INVITE'] = EINLADEN
+L['SUGGEST_INVITE'] = EINLADUNG EMPFEHLEN
+L['REQUEST_INVITE'] = EINLADUNG NACHFRAGEN
+L['CANCEL'] = ABBRECHEN
 
 -- Announce messages
-L['ANNOUNCE_NEW_KEY'] = 'Astral Keys: New key %s'
-L['NO_KEY'] = 'No key'
-L['KEYS_RESPOND_ON_NO_KEY'] = 'Respond even if you do not have a key'
+L['ANNOUNCE_NEW_KEY'] = 'Astral Keys: Neuer Schlüssel %s'
+L['NO_KEY'] = 'Kein Schlüssel'
+L['KEYS_RESPOND_ON_NO_KEY'] = 'Antworten auch mit keinem Schlüssel vorhanden'
 
 
 -- Search field texts
-L['FILTER_TEXT_DUNGEON'] = 'Filter by dungeon'
-L['FILTER_TEXT_CHARACTER'] = 'Filter by character name'
+L['FILTER_TEXT_DUNGEON'] = 'Nach Dungeon filtern'
+L['FILTER_TEXT_CHARACTER'] = 'Nach Charakternamen filtern'
 
 -- Options
-L['!KEYS_DESC'] = 'Respond to !keys command in the following chat channels'
-L['EXPANDED_TOOLTIP'] = 'Show affix description in the tooltip'
+L['!KEYS_DESC'] = 'Auf !keys antworten in den folgenden Kanälen'
+L['EXPANDED_TOOLTIP'] = 'Affix-Beschreibung im Tooltip anzeigen'
