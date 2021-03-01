@@ -7,7 +7,7 @@ L['PARTY'] = PARTY
 L['RAID'] = RAID
 
 -- Column Headers
-L['LEVEL'] = LEVEL
+L['LEVEL'] = STUFE
 L['DUNGEON'] = DUNGEONS
 L['CHARACTER'] = CHARAKTER
 
@@ -19,7 +19,7 @@ L['AFFIXES'] = 'AFFIXE'
 L['CURRENT_KEY'] = 'AKTUELL'
 L['WEEKLY_BEST'] = 'WÖCH. BESTES'
 
-L['CHARACTER_DUNGEON_NOT_RAN'] = 'Kein Mythisch+ geschafft'
+L['CHARACTER_DUNGEON_NOT_RAN'] = 'Kein Mythisch+ abgeschlossen'
 L['CHARACTER_KEY_NOT_FOUND'] = 'Kein Schlüssel gefunden'
 
 
