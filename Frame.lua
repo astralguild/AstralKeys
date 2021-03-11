@@ -462,6 +462,7 @@ reportButton:SetScript('OnClick', function(self)
 	AstralMenuFrameReport1:SetShown( not AstralMenuFrameReport1:IsShown())
 	end)
 
+
 local settingsButton = CreateFrame('BUTTON', '$parentSettingsButton', menuBar)
 settingsButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline-settings-20px@2x')
 settingsButton:SetSize(24, 24)
@@ -477,6 +478,29 @@ settingsButton:SetScript('OnClick', function()
 	AstralMenuFrameUnit1:Hide()
 	AstralOptionsFrame:SetShown( not AstralOptionsFrame:IsShown())
 	end)
+
+LoadAddOn("Blizzard_WeeklyRewards")
+local greatVaultButton = CreateFrame('BUTTON', '$parentGreatVaultButton', menuBar)
+greatVaultButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\great-vault@2x')
+greatVaultButton:SetSize(24, 24)
+greatVaultButton:GetNormalTexture():SetVertexColor(.8, .8, .8, 0.8)
+greatVaultButton:SetPoint('TOP', settingsButton, 'BOTTOM', 0, -20)
+greatVaultButton:SetScript('OnEnter', function(self)
+	self:GetNormalTexture():SetVertexColor(126/255, 126/255, 126/255, 0.8)
+end)
+greatVaultButton:SetScript('OnLeave', function(self)
+	self:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
+end)
+greatVaultButton:SetScript('OnClick', function()
+	ToggleGreatVault()
+end)
+
+function ToggleGreatVault()
+	if WeeklyRewardsFrame:IsShown() then
+		WeeklyRewardsFrame:Hide()
+	else WeeklyRewardsFrame:Show()
+	end
+end
 
 local logo_Astral = CreateFrame('BUTTON', nil, menuBar)
 logo_Astral:SetSize(32, 32)
