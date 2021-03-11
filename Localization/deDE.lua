@@ -1,5 +1,8 @@
 local L = select(2, ...)[2]('deDE')
 
+-- Default string for keystone
+L['KEYSTONE'] = 'Schlüsselstein:'
+
 -- Default tab names
 L['GUILD'] = 'GILDE'
 L['FRIENDS'] = 'FREUNDE'
@@ -52,3 +55,4 @@ L['FILTER_TEXT_CHARACTER'] = 'Sortierung nach Charakternamen'
 -- Options
 L['!KEYS_DESC'] = 'In folgenden Chatkanälen auf !keys Befehl reagieren'
 L['EXPANDED_TOOLTIP'] = 'Zeige Affix-Beschreibungen im Tooltip'
+
