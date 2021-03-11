@@ -59,7 +59,20 @@ function e.CreateKeyLink(mapID, keyLevel)
 	else
 		mapName = e.GetMapName(mapID)
 	end
-	return strformat('|c' .. COLOUR[3] .. '|Hkeystone:158923:%d:%d:%d:%d:%d:%d|h[Keystone: %s (%d)]|h|r', mapID, keyLevel, e.AffixOne(), e.AffixTwo(), e.AffixThree(), e.AffixFour(), mapName, keyLevel):gsub('\124\124', '\124')
+	local thisAff1, thisAff2, thisAff3, thisAff4 = 0
+	if keyLevel > 1 then
+	 thisAff1 = e.AffixOne()
+	end
+	if keyLevel > 3 then
+	 thisAff2 = e.AffixTwo()
+	end
+	if keyLevel > 6 then
+	 thisAff3 = e.AffixThree()
+	end
+	if keyLevel > 8 then
+	 thisAff4 = e.AffixFour()
+	end
+	return strformat('|c' .. COLOUR[3] .. '|Hkeystone:180653:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r', mapID, keyLevel, thisAff1, thisAff2, thisAff3, thisAff4, L['KEYSTONE'], mapName, keyLevel):gsub('\124\124', '\124')
 end
 
 AstralEvents:Register('CHALLENGE_MODE_COMPLETED', function()

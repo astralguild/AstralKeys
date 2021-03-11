@@ -1,5 +1,8 @@
 local L = select(2, ...)[2]('deDE')
 
+-- Default string for keystone
+L['KEYSTONE'] = 'Schlüsselstein:'
+
 -- Default tab names
 L['GUILD'] = 'GILDE'
 L['FRIENDS'] = 'FREUNDE'
