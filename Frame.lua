@@ -799,6 +799,7 @@ affixTitle:SetText(L['AFFIXES'])
 -- Affix Frames
 -----------------------------------------------------
 
+local affixLevels = {2, 4, 7, 10} 
 do
 	for i = 1, 4 do
 		local frame = CreateFrame('FRAME', '$parentAffix' .. i, characterFrame)
@@ -812,7 +813,6 @@ do
 		frame.affixID = 0
 		frame:SetSize(32, 32)
 		frame.icon = frame:CreateTexture(nil, 'ARTWORK')
-				
 		frame.icon:AddMaskTexture(mask)
 
 		if i == 1 then
@@ -820,6 +820,11 @@ do
 		else
 			frame:SetPoint('LEFT', '$parentAffix' .. (i -1), 'RIGHT', 15, 0)
 		end
+
+		local affixLevel = frame:CreateFontString('$parentAffixLevel' .. i, 'OVERLAY', 'InterUIBlack_Small')
+		affixLevel:SetPoint('TOP', 0, 14)
+		affixLevel:SetText('(+' .. affixLevels[i] .. ')')
+
 		frame.icon:SetAllPoints(frame)
 
 		function frame:UpdateInfo(affixID)
