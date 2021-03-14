@@ -61,17 +61,18 @@ function e.CreateKeyLink(mapID, keyLevel)
 	end
 	local thisAff1, thisAff2, thisAff3, thisAff4 = 0
 	if keyLevel > 1 then
-	 thisAff1 = e.AffixOne()
+		thisAff1 = e.AffixOne()
+		if keyLevel > 3 then
+			thisAff2 = e.AffixTwo()
+			if keyLevel > 6 then
+				thisAff3 = e.AffixThree()
+				if keyLevel > 9 then
+					thisAff4 = e.AffixFour()
+				end
+			end
+		end		
 	end
-	if keyLevel > 3 then
-	 thisAff2 = e.AffixTwo()
-	end
-	if keyLevel > 6 then
-	 thisAff3 = e.AffixThree()
-	end
-	if keyLevel > 8 then
-	 thisAff4 = e.AffixFour()
-	end
+
 	return strformat('|c' .. COLOUR[3] .. '|Hkeystone:180653:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r', mapID, keyLevel, thisAff1, thisAff2, thisAff3, thisAff4, L['KEYSTONE'], mapName, keyLevel):gsub('\124\124', '\124')
 end
 
