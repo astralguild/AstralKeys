@@ -2,7 +2,7 @@
 ## Title: Astral Keys
 ## Notes: Keystone Manager for Guilds and Friends
 ## Author: Astral
-## Version: 3.39
+## Version: 3.45
 ## SavedVariables: AstralKeys, AstralCharacters, AstralKeysSettings, AstralMinimap, AstralAffixes, AstralLists, AstralUnits
 
 Init.lua
@@ -36,9 +36,11 @@ Unit Information.lua
 Character Info.lua
 Dungeons.lua
 Key Information.lua
+Vault Information.lua
 
 AstralKeys.lua
 Frame Functions.lua
 Frame.xml
 MinimapButton.lua
 Options.lua
+GreatVault.xml

@@ -8,7 +8,7 @@ COLOUR[3] = 'ffa335ee' -- Epic
 COLOUR[4] = 'ffff8000' -- Legendary
 COLOUR[5] = 'ffe6cc80' -- Artifact
 
-e.MYTHICKEY_ITEMID = 158923
+e.MYTHICKEY_ITEMID = 180653
 
 local MapIds = {}
 
@@ -40,7 +40,7 @@ local function InitData()
 	AstralEvents:Unregister('CHALLENGE_MODE_MAPS_UPDATE', 'initData')
 	C_ChatInfo.RegisterAddonMessagePrefix('AstralKeys')
 	e.FindKeyStone(true, false)
-	e.UpdateCharacterBest() 	
+	e.UpdateCharacterBest()
 	if IsInGuild() then
 		AstralComs:NewMessage('AstralKeys', 'request', 'GUILD')
 	end
@@ -55,7 +55,7 @@ AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', InitData, 'initData')
 function e.CreateKeyLink(mapID, keyLevel)
 	local mapName
 	if mapID == 369 or mapID == 370 then
-		mapName = C_ChallengeMode.GetMapUIInfo(mapID)		
+		mapName = C_ChallengeMode.GetMapUIInfo(mapID)
 	else
 		mapName = e.GetMapName(mapID)
 	end
@@ -70,16 +70,17 @@ function e.CreateKeyLink(mapID, keyLevel)
 					thisAff4 = e.AffixFour()
 				end
 			end
-		end		
+		end
 	end
-
-	return strformat('|c' .. COLOUR[3] .. '|Hkeystone:180653:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r', mapID, keyLevel, thisAff1, thisAff2, thisAff3, thisAff4, L['KEYSTONE'], mapName, keyLevel):gsub('\124\124', '\124')
+	local localized_keystone = strformat(CHALLENGE_MODE_KEYSTONE_NAME,mapName)
+	return strformat('|c' .. COLOUR[3] .. '|Hkeystone:%d:%d:%d:%d:%d:%d:%d|h[%s (%d)]|h|r', e.MYTHICKEY_ITEMID, mapID, keyLevel, thisAff1, thisAff2, thisAff3, thisAff4, localized_keystone, keyLevel):gsub('\124\124', '\124')
 end
 
 AstralEvents:Register('CHALLENGE_MODE_COMPLETED', function()
 	C_Timer.After(3, function()
 		C_MythicPlus.RequestRewards()
 		e.FindKeyStone(true, true)
+		e.UpdateWeeklyCharacter()
 	end)
 end, 'dungeonCompleted')
 
@@ -93,7 +94,7 @@ local function ParseLootMsgForKey(...)
 			e.FindKeyStone(true, true)
 			AstralEvents:Unregister('BAG_UPDATE', 'bagUpdate')
 			AstralEvents:Unregister('CHAT_MSG_LOOT', 'lootCheck')
-			end, 'bagUpdate')
+		end, 'bagUpdate')
 	end
 end
 
@@ -104,7 +105,7 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 	local keyLevel = C_MythicPlus.GetOwnedKeystoneLevel()
 	local weeklyBest = 0
 	local isChestAvailable = C_MythicPlus.IsWeeklyRewardAvailable()
-	
+
 
 	local runHistory = C_MythicPlus.GetRunHistory(false, true)
 
@@ -119,7 +120,7 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 
 	local msg = ''
 
-	if mapID then 
+	if mapID then
 		msg = string.format('%s:%s:%d:%d:%d:%d:%s', e.Player(), e.PlayerClass(), mapID, keyLevel, weeklyBest, e.Week, e.FACTION)
 	end
 

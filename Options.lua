@@ -72,10 +72,10 @@ contentFrame:SetPoint('TOPLEFT', menuBar, 'TOPRIGHT', 15, -15)
 contentFrame:SetSize(550, 360)
 
 local generalHeader = contentFrame:CreateFontString(nil, 'OVERLAY', 'InterUIBold_Normal')
-generalHeader:SetText(L['GENERAL OPTIONS'])
+generalHeader:SetText(L['GENERAL_OPTIONS'])
 generalHeader:SetPoint('TOPLEFT', contentFrame, 'TOPLEFT')
 
-local showOffLine = e.CreateCheckBox(contentFrame, L['Show offline players'])
+local showOffLine = e.CreateCheckBox(contentFrame, L['OFFLINE_PLAYERS'])
 showOffLine:SetPoint('TOPLEFT', generalHeader, 'BOTTOMLEFT', 10, -10)
 showOffLine:SetScript('OnClick', function(self)
 	AstralKeysSettings.frame.show_offline.isEnabled = self:GetChecked()
@@ -83,8 +83,8 @@ showOffLine:SetScript('OnClick', function(self)
 	HybridScrollFrame_SetOffset(AstralKeyFrameListContainer, 0)
 	end)
 
-local showMinimap = e.CreateCheckBox(contentFrame, L['Show Minimap button'])
-showMinimap:SetPoint('LEFT', showOffLine, 'RIGHT', 10, 0)
+local showMinimap = e.CreateCheckBox(contentFrame, L['MINIMAP_BUTTON'])
+showMinimap:SetPoint('LEFT', showOffLine, 'RIGHT', 20, 0)
 showMinimap:SetScript('OnClick', function(self)
 	AstralKeysSettings.general.show_minimap_button.isEnabled = self:GetChecked()
 	if AstralKeysSettings.general.show_minimap_button.isEnabled then
@@ -97,27 +97,27 @@ showMinimap:SetScript('OnClick', function(self)
 	end
 	end)
 
-local showTooltip = e.CreateCheckBox(contentFrame, L['Show current key in tooltip'])
+local showTooltip = e.CreateCheckBox(contentFrame, L['KEY_TOOLTIP'])
 showTooltip:SetPoint('TOPLEFT', showOffLine, 'BOTTOMLEFT', 0, -5)
 showTooltip:SetScript('OnClick', function(self)
 	AstralKeysSettings.general.show_tooltip_key.isEnabled = self:GetChecked()
 	end)
 
-local mingleOffline = e.CreateCheckBox(contentFrame, L['Display offline below online'])
-mingleOffline:SetPoint('LEFT', showTooltip, 'RIGHT', 10, 0)
+local mingleOffline = e.CreateCheckBox(contentFrame, L['OFFLINE_BELOW_ONLINE'])
+mingleOffline:SetPoint('LEFT', showTooltip, 'RIGHT', 20, 0)
 mingleOffline:SetScript('OnClick', function(self)
 	AstralKeysSettings.frame.mingle_offline.isEnabled = not AstralKeysSettings.frame.mingle_offline.isEnabled
 	e.UpdateFrames()
 	end)
 
-local announceParty = e.CreateCheckBox(contentFrame, L['Announce new keys to party'])
+local announceParty = e.CreateCheckBox(contentFrame, L['NEWKEY_PARTY_ANNOUNCE'])
 announceParty:SetPoint('TOPLEFT', showTooltip, 'BOTTOMLEFT', 0, -5)
 announceParty:SetScript('OnClick', function(self)
 	AstralKeysSettings.general.announce_party.isEnabled = not AstralKeysSettings.general.announce_party.isEnabled
 	end)
 
-local announceGuild = e.CreateCheckBox(contentFrame, L['Announce new keys to guild'])
-announceGuild:SetPoint('LEFT', announceParty, 'RIGHT', 10, 0)
+local announceGuild = e.CreateCheckBox(contentFrame, L['NEWKEY_GUILD_ANNOUNCE'])
+announceGuild:SetPoint('LEFT', announceParty, 'RIGHT', 20, 0)
 announceGuild:SetScript('OnClick', function(self)
 	AstralKeysSettings.general.announce_guild.isEnabled = not AstralKeysSettings.general.announce_guild.isEnabled
 	end)
@@ -129,7 +129,7 @@ expandedTooltip:SetScript('OnClick', function (self)
 end)
 
 local chatHeader = contentFrame:CreateFontString(nil, 'OVERLAY', 'InterUIBold_Normal')
-chatHeader:SetText(L['!keys chat command'])
+chatHeader:SetText(L['!KEYS_CHAT_COMMAND'])
 chatHeader:SetPoint('TOPLEFT', expandedTooltip, 'BOTTOMLEFT', -10, -20)
 
 local chatDesc = contentFrame:CreateFontString(nil, 'OVERLAY', 'InterUIRegular_Small')
@@ -162,10 +162,10 @@ end)
 
 
 local syncHeader = contentFrame:CreateFontString(nil, 'OVERLAY', 'InterUIBold_Normal')
-syncHeader:SetText(L['SYNC OPTIONS'])
+syncHeader:SetText(L['SYNC_OPTIONS'])
 syncHeader:SetPoint('TOPLEFT', commandRespondNoKey, 'BOTTOMLEFT', -10, -20)
 
-local syncFriends = e.CreateCheckBox(contentFrame, L['Sync with friends'])
+local syncFriends = e.CreateCheckBox(contentFrame, L['SYNC_FRIENDS'])
 syncFriends:SetPoint('TOPLEFT', syncHeader, 'BOTTOMLEFT', 10, -10)
 syncFriends:SetScript('OnClick', function(self)
 	AstralKeysSettings.friendOptions.friend_sync.isEnabled = self:GetChecked()
@@ -173,19 +173,19 @@ syncFriends:SetScript('OnClick', function(self)
 	e.ToggleFriendSync()
 	end)
 
-local otherFaction = e.CreateCheckBox(contentFrame, L['Show other faction'])
-otherFaction:SetPoint('LEFT', syncFriends, 'RIGHT', 10, 0)
+local otherFaction = e.CreateCheckBox(contentFrame, L['SHOW_FACTION'])
+otherFaction:SetPoint('LEFT', syncFriends, 'RIGHT', 20, 0)
 otherFaction:SetScript('OnClick', function(self)
 	AstralKeysSettings.friendOptions.show_other_faction.isEnabled = self:GetChecked()
 	e.UpdateFrames()
 	end)
 
 local rankFilterHeader = contentFrame:CreateFontString(nil, 'OVERLAY', 'InterUIBold_Normal')
-rankFilterHeader:SetText(L['Rank Filter'])
+rankFilterHeader:SetText(L['RANK_FILTER'])
 rankFilterHeader:SetPoint('TOPLEFT', syncFriends, 'BOTTOMLEFT', -10, -20)
 
 local filter_descript = contentFrame:CreateFontString(nil, 'OVERLAY', 'InterUIRegular_Small')
-filter_descript:SetText(L['Include these ranks in the guild listing'])
+filter_descript:SetText(L['RANK_FILTER_DESC'])
 filter_descript:SetPoint('TOPLEFT', rankFilterHeader, 'BOTTOMLEFT', 5, -5)
 
 local _ranks = {}

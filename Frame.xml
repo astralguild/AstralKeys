@@ -2,17 +2,17 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Frame.lua"/>
 
-<!-- 
-********************************************************************************
-Character Frame Template
-********************************************************************************
--->
+	<!--
+    ********************************************************************************
+    Character Frame Template
+    ********************************************************************************
+    -->
 	<Button name="AstralCharacterFrameTemplate" virtual="true" mixin="AstralKeysCharacterMixin">
 		<Size>
 			<AbsDimension x="180" y="50"/>
 		</Size>
 		<Layers>
-			<Layer level="ARTOWKR">
+			<Layer level="ARTWORK">
 				<FontString name="$parentNameString" inherits="InterUIBold_Normal" wordwrap="false" parentKey="nameString" justifyH="LEFT">
 					<Size>
 						<AbsDimension x="180" y="15"/>
@@ -58,24 +58,24 @@ Character Frame Template
 	<Button name="AstralListFrameTemplate" virtual="true" mixin="AstralKeysListMixin">
 		<!-- with WKYL BST, 440 px -->
 		<Size>
-			<AbsDimension x="400" y="20"/>
+			<AbsDimension x="480" y="20"/>
 		</Size>
 		<Layers>
-			<Layer level="ARTOWKR">
+			<Layer level="ARTWORK">
 				<FontString name="$parentLevelString" inherits="InterUIBlack_Normal" justifyH='RIGHT' wordwrap="false" parentKey="levelString">
 					<Size>
-						<AbsDimension x="20" y="15"/>
+						<AbsDimension x="50" y="15"/>
 					</Size>
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPLEFT" x="32" y="0"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPLEFT" x="30" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentDungeonString" inherits="InterUIBlack_Normal" justifyH='LEFT' wordwrap="false" parentKey="dungeonString">
 					<Size>
-						<AbsDimension x="155" y="15"/>
+						<AbsDimension x="180" y="15"/>
 					</Size>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentLevelString" relativePoint="RIGHT" x="24" y="0"/>
+						<Anchor point="LEFT" relativeTo="$parentLevelString" relativePoint="RIGHT" x="20" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentNameString" inherits="InterUIMedium_Normal" justifyH='LEFT' wordwrap="false" parentKey="nameString">
@@ -83,12 +83,12 @@ Character Frame Template
 						<AbsDimension x="153" y="15"/>
 					</Size>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentDungeonString" relativePoint="RIGHT" x="0" y="0"/>
+						<Anchor point="LEFT" relativeTo="$parentDungeonString" relativePoint="RIGHT" x="5" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentBestString" inherits="InterUIBlack_Normal" justifyH='RIGHT' wordwrap="false" parentKey="bestString">
 					<Size>
-						<AbsDimension x="20" y="15"/>
+						<AbsDimension x="50" y="15"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentNameString" relativePoint="RIGHT" x="10" y="0"/>
@@ -98,7 +98,7 @@ Character Frame Template
 			<Layer level="OVERLAY">
 				<Texture parentKey="Highlight" hidden='true'>
 					<Size>
-						<AbsDimension x="400" y="24"/>
+						<AbsDimension x="480" y="24"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT">
@@ -126,6 +126,3 @@ Character Frame Template
 		-->
 	</Button>
 </Ui>
-
-
-

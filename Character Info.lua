@@ -8,7 +8,7 @@ function e.SetCharacterID(unit, unitID)
 	characterList[unit] = unitID
 end
 
-function e.UpdateCharacterIDs() 
+function e.UpdateCharacterIDs()
 	wipe(characterList)
 	for i = 1, #AstralCharacters do
 		characterList[AstralCharacters[i].unit] = i
@@ -120,8 +120,8 @@ function e.GetCharacterMapID(unit)
 	if not unit then return nil end
 
 	local id = e.UnitID(unit)
-	
-	if id then 
+
+	if id then
 		return AstralKeys[id].dungeon_id
 	else
 		return nil
@@ -133,8 +133,23 @@ function e.GetCharacterKeyLevel(unit)
 
 	local id = e.UnitID(unit)
 
-	if id then 
+	if id then
 		return AstralKeys[id].key_level
+	else
+		return nil
+	end
+end
+
+-- Retrieves Great Vault progress for character
+-- @param id int ID for the character
+-- @return table Progress by id per tier
+function e.GetWeeklyProgress(id)
+	if AstralCharacters[id] and AstralCharacters[id].vault then
+		if AstralCharacters[id] and AstralCharacters[id].vault.progress then
+			return AstralCharacters[id].vault.progress
+		else
+			return nil
+		end
 	else
 		return nil
 	end

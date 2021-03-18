@@ -152,6 +152,8 @@ local function LoadDefaultSettings(addon)
 	e:AddDefaultSettings('friendOptions', 'show_other_faction', {
 		isEnabled = true,
 	})
+	e:AddDefaultSettings('vault', 'current_list', 'MYTHIC')
+	e:AddDefaultSettings('vault', 'only_incomplete', 'false')
 	AstralEvents:Unregister('ADDON_LOADED', 'LoadDefaultSettings')
 end
 
@@ -163,4 +165,12 @@ end
 
 function e.SetFrameListShown(listName)
 	AstralKeysSettings.frame.current_list = listName
+end
+
+function e.VaultListShown()
+	return AstralKeysSettings.vault.current_list
+end
+
+function e.SetVaultListShown(listName)
+	AstralKeysSettings.vault.current_list = listName
 end
