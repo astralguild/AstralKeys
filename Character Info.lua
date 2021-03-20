@@ -8,6 +8,37 @@ function e.SetCharacterID(unit, unitID)
 	characterList[unit] = unitID
 end
 
+function e.GetMinimumItemLevel()
+	local minitemlvl = 9999
+	for i = 1, 18 do
+		local itemLink = GetInventoryItemLink("player", i)
+		local effectiveILvl, isPreview, baseILvl = GetDetailedItemLevelInfo(itemLink or "")
+
+		if effectiveILvl then
+			if minitemlvl > effectiveILvl then
+				minitemlvl = effectiveILvl
+			end
+		end
+	end
+	if minitemlvl < 9999 then
+		return minitemlvl
+	else
+		return 0
+	end
+end
+
+function e.UpdateAstralGear(maxLevel)
+	wipe(AstralGear)
+	for i = 1, maxLevel do
+		local rewardWeekly, rewardDaily = C_MythicPlus.GetRewardLevelForDifficultyLevel(i)
+		table.insert(AstralGear, {weekly = rewardWeekly, daily = rewardDaily})
+	end
+end
+
+function e.SetLowestGear()
+	e.lowestGear = e.GetMinimumItemLevel()
+end
+
 function e.UpdateCharacterIDs()
 	wipe(characterList)
 	for i = 1, #AstralCharacters do
@@ -135,21 +166,6 @@ function e.GetCharacterKeyLevel(unit)
 
 	if id then
 		return AstralKeys[id].key_level
-	else
-		return nil
-	end
-end
-
--- Retrieves Great Vault progress for character
--- @param id int ID for the character
--- @return table Progress by id per tier
-function e.GetWeeklyProgress(id)
-	if AstralCharacters[id] and AstralCharacters[id].vault then
-		if AstralCharacters[id] and AstralCharacters[id].vault.progress then
-			return AstralCharacters[id].vault.progress
-		else
-			return nil
-		end
 	else
 		return nil
 	end

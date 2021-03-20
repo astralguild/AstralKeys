@@ -3,14 +3,21 @@ local e, L = unpack(select(2, ...))
 -- MixIns
 AstralKeysCharacterMixin = {}
 AstralKeysListMixin = {}
+AstralKeysGearMixin = {}
+
 -- Red color code
 -- #C72329
 
 -- Background
 -- Left #000000 ALPHA 0.8
 -- Right #212121 ALPHA 0.8
+local COLOR_YELLOW = 'ffffffc0'
 local COLOR_GRAY = 'ff9d9d9d'
+local COLOR_RED = 'ffff0000'
+local COLOR_GREEN = 'ff00ff00'
 local COLOR_BLUE_BNET = 'ff82c5ff'
+local COLOR_WHITE = 'ffffffff'
+
 
 -- Scroll bar texture alpha settings
 local SCROLL_TEXTURE_ALPHA_MIN = 0.25
@@ -142,6 +149,7 @@ function AstralKeysListMixin:OnClick(button)
 			AstralMenuFrameUnit1:SetUnit(self.unitID)
 			AstralMenuFrameUnit1:SetTitle(WrapTextInColorCode(e.UnitName(self.unitID), select(4, GetClassColor(e.UnitClass(self.unitID)))))
 			AstralMenuFrameUnit1:SetPoint('TOPLEFT', UIParent, 'BOTTOMLEFT', xOffset, yOffset)
+			AstralMenuFrameUnit1:AdjustWidth()
 			AstralMenuFrameUnit1:Show()
 			selectedUnits[e.Unit(self.unitID)] = true
 		end
@@ -166,6 +174,55 @@ function AstralKeysListMixin:OnLeave()
 	local scrollBar = self:GetParent():GetParent().scrollBar
 	local scrollButton = _G[scrollBar:GetName() .. 'ThumbTexture']
 	scrollButton:SetAlpha(SCROLL_TEXTURE_ALPHA_MIN)
+end
+-- AstralKeysGearMixin
+function AstralKeysGearMixin:UpdateLevel(Level)
+	if Level > 1 then
+		local dailycolor, weeklycolor
+		local currentLevel = "Mythic " .. DUNGEONS .. "+" .. Level
+		local weeklyGearLevel = AstralGear[Level].weekly
+		local dailyGearLevel = AstralGear[Level].daily
+		local dailyGearString = string.format(MYTHIC_PLUS_CHEST_KEYSTONE_LEVEL, Level)
+		local weeklyGearString = string.format(MYTHIC_PLUS_POWER_LEVEL, Level)
+		if AstralGear[Level].weekly > e.lowestGear then
+			weeklycolor = COLOR_GREEN
+		elseif AstralGear[Level].weekly < e.lowestGear then
+			weeklycolor = COLOR_RED
+		else
+			weeklycolor = COLOR_GRAY
+		end
+		if AstralGear[Level].daily > e.lowestGear then
+			dailycolor = COLOR_GREEN
+		elseif AstralGear[Level].daily < e.lowestGear then
+			dailycolor = COLOR_RED
+		else
+			dailycolor = COLOR_GRAY
+		end
+		self.levelString:SetFormattedText('|c%s%s|r', COLOR_WHITE, currentLevel)
+		self.itemStringDaily:SetFormattedText('|c%s%s %d - %s|r', dailycolor, ITEM_LEVEL_ABBR, dailyGearLevel, dailyGearString)
+		self.itemStringWeekly:SetFormattedText('|c%s%s %d - %s %s|r', weeklycolor, ITEM_LEVEL_ABBR, weeklyGearLevel, MYTHIC_PLUS_WEEKLY_BEST, weeklyGearString)
+	else
+		self.levelString:SetText("")
+		self.itemStringDaily:SetText("")
+		self.itemStringWeekly:SetText("")
+	end
+end
+
+function AstralKeysGearMixin:OnEnter()
+	local scrollBar = self:GetParent():GetParent().scrollBar
+	local scrollButton = _G[scrollBar:GetName() .. 'ThumbTexture']
+	scrollButton:SetAlpha(SCROLL_TEXTURE_ALPHA_MAX)
+end
+
+function AstralKeysGearMixin:OnLeave()
+	local scrollBar = self:GetParent():GetParent().scrollBar
+	local scrollButton = _G[scrollBar:GetName() .. 'ThumbTexture']
+	scrollButton:SetAlpha(SCROLL_TEXTURE_ALPHA_MIN)
+end
+
+function AstralKeysGearMixin:OnLoad()
+	--self.weeklyString:SetText(L['WEEKLY_BEST'])
+	--self.keyString:SetText(L['CURRENT_KEY'])
 end
 
 -- Unit dropdown mneu items, whisper and invite
@@ -495,6 +552,18 @@ greatVaultButton:SetScript('OnClick', function()
 	ToggleGreatVault()
 end)
 
+local gearButton = CreateFrame('BUTTON', '$parentgearButton', menuBar)
+gearButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\itemlist@2x')
+gearButton:SetSize(24, 24)
+gearButton:GetNormalTexture():SetVertexColor(.8, .8, .8, 0.8)
+gearButton:SetPoint('TOP', greatVaultButton, 'BOTTOM', 0, -20)
+gearButton:SetScript('OnEnter', function(self)
+	self:GetNormalTexture():SetVertexColor(126/255, 126/255, 126/255, 0.8)
+end)
+gearButton:SetScript('OnLeave', function(self)
+	self:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
+end)
+
 function ToggleGreatVault()
 	--if WeeklyRewardsFrame:IsShown() then
 	--	WeeklyRewardsFrame:Hide()
@@ -729,7 +798,142 @@ local function RemoveList(frame)
 end
 --tabPopup:AddButton(L['DELETE_LIST'], nil, nil, function () RemoveList(subTabPopup) end, true, subTabPopup)
 
--- Middle panel construction, Affixe info, character info, guild/version string
+---- Gear panel construction, myth-level info etc
+-------------------------------------------------
+
+local gearFrame = CreateFrame('FRAME', '$parentGearFrame', AstralKeyFrame)
+gearFrame:SetSize(250, 490)
+gearFrame:SetPoint('TOPRIGHT', menuBar, 'TOPLEFT', -1, 0)
+
+gearFrame.collapse = gearFrame:CreateAnimationGroup()
+local gearCollapse = gearFrame.collapse:CreateAnimation('Alpha')
+gearCollapse:SetFromAlpha(1)
+gearCollapse:SetToAlpha(0)
+gearCollapse:SetDuration(.2)
+gearCollapse:SetSmoothing('IN_OUT')
+
+gearCollapse:SetScript('OnFinished', function(self)
+	self:GetRegionParent():Hide()
+end)
+
+gearCollapse:SetScript('OnUpdate', function(self)
+	self:GetRegionParent():SetAlpha(self:GetSmoothProgress()/2)
+	local left, bottom, width = gearFrame:GetRect()
+	local newWidth = 250 - self:GetProgress() * 250 -- 250:: Gear Frame Width
+	gearFrame:ClearAllPoints()
+	gearFrame:SetWidth(newWidth)
+	gearFrame:SetPoint('TOPRIGHT', menuBar, 'TOPLEFT', -1, 0)
+end)
+
+gearFrame.expand = gearFrame:CreateAnimationGroup()
+local gearExpand = gearFrame.expand:CreateAnimation('Alpha')
+
+gearExpand:SetFromAlpha(0)
+gearExpand:SetToAlpha(1)
+gearExpand:SetDuration(.2)
+gearExpand:SetSmoothing('IN_OUT')
+
+gearExpand:SetScript('OnPlay', function(self)
+	self:GetRegionParent():Show()
+end)
+
+gearExpand:SetScript('OnUpdate', function(self, elapsed)
+	self:GetRegionParent():SetAlpha(self:GetSmoothProgress()*2)
+	local left, bottom, width = gearFrame:GetRect()
+	local newWidth = self:GetProgress() * 250 -- 250:: Gear Frame Width
+	gearFrame:ClearAllPoints()
+	gearFrame:SetWidth(newWidth)
+	gearFrame:SetPoint('TOPRIGHT', menuBar, 'TOPLEFT', -1, 0)
+end)
+
+gearButton:SetScript('OnClick', function(self)
+	if not AstralKeysSettings.frame.isGearCollapsed.isEnabled then
+		if AstralKeyFrameGearFrame.expand:IsPlaying() then
+			AstralKeyFrameGearFrame.expand:Stop()
+		end
+		AstralKeyFrameGearFrame.collapse:Play()
+		AstralKeysSettings.frame.isGearCollapsed.isEnabled = true
+	else
+		if AstralKeyFrameGearFrame.collapse:IsPlaying() then
+			AstralKeyFrameGearFrame.collapse:Stop()
+		end
+		AstralKeyFrameGearFrame.expand:Play()
+		AstralKeysSettings.frame.isGearCollapsed.isEnabled = false
+	end
+end)
+
+gearFrame.background = gearFrame:CreateTexture(nil, 'BACKGROUND')
+gearFrame.background:SetColorTexture(33/255, 33/255, 33/255, 0.9)
+gearFrame.background:SetAllPoints(gearFrame)
+
+function GearScrollFrame_Update()
+	local scrollFrame = AstralKeyFrameGearFrameListContainer
+	local offset = 1 + HybridScrollFrame_GetOffset(scrollFrame)
+	local buttons = scrollFrame.buttons
+	local numButtons = #buttons
+	local button, index
+	local height = scrollFrame.buttonHeight
+	local usedHeight = #buttons * height
+
+	for i = 1, #buttons do
+		if AstralGear[i+offset] then
+			buttons[i]:UpdateLevel(i+offset)
+			buttons[i]:Show()
+		else
+			buttons[i]:Hide()
+		end
+	end
+
+	HybridScrollFrame_Update(AstralKeyFrameGearFrameListContainer, height * #AstralGear, usedHeight)
+end
+
+local function GearScrollFrame_OnEnter()
+	AstralKeyFrameGearFrameListContainerScrollBarThumbTexture:SetAlpha(SCROLL_TEXTURE_ALPHA_MAX)
+end
+
+local function GearScrollFrame_OnLeave()
+	AstralKeyFrameGearFrameListContainerScrollBarThumbTexture:SetAlpha(SCROLL_TEXTURE_ALPHA_MIN)
+end
+
+local gearTitle = gearFrame:CreateFontString('$parentGearTitle', 'OVERLAY', 'InterUIBlack_Small')
+gearTitle:SetPoint('TOPLEFT', gearFrame, 'TOPLEFT', 10, -20)
+gearTitle:SetText(L['MYTHICGEAR'])
+
+local gearLevelMin = gearFrame:CreateFontString('$parentGearLevelMin', 'OVERLAY', 'InterUIBlack_Small')
+gearLevelMin:SetPoint('TOPLEFT', gearTitle, 'BOTTOMLEFT', 0, 0)
+local strItemLevel = string.format (ITEM_LEVEL, e.lowestGear)
+gearLevelMin:SetFormattedText('|c%s%s (%s)|r',COLOR_GRAY, strItemLevel, MINIMUM)
+
+local gearScrollFrame = CreateFrame('ScrollFrame', '$parentListContainer', AstralKeyFrameGearFrame, 'HybridScrollFrameTemplate')
+gearScrollFrame:SetSize(220, 420)
+gearScrollFrame:SetPoint('TOPLEFT', gearLevelMin, 'BOTTOMLEFT', 0, -20)
+gearScrollFrame:SetScript('OnEnter',  GearScrollFrame_OnEnter)
+gearScrollFrame:SetScript('OnLeave', GearScrollFrame_OnLeave)
+gearScrollFrame.buttonHeight = 45
+gearScrollFrame.update = GearScrollFrame_Update
+
+local gearScrollBar = CreateFrame('Slider', '$parentScrollBar', gearScrollFrame, 'HybridScrollBarTemplate')
+gearScrollBar:SetWidth(10)
+gearScrollBar:SetPoint('TOPLEFT', gearScrollFrame, 'TOPRIGHT')
+gearScrollBar:SetPoint('BOTTOMLEFT', gearScrollFrame, 'BOTTOMRIGHT', 1, 0)
+gearScrollBar:SetScript('OnEnter', GearScrollFrame_OnEnter)
+gearScrollBar:SetScript('OnLeave', GearScrollFrame_OnEnter)
+
+-- Re-skin the scroll Bar
+gearScrollBar.ScrollBarTop:Hide()
+gearScrollBar.ScrollBarMiddle:Hide()
+gearScrollBar.ScrollBarBottom:Hide()
+_G[gearScrollBar:GetName() .. 'ScrollDownButton']:Hide()
+_G[gearScrollBar:GetName() .. 'ScrollUpButton']:Hide()
+
+local scrollButton = _G[gearScrollBar:GetName() .. 'ThumbTexture']
+scrollButton:SetHeight(50)
+scrollButton:SetWidth(4)
+scrollButton:SetColorTexture(204/255, 204/255, 204/255, SCROLL_TEXTURE_ALPHA_MAX)
+
+--- Character Frames
+----------------------------------------------------------------
+
 local characterFrame = CreateFrame('FRAME', '$parentCharacterFrame', AstralKeyFrame)
 characterFrame:SetSize(235, 490)
 characterFrame:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 51, 0)
@@ -1016,8 +1220,6 @@ affixExpandButton:SetScript('OnClick', function(self)
 	end
 end)
 
--- Character Frames
-----------------------------------------------------------------
 local characterTitle = characterFrame:CreateFontString('$parentCharacterTitle', 'OVERLAY', 'InterUIBlack_Small')
 characterTitle:SetPoint('TOPLEFT', affixFrame, 'BOTTOMLEFT', 0, -10)
 characterTitle:SetText(L['CHARACTERS'])
@@ -1679,9 +1881,11 @@ local function InitializeFrame()
 	for i = 1, #AstralLists do
 		CreateNewTab(AstralLists[i].name, tabFrame)
 	end
+
 	UpdateTabs()
 
 	guildVersionString:SetFormattedText('Astral - Turalyon (US) %s', e.CLIENT_VERSION)
+	e.SetLowestGear()
 
 	if AstralKeysSettings.frame.isCollapsed.isEnabled then
 		collapseButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline-first_page-24px@2x')
@@ -1691,6 +1895,10 @@ local function InitializeFrame()
 		collapseButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline-last_page-24px@2x')
 	end
 
+	if AstralKeysSettings.frame.isGearCollapsed.isEnabled then
+		AstralKeyFrameGearFrame:Hide()
+	end
+
 	if not AstralKeysSettings.friendOptions.friend_sync.isEnabled then
 		AstralKeyFrameTabFrameTabFRIENDS:Hide()
 	end
@@ -1698,10 +1906,11 @@ local function InitializeFrame()
 	offLineButton:SetChecked(AstralKeysSettings.frame.show_offline.isEnabled)
 	HybridScrollFrame_CreateButtons(AstralKeyFrameCharacterFrameCharacterContainer, 'AstralCharacterFrameTemplate', 0, 0, 'TOPLEFT', 'TOPLEFT', 0, -10)
 	HybridScrollFrame_CreateButtons(AstralKeyFrameListContainer, 'AstralListFrameTemplate', 0, 0, 'TOPLEFT', 'TOPLEFT', 0, -10)
-
+	HybridScrollFrame_CreateButtons(AstralKeyFrameGearFrameListContainer, 'AstralGearFrameTemplate', 0, 0, 'TOPLEFT', 'TOPLEFT', 0, 0)
 	e.UpdateAffixes()
-
+	e.UpdateCharacterFrames()
 	e.UpdateFrames()
+	GearScrollFrame_Update()
 	UpdateTabs()
 end
 
@@ -1733,10 +1942,18 @@ end
 
 function e.UpdateFrames()
 	if not init or not AstralKeyFrame:IsShown() then return end
-
+	e.SetLowestGear()
+	e.UpdateGear()
 	e.UpdateTable(sortTable, FILTER_FIELDS)
 	e.SortTable(sortTable, AstralKeysSettings.frame.sorth_method)
 	e.UpdateLines()
+end
+
+function e.UpdateGear()
+	local strItemLevel = string.format (ITEM_LEVEL, e.lowestGear)
+	gearLevelMin:Hide()
+	gearLevelMin:SetFormattedText('|c%s%s (%s)|r',COLOR_GRAY, strItemLevel, MINIMUM)
+	gearLevelMin:Show()
 end
 
 function e.UpdateCharacterFrames()
@@ -1861,6 +2078,7 @@ end
 SLASH_ASTRALKEYS1 = '/astralkeys'
 SLASH_ASTRALKEYS2 = '/ak'
 SLASH_ASTRALKEYSV1 = '/akv'
+SLASH_ASTRALKEYSWWC1 = '/akwwc'
 
 local function handler(msg)
 	e.AstralToggle()
@@ -1868,3 +2086,4 @@ end
 
 SlashCmdList['ASTRALKEYS'] = handler;
 SlashCmdList['ASTRALKEYSV'] = function(msg) e.CheckGuildVersion() end
+SlashCmdList['ASTRALKEYSWWC'] = function(msg) e.WipeWeeklyCharacter() end

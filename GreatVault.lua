@@ -3,13 +3,8 @@ local e, L = unpack(select(2, ...))
 -- MixIns
 AstralKeysVaultMixin = {}
 
-local BACKDROPBUTTON = {
-    bgFile = nil,
-    edgeFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 16, edgeSize = 1,
-    insets = {left = 0, right = 0, top = 0, bottom = 0}
-}
-
 -- Color Definitions
+local COLOR_YELLOW = 'ffffffc0'
 local COLOR_GRAY = 'ff9d9d9d'
 local COLOR_RED = 'ffff0000'
 local COLOR_GREEN = 'ff00ff00'
@@ -17,6 +12,12 @@ local COLOR_GREEN = 'ff00ff00'
 -- Scroll bar texture alpha settings
 local SCROLL_TEXTURE_ALPHA_MIN = 0.25
 local SCROLL_TEXTURE_ALPHA_MAX = 0.6
+
+local BACKDROPBUTTON = {
+    bgFile = nil,
+    edgeFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 16, edgeSize = 1,
+    insets = {left = 0, right = 0, top = 0, bottom = 0}
+}
 
 -- Used for filtering, sorting, and displaying units on lists
 local vaultTable = {}
@@ -31,13 +32,13 @@ local function ClearSelectedUnits()
 end
 
 function AstralKeysVaultMixin:UpdateUnit(characterID)
+    local thisName = self:GetName()
+    C_MythicPlus.RequestMapInfo()
     local unit = e.CharacterName(characterID)
     local realm = e.CharacterRealm(characterID)
     local unitClass = e.GetCharacterClass(characterID)
     local progress = e.GetWeeklyProgress(characterID)
-    local tierprogress = {}
-    local tierthreshold = {}
-    local tiercolor = {}
+    local tierstring = {}
     local Types = {['MYTHIC']=Enum.WeeklyRewardChestThresholdType.MythicPlus,['RAID']=Enum.WeeklyRewardChestThresholdType.Raid,['PVP']=Enum.WeeklyRewardChestThresholdType.RankedPvP}
     if realm ~= e.PlayerRealm() then
         unit = unit .. ' (*)'
@@ -54,26 +55,89 @@ function AstralKeysVaultMixin:UpdateUnit(characterID)
         --threshold = threshold
         --progress = actual number
         for i = 1, 3 do
+            local tierfault = false
+            _G[thisName.."Tier"..i.."String"]:Show()
+            _G[thisName.."Tier"..i.."Level"]:Show()
+            _G[thisName.."Tier"..i.."Item"]:Show()
+            tierstring[i] = ''
             for j = 1, #progress do
                 if progress[j].index == i and progress[j].type == Types[e.VaultListShown()] then
                     if progress[j].progress >= progress[j].threshold then
-                        tiercolor[i] = COLOR_GREEN
-                        tierprogress[i] = progress[j].threshold
+                        local tierlevel, tieritem
+                        local itemLevel
+                        local itemLink, upgradeitemLink = C_WeeklyRewards.GetExampleRewardItemHyperlinks(progress[j].id)
+                        if itemLink then
+                            if progress[j].itemLevel > 0 then
+                                if GetDetailedItemLevelInfo(itemLink) then
+                                    if GetDetailedItemLevelInfo(itemLink) ~= progress[j].itemLevel and GetDetailedItemLevelInfo(itemLink) > 0 and characterID == e.GetCharacterID(e.Player()) then
+                                        itemLevel = GetDetailedItemLevelInfo(itemLink)
+                                        e.SetWeeklyItemLevel(characterID, j, itemLevel)
+                                        --print("updated:", itemLevel, "and wrote to database:", progress[j].itemLevel) --debug function
+                                    else
+                                        itemLevel = progress[j].itemLevel
+                                        --print("used database:",itemLevel) --debug function
+                                    end
+                                else
+                                    itemLevel = progress[j].itemLevel
+                                    --print("used database:",itemLevel,"due to ItemLevelInfo being",GetDetailedItemLevelInfo(itemLink)) --debug function
+                                end
+                            elseif characterID == e.GetCharacterID(e.Player()) then
+                                itemLevel = GetDetailedItemLevelInfo(itemLink)
+                                e.SetWeeklyItemLevel(characterID, j, itemLevel)
+                                --print("used fresh:", itemLevel, "and wrote to database:", progress[j].itemLevel) --debug function
+                            end
+                        else
+                            tierfault = true
+                            --print("error retrieving itemLink") --debug function
+                        end
+
+                        if Types[e.VaultListShown()] == Enum.WeeklyRewardChestThresholdType.MythicPlus then
+                            local rewardstring = string.format(WEEKLY_REWARDS_ITEM_LEVEL_MYTHIC, itemLevel, progress[j].level)
+                            local lzditem, lzdlevel = strsplit("-", rewardstring)
+                            tierlevel = string.format('%s%s',COLOR_GREEN, strtrim(lzdlevel))
+                            tieritem = string.format('%s%s',COLOR_YELLOW, strtrim(lzditem))
+                        elseif Types[e.VaultListShown()] == Enum.WeeklyRewardChestThresholdType.Raid then
+                            local lzditem = string.format(ITEM_LEVEL, itemLevel)
+                            tierlevel = string.format('%s%s',COLOR_GREEN, DifficultyUtil.GetDifficultyName(progress[j].level))
+                            tieritem = string.format('%s%s',COLOR_YELLOW, lzditem)
+                        elseif Types[e.VaultListShown()] == Enum.WeeklyRewardChestThresholdType.RankedPvP then
+                            local tierName = PVPUtil.GetTierName(progress[j].level)
+                            local rewardstring = string.format(WEEKLY_REWARDS_ITEM_LEVEL_PVP, itemLevel, tierName)
+                            local lzditem, lzdlevel = strsplit("-", rewardstring)
+                            tierlevel = string.format('%s%s',COLOR_GREEN, strtrim(lzdlevel))
+                            tieritem = string.format('%s%s',COLOR_YELLOW, strtrim(lzditem))
+                            --else
+                            --	print("error:", Types[e.VaultListShown()], "==", Enum.WeeklyRewardChestThresholdType.MythicPlus, Enum.WeeklyRewardChestThresholdType.Raid, Enum.WeeklyRewardChestThresholdType.RankedPvP)
+                            --	tierlevel = string.format('%s%s',COLOR_RED, "ERROR")
+                            --	tieritem = string.format('%s%s',COLOR_RED, "ERROR")
+                        else
+                            tierfault = true
+                        end
+                        if not tierfault then
+                            _G[thisName.."Tier"..i.."String"]:Hide()
+                            _G[thisName.."Tier"..i.."Level"]:SetFormattedText('|c%s|r', tierlevel)
+                            _G[thisName.."Tier"..i.."Item"]:SetFormattedText('|c%s|r', tieritem)
+                        end
                     else
-                        tiercolor[i] = COLOR_RED
-                        tierprogress[i] = progress[j].progress
+                        tierstring[i] = string.format('%s(%d / %d)',COLOR_RED, progress[j].progress, progress[j].threshold)
+                        _G[thisName.."Tier"..i.."Level"]:Hide()
+                        _G[thisName.."Tier"..i.."Item"]:Hide()
+                        _G[thisName.."Tier"..i.."String"]:SetFormattedText('|c%s|r', tierstring[i])
                     end
-                    tierthreshold[i] = progress[j].threshold
                 end
             end
+            if tierfault then
+                _G[thisName.."Tier"..i.."Level"]:Hide()
+                _G[thisName.."Tier"..i.."Item"]:Hide()
+                _G[thisName.."Tier"..i.."String"]:SetFormattedText('|c%s%s|r', COLOR_GRAY, L['NO_VAULT_DATA'])
+            end
         end
-        self.tier1String:SetFormattedText('|c%s(%d / %d)|r', tiercolor[1], tierprogress[1], tierthreshold[1])
-        self.tier2String:SetFormattedText('|c%s(%d / %d)|r', tiercolor[2], tierprogress[2], tierthreshold[2])
-        self.tier3String:SetFormattedText('|c%s(%d / %d)|r', tiercolor[3], tierprogress[3], tierthreshold[3])
     else
-        self.tier1String:SetFormattedText('|c%s%s|r', COLOR_GRAY, L['NO_VAULT_DATA'])
-        self.tier2String:SetFormattedText('|c%s%s|r', COLOR_GRAY, L['NO_VAULT_DATA'])
-        self.tier3String:SetFormattedText('|c%s%s|r', COLOR_GRAY, L['NO_VAULT_DATA'])
+        for i = 1, 3 do
+            _G[thisName.."Tier"..i.."Level"]:Hide()
+            _G[thisName.."Tier"..i.."Item"]:Hide()
+            _G[thisName.."Tier"..i.."String"]:SetFormattedText('|c%s%s|r', COLOR_GRAY, L['NO_VAULT_DATA'])
+        end
     end
 end
 
@@ -95,7 +159,7 @@ end
 
 local AstralKeysVaultFrame = CreateFrame('FRAME', 'AstralKeysVaultFrame', UIParent)
 AstralKeysVaultFrame:SetFrameStrata('DIALOG')
-AstralKeysVaultFrame:SetWidth(325)
+AstralKeysVaultFrame:SetWidth(525)
 AstralKeysVaultFrame:SetHeight(325)
 AstralKeysVaultFrame:SetPoint('CENTER', UIParent, 'CENTER')
 AstralKeysVaultFrame:EnableMouse(true)
@@ -155,14 +219,14 @@ end)
 --TODO: Create Validation on week-change (see BlizzardWeeklyRewards.lua)
 --TODO: Make list interactive to show only characters with unfinished progress
 
--- Window 325
+-- Window 525
 -- MenuBar 50px
--- Middle Frame 275px
+-- Middle Frame 475px
 -- Padding Left/Right 10
--- -- TabFrame = MiddleFrame 275 - Padding 10 - Close Button 20 = 245
+-- -- TabFrame = MiddleFrame 275 - Padding 10 - Close Button 20 = 445
 vaultTabFrame = CreateFrame('FRAME', '$parentTabFrame', AstralKeysVaultFrame)
 vaultTabFrame.offSet = 0
-vaultTabFrame:SetSize(245, 45)
+vaultTabFrame:SetSize(445, 45)
 vaultTabFrame:SetPoint('TOPRIGHT', AstralKeysVaultFrame, 'TOPRIGHT', -20, 0)
 vaultTabFrame.buttons = {}
 
@@ -170,7 +234,7 @@ function UpdateVaultTabs()
     local buttons = AstralKeysVaultFrameTabFrame.buttons
     local offSet = AstralKeysVaultFrameTabFrame.offSet
 
-    local maxPossibleWidth = 245 -- Tab frame, close button, new tab button width
+    local maxPossibleWidth = 445 -- Tab frame, close button, new tab button width
     local usedWidth = 0 -- initialize at 10 for padding on the left
     local buttonsUsed = 0
 
@@ -246,7 +310,7 @@ end
 
 -- Middle panel construction, Affixe info, character info, guild/version string
 local characterFrame = CreateFrame('FRAME', '$parentCharacterFrame', AstralKeysVaultFrame)
-characterFrame:SetSize(245, 280)
+characterFrame:SetSize(445, 280)
 characterFrame:SetPoint('TOPLEFT', AstralKeysVaultFrame, 'TOPLEFT', 61, -46)
 
 function VaultScrollFrame_Update()
@@ -279,7 +343,7 @@ local function VaultScrollFrame_OnLeave()
 end
 
 local vaultScrollFrame = CreateFrame('ScrollFrame', '$parentCharacterContainer', AstralKeysVaultFrameCharacterFrame, 'HybridScrollFrameTemplate')
-vaultScrollFrame:SetSize(245, 260)
+vaultScrollFrame:SetSize(445, 260)
 vaultScrollFrame:SetPoint('TOPLEFT', characterFrame, 'TOPLEFT', 0, -20)
 vaultScrollFrame:SetScript('OnEnter',  VaultScrollFrame_OnEnter)
 vaultScrollFrame:SetScript('OnLeave', VaultScrollFrame_OnLeave)
@@ -325,6 +389,7 @@ AstralKeysVaultFrame:SetScript('OnKeyDown', function(self, key)
 end)
 
 AstralKeysVaultFrame:SetScript('OnShow', function(self)
+    e.UpdateCharacterFrames()
     VaultScrollFrame_Update()
     self:SetPropagateKeyboardInput(true)
 end)
@@ -350,18 +415,30 @@ local function InitializeFrame()
         CreateVaultTab(Tabs[i], vaultTabFrame)
     end
     UpdateVaultTabs()
-    e.UpdateWeeklyCharacter()
     --TODO: INITIALIZE CHECKBOX HERE
+    e.UpdateWeeklyCharacter()
     HybridScrollFrame_CreateButtons(AstralKeysVaultFrameCharacterFrameCharacterContainer, 'AstralKeysVaultFrameTemplate', 0, 0, 'TOPLEFT', 'TOPLEFT', 0, -10)
+    e.UpdateVaultFrames()
     if not e.VaultListShown() then
         AstralKeysSettings.vault.current_list = 'MYTHIC'
     end
-    VaultScrollFrame_Update()
     UpdateVaultTabs()
+end
+
+function e.UpdateVaultFrames()
+    if not init then return end
+
+    local id = e.GetCharacterID(e.Player())
+    if id then
+        local player = table.remove(AstralCharacters, id)
+        table.sort(AstralCharacters, function(a,b) return a.unit < b.unit end)
+        table.insert(AstralCharacters, 1, player)
+        e.UpdateCharacterIDs()
+    end
+    VaultScrollFrame_Update()
 end
 
 function e.AstralKeysVaultToggle()
     if not init then InitializeFrame() end
     AstralKeysVaultFrame:SetShown(not AstralKeysVaultFrame:IsShown())
-    e.UpdateWeeklyCharacter()
 end

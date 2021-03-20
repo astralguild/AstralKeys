@@ -22,6 +22,9 @@ L['WEEKLY_BEST'] = 'WÖCH. BESTER'
 L['CHARACTER_DUNGEON_NOT_RAN'] = '(Noch keiner)'
 L['CHARACTER_KEY_NOT_FOUND'] = 'Kein Schlüssel gefunden'
 
+-- Gearlist Labels
+L['MYTHICGEAR'] = 'Mythische Gegenstände'
+
 -- Dropdown menu selections
 L['REPORT_TO'] = 'Melden an'
 L['Whisper'] = WHISPER

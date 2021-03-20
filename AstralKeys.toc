@@ -3,7 +3,7 @@
 ## Notes: Keystone Manager for Guilds and Friends
 ## Author: Astral
 ## Version: 3.45
-## SavedVariables: AstralKeys, AstralCharacters, AstralKeysSettings, AstralMinimap, AstralAffixes, AstralLists, AstralUnits
+## SavedVariables: AstralKeys, AstralCharacters, AstralKeysSettings, AstralMinimap, AstralAffixes, AstralLists, AstralUnits, AstralGear
 
 Init.lua
 Localization\Localization.lua
@@ -41,6 +41,6 @@ Vault Information.lua
 AstralKeys.lua
 Frame Functions.lua
 Frame.xml
+GreatVault.xml
 MinimapButton.lua
 Options.lua
-GreatVault.xml

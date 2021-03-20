@@ -124,6 +124,9 @@ local function LoadDefaultSettings(addon)
 	e:AddDefaultSettings('frame', 'isCollapsed', {
 		isEnabled = false,
 	})
+	e:AddDefaultSettings('frame', 'isGearCollapsed', {
+		isEnabled = true,
+	})
 	e:AddDefaultSettings('frame', 'current_list', 'GUILD')
 	e:AddDefaultSettings('frame', 'show_offline', {
 		isEnabled = true,

@@ -1,15 +1,15 @@
 local e, L = unpack(select(2, ...))
 
 local BACKDROP = {
-bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-edgeFile = nil, tile = true, tileSize = 16, edgeSize = 16,
-insets = {left = 0, right = 0, top = 0, bottom = 0}
+	bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+	edgeFile = nil, tile = true, tileSize = 16, edgeSize = 16,
+	insets = {left = 0, right = 0, top = 0, bottom = 0}
 }
 
 local BACKDROPBUTTON = {
-bgFile = nil,
-edgeFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 16, edgeSize = 1,
-insets = {left = 0, right = 0, top = 0, bottom = 0}
+	bgFile = nil,
+	edgeFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 16, edgeSize = 1,
+	insets = {left = 0, right = 0, top = 0, bottom = 0}
 }
 
 function e.CreateCheckBox(parent, label, width)
@@ -45,9 +45,9 @@ function e.CreateCheckBox(parent, label, width)
 end
 
 local BACKDROP2 = {
-bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-edgeFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 16, edgeSize = 1,
-insets = {left = 0, right = 0, top = 0, bottom = 0}
+	bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+	edgeFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 16, edgeSize = 1,
+	insets = {left = 0, right = 0, top = 0, bottom = 0}
 }
 
 local function AcquireButtonFromPool(parent)
@@ -62,7 +62,7 @@ local function CreateButton(parent)
 
 	if not button then
 		button = CreateFrame('BUTTON', nil, parent)
-		button:SetSize(140, 20)	
+		button:SetSize(140, 20)
 
 		button:SetNormalFontObject(InterUIMedium_Normal)
 		local texture = button:CreateTexture()
@@ -211,7 +211,7 @@ function e.CreateDropDownFrame(name, level, parent)
 		button:SetPoint('TOPLEFT', self.title, 'BOTTOMLEFT', 5, -20*(#self.buttons))
 		button:SetText(name)
 
-		local stringLength = button:GetFontString():GetUnboundedStringWidth()	
+		local stringLength = button:GetFontString():GetUnboundedStringWidth()
 
 		if not subMenu then
 			button.menuTexture:Hide()
@@ -221,7 +221,7 @@ function e.CreateDropDownFrame(name, level, parent)
 			end)
 			button:SetScript('OnEnter', function(self)
 				CloseSubMenu(self:GetParent())
-			end)			
+			end)
 		else
 			button:SetWidth(self:GetWidth() + 15)
 			stringLength = stringLength + 40 -- to account for sub menu texture and padding on both sides of it

@@ -125,4 +125,42 @@
 		</HighlightTexture>
 		-->
 	</Button>
+	<Button name="AstralGearFrameTemplate" virtual="true" mixin="AstralKeysGearMixin">
+		<Size>
+			<AbsDimension x="220" y="35"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentLevelString" inherits="InterUIBold_Normal" wordwrap="false" parentKey="levelString" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="220" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentItemStringDaily" inherits="InterUIBold_Small" wordwrap="false" parentKey="itemStringDaily" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="220" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentLevelString" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentItemStringWeekly" inherits="InterUIBold_Small" wordwrap="false" parentKey="itemStringWeekly" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="220" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentItemStringDaily" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Button>
 </Ui>

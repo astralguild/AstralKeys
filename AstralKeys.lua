@@ -1,11 +1,14 @@
 local e, L = unpack(select(2, ...))
 e.Week = 0
 e.EXPANSION_LEVEL = 60
+e.MythicGearMaxLevel = 26
+e.lowestGear = 999
 
 if not AstralKeys then AstralKeys = {} end
 if not AstralCharacters then AstralCharacters = {} end
+if not AstralGear then AstralGear = {} end
 
-local initializeTime = {} 
+local initializeTime = {}
 initializeTime[1] = 1500390000 -- US Tuesday at reset
 initializeTime[2] = 1500447600 -- EU Wednesday at reset
 initializeTime[3] = 1500505200 -- CN Thursday at reset
@@ -40,7 +43,7 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 	else
 		e.FACTION = 1
 	end
-	
+
 	local region = GetCurrentRegion()
 	local currentTime = GetServerTime()
 	local d = date('*t', currentTime)
@@ -54,6 +57,11 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 
 	e.SetPlayerNameRealm()
 	e.SetPlayerClass()
+
+	if not (#AstralGear > 0) then
+		wipe(AstralGear)
+		e.UpdateAstralGear(e.MythicGearMaxLevel) -- 26 = maximum Mythic-level to lookup gear
+	end
 
 	if currentTime > AstralKeysSettings.general.init_time then
 		wipe(AstralCharacters)
@@ -75,13 +83,15 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 					self.first = false
 				end
 
-				if time(date('*t', GetServerTime())) > AstralKeysSettings.general.init_time then					
+				if time(date('*t', GetServerTime())) > AstralKeysSettings.general.init_time then
 					e.WipeCharacterList()
 					e.WipeUnitList()
 					e.WipeFriendList()
 					C_MythicPlus.RequestRewards()
 					AstralCharacters = {}
 					AstralKeys = {}
+					AstralGear = {}
+					e.UpdateAstralGear(e.MythicGearMaxLevel)
 					AstralKeysSettings.general.init_time = e.DataResetTime()
 					e.Week = math.floor((GetServerTime() - initializeTime[1]) / 604800)
 					e.FindKeyStone(true, false)
@@ -92,7 +102,7 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 				end
 				self.elapsed = 0
 			end
-			end)
+		end)
 	elseif d.wday == 4 and d.hour < (7 + hourOffset + (d.isdst and 1 or 0)) and region == 3 then
 		local frame = CreateFrame('FRAME')
 		frame.elapsed = 0
@@ -114,6 +124,8 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 					C_MythicPlus.RequestRewards()
 					AstralCharacters = {}
 					AstralKeys = {}
+					AstralGear = {}
+					e.UpdateAstralGear(e.MythicGearMaxLevel)
 					AstralKeysSettings.general.init_time = e.DataResetTime()
 					e.FindKeyStone(true, false)
 					e.Week = math.floor((GetServerTime() - initializeTime[2]) / 604800)
@@ -124,7 +136,7 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 				end
 				self.elapsed = 0
 			end
-			end)
+		end)
 	end
 
 	-- Check over saved variables, remove any entries that are incorrect
@@ -155,8 +167,8 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 		if AstralCharacters[i] and AstralCharacters[i].unit then
 			e.SetCharacterID(AstralCharacters[i].unit, i)
 		end
-	end	
-	
+	end
+
 	if AstralAffixes.season_start_week == 0 then -- Addon has just initialized for the fisrt time or saved variables have been lost. 
 		AstralAffixes.season_start_week = e.Week
 	end
