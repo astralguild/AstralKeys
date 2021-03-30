@@ -66,29 +66,30 @@ function AstralKeysVaultMixin:UpdateUnit(characterID)
                         local tierlevel, tieritem
                         local itemLevel
                         local itemLink, upgradeitemLink = C_WeeklyRewards.GetExampleRewardItemHyperlinks(progress[j].id)
-                        if itemLink then
+                        if GetDetailedItemLevelInfo(itemLink) then
                             if progress[j].itemLevel > 0 then
-                                if GetDetailedItemLevelInfo(itemLink) then
-                                    if GetDetailedItemLevelInfo(itemLink) ~= progress[j].itemLevel and GetDetailedItemLevelInfo(itemLink) > 0 and characterID == e.GetCharacterID(e.Player()) then
-                                        itemLevel = GetDetailedItemLevelInfo(itemLink)
-                                        e.SetWeeklyItemLevel(characterID, j, itemLevel)
-                                        --print("updated:", itemLevel, "and wrote to database:", progress[j].itemLevel) --debug function
-                                    else
-                                        itemLevel = progress[j].itemLevel
-                                        --print("used database:",itemLevel) --debug function
-                                    end
+                                if GetDetailedItemLevelInfo(itemLink) ~= progress[j].itemLevel and GetDetailedItemLevelInfo(itemLink) > 0 and characterID == e.GetCharacterID(e.Player()) then
+                                    itemLevel = GetDetailedItemLevelInfo(itemLink)
+                                    e.SetWeeklyItemLevel(characterID, j, itemLevel)
+                                    print("updated:", itemLevel, "and wrote to database:", progress[j].itemLevel) --debug function
                                 else
                                     itemLevel = progress[j].itemLevel
-                                    --print("used database:",itemLevel,"due to ItemLevelInfo being",GetDetailedItemLevelInfo(itemLink)) --debug function
+                                    print("used database:",itemLevel) --debug function
                                 end
                             elseif characterID == e.GetCharacterID(e.Player()) then
                                 itemLevel = GetDetailedItemLevelInfo(itemLink)
                                 e.SetWeeklyItemLevel(characterID, j, itemLevel)
-                                --print("used fresh:", itemLevel, "and wrote to database:", progress[j].itemLevel) --debug function
+                                print(itemLink)
+                                print("used fresh:", itemLevel, "and wrote to database instead of old:", progress[j].itemLevel) --debug function
                             end
                         else
-                            tierfault = true
-                            --print("error retrieving itemLink") --debug function
+                            if progress[j].itemLevel > 0 then
+                                itemLevel = progress[j].itemLevel
+                                print("used database as failsafe:",itemLevel) --debug function
+                            else
+                                tierfault = true
+                                print(e.VaultListShown(),"(",e.GetCharacterID(e.Player())," ): error retrieving itemLink for tier",i,"on characterID",characterID,"with progress",j,"and progressID",progress[j].id) --debug function
+                            end
                         end
 
                         if Types[e.VaultListShown()] == Enum.WeeklyRewardChestThresholdType.MythicPlus then
@@ -378,7 +379,7 @@ function AstralKeysVaultFrame:OnUpdate(elapsed)
     end
     self:SetScript('OnUpdate', nil)
     self.updateDelay = 0
-    VaultScrollFrame_Update()
+    --e.UpdateVaultFrames()
 end
 
 AstralKeysVaultFrame:SetScript('OnKeyDown', function(self, key)
@@ -390,7 +391,7 @@ end)
 
 AstralKeysVaultFrame:SetScript('OnShow', function(self)
     e.UpdateCharacterFrames()
-    VaultScrollFrame_Update()
+    e.UpdateVaultFrames()
     self:SetPropagateKeyboardInput(true)
 end)
 
@@ -409,6 +410,7 @@ end)
 local init = false
 local function InitializeFrame()
     init = true
+    C_MythicPlus.RequestMapInfo()
     --creates Tabs: AstralKeysVaultFrameTabFrameTab*name*
     local Tabs = {'MYTHIC','RAID','PVP'}
     for i = 1, 3 do
@@ -418,7 +420,7 @@ local function InitializeFrame()
     --TODO: INITIALIZE CHECKBOX HERE
     e.UpdateWeeklyCharacter()
     HybridScrollFrame_CreateButtons(AstralKeysVaultFrameCharacterFrameCharacterContainer, 'AstralKeysVaultFrameTemplate', 0, 0, 'TOPLEFT', 'TOPLEFT', 0, -10)
-    e.UpdateVaultFrames()
+    --e.UpdateVaultFrames()
     if not e.VaultListShown() then
         AstralKeysSettings.vault.current_list = 'MYTHIC'
     end

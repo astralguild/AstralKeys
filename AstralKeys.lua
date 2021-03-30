@@ -169,9 +169,12 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 		end
 	end
 
-	if AstralAffixes.season_start_week == 0 then -- Addon has just initialized for the fisrt time or saved variables have been lost. 
+	if AstralAffixes.season_start_week == 0 then -- Addon has just initialized for the fisrt time or saved variables have been lost.
 		AstralAffixes.season_start_week = e.Week
 	end
+	LoadAddOn("Blizzard_WeeklyRewards")
+	WeeklyRewardsFrame:Show()
+	WeeklyRewardsFrame:Hide()
 	C_MythicPlus.RequestMapInfo() -- Gets info on affixes and current season...
 	C_MythicPlus.RequestCurrentAffixes() -- Who knows what this actually does...
 

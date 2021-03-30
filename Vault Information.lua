@@ -20,8 +20,17 @@ function e.UpdateWeeklyCharacter()
             end
             wipe(AstralCharacters[i].vault)
             AstralCharacters[i].vault = {progress={}}
+
             for j = 1, #fetchedActivites do
-                table.insert(AstralCharacters[i].vault.progress,{threshold = fetchedActivites[j].threshold, type = fetchedActivites[j].type, index = fetchedActivites[j].index, progress = fetchedActivites[j].progress, level = fetchedActivites[j].level, rewards = fetchedActivites[j].rewards, id = fetchedActivites[j].id, itemLevel = 0})
+                local itemLink, upgradeitemLink = C_WeeklyRewards.GetExampleRewardItemHyperlinks(fetchedActivites[j].id)
+                local dataitemLevel = 0
+                if GetDetailedItemLevelInfo(itemLink) then
+                    dataitemLevel = GetDetailedItemLevelInfo(itemLink)
+                    print("Got dataitemLevel:", dataitemLevel)
+                else
+                    print("No dataitemLevel for link:",itemLink)
+                end
+                table.insert(AstralCharacters[i].vault.progress,{threshold = fetchedActivites[j].threshold, type = fetchedActivites[j].type, index = fetchedActivites[j].index, progress = fetchedActivites[j].progress, level = fetchedActivites[j].level, rewards = fetchedActivites[j].rewards, id = fetchedActivites[j].id, itemLevel = dataitemLevel})
             end
         end
     end
@@ -58,6 +67,9 @@ end
 function e.SetWeeklyItemLevel(charid, progressid, itemLVL)
     if AstralCharacters[charid] and AstralCharacters[charid].vault.progress then
         if AstralCharacters[charid].vault.progress[progressid] then
+            if itemLVL == nil then
+                itemLVL = 0
+            end
             AstralCharacters[charid].vault.progress[progressid].itemLevel = itemLVL
             print("Wrote item level",itemLVL,"to CharID",charid,"and progressid",progressid)
         end
