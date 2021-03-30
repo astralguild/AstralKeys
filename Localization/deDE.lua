@@ -54,4 +54,4 @@ L['FILTER_TEXT_CHARACTER'] = 'Sortierung nach Charakternamen'
 
 -- Options
 L['!KEYS_DESC'] = 'In folgenden Chatkanälen auf !keys Befehl reagieren'
-L['EXPANDED_TOOLTIP'] = 'Zeige Affix-Beschreibungen im Tooltip'
+L['EXPANDED_TOOLTIP'] = 'Affix-Beschreibungen im Tooltip zeigen'
