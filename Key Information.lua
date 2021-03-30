@@ -80,7 +80,7 @@ AstralEvents:Register('CHALLENGE_MODE_COMPLETED', function()
 	C_Timer.After(3, function()
 		C_MythicPlus.RequestRewards()
 		e.FindKeyStone(true, true)
-		e.UpdateWeeklyCharacter()
+		---e.UpdateWeeklyCharacter()
 	end)
 end, 'dungeonCompleted')
 

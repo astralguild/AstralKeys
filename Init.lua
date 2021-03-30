@@ -4,7 +4,6 @@ addon[1] = {} -- engine
 addon[2] = {} -- Localization
 
 local e = addon[1]
-
 local uiScale, mult
 
 function e:SetUIScale()

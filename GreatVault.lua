@@ -38,6 +38,9 @@ function AstralKeysVaultMixin:UpdateUnit(characterID)
     local realm = e.CharacterRealm(characterID)
     local unitClass = e.GetCharacterClass(characterID)
     local progress = e.GetWeeklyProgress(characterID)
+	local hasAvailableRewards = C_WeeklyRewards.HasAvailableRewards();
+	local couldClaimRewardsInOnShow = C_WeeklyRewards.CanClaimRewards();
+	local isReadOnly = not C_WeeklyRewards.HasInteraction();
     local tierstring = {}
     local Types = {['MYTHIC']=Enum.WeeklyRewardChestThresholdType.MythicPlus,['RAID']=Enum.WeeklyRewardChestThresholdType.Raid,['PVP']=Enum.WeeklyRewardChestThresholdType.RankedPvP}
     if realm ~= e.PlayerRealm() then
@@ -61,35 +64,36 @@ function AstralKeysVaultMixin:UpdateUnit(characterID)
             _G[thisName.."Tier"..i.."Item"]:Show()
             tierstring[i] = ''
             for j = 1, #progress do
+				local isUnlocked = progress[j].progress >= progress[j].threshold
                 if progress[j].index == i and progress[j].type == Types[e.VaultListShown()] then
-                    if progress[j].progress >= progress[j].threshold then
+                    if isUnlocked then
                         local tierlevel, tieritem
                         local itemLevel
                         local itemLink, upgradeitemLink = C_WeeklyRewards.GetExampleRewardItemHyperlinks(progress[j].id)
                         if GetDetailedItemLevelInfo(itemLink) then
                             if progress[j].itemLevel > 0 then
-                                if GetDetailedItemLevelInfo(itemLink) ~= progress[j].itemLevel and GetDetailedItemLevelInfo(itemLink) > 0 and characterID == e.GetCharacterID(e.Player()) then
-                                    itemLevel = GetDetailedItemLevelInfo(itemLink)
-                                    e.SetWeeklyItemLevel(characterID, j, itemLevel)
-                                    print("updated:", itemLevel, "and wrote to database:", progress[j].itemLevel) --debug function
-                                else
-                                    itemLevel = progress[j].itemLevel
+								if GetDetailedItemLevelInfo(itemLink) ~= progress[j].itemLevel and GetDetailedItemLevelInfo(itemLink) > 0 and characterID == e.GetCharacterID(e.Player()) then
+									itemLevel = GetDetailedItemLevelInfo(itemLink)
+									e.SetWeeklyItemLevel(characterID, j, itemLevel)
+									print("updated:", itemLevel, "and wrote to database:", progress[j].itemLevel) --debug function
+								else
+									itemLevel = progress[j].itemLevel
                                     print("used database:",itemLevel) --debug function
-                                end
+								end
                             elseif characterID == e.GetCharacterID(e.Player()) then
                                 itemLevel = GetDetailedItemLevelInfo(itemLink)
                                 e.SetWeeklyItemLevel(characterID, j, itemLevel)
-                                print(itemLink)
+								print(itemLink)
                                 print("used fresh:", itemLevel, "and wrote to database instead of old:", progress[j].itemLevel) --debug function
                             end
                         else
-                            if progress[j].itemLevel > 0 then
-                                itemLevel = progress[j].itemLevel
+							if progress[j].itemLevel > 0 then
+								itemLevel = progress[j].itemLevel
                                 print("used database as failsafe:",itemLevel) --debug function
-                            else
-                                tierfault = true
-                                print(e.VaultListShown(),"(",e.GetCharacterID(e.Player())," ): error retrieving itemLink for tier",i,"on characterID",characterID,"with progress",j,"and progressID",progress[j].id) --debug function
-                            end
+							else
+								tierfault = true								
+								print(e.VaultListShown(),"(",e.GetCharacterID(e.Player())," ): error retrieving itemLink for tier",i,"on characterID",characterID,"with progress",j,"and progressID",progress[j].id) --debug function
+							end
                         end
 
                         if Types[e.VaultListShown()] == Enum.WeeklyRewardChestThresholdType.MythicPlus then
@@ -410,7 +414,7 @@ end)
 local init = false
 local function InitializeFrame()
     init = true
-    C_MythicPlus.RequestMapInfo()
+	C_MythicPlus.RequestMapInfo()
     --creates Tabs: AstralKeysVaultFrameTabFrameTab*name*
     local Tabs = {'MYTHIC','RAID','PVP'}
     for i = 1, 3 do

@@ -12,6 +12,9 @@ function e.UpdateWeeklyCharacter()
     C_MythicPlus.RequestMapInfo()
     local found = false
     local fetchedActivites = C_WeeklyRewards.GetActivities()
+	local hasAvailableRewards = C_WeeklyRewards.HasAvailableRewards();
+	local couldClaimRewardsInOnShow = C_WeeklyRewards.CanClaimRewards();
+	local isReadOnly = not C_WeeklyRewards.HasInteraction();
     for i = 1, #AstralCharacters do
         if AstralCharacters[i].unit == e.Player() then
             found = true
@@ -22,14 +25,14 @@ function e.UpdateWeeklyCharacter()
             AstralCharacters[i].vault = {progress={}}
 
             for j = 1, #fetchedActivites do
-                local itemLink, upgradeitemLink = C_WeeklyRewards.GetExampleRewardItemHyperlinks(fetchedActivites[j].id)
-                local dataitemLevel = 0
-                if GetDetailedItemLevelInfo(itemLink) then
-                    dataitemLevel = GetDetailedItemLevelInfo(itemLink)
-                    print("Got dataitemLevel:", dataitemLevel)
-                else
-                    print("No dataitemLevel for link:",itemLink)
-                end
+				local itemLink, upgradeitemLink = C_WeeklyRewards.GetExampleRewardItemHyperlinks(fetchedActivites[j].id)
+				local dataitemLevel = 0
+				if GetDetailedItemLevelInfo(itemLink) then
+					dataitemLevel = GetDetailedItemLevelInfo(itemLink)
+					print("Got dataitemLevel:", dataitemLevel)
+				else
+					print("No dataitemLevel for link:",itemLink)
+				end
                 table.insert(AstralCharacters[i].vault.progress,{threshold = fetchedActivites[j].threshold, type = fetchedActivites[j].type, index = fetchedActivites[j].index, progress = fetchedActivites[j].progress, level = fetchedActivites[j].level, rewards = fetchedActivites[j].rewards, id = fetchedActivites[j].id, itemLevel = dataitemLevel})
             end
         end
