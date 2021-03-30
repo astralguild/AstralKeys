@@ -21,7 +21,7 @@ local function UpdateWeekly()
 	else
 		local id = e.UnitID(e.Player())
 		if id then
-			AstralKeys[id][5] = characterWeeklyBest
+			AstralKeys[id].weekly_best = characterWeeklyBest
 			e.UpdateFrames()
 		end
 	end
@@ -140,12 +140,19 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 		else -- Not in a guild, who are you people? Whatever, gotta make it work for them as well
 			local id = e.UnitID(e.Player())
 			if id then -- Are we in the DB already?
-				AstralKeys[id][3] = tonumber(mapID)
-				AstralKeys[id][4] = tonumber(keyLevel)
-				AstralKeys[id][6] = e.Week
-				AstralKeys[id][7] = e.WeekTime()
+				AstralKeys[id].dungeon_id = tonumber(mapID)
+				AstralKeys[id].key_level = tonumber(keyLevel)
+				AstralKeys[id].week = e.Week
+				AstralKeys[id].time_stamp = e.WeekTime()
 			else -- Nope, ok, let's add them to the DB manually.
-				AstralKeys[#AstralKeys + 1] = {e.Player(), e.PlayerClass(), tonumber(mapID), tonumber(keyLevel), e.Week, e.WeekTime()}
+				AstralKeys[#AstralKeys + 1] = {
+					unit = e.Player(),
+					class = e.PlayerClass(),
+					dungeon_id = tonumber(mapID),
+					key_level = tonumber(keyLevel),
+					week = e.Week,
+					time_stamp = e.WeekTime(),
+				}
 				e.SetUnitID(e.Player(), #AstralKeys)
 			end
 		end
