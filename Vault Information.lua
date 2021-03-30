@@ -12,9 +12,9 @@ function e.UpdateWeeklyCharacter()
     C_MythicPlus.RequestMapInfo()
     local found = false
     local fetchedActivites = C_WeeklyRewards.GetActivities()
-	local hasAvailableRewards = C_WeeklyRewards.HasAvailableRewards();
-	local couldClaimRewardsInOnShow = C_WeeklyRewards.CanClaimRewards();
-	local isReadOnly = not C_WeeklyRewards.HasInteraction();
+	local hasAvailableRewards = C_WeeklyRewards.HasAvailableRewards()
+	local couldClaimRewardsInOnShow = C_WeeklyRewards.CanClaimRewards()
+	local isReadOnly = not C_WeeklyRewards.HasInteraction()
     for i = 1, #AstralCharacters do
         if AstralCharacters[i].unit == e.Player() then
             found = true

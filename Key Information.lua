@@ -79,10 +79,17 @@ end
 AstralEvents:Register('CHALLENGE_MODE_COMPLETED', function()
 	C_Timer.After(3, function()
 		C_MythicPlus.RequestRewards()
-		e.FindKeyStone(true, true)
-		---e.UpdateWeeklyCharacter()
+		e.FindKeyStone(true, true)		
 	end)
 end, 'dungeonCompleted')
+
+AstralEvents:Register('WEEKLY_REWARDS_UPDATE', function()
+	C_Timer.After(3, function()
+		C_MythicPlus.RequestRewards()
+		e.FindKeyStone(true, true)
+		e.UpdateWeeklyCharacter()
+	end)
+end, 'weeklyRewardsUpdated')
 
 local function ParseLootMsgForKey(...)
 	local msg = ...

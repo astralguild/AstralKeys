@@ -78,7 +78,7 @@ function AstralKeysVaultMixin:UpdateUnit(characterID)
 									print("updated:", itemLevel, "and wrote to database:", progress[j].itemLevel) --debug function
 								else
 									itemLevel = progress[j].itemLevel
-                                    print("used database:",itemLevel) --debug function
+									print("used database:",itemLevel) --debug function
 								end
                             elseif characterID == e.GetCharacterID(e.Player()) then
                                 itemLevel = GetDetailedItemLevelInfo(itemLink)
@@ -424,7 +424,7 @@ local function InitializeFrame()
     --TODO: INITIALIZE CHECKBOX HERE
     e.UpdateWeeklyCharacter()
     HybridScrollFrame_CreateButtons(AstralKeysVaultFrameCharacterFrameCharacterContainer, 'AstralKeysVaultFrameTemplate', 0, 0, 'TOPLEFT', 'TOPLEFT', 0, -10)
-    --e.UpdateVaultFrames()
+    e.UpdateVaultFrames()
     if not e.VaultListShown() then
         AstralKeysSettings.vault.current_list = 'MYTHIC'
     end
@@ -441,6 +441,7 @@ function e.UpdateVaultFrames()
         table.insert(AstralCharacters, 1, player)
         e.UpdateCharacterIDs()
     end
+	e.UpdateWeeklyCharacter()
     VaultScrollFrame_Update()
 end
 
