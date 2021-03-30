@@ -9,62 +9,62 @@ COLOUR[4] = 'ffff8000' -- Legendary
 COLOUR[5] = 'ffe6cc80' -- Artifact
 
 function e.UpdateWeeklyCharacter()
-    C_MythicPlus.RequestMapInfo()
-    local found = false
-    local fetchedActivites = C_WeeklyRewards.GetActivities()
+	C_MythicPlus.RequestMapInfo()
+	local found = false
+	local fetchedActivites = C_WeeklyRewards.GetActivities()
 	local hasAvailableRewards = C_WeeklyRewards.HasAvailableRewards()
 	local couldClaimRewardsInOnShow = C_WeeklyRewards.CanClaimRewards()
 	local isReadOnly = not C_WeeklyRewards.HasInteraction()
-    for i = 1, #AstralCharacters do
-        if AstralCharacters[i].unit == e.Player() then
-            found = true
-            if AstralCharacters[i].vault == nil then
-                AstralCharacters[i].vault = {progress={}}
-            end
-            wipe(AstralCharacters[i].vault)
-            AstralCharacters[i].vault = {progress={}}
+	for i = 1, #AstralCharacters do
+		if AstralCharacters[i].unit == e.Player() then
+			found = true
+			if AstralCharacters[i].vault == nil then
+				AstralCharacters[i].vault = { progress = {} }
+			end
+			wipe(AstralCharacters[i].vault)
+			AstralCharacters[i].vault = { progress = {} }
 
-            for j = 1, #fetchedActivites do
+			for j = 1, #fetchedActivites do
 				local itemLink, upgradeitemLink = C_WeeklyRewards.GetExampleRewardItemHyperlinks(fetchedActivites[j].id)
 				local dataitemLevel = 0
 				if GetDetailedItemLevelInfo(itemLink) then
 					dataitemLevel = GetDetailedItemLevelInfo(itemLink)
-					if(e.GVdebug) then
+					if (e.GVdebug) then
 						print("Got dataitemLevel:", dataitemLevel)
 					end
 				else
-					if(e.GVdebug) then
-						print("No dataitemLevel for link:",itemLink)
+					if (e.GVdebug) then
+						print("No dataitemLevel for link:", itemLink)
 					end
 				end
-                table.insert(AstralCharacters[i].vault.progress,{threshold = fetchedActivites[j].threshold, type = fetchedActivites[j].type, index = fetchedActivites[j].index, progress = fetchedActivites[j].progress, level = fetchedActivites[j].level, rewards = fetchedActivites[j].rewards, id = fetchedActivites[j].id, itemLevel = dataitemLevel})
-            end
-        end
-    end
+				table.insert(AstralCharacters[i].vault.progress, { threshold = fetchedActivites[j].threshold, type = fetchedActivites[j].type, index = fetchedActivites[j].index, progress = fetchedActivites[j].progress, level = fetchedActivites[j].level, rewards = fetchedActivites[j].rewards, id = fetchedActivites[j].id, itemLevel = dataitemLevel })
+			end
+		end
+	end
 
-    if not found then
-        table.insert(AstralCharacters, {unit = e.Player(), class = e.PlayerClass(), weekly_best = 0, faction = e.FACTION, vault={progress={}}})
-        e.SetCharacterID(e.Player(), #AstralCharacters)
-        local characterID = e.GetCharacterID(e.Player())
-        for i = 1, #fetchedActivites do
-            table.insert(AstralCharacters[characterID].vault.progress,{threshold = fetchedActivites[i].threshold, type = fetchedActivites[i].type, index = fetchedActivites[i].index, progress = fetchedActivites[i].progress, level = fetchedActivites[i].level, rewards = fetchedActivites[i].rewards, id = fetchedActivites[i].id, itemLevel = 0})
-        end
-    end
+	if not found then
+		table.insert(AstralCharacters, { unit = e.Player(), class = e.PlayerClass(), weekly_best = 0, faction = e.FACTION, vault = { progress = {} } })
+		e.SetCharacterID(e.Player(), #AstralCharacters)
+		local characterID = e.GetCharacterID(e.Player())
+		for i = 1, #fetchedActivites do
+			table.insert(AstralCharacters[characterID].vault.progress, { threshold = fetchedActivites[i].threshold, type = fetchedActivites[i].type, index = fetchedActivites[i].index, progress = fetchedActivites[i].progress, level = fetchedActivites[i].level, rewards = fetchedActivites[i].rewards, id = fetchedActivites[i].id, itemLevel = 0 })
+		end
+	end
 end
 
 -- Retrieves Great Vault progress for character
 -- @param id int ID for the character
 -- @return table Progress by id per tier
 function e.GetWeeklyProgress(id)
-    if AstralCharacters[id] and AstralCharacters[id].vault then
-        if AstralCharacters[id] and AstralCharacters[id].vault.progress then
-            return AstralCharacters[id].vault.progress
-        else
-            return nil
-        end
-    else
-        return nil
-    end
+	if AstralCharacters[id] and AstralCharacters[id].vault then
+		if AstralCharacters[id] and AstralCharacters[id].vault.progress then
+			return AstralCharacters[id].vault.progress
+		else
+			return nil
+		end
+	else
+		return nil
+	end
 end
 
 -- Sets actual item level for each type and tier
@@ -72,19 +72,19 @@ end
 -- @param progressid int ID for the progress table
 -- @param itemLVL int itemLVL
 function e.SetWeeklyItemLevel(charid, progressid, itemLVL)
-    if AstralCharacters[charid] and AstralCharacters[charid].vault.progress then
-        if AstralCharacters[charid].vault.progress[progressid] then
-            if itemLVL == nil then
-                itemLVL = 0
-            end
-            AstralCharacters[charid].vault.progress[progressid].itemLevel = itemLVL
-            print("Wrote item level",itemLVL,"to CharID",charid,"and progressid",progressid)
-        end
-    end
+	if AstralCharacters[charid] and AstralCharacters[charid].vault.progress then
+		if AstralCharacters[charid].vault.progress[progressid] then
+			if itemLVL == nil then
+				itemLVL = 0
+			end
+			AstralCharacters[charid].vault.progress[progressid].itemLevel = itemLVL
+			print("Wrote item level", itemLVL, "to CharID", charid, "and progressid", progressid)
+		end
+	end
 end
 
 function e.WipeWeeklyCharacter()
-    for i = 1, #AstralCharacters do
-        wipe(AstralCharacters[i].vault)
-    end
+	for i = 1, #AstralCharacters do
+		wipe(AstralCharacters[i].vault)
+	end
 end

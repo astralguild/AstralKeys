@@ -8,12 +8,13 @@ function e.DataResetTime()
 	local region = GetCurrentRegion()
 	local serverTime = GetServerTime()
 	local d = date('*t', serverTime)
-	local hourOffset, minOffset = math.modf(difftime(serverTime, time(date('!*t', serverTime))))/3600
+	local hourOffset, minOffset = math.modf(difftime(serverTime, time(date('!*t', serverTime)))) / 3600
 	minOffset = minOffset or 0
 	local hours
 	local days
 
-	if region ~= 3 then -- Not EU
+	if region ~= 3 then
+		-- Not EU
 		hours = 15 + (d.isdst and 1 or 0) + hourOffset
 		if d.wday > 2 then
 			if d.wday == 3 then
@@ -24,11 +25,12 @@ function e.DataResetTime()
 		else
 			days = 3 - d.wday
 		end
-	else -- EU
+	else
+		-- EU
 		hours = 7 + (d.isdst and 1 or 0) + hourOffset
 		if d.wday > 3 then
 			if d.wday == 4 then
-				days = (d.hour < hours and 0 or 7)				
+				days = (d.hour < hours and 0 or 7)
 			else
 				days = 11 - d.wday
 			end
@@ -37,7 +39,7 @@ function e.DataResetTime()
 		end
 	end
 
-	local time = (((days * 24 + hours) * 60 + minOffset) * 60) + serverTime - d.hour*3600 - d.min*60 - d.sec
+	local time = (((days * 24 + hours) * 60 + minOffset) * 60) + serverTime - d.hour * 3600 - d.min * 60 - d.sec
 
 	-- TODO
 	-- ADD DST Check for time before returning!!!
@@ -94,10 +96,10 @@ local function LoadDefaultSettings(addon)
 
 	-- General options
 	e:AddDefaultSettings('general', 'init_time', e.DataResetTime())
-	e:AddDefaultSettings('general', 'show_minimap_button', 
-	{
-		isEnabled = true,
-	})
+	e:AddDefaultSettings('general', 'show_minimap_button',
+			{
+				isEnabled = true,
+			})
 	e:AddDefaultSettings('general', 'show_tooltip_key', {
 		isEnabled = true,
 	})
@@ -107,13 +109,13 @@ local function LoadDefaultSettings(addon)
 	e:AddDefaultSettings('general', 'announce_guild', {
 		isEnabled = false,
 	})
-	e:AddDefaultSettings('general', 'report_on_message', 
-	{
-		['party'] = true,
-		['raid'] = false,
-		['guild'] = false,
-		['no_key'] = false,
-	})
+	e:AddDefaultSettings('general', 'report_on_message',
+			{
+				['party'] = true,
+				['raid'] = false,
+				['guild'] = false,
+				['no_key'] = false,
+			})
 	e:AddDefaultSettings('general', 'expanded_tooltip', {
 		isEnabled = true,
 	})
@@ -134,19 +136,19 @@ local function LoadDefaultSettings(addon)
 	e:AddDefaultSettings('frame', 'mingle_offline', {
 		isEnabled = false,
 	})
-	e:AddDefaultSettings('frame', 'rank_filter', 
-	{
-		[1] = true,
-		[2] = true,
-		[3] = true,
-		[4] = true,
-		[5] = true,
-		[6] = true,
-		[7] = true,
-		[8] = true,
-		[9] = true,
-		[10] = true,
-	})
+	e:AddDefaultSettings('frame', 'rank_filter',
+			{
+				[1] = true,
+				[2] = true,
+				[3] = true,
+				[4] = true,
+				[5] = true,
+				[6] = true,
+				[7] = true,
+				[8] = true,
+				[9] = true,
+				[10] = true,
+			})
 
 	-- Friend syncing options
 	e:AddDefaultSettings('friendOptions', 'friend_sync', {

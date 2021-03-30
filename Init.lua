@@ -8,11 +8,11 @@ local uiScale, mult
 
 function e:SetUIScale()
 	local screenHeight = UIParent:GetHeight()
-	local scale = string.match( GetCVar( "gxWindowedResolution" ), "%d+x(%d+)" )
+	local scale = string.match(GetCVar("gxWindowedResolution"), "%d+x(%d+)")
 	uiScale = UIParent:GetScale()
-	mult = 768/scale/uiScale
+	mult = 768 / scale / uiScale
 end
 
 function e:Scale(x)
-	return mult * floor(x/mult+.5)
+	return mult * floor(x / mult + .5)
 end

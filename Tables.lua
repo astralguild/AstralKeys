@@ -5,17 +5,20 @@ local SORT_MEDTHOD = {}
 
 local function ListFilter(A, filters)
 	if not type(A) == 'table' then return end
-	
+
 	local keyLevelLowerBound, keyLevelUpperBound = 2, 999 -- Lowest key possible, some high enough number
 
 	if filters['key_level'] ~= '' and filters['key_level'] ~= '1' then
 		local keyFilterText = filters['key_level']
-		if tonumber(keyFilterText) then -- only input a single key level
+		if tonumber(keyFilterText) then
+			-- only input a single key level
 			keyLevelLowerBound = tonumber(keyFilterText)
 			keyLevelUpperBound = tonumber(keyFilterText)
-		elseif string.match(keyFilterText, '%d+%+') then -- Text input is <number>+, looking for any key at least <number>
+		elseif string.match(keyFilterText, '%d+%+') then
+			-- Text input is <number>+, looking for any key at least <number>
 			keyLevelLowerBound = tonumber(string.match(keyFilterText, '%d+'))
-		elseif string.match(keyFilterText, '%d+%-') then -- Text input is <number>-, looking for a key no higher than <number>
+		elseif string.match(keyFilterText, '%d+%-') then
+			-- Text input is <number>-, looking for a key no higher than <number>
 			keyLevelUpperBound = tonumber(string.match(keyFilterText, '%d+'))
 		end
 	end
@@ -32,27 +35,28 @@ local function ListFilter(A, filters)
 		end
 
 		local isShownInFilter = true -- Assume there is no filter taking place
-		
+
 		for field, filterText in pairs(filters) do
-				if filterText ~= '' then
-					isShownInFilter = false -- There is a filter, now assume this unit is not to be shown
-					if field == 'dungeon_name' then
-						local mapName = e.GetMapName(A[i]['dungeon_id'])
-						if strfind(strlower(mapName), strlower(filterText)) then
-							isShownInFilter = true
-						end
-					elseif field == 'key_level' then
-						if A[i][field] >= keyLevelLowerBound and A[i][field] <= keyLevelUpperBound then
-							isShownInFilter = true
-						end
-					else
-						if strfind(strlower(A[i][field]):sub(1, A[i][field]:find('-') - 1), strlower(filterText)) then -- or strfind(strlower(A[i].btag), strlower(filterText)) then
-							isShownInFilter = true
-						end
+			if filterText ~= '' then
+				isShownInFilter = false -- There is a filter, now assume this unit is not to be shown
+				if field == 'dungeon_name' then
+					local mapName = e.GetMapName(A[i]['dungeon_id'])
+					if strfind(strlower(mapName), strlower(filterText)) then
+						isShownInFilter = true
+					end
+				elseif field == 'key_level' then
+					if A[i][field] >= keyLevelLowerBound and A[i][field] <= keyLevelUpperBound then
+						isShownInFilter = true
+					end
+				else
+					if strfind(strlower(A[i][field]):sub(1, A[i][field]:find('-') - 1), strlower(filterText)) then
+						-- or strfind(strlower(A[i].btag), strlower(filterText)) then
+						isShownInFilter = true
 					end
 				end
-				A[i].isShown = A[i].isShown and isShownInFilter
 			end
+			A[i].isShown = A[i].isShown and isShownInFilter
+		end
 
 		if A[i].isShown then
 			A.num_shown = A.num_shown + 1
@@ -67,7 +71,7 @@ local function CompareUnitNames(a, b)
 		if s > t then
 			return true
 		elseif
-			s < t then
+		s < t then
 			return false
 		else
 			return string.lower(a.character_name) > string.lower(b.character_name)
@@ -76,14 +80,13 @@ local function CompareUnitNames(a, b)
 		if s < t then
 			return true
 		elseif
-			s > t then
+		s > t then
 			return false
 		else
 			return string.lower(a.character_name) < string.lower(b.character_name)
 		end
 	end
 end
-
 
 local function ListSort(A, v)
 	if v == 'dungeon_name' then
@@ -132,7 +135,7 @@ local function ListSort(A, v)
 				end
 			end)
 		else
-			table.sort(A, function(a, b) 
+			table.sort(A, function(a, b)
 				local aOnline = e.IsUnitOnline(a.character_name) and 1 or 0
 				local bOnline = e.IsUnitOnline(b.character_name) and 1 or 0
 				if not AstralKeysSettings.frame.mingle_offline.isEnabled then
@@ -144,7 +147,7 @@ local function ListSort(A, v)
 						if a[v] > b[v] then
 							return true
 						elseif
-							a[v] < b[v]  then
+						a[v] < b[v] then
 							return false
 						else
 							return CompareUnitNames(a, b)
@@ -153,7 +156,7 @@ local function ListSort(A, v)
 						if a[v] < b[v] then
 							return true
 						elseif
-							a[v] > b[v]  then
+						a[v] > b[v] then
 							return false
 						else
 							return CompareUnitNames(a, b)

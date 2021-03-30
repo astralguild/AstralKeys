@@ -1,128 +1,144 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
-	<Script file="GreatVault.lua"/>
+    <Script file="GreatVault.lua"/>
 
-	<!--
+    <!--
     ********************************************************************************
     Vault Frame Template
     ********************************************************************************
     -->
-	<Button name="AstralKeysVaultFrameTemplate" virtual="true" mixin="AstralKeysVaultMixin">
-		<Size>
-			<AbsDimension x="420" y="60"/>
-		</Size>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString name="$parentNameString" inherits="InterUIBold_Normal" wordwrap="false" parentKey="nameString" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="420" y="15"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentTier1String" inherits="InterUIBold_Normal" wordwrap="false" parentKey="tier1String" justifyH="CENTER">
-					<Size>
-						<AbsDimension x="140" y="20"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentNameString" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentTier1Level" inherits="InterUIBold_Small" wordwrap="false" parentKey="tier1Level" justifyH="CENTER" justifyV="TOP">
-					<Size>
-						<AbsDimension x="140" y="12"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTier1String" relativePoint="TOPLEFT" x="0" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentTier1Item" inherits="InterUIBold_Tiny" wordwrap="false" parentKey="tier1Item" justifyH="CENTER" justifyV="BOTTOM">
-					<Size>
-						<AbsDimension x="140" y="8"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentTier1String" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentTier1" inherits="InterUIRegular_Small" wordwrap="false" parentKey="tier1" alpha="0.5" justifyH="CENTER">
-					<Size>
-						<AbsDimension x="140" y="15"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentTier1String" relativePoint="BOTTOM" x="0" y="-2"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentTier2String" inherits="InterUIBold_Normal" wordwrap="false" parentKey="tier2String" justifyH="CENTER">
-					<Size>
-						<AbsDimension x="140" y="20"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTier1String" relativePoint="TOPRIGHT" x="0" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentTier2Level" inherits="InterUIBold_Small" wordwrap="false" parentKey="tier2Level" justifyH="CENTER" justifyV="TOP">
-					<Size>
-						<AbsDimension x="140" y="12"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTier2String" relativePoint="TOPLEFT" x="0" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentTier2Item" inherits="InterUIBold_Tiny" wordwrap="false" parentKey="tier2Item" justifyH="CENTER" justifyV="BOTTOM">
-					<Size>
-						<AbsDimension x="140" y="8"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentTier2String" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentTier2" inherits="InterUIRegular_Small" wordwrap="false" parentKey="tier2" alpha="0.5" justifyH="CENTER">
-					<Size>
-						<AbsDimension x="140" y="15"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentTier2String" relativePoint="BOTTOM" x="0" y="-2"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentTier3String" inherits="InterUIBold_Normal" wordwrap="false" parentKey="tier3String" justifyH="CENTER">
-					<Size>
-						<AbsDimension x="140" y="20"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTier2String" relativePoint="TOPRIGHT" x="0" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentTier3Level" inherits="InterUIBold_Small" wordwrap="false" parentKey="tier3Level" justifyH="CENTER" justifyV="TOP">
-					<Size>
-						<AbsDimension x="140" y="12"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTier3String" relativePoint="TOPLEFT" x="0" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentTier3Item" inherits="InterUIBold_Tiny" wordwrap="false" parentKey="tier3Item" justifyH="CENTER" justifyV="BOTTOM">
-					<Size>
-						<AbsDimension x="140" y="8"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentTier3String" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentTier3" inherits="InterUIRegular_Small" wordwrap="false" parentKey="tier3" alpha="0.5" justifyH="CENTER">
-					<Size>
-						<AbsDimension x="140" y="15"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentTier3String" relativePoint="BOTTOM" x="0" y="-2"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-			<OnLoad method="OnLoad"/>
-		</Scripts>
-	</Button>
+    <Button name="AstralKeysVaultFrameTemplate" virtual="true" mixin="AstralKeysVaultMixin">
+        <Size>
+            <AbsDimension x="420" y="60"/>
+        </Size>
+        <Layers>
+            <Layer level="ARTWORK">
+                <FontString name="$parentNameString" inherits="InterUIBold_Normal" wordwrap="false"
+                            parentKey="nameString" justifyH="LEFT">
+                    <Size>
+                        <AbsDimension x="420" y="15"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="0" y="0"/>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentTier1String" inherits="InterUIBold_Normal" wordwrap="false"
+                            parentKey="tier1String" justifyH="CENTER">
+                    <Size>
+                        <AbsDimension x="140" y="20"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentNameString" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentTier1Level" inherits="InterUIBold_Small" wordwrap="false"
+                            parentKey="tier1Level" justifyH="CENTER" justifyV="TOP">
+                    <Size>
+                        <AbsDimension x="140" y="12"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentTier1String" relativePoint="TOPLEFT" x="0" y="0"/>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentTier1Item" inherits="InterUIBold_Tiny" wordwrap="false" parentKey="tier1Item"
+                            justifyH="CENTER" justifyV="BOTTOM">
+                    <Size>
+                        <AbsDimension x="140" y="8"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="BOTTOMLEFT" relativeTo="$parentTier1String" relativePoint="BOTTOMLEFT" x="0"
+                                y="0"/>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentTier1" inherits="InterUIRegular_Small" wordwrap="false" parentKey="tier1"
+                            alpha="0.5" justifyH="CENTER">
+                    <Size>
+                        <AbsDimension x="140" y="15"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP" relativeTo="$parentTier1String" relativePoint="BOTTOM" x="0" y="-2"/>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentTier2String" inherits="InterUIBold_Normal" wordwrap="false"
+                            parentKey="tier2String" justifyH="CENTER">
+                    <Size>
+                        <AbsDimension x="140" y="20"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentTier1String" relativePoint="TOPRIGHT" x="0" y="0"/>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentTier2Level" inherits="InterUIBold_Small" wordwrap="false"
+                            parentKey="tier2Level" justifyH="CENTER" justifyV="TOP">
+                    <Size>
+                        <AbsDimension x="140" y="12"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentTier2String" relativePoint="TOPLEFT" x="0" y="0"/>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentTier2Item" inherits="InterUIBold_Tiny" wordwrap="false" parentKey="tier2Item"
+                            justifyH="CENTER" justifyV="BOTTOM">
+                    <Size>
+                        <AbsDimension x="140" y="8"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="BOTTOMLEFT" relativeTo="$parentTier2String" relativePoint="BOTTOMLEFT" x="0"
+                                y="0"/>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentTier2" inherits="InterUIRegular_Small" wordwrap="false" parentKey="tier2"
+                            alpha="0.5" justifyH="CENTER">
+                    <Size>
+                        <AbsDimension x="140" y="15"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP" relativeTo="$parentTier2String" relativePoint="BOTTOM" x="0" y="-2"/>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentTier3String" inherits="InterUIBold_Normal" wordwrap="false"
+                            parentKey="tier3String" justifyH="CENTER">
+                    <Size>
+                        <AbsDimension x="140" y="20"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentTier2String" relativePoint="TOPRIGHT" x="0" y="0"/>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentTier3Level" inherits="InterUIBold_Small" wordwrap="false"
+                            parentKey="tier3Level" justifyH="CENTER" justifyV="TOP">
+                    <Size>
+                        <AbsDimension x="140" y="12"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentTier3String" relativePoint="TOPLEFT" x="0" y="0"/>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentTier3Item" inherits="InterUIBold_Tiny" wordwrap="false" parentKey="tier3Item"
+                            justifyH="CENTER" justifyV="BOTTOM">
+                    <Size>
+                        <AbsDimension x="140" y="8"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="BOTTOMLEFT" relativeTo="$parentTier3String" relativePoint="BOTTOMLEFT" x="0"
+                                y="0"/>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentTier3" inherits="InterUIRegular_Small" wordwrap="false" parentKey="tier3"
+                            alpha="0.5" justifyH="CENTER">
+                    <Size>
+                        <AbsDimension x="140" y="15"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP" relativeTo="$parentTier3String" relativePoint="BOTTOM" x="0" y="-2"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnEnter method="OnEnter"/>
+            <OnLeave method="OnLeave"/>
+            <OnLoad method="OnLoad"/>
+        </Scripts>
+    </Button>
 </Ui>

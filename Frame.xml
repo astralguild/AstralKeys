@@ -1,166 +1,179 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
-	<Script file="Frame.lua"/>
+    <Script file="Frame.lua"/>
 
-	<!--
+    <!--
     ********************************************************************************
     Character Frame Template
     ********************************************************************************
     -->
-	<Button name="AstralCharacterFrameTemplate" virtual="true" mixin="AstralKeysCharacterMixin">
-		<Size>
-			<AbsDimension x="180" y="50"/>
-		</Size>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString name="$parentNameString" inherits="InterUIBold_Normal" wordwrap="false" parentKey="nameString" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="180" y="15"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentKeyString" inherits="InterUIBold_Tiny" wordwrap="false" parentKey="keyString" text="CURRENT" alpha="0.5" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="70" y="15"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentNameString" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentWeeklyString" inherits="InterUIBold_Tiny" wordwrap="false" parentKey="weeklyString" text="WKLY BEST" alpha="0.5"  justifyH="LEFT">
-					<Size>
-						<AbsDimension x="70" y="15"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentKeyString" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentKeyStringValue" inherits="InterUIRegular_Small" wordwrap="false" parentKey="keyStringValue" justifyH="LEFT">
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentKeyString" relativePoint="RIGHT" x="0" y=".5"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentWeeklyStringValue" inherits="InterUIRegular_Small" wordwrap="false" parentKey="weeklyStringValue" justifyH="LEFT">
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentWeeklyString" relativePoint="RIGHT" x="0" y=".5"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-			<OnLoad method="OnLoad"/>
-		</Scripts>
-	</Button>
-	<Button name="AstralListFrameTemplate" virtual="true" mixin="AstralKeysListMixin">
-		<!-- with WKYL BST, 440 px -->
-		<Size>
-			<AbsDimension x="480" y="20"/>
-		</Size>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString name="$parentLevelString" inherits="InterUIBlack_Normal" justifyH='RIGHT' wordwrap="false" parentKey="levelString">
-					<Size>
-						<AbsDimension x="50" y="15"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPLEFT" x="30" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentDungeonString" inherits="InterUIBlack_Normal" justifyH='LEFT' wordwrap="false" parentKey="dungeonString">
-					<Size>
-						<AbsDimension x="180" y="15"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentLevelString" relativePoint="RIGHT" x="20" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentNameString" inherits="InterUIMedium_Normal" justifyH='LEFT' wordwrap="false" parentKey="nameString">
-					<Size>
-						<AbsDimension x="153" y="15"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentDungeonString" relativePoint="RIGHT" x="5" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentBestString" inherits="InterUIBlack_Normal" justifyH='RIGHT' wordwrap="false" parentKey="bestString">
-					<Size>
-						<AbsDimension x="50" y="15"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentNameString" relativePoint="RIGHT" x="10" y="0"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="Highlight" hidden='true'>
-					<Size>
-						<AbsDimension x="480" y="24"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="0" y="6"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					<Color r=".5" g=".5" b=".5" a="0.2"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad>
-				self:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-			</OnLoad>
-			<OnClick method="OnClick"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
-		<!--
-		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD" setAllPoints="true">
-			<color r="1" b="1" g="1" a="0.3"/>
-		</HighlightTexture>
-		-->
-	</Button>
-	<Button name="AstralGearFrameTemplate" virtual="true" mixin="AstralKeysGearMixin">
-		<Size>
-			<AbsDimension x="220" y="35"/>
-		</Size>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString name="$parentLevelString" inherits="InterUIBold_Normal" wordwrap="false" parentKey="levelString" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="220" y="12"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentItemStringDaily" inherits="InterUIBold_Small" wordwrap="false" parentKey="itemStringDaily" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="220" y="10"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentLevelString" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentItemStringWeekly" inherits="InterUIBold_Small" wordwrap="false" parentKey="itemStringWeekly" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="220" y="10"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentItemStringDaily" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-			<OnLoad method="OnLoad"/>
-		</Scripts>
-	</Button>
+    <Button name="AstralCharacterFrameTemplate" virtual="true" mixin="AstralKeysCharacterMixin">
+        <Size>
+            <AbsDimension x="180" y="50"/>
+        </Size>
+        <Layers>
+            <Layer level="ARTWORK">
+                <FontString name="$parentNameString" inherits="InterUIBold_Normal" wordwrap="false"
+                            parentKey="nameString" justifyH="LEFT">
+                    <Size>
+                        <AbsDimension x="180" y="15"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="0" y="0"/>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentKeyString" inherits="InterUIBold_Tiny" wordwrap="false" parentKey="keyString"
+                            text="CURRENT" alpha="0.5" justifyH="LEFT">
+                    <Size>
+                        <AbsDimension x="70" y="15"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentNameString" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentWeeklyString" inherits="InterUIBold_Tiny" wordwrap="false"
+                            parentKey="weeklyString" text="WKLY BEST" alpha="0.5" justifyH="LEFT">
+                    <Size>
+                        <AbsDimension x="70" y="15"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentKeyString" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentKeyStringValue" inherits="InterUIRegular_Small" wordwrap="false"
+                            parentKey="keyStringValue" justifyH="LEFT">
+                    <Anchors>
+                        <Anchor point="LEFT" relativeTo="$parentKeyString" relativePoint="RIGHT" x="0" y=".5"/>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentWeeklyStringValue" inherits="InterUIRegular_Small" wordwrap="false"
+                            parentKey="weeklyStringValue" justifyH="LEFT">
+                    <Anchors>
+                        <Anchor point="LEFT" relativeTo="$parentWeeklyString" relativePoint="RIGHT" x="0" y=".5"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnEnter method="OnEnter"/>
+            <OnLeave method="OnLeave"/>
+            <OnLoad method="OnLoad"/>
+        </Scripts>
+    </Button>
+    <Button name="AstralListFrameTemplate" virtual="true" mixin="AstralKeysListMixin">
+        <!-- with WKYL BST, 440 px -->
+        <Size>
+            <AbsDimension x="480" y="20"/>
+        </Size>
+        <Layers>
+            <Layer level="ARTWORK">
+                <FontString name="$parentLevelString" inherits="InterUIBlack_Normal" justifyH='RIGHT' wordwrap="false"
+                            parentKey="levelString">
+                    <Size>
+                        <AbsDimension x="50" y="15"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPLEFT" x="30" y="0"/>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentDungeonString" inherits="InterUIBlack_Normal" justifyH='LEFT' wordwrap="false"
+                            parentKey="dungeonString">
+                    <Size>
+                        <AbsDimension x="180" y="15"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeTo="$parentLevelString" relativePoint="RIGHT" x="20" y="0"/>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentNameString" inherits="InterUIMedium_Normal" justifyH='LEFT' wordwrap="false"
+                            parentKey="nameString">
+                    <Size>
+                        <AbsDimension x="153" y="15"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeTo="$parentDungeonString" relativePoint="RIGHT" x="5" y="0"/>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentBestString" inherits="InterUIBlack_Normal" justifyH='RIGHT' wordwrap="false"
+                            parentKey="bestString">
+                    <Size>
+                        <AbsDimension x="50" y="15"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeTo="$parentNameString" relativePoint="RIGHT" x="10" y="0"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+            <Layer level="OVERLAY">
+                <Texture parentKey="Highlight" hidden='true'>
+                    <Size>
+                        <AbsDimension x="480" y="24"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="0" y="6"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <Color r=".5" g=".5" b=".5" a="0.2"/>
+                </Texture>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnLoad>
+                self:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+            </OnLoad>
+            <OnClick method="OnClick"/>
+            <OnEnter method="OnEnter"/>
+            <OnLeave method="OnLeave"/>
+        </Scripts>
+        <!--
+        <HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD" setAllPoints="true">
+            <color r="1" b="1" g="1" a="0.3"/>
+        </HighlightTexture>
+        -->
+    </Button>
+    <Button name="AstralGearFrameTemplate" virtual="true" mixin="AstralKeysGearMixin">
+        <Size>
+            <AbsDimension x="220" y="35"/>
+        </Size>
+        <Layers>
+            <Layer level="ARTWORK">
+                <FontString name="$parentLevelString" inherits="InterUIBold_Normal" wordwrap="false"
+                            parentKey="levelString" justifyH="LEFT">
+                    <Size>
+                        <AbsDimension x="220" y="12"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="0" y="0"/>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentItemStringDaily" inherits="InterUIBold_Small" wordwrap="false"
+                            parentKey="itemStringDaily" justifyH="LEFT">
+                    <Size>
+                        <AbsDimension x="220" y="10"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentLevelString" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentItemStringWeekly" inherits="InterUIBold_Small" wordwrap="false"
+                            parentKey="itemStringWeekly" justifyH="LEFT">
+                    <Size>
+                        <AbsDimension x="220" y="10"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentItemStringDaily" relativePoint="BOTTOMLEFT" x="0"
+                                y="0"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnEnter method="OnEnter"/>
+            <OnLeave method="OnLeave"/>
+            <OnLoad method="OnLoad"/>
+        </Scripts>
+    </Button>
 </Ui>

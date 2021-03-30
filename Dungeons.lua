@@ -11,7 +11,7 @@ local function SetDungeonTable()
 
 	for _, mapID in pairs(dungeonTable) do
 		local name = C_ChallengeMode.GetMapUIInfo(mapID)
-		if not name then 
+		if not name then
 			C_MythicPlus.RequestMapInfo()
 			break
 		end

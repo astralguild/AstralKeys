@@ -33,18 +33,18 @@ Affix names corresponding to ID
 ]]
 
 local AFFIX_ROTATION = {
-	{10, 11, 3}, -- Fortified, Bursting, Volcanic
-	{9, 7, 124}, -- Tyrannical, Bolstering, Storming
-	{10, 123, 12}, -- Fortified, Spiteful, Grievous
-	{9, 122, 4}, -- Tyrannical, Inspiring, Necrotic
-	{10, 8, 14}, -- Fortified, Sanguine, Quaking
-	{9, 6, 13}, -- Tyrannical, Raging, Explosive
-	{10, 123, 3}, -- Fortified, Spiteful, Volcanic
-	{9, 7, 4}, -- Tyrannical, Bolstering, Necrotic
-	{10, 122, 124}, -- Fortified, Inspiring, Storming
-	{9, 11, 13}, -- Tyrannical, Bursting, Explosive
-	{10, 8, 12}, -- Fortified, Sanguine, Grievous
-	{9, 6, 14}, -- Tyrannical, Raging, Quaking
+	{ 10, 11, 3 }, -- Fortified, Bursting, Volcanic
+	{ 9, 7, 124 }, -- Tyrannical, Bolstering, Storming
+	{ 10, 123, 12 }, -- Fortified, Spiteful, Grievous
+	{ 9, 122, 4 }, -- Tyrannical, Inspiring, Necrotic
+	{ 10, 8, 14 }, -- Fortified, Sanguine, Quaking
+	{ 9, 6, 13 }, -- Tyrannical, Raging, Explosive
+	{ 10, 123, 3 }, -- Fortified, Spiteful, Volcanic
+	{ 9, 7, 4 }, -- Tyrannical, Bolstering, Necrotic
+	{ 10, 122, 124 }, -- Fortified, Inspiring, Storming
+	{ 9, 11, 13 }, -- Tyrannical, Bursting, Explosive
+	{ 10, 8, 12 }, -- Fortified, Sanguine, Grievous
+	{ 9, 6, 14 }, -- Tyrannical, Raging, Quaking
 }
 
 local AFFIX_INFO = {}
@@ -90,12 +90,13 @@ end
 
 local function UpdateMythicPlusAffixes()
 	local affixes = C_MythicPlus.GetCurrentAffixes()
-	if not affixes or not C_ChallengeMode.GetAffixInfo(1) then -- affixes have not loaded, re-request the info
+	if not affixes or not C_ChallengeMode.GetAffixInfo(1) then
+		-- affixes have not loaded, re-request the info
 		C_MythicPlus.RequestMapInfo()
 		C_MythicPlus.RequestCurrentAffixes()
 		return
 	end
-	
+
 	SEASON_AFFIX = affixes[4].id -- Set the season affix id
 	AffixOneID = affixes[1].id
 	AffixTwoID = affixes[2].id
@@ -103,7 +104,8 @@ local function UpdateMythicPlusAffixes()
 
 	ROTATION_WEEK_POSITION = GetRotationPosition(affixes[1].id, affixes[2].id, affixes[3].id)
 
-	if SEASON_AFFIX ~= AstralAffixes.season_affix then -- Season has changed
+	if SEASON_AFFIX ~= AstralAffixes.season_affix then
+		-- Season has changed
 		AstralAffixes.rotation = {} -- Wipe the table
 		AstralAffixes.season_affix = SEASON_AFFIX -- Change the season affix
 		AstralAffixes.season_start_week = e.Week -- Set the starting week
@@ -113,14 +115,14 @@ local function UpdateMythicPlusAffixes()
 	local affixId = 1
 	for affixId = 1, 300 do
 		local name, desc = C_ChallengeMode.GetAffixInfo(affixId)
-		AFFIX_INFO[affixId] = {name = name, description = desc}
+		AFFIX_INFO[affixId] = { name = name, description = desc }
 		affixId = affixId + 1
 	end
 
 	-- Store the season affix info
 	local name, desc = C_ChallengeMode.GetAffixInfo(SEASON_AFFIX)
-	AFFIX_INFO[SEASON_AFFIX] = {name = name, description = desc}
-	
+	AFFIX_INFO[SEASON_AFFIX] = { name = name, description = desc }
+
 	AstralEvents:Unregister('CHALLENGE_MODE_MAPS_UPDATE', 'updateAffixes')
 	AstralEvents:Unregister('MYTHIC_PLUS_CURRENT_AFFIX_UPDATE', 'updateAffixes')
 end
@@ -147,7 +149,7 @@ function e.AffixTwo(weekOffSet)
 		return AffixTwoID
 	end
 	local week = (ROTATION_WEEK_POSITION + weekOffSet) % 12
---	local week = (e.Week + offSet) % 12
+	--	local week = (e.Week + offSet) % 12
 	if week == 0 then week = 12 end
 	return AFFIX_ROTATION[week][2]
 end
@@ -159,8 +161,8 @@ function e.AffixThree(weekOffSet)
 		return AffixThreeID
 	end
 
-	local week = (ROTATION_WEEK_POSITION + weekOffSet) % 12	
---	local week = (e.Week + offSet) % 12
+	local week = (ROTATION_WEEK_POSITION + weekOffSet) % 12
+	--	local week = (e.Week + offSet) % 12
 	if week == 0 then week = 12 end
 	return AFFIX_ROTATION[week][3]
 
@@ -190,7 +192,7 @@ end
 function e.GetAffixID(id, weekOffSet)
 	local offSet = weekOffSet or 0
 	--local week = (e.Week + offSet) % 12
-	local week = (ROTATION_WEEK_POSITION + weekOffSet) % 12	
+	local week = (ROTATION_WEEK_POSITION + weekOffSet) % 12
 	if week == 0 then week = 12 end
 	return AFFIX_ROTATION[week][id] or SEASON_AFFIX
 end

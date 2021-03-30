@@ -2,7 +2,7 @@ local L = select(2, ...)[2]
 
 local localizations = {}
 local locale = GetLocale()
-if(locale == 'enGB') then
+if (locale == 'enGB') then
 	locale = 'enUS'
 end
 

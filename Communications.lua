@@ -19,7 +19,7 @@ local PrintVersion, CheckInstanceType
 -- Two different time settings for in a raid or otherwise
 -- Creates a random variance between +- [.001, .100] to help prevent
 -- disconnects from too many addon messages
-local SEND_VARIANCE = ((-1)^math.random(1,2)) * math.random(1, 100)/ 10^3 -- random number to space out messages being sent between clients
+local SEND_VARIANCE = ((-1) ^ math.random(1, 2)) * math.random(1, 100) / 10 ^ 3 -- random number to space out messages being sent between clients
 local SEND_INTERVAL = {}
 SEND_INTERVAL[1] = 0.2 + SEND_VARIANCE -- Normal operations
 SEND_INTERVAL[2] = 1 + SEND_VARIANCE -- Used when in a raiding environment
@@ -37,7 +37,7 @@ function AstralComs:RegisterPrefix(channel, prefix, f)
 	if self:IsPrefixRegistered(channel, prefix) then return end -- Did we register something to the same channel with the same name?
 
 	if not self.dtbl[channel] then self.dtbl[channel] = {} end
-	
+
 	local obj = {}
 	obj.method = f
 	obj.prefix = prefix
@@ -84,7 +84,7 @@ function AstralComs:OnEvent(event, prefix, msg, channel, sender)
 	end
 end
 
-local msgs = setmetatable({}, {__mode='k'})
+local msgs = setmetatable({}, { __mode = 'k' })
 
 local function newMsg()
 	local msg = next(msgs)
@@ -99,7 +99,6 @@ local function delMsg(msg)
 	msg[1] = nil
 	msgs[msg] = true
 end
-
 
 function AstralComs:NewMessage(prefix, text, channel, target)
 	if channel == 'GUILD' then
@@ -134,14 +133,17 @@ end
 function AstralComs:SendMessage()
 	local msg = table.remove(self.queue, 1)
 	if msg[3] == 'BNET' then
-		if select(3, BNGetGameAccountInfo(msg[4])) == 'WoW' and BNConnected() then -- Are they logged into WoW and are we connected to BNET?
+		if select(3, BNGetGameAccountInfo(msg[4])) == 'WoW' and BNConnected() then
+			-- Are they logged into WoW and are we connected to BNET?
 			msg.method(unpack(msg, 1, #msg))
 		end
 	elseif msg[3] == 'WHISPER' then
-		if e.IsFriendOnline(msg[4]) then -- Are they still logged into that toon
+		if e.IsFriendOnline(msg[4]) then
+			-- Are they still logged into that toon
 			msg.method(unpack(msg, 1, #msg))
 		end
-	else-- Guild/raid message, just send it
+	else
+		-- Guild/raid message, just send it
 		msg.method(unpack(msg, 1, #msg))
 		delMsg(msg)
 	end
@@ -164,7 +166,8 @@ function AstralComs:OnUpdate(elapsed)
 
 	self.delay = 0
 
-	if #self.queue < 1 then -- Don't have any messages to send
+	if #self.queue < 1 then
+		-- Don't have any messages to send
 		self:Hide()
 		return
 	end
@@ -204,7 +207,7 @@ local function VersionPush(msg, sender)
 	if tonumber(majorVersion) > highestMajorVersion then
 		highestMajorVersion = tonumber(majorVersion)
 	end
-	versionList[sender] = {subVersion = tonumber(subVersion), majorVersion = tonumber(majorVersion), class = class}
+	versionList[sender] = { subVersion = tonumber(subVersion), majorVersion = tonumber(majorVersion), class = class }
 end
 AstralComs:RegisterPrefix('GUILD', 'versionPush', VersionPush)
 
@@ -214,7 +217,7 @@ PrintVersion = function()
 	local notInstalled = 'Not installed: '
 
 	local i = 1
-	for k,v in pairs(versionList) do
+	for k, v in pairs(versionList) do
 		if v.majorVersion <= highestMajorVersion and tonumber(v.subVersion) < highestSubVersion then
 			outOfDate = outOfDate .. strformat('%s(%d.%d) ', WrapTextInColorCode(Ambiguate(k, 'GUILD'), select(4, GetClassColor(v.class))), v.majorVersion, v.subVersion)
 		else
@@ -290,11 +293,11 @@ end
 -- keep the addon channel overhead low
 AstralEvents:Register('ENCOUNTER_START', function()
 	AstralComs:UnregisterPrefix('GUILD', 'request')
-	end, 'encStart')
+end, 'encStart')
 
 AstralEvents:Register('ENCOUNTER_END', function()
 	AstralComs:RegisterPrefix('GUILD', 'request', AstralKeys_PushKeyList)
-	end, 'encStop')
+end, 'encStop')
 
 -- Checks to see if we zone into a raid instance,
 -- Let's increase the send interval if we are raiding, client sync can wait, dc's can't
@@ -316,7 +319,7 @@ function e.AnnounceCharacterKeys(channel)
 		if id then
 			local link = e.CreateKeyLink(e.UnitMapID(id), e.UnitKeyLevel(id))
 			if channel == 'PARTY' and not IsInGroup() then return end
-			SendChatMessage(strformat('%s %s',e.CharacterName(i), link), channel)
+			SendChatMessage(strformat('%s %s', e.CharacterName(i), link), channel)
 		end
 	end
 end
@@ -334,7 +337,8 @@ local function ParseGuildChatCommands(text)
 	if UnitLevel('player') ~= e.EXPANSION_LEVEL then return end -- Don't bother checking anything if the unit is unable to acquire a key
 	if text == '!keys' then
 		local guild = GetGuildInfo('player')
-		if AstralKeysSettings.general.report_on_message['guild'] or (guild == 'Astral' and e.PlayerRealm() == 'Turalyon') then -- Guild leader for Astral desires this setting to be foreced on for members.
+		if AstralKeysSettings.general.report_on_message['guild'] or (guild == 'Astral' and e.PlayerRealm() == 'Turalyon') then
+			-- Guild leader for Astral desires this setting to be foreced on for members.
 			local unitID = e.UnitID(e.Player())
 			if unitID then
 				local keyLink = e.CreateKeyLink(e.UnitMapID(unitID), e.UnitKeyLevel(unitID))
@@ -387,7 +391,7 @@ local function ParseRaidChatCommands(text)
 					end
 				end
 				if not link then return end -- something went wrong
-				SendChatMessage(string.format('Astral Keys: %s', link), 'RAID')	
+				SendChatMessage(string.format('Astral Keys: %s', link), 'RAID')
 			else
 				if AstralKeysSettings.general.report_on_message.no_key then
 					SendChatMessage(strformat('%s: %s', 'Astral Keys', L['NO_KEY']), 'RAID')

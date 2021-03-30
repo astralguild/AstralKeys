@@ -3,27 +3,27 @@ local e, L = unpack(select(2, ...))
 local BACKDROP = {
 	bgFile = "Interface/Tooltips/UI-Tooltip-Background",
 	edgeFile = nil, tile = true, tileSize = 16, edgeSize = 16,
-	insets = {left = 0, right = 0, top = 0, bottom = 0}
+	insets = { left = 0, right = 0, top = 0, bottom = 0 }
 }
 
 local BACKDROPBUTTON = {
 	bgFile = nil,
 	edgeFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 16, edgeSize = 1,
-	insets = {left = 0, right = 0, top = 0, bottom = 0}
+	insets = { left = 0, right = 0, top = 0, bottom = 0 }
 }
 
 function e.CreateCheckBox(parent, label, width)
 	local checkbox = CreateFrame('CheckButton', nil, parent, "BackdropTemplate")
 	checkbox:SetSize(width or 200, 20)
 	checkbox:SetBackdrop(nil)
-	checkbox:SetBackdropBorderColor(85/255, 85/255, 85/255)
+	checkbox:SetBackdropBorderColor(85 / 255, 85 / 255, 85 / 255)
 	checkbox:SetNormalFontObject(InterUIRegular_Normal)
 	checkbox:SetText(label)
 
 	checkbox:SetNormalTexture(nil)
 	checkbox:SetBackdropColor(0, 0, 0)
 
-	checkbox:SetPushedTextOffset(1,-1)
+	checkbox:SetPushedTextOffset(1, -1)
 
 	local tex = checkbox:CreateTexture('PUSHED_TEXTURE_BOX', 'BACKGROUND')
 	tex:SetSize(12, 12)
@@ -47,7 +47,7 @@ end
 local BACKDROP2 = {
 	bgFile = "Interface/Tooltips/UI-Tooltip-Background",
 	edgeFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 16, edgeSize = 1,
-	insets = {left = 0, right = 0, top = 0, bottom = 0}
+	insets = { left = 0, right = 0, top = 0, bottom = 0 }
 }
 
 local function AcquireButtonFromPool(parent)
@@ -110,7 +110,6 @@ function e.ClosePopupFrames(ignoredFrame)
 
 end
 
-
 function e.CreateDropDownFrame(name, level, parent)
 	local frame = CreateFrame('FRAME', 'AstralMenuFrame' .. name .. level, parent, "BackdropTemplate")
 	frame:Hide()
@@ -126,7 +125,7 @@ function e.CreateDropDownFrame(name, level, parent)
 	frame:SetFrameLevel(level * 5)
 
 	frame:SetBackdrop(BACKDROP2)
-	frame:SetBackdropBorderColor(33/255, 33/255, 33/255, 0.8)
+	frame:SetBackdropBorderColor(33 / 255, 33 / 255, 33 / 255, 0.8)
 	frame:SetBackdropColor(0, 0, 0)
 
 	frame.background = frame:CreateTexture(nil, 'BACKGROUND')
@@ -208,7 +207,7 @@ function e.CreateDropDownFrame(name, level, parent)
 	function frame:AddButton(name, onClick, onShow, onEnter, subMenu, subFrame)
 		local button = CreateButton(self)
 		button:SetWidth(self:GetWidth() - 20)
-		button:SetPoint('TOPLEFT', self.title, 'BOTTOMLEFT', 5, -20*(#self.buttons))
+		button:SetPoint('TOPLEFT', self.title, 'BOTTOMLEFT', 5, -20 * (#self.buttons))
 		button:SetText(name)
 
 		local stringLength = button:GetFontString():GetUnboundedStringWidth()
@@ -267,7 +266,7 @@ end
 
 function e.AddEscHandler(frame)
 	if not frame and type(frame) ~= 'table' then
-		error('frame expcted, got '.. type(frame))
+		error('frame expcted, got ' .. type(frame))
 	end
 	if frame:GetScript('OnKeyDown') then
 		frame:HookScript('OnKeyDown', function(self, key)

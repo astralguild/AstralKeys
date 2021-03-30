@@ -28,7 +28,8 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 
 	local major, minor = string.match(GetAddOnMetadata('AstralKeys', 'version'), '(%d+).(%d+)')
 
-	if tonumber(major) == 3 and tonumber(minor) > 25 and not AstralKeysSettings.wipedOldTables then -- Changed to single table in 3.26
+	if tonumber(major) == 3 and tonumber(minor) > 25 and not AstralKeysSettings.wipedOldTables then
+		-- Changed to single table in 3.26
 		wipe(AstralKeys)
 		AstralFriends = nil
 		AstralKeysSettings.wipedOldTables = true
@@ -47,9 +48,10 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 	local region = GetCurrentRegion()
 	local currentTime = GetServerTime()
 	local d = date('*t', currentTime)
-	local hourOffset, minOffset = math.modf(difftime(currentTime, time(date('!*t', currentTime))))/3600
+	local hourOffset, minOffset = math.modf(difftime(currentTime, time(date('!*t', currentTime)))) / 3600
 
-	if region ~= 3 then -- Non EU
+	if region ~= 3 then
+		-- Non EU
 		e.Week = math.floor((GetServerTime() - initializeTime[1]) / 604800)
 	else
 		e.Week = math.floor((GetServerTime() - initializeTime[2]) / 604800)
@@ -143,7 +145,8 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 	-- if any of these fields, remove it
 	-- unit, class, dungeon_id, key_level, faction
 	for i = #AstralKeys, 1, -1 do
-		if not (AstralKeys[i].unit and AstralKeys[i].class and AstralKeys[i].dungeon_id and AstralKeys[i].key_level) then -- Missing information from an entry, remove the entry
+		if not (AstralKeys[i].unit and AstralKeys[i].class and AstralKeys[i].dungeon_id and AstralKeys[i].key_level) then
+			-- Missing information from an entry, remove the entry
 			table.remove(AstralKeys, i)
 		end
 	end
@@ -155,7 +158,8 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 		end
 	end
 
-	for i = 1, #AstralKeys do -- index guild units
+	for i = 1, #AstralKeys do
+		-- index guild units
 		if AstralKeys[i] and AstralKeys[i].unit then
 			e.SetUnitID(AstralKeys[i].unit, i)
 			e.AddUnitToSortTable(AstralKeys[i].unit, AstralKeys[i].btag, AstralKeys[i].class, AstralKeys[i].faction, AstralKeys[i].dungeon_id, AstralKeys[i].key_level, AstralKeys[i].weekly_best)
@@ -163,13 +167,15 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 		end
 	end
 
-	for i = 1, #AstralCharacters do -- index player's characters
+	for i = 1, #AstralCharacters do
+		-- index player's characters
 		if AstralCharacters[i] and AstralCharacters[i].unit then
 			e.SetCharacterID(AstralCharacters[i].unit, i)
 		end
 	end
 
-	if AstralAffixes.season_start_week == 0 then -- Addon has just initialized for the fisrt time or saved variables have been lost.
+	if AstralAffixes.season_start_week == 0 then
+		-- Addon has just initialized for the fisrt time or saved variables have been lost.
 		AstralAffixes.season_start_week = e.Week
 	end
 	LoadAddOn("Blizzard_WeeklyRewards")

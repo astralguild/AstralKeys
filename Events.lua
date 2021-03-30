@@ -24,7 +24,7 @@ function AstralEvents:Register(event, f, name)
 	if self:IsRegistered(event, name) then return end -- Event already registered with same name, bail out
 	local obj = self:NewObject(f, name)
 
-	if not self.dtbl[event] then 
+	if not self.dtbl[event] then
 		self.dtbl[event] = {}
 		AstralEvents:RegisterEvent(event)
 	end

@@ -12,7 +12,7 @@ local function UpdateGuildList()
 		local name, _, rankIndex, _, _, _, _, _, connected = GetGuildRosterInfo(i)
 		local guid = select(17, GetGuildRosterInfo(i))
 		if not name then return end
-		GUILD_LIST[name] = {rank = rankIndex + 1, isConnected = connected, guid = guid}
+		GUILD_LIST[name] = { rank = rankIndex + 1, isConnected = connected, guid = guid }
 	end
 	e.UpdateFrames()
 end
@@ -40,7 +40,7 @@ end
 
 function e.GuildMemberGuid(unit)
 	if not GUILD_LIST[unit] then return nil end
-	
+
 	return GUILD_LIST[unit].guid
 end
 
@@ -58,7 +58,7 @@ local function UpdateUnitKey(msg, sender)
 	local timeStamp = e.WeekTime() -- part of the week we got this key update, used to determine if a key got de-leveled or not
 
 	local unit, class, dungeonID, keyLevel, weekly_best, week = strsplit(':', msg)
-	
+
 	dungeonID = tonumber(dungeonID)
 	keyLevel = tonumber(keyLevel)
 	weekly_best = tonumber(weekly_best)
@@ -66,13 +66,15 @@ local function UpdateUnitKey(msg, sender)
 
 	local id = e.UnitID(unit) -- Is this unit in the db already?
 
-	if id then -- Yep, just change the values then
+	if id then
+		-- Yep, just change the values then
 		AstralKeys[id].dungeon_id = dungeonID
 		AstralKeys[id].key_level = keyLevel
 		AstralKeys[id].weekly_best = weekly_best
 		AstralKeys[id].week = week
 		AstralKeys[id].time_stamp = timeStamp
-	else -- Nope, let's add them to the DB and index their position
+	else
+		-- Nope, let's add them to the DB and index their position
 		table.insert(AstralKeys, {
 			unit = unit,
 			btag = btag,
@@ -109,12 +111,12 @@ local function SyncReceive(entry, sender)
 
 	local _pos = 0
 	while find(entry, '_', _pos) do
-		
+
 		--unit, class, dungeonID, keyLevel, weekly_best, week, timeStamp = string.split(':', entry:sub(_pos, entry:find('_', _pos) - 1))
 
 		class, dungeonID, keyLevel, weekly_best, week, timeStamp = entry:match(':(%a+):(%d+):(%d+):(%d+):(%d+):(%d)', entry:find(':', _pos))
 		unit = entry:sub(_pos, entry:find(':', _pos) - 1)
-		
+
 		_pos = find(entry, '_', _pos) + 1
 
 		dungeonID = tonumber(dungeonID)
@@ -123,7 +125,7 @@ local function SyncReceive(entry, sender)
 		week = tonumber(week)
 		timeStamp = tonumber(timeStamp)
 
-		if week >= e.Week and e.UnitInGuild(unit) then 
+		if week >= e.Week and e.UnitInGuild(unit) then
 
 			local id = e.UnitID(unit)
 			if id then
@@ -174,17 +176,19 @@ function AstralKeys_PushKeyList(msg, sender)
 
 	wipe(messageStack)
 	for i = 1, #AstralKeys do
-		if e.UnitInGuild(AstralKeys[i].unit) then -- Only send current guild keys, who wants keys from a different guild?
+		if e.UnitInGuild(AstralKeys[i].unit) then
+			-- Only send current guild keys, who wants keys from a different guild?
 			messageStack[#messageStack + 1] = strformat('%s_', strformat('%s:%s:%d:%d:%d:%d:%d', AstralKeys[i].unit, AstralKeys[i].class, AstralKeys[i].dungeon_id, AstralKeys[i].key_level, AstralKeys[i].weekly_best, AstralKeys[i].week, AstralKeys[i].time_stamp))
 			--messageStack[#messageStack + 1] = strformat('%s_', strformat('%s:%s:%d:%d:%d:%d:%d', AstralKeys[i][1], AstralKeys[i][2], AstralKeys[i][3], AstralKeys[i][4], AstralKeys[i][5], AstralKeys[i][6], AstralKeys[i][7]))
 			--messageStack[#messageStack + 1] = strformat('%s_', table.concat(AstralKeys[i], ':'))
 		end
 	end
- 
+
 	local msg = ''
 	while messageStack[1] do
 		msg = strformat('%s%s', msg, messageStack[1])
-		if msg:len() < 235 then -- Keep the message length less than 255 or player will disconnect
+		if msg:len() < 235 then
+			-- Keep the message length less than 255 or player will disconnect
 			table.remove(messageStack, 1)
 		else
 			AstralComs:NewMessage('AstralKeys', strformat('%s %s', SYNC_VERSION, msg), 'GUILD')
@@ -196,7 +200,7 @@ end
 AstralComs:RegisterPrefix('GUILD', 'request', AstralKeys_PushKeyList)
 
 -- Guild sorting/Filtering
-local function GuildListSort(A, v)	
+local function GuildListSort(A, v)
 	if v == 'dungeon_name' then
 		table.sort(A, function(a, b)
 			local aOnline = e.GuildMemberOnline(a.character_name) and 1 or 0
@@ -284,12 +288,15 @@ local function GuildListFilter(A, filters)
 
 	if filters['key_level'] ~= '' and filters['key_level'] ~= '1' then
 		local keyFilterText = filters['key_level']:gsub('[^0-9%+%-]', '')
-		if tonumber(keyFilterText) then -- only input a single key level
+		if tonumber(keyFilterText) then
+			-- only input a single key level
 			keyLevelLowerBound = tonumber(keyFilterText)
 			keyLevelUpperBound = tonumber(keyFilterText)
-		elseif string.match(keyFilterText, '%d+%+') then -- Text input is <number>+, looking for any key at least <number>
+		elseif string.match(keyFilterText, '%d+%+') then
+			-- Text input is <number>+, looking for any key at least <number>
 			keyLevelLowerBound = tonumber(string.match(keyFilterText, '%d+'))
-		elseif string.match(keyFilterText, '%d+%-') then -- Text input is <number>-, looking for a key no higher than <number>
+		elseif string.match(keyFilterText, '%d+%-') then
+			-- Text input is <number>-, looking for a key no higher than <number>
 			keyLevelUpperBound = tonumber(string.match(keyFilterText, '%d+'))
 		end
 	end
@@ -305,7 +312,7 @@ local function GuildListFilter(A, filters)
 			A[i].isShown = A[i].isShown and AstralKeysSettings.frame.rank_filter[e.GuildMemberRank(A[i].character_name)]
 
 			local isShownInFilter = true  -- Assume there is no filter taking place
-			
+
 			for field, filterText in pairs(filters) do
 				if filterText ~= '' then
 					isShownInFilter = false -- There is a filter, now assume this unit is not to be shown
@@ -341,14 +348,14 @@ local function GuildUnitFunction(self, unit, unitClass, mapID, keyLevel, weekly_
 	self.unitID = e.UnitID(unit)
 	self.levelString:SetText(keyLevel)
 	self.dungeonString:SetText(e.GetMapName(mapID))
-	self.nameString:SetText(WrapTextInColorCode(Ambiguate(unit, 'GUILD') , select(4, GetClassColor(unitClass))))
+	self.nameString:SetText(WrapTextInColorCode(Ambiguate(unit, 'GUILD'), select(4, GetClassColor(unitClass))))
 	if weekly_best and weekly_best > 1 then
 		local color_code = e.GetDifficultyColour(weekly_best)
 		self.bestString:SetText(WrapTextInColorCode(weekly_best, color_code))
 	else
 		self.bestString:SetText(nil)
 	end
-	
+
 	if e.GuildMemberOnline(unit) then
 		self:SetAlpha(1)
 	else

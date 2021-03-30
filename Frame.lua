@@ -34,7 +34,7 @@ FILTER_FIELDS['character_name'] = ''
 local BACKDROPBUTTON = {
 	bgFile = nil,
 	edgeFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 16, edgeSize = 1,
-	insets = {left = 0, right = 0, top = 0, bottom = 0}
+	insets = { left = 0, right = 0, top = 0, bottom = 0 }
 }
 -- Used for filtering, sorting, and displaying units on lists
 local sortTable = {}
@@ -108,9 +108,9 @@ function AstralKeysListMixin:SetUnit(unit, class, mapID, keyLevel, weekly_best, 
 	else
 		if btag then
 			if tonumber(faction) == e.FACTION then
-				self.nameString:SetText( string.format('%s (%s)', WrapTextInColorCode(btag:sub(1, btag:find('#') - 1), COLOR_BLUE_BNET), WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), select(4, GetClassColor(class)))))
+				self.nameString:SetText(string.format('%s (%s)', WrapTextInColorCode(btag:sub(1, btag:find('#') - 1), COLOR_BLUE_BNET), WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), select(4, GetClassColor(class)))))
 			else
-				self.nameString:SetText( string.format('%s (%s)', WrapTextInColorCode(btag:sub(1, btag:find('#') - 1), COLOR_BLUE_BNET), WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), 'ff9d9d9d')))
+				self.nameString:SetText(string.format('%s (%s)', WrapTextInColorCode(btag:sub(1, btag:find('#') - 1), COLOR_BLUE_BNET), WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), 'ff9d9d9d')))
 			end
 		else
 			self.nameString:SetText(WrapTextInColorCode(unit:sub(1, unit:find('-') - 1), select(4, GetClassColor(class))))
@@ -139,8 +139,8 @@ function AstralKeysListMixin:OnClick(button)
 
 			local cursorX, cursorY = GetCursorPosition()
 			local left, bottom, width, height = AstralKeyFrame:GetRect()
-			cursorX = cursorX/uiScale
-			cursorY =  cursorY/uiScale
+			cursorX = cursorX / uiScale
+			cursorY = cursorY / uiScale
 			xOffset, yOffset = 20, 0
 
 			xOffset = cursorX + xOffset
@@ -291,7 +291,7 @@ local function InviteUnit(self)
 		end
 	end
 end
-unitPopup:AddButton(L['INVITE'],InviteUnit, Invite_OnShow)
+unitPopup:AddButton(L['INVITE'], InviteUnit, Invite_OnShow)
 
 local function CreateList_OnEnter(self)
 	local text = self:GetText()
@@ -326,23 +326,23 @@ createListEditBox:SetFontObject(InterUIRegular_Normal)
 createListEditBox:SetAutoFocus(true)
 createListEditBox:SetMaxLetters(50)
 createListEditBox:SetBackdrop(BACKDROPBUTTON)
-createListEditBox:SetBackdropBorderColor(33/255, 33/255, 33/255, 0.8)
+createListEditBox:SetBackdropBorderColor(33 / 255, 33 / 255, 33 / 255, 0.8)
 
 createListEditBox.description = createListEditBox:CreateFontString(nil, 'OVERLAY', 'InterUIMedium_Normal')
 createListEditBox.description:SetHeight(20)
 createListEditBox.description:SetJustifyH('LEFT')
 createListEditBox.description:SetText(L['NEW_LIST_DESCRIPTION'])
-createListEditBox.description:SetTextColor(99/255, 99/255, 99/255, 1)
+createListEditBox.description:SetTextColor(99 / 255, 99 / 255, 99 / 255, 1)
 createListEditBox.description:SetPoint('LEFT', createListEditBox, 'LEFT', 3, 0)
 createListEditBox.description:Hide()
 
 local createListOkayButton = CreateFrame('BUTTON', nil, createListEditBox, "BackdropTemplate")
 createListOkayButton:SetNormalFontObject(InterUIMedium_Normal)
 createListOkayButton:SetBackdrop(BACKDROPBUTTON)
-createListOkayButton:SetBackdropBorderColor(33/255, 33/255, 33/255, 0.8)
+createListOkayButton:SetBackdropBorderColor(33 / 255, 33 / 255, 33 / 255, 0.8)
 createListOkayButton:SetHeight(20)
 createListOkayButton:SetText(L['OKAY'])
-createListOkayButton:GetFontString():SetTextColor(198/255, 198/255, 198/255, 1)
+createListOkayButton:GetFontString():SetTextColor(198 / 255, 198 / 255, 198 / 255, 1)
 createListOkayButton:SetWidth(createListOkayButton:GetFontString():GetUnboundedStringWidth() + 5)
 createListOkayButton:SetPoint('LEFT', createListEditBox, 'RIGHT', 5, 0)
 
@@ -391,7 +391,8 @@ local function BuildLists(frame)
 			frame:AddButton(AstralLists[i].name, function(self)
 				for unit in pairs(selectedUnits) do
 					local unit = unit
-					local btag e.UnitBTag(e.UnitID(unit))
+					local btag
+					e.UnitBTag(e.UnitID(unit))
 					local list = self:GetText()
 					e.AddUnitToList(unit, list, btag)
 				end
@@ -446,13 +447,13 @@ AstralKeyFrame.background = AstralKeyFrame:CreateTexture(nil, 'BACKGROUND')
 AstralKeyFrame.background:SetAllPoints(AstralKeyFrame)
 AstralKeyFrame.background:SetColorTexture(0, 0, 0, 0.8)
 
-local AstralKeyToolTip = CreateFrame( "GameTooltip", "AstralKeyToolTip", AAFrame, "GameTooltipTemplate" )
+local AstralKeyToolTip = CreateFrame("GameTooltip", "AstralKeyToolTip", AAFrame, "GameTooltipTemplate")
 AstralKeyToolTip:SetOwner(AstralKeyFrame, "ANCHOR_CURSOR")
 AstralKeyToolTip:SetScript('OnShow', function(self)
 	self:SetBackdrop({
 		bgFile = "Interface/Tooltips/UI-Tooltip-Background",
 		edgeFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 16, edgeSize = 1,
-		insets = {left = 0, right = 0, top = 0, bottom = 0}
+		insets = { left = 0, right = 0, top = 0, bottom = 0 }
 	})
 	self:SetBackdropColor(0, 0, 0, 1)
 	self:SetBackdropBorderColor(0, 0, 0)
@@ -479,7 +480,7 @@ menuBar:SetSize(50, 490)
 menuBar:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT')
 menuBar.texture = menuBar:CreateTexture(nil, 'BACKGROUND')
 menuBar.texture:SetAllPoints(menuBar)
-menuBar.texture:SetColorTexture(33/255, 33/255, 33/255, 0.8)
+menuBar.texture:SetColorTexture(33 / 255, 33 / 255, 33 / 255, 0.8)
 
 local logo_Key = menuBar:CreateTexture(nil, 'ARTWORK')
 logo_Key:SetSize(32, 32)
@@ -505,7 +506,7 @@ reportButton:SetSize(20, 20)
 reportButton:GetNormalTexture():SetVertexColor(.8, .8, .8, 0.8)
 reportButton:SetPoint('TOP', divider, 'BOTTOM', 0, -20)
 reportButton:SetScript('OnEnter', function(self)
-	self:GetNormalTexture():SetVertexColor(126/255, 126/255, 126/255, 0.8)
+	self:GetNormalTexture():SetVertexColor(126 / 255, 126 / 255, 126 / 255, 0.8)
 end)
 reportButton:SetScript('OnLeave', function(self)
 	self:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
@@ -516,9 +517,8 @@ reportButton:SetScript('OnClick', function(self)
 	--AstralMenuFrameTabs1:Hide()
 	--AstralMenuFrameTabs2:Hide()
 	AstralMenuFrameReport1:SetPoint('TOPLEFT', self, 'TOPRIGHT', 10, -3)
-	AstralMenuFrameReport1:SetShown( not AstralMenuFrameReport1:IsShown())
+	AstralMenuFrameReport1:SetShown(not AstralMenuFrameReport1:IsShown())
 end)
-
 
 local settingsButton = CreateFrame('BUTTON', '$parentSettingsButton', menuBar)
 settingsButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline-settings-20px@2x')
@@ -526,14 +526,14 @@ settingsButton:SetSize(24, 24)
 settingsButton:GetNormalTexture():SetVertexColor(.8, .8, .8, 0.8)
 settingsButton:SetPoint('TOP', reportButton, 'BOTTOM', 0, -20)
 settingsButton:SetScript('OnEnter', function(self)
-	self:GetNormalTexture():SetVertexColor(126/255, 126/255, 126/255, 0.8)
+	self:GetNormalTexture():SetVertexColor(126 / 255, 126 / 255, 126 / 255, 0.8)
 end)
 settingsButton:SetScript('OnLeave', function(self)
 	self:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
 end)
 settingsButton:SetScript('OnClick', function()
 	AstralMenuFrameUnit1:Hide()
-	AstralOptionsFrame:SetShown( not AstralOptionsFrame:IsShown())
+	AstralOptionsFrame:SetShown(not AstralOptionsFrame:IsShown())
 end)
 
 LoadAddOn("Blizzard_WeeklyRewards")
@@ -543,7 +543,7 @@ greatVaultButton:SetSize(24, 24)
 greatVaultButton:GetNormalTexture():SetVertexColor(.8, .8, .8, 0.8)
 greatVaultButton:SetPoint('TOP', settingsButton, 'BOTTOM', 0, -20)
 greatVaultButton:SetScript('OnEnter', function(self)
-	self:GetNormalTexture():SetVertexColor(126/255, 126/255, 126/255, 0.8)
+	self:GetNormalTexture():SetVertexColor(126 / 255, 126 / 255, 126 / 255, 0.8)
 end)
 greatVaultButton:SetScript('OnLeave', function(self)
 	self:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
@@ -558,7 +558,7 @@ gearButton:SetSize(24, 24)
 gearButton:GetNormalTexture():SetVertexColor(.8, .8, .8, 0.8)
 gearButton:SetPoint('TOP', greatVaultButton, 'BOTTOM', 0, -20)
 gearButton:SetScript('OnEnter', function(self)
-	self:GetNormalTexture():SetVertexColor(126/255, 126/255, 126/255, 0.8)
+	self:GetNormalTexture():SetVertexColor(126 / 255, 126 / 255, 126 / 255, 0.8)
 end)
 gearButton:SetScript('OnLeave', function(self)
 	self:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
@@ -596,7 +596,7 @@ collapseButton:SetSize(20, 20)
 collapseButton:GetNormalTexture():SetVertexColor(.8, .8, .8, 0.8)
 collapseButton:SetPoint('BOTTOM', logo_Astral, 'TOP', 0, 20)
 collapseButton:SetScript('OnEnter', function(self)
-	self:GetNormalTexture():SetVertexColor(126/255, 126/255, 126/255, 0.8)
+	self:GetNormalTexture():SetVertexColor(126 / 255, 126 / 255, 126 / 255, 0.8)
 end)
 collapseButton:SetScript('OnLeave', function(self)
 	self:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
@@ -613,7 +613,7 @@ closeButton:SetScript('OnClick', function()
 end)
 closeButton:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', -14, -14)
 closeButton:SetScript('OnEnter', function(self)
-	self:GetNormalTexture():SetVertexColor(126/255, 126/255, 126/255, 0.8)
+	self:GetNormalTexture():SetVertexColor(126 / 255, 126 / 255, 126 / 255, 0.8)
 end)
 closeButton:SetScript('OnLeave', function(self)
 	self:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
@@ -706,7 +706,7 @@ function UpdateTabs()
 		else
 			usedWidth = usedWidth + buttons[i]:GetWidth() + 10 -- Padding between buttons
 			if usedWidth <= maxPossibleWidth then
-				buttons[i]:SetPoint('LEFT', buttons[i-1], 'RIGHT', 10, 0)
+				buttons[i]:SetPoint('LEFT', buttons[i - 1], 'RIGHT', 10, 0)
 				buttons[i]:Show()
 				buttonsUsed = i
 			end
@@ -750,7 +750,7 @@ function CreateNewTab(name, parent, ...)
 	self:SetWidth(textWidth + 10)
 	self.underline = self:CreateTexture(nil, 'ARTWORK')
 	self.underline:SetSize(textWidth, 2)
-	self.underline:SetColorTexture(214/255, 38/255, 38/255)
+	self.underline:SetColorTexture(214 / 255, 38 / 255, 38 / 255)
 	self.underline:SetPoint('BOTTOM', self, 'BOTTOM', -5, -1)
 
 	self.underline:Hide()
@@ -817,7 +817,7 @@ gearCollapse:SetScript('OnFinished', function(self)
 end)
 
 gearCollapse:SetScript('OnUpdate', function(self)
-	self:GetRegionParent():SetAlpha(self:GetSmoothProgress()/2)
+	self:GetRegionParent():SetAlpha(self:GetSmoothProgress() / 2)
 	local left, bottom, width = gearFrame:GetRect()
 	local newWidth = 250 - self:GetProgress() * 250 -- 250:: Gear Frame Width
 	gearFrame:ClearAllPoints()
@@ -838,7 +838,7 @@ gearExpand:SetScript('OnPlay', function(self)
 end)
 
 gearExpand:SetScript('OnUpdate', function(self, elapsed)
-	self:GetRegionParent():SetAlpha(self:GetSmoothProgress()*2)
+	self:GetRegionParent():SetAlpha(self:GetSmoothProgress() * 2)
 	local left, bottom, width = gearFrame:GetRect()
 	local newWidth = self:GetProgress() * 250 -- 250:: Gear Frame Width
 	gearFrame:ClearAllPoints()
@@ -863,7 +863,7 @@ gearButton:SetScript('OnClick', function(self)
 end)
 
 gearFrame.background = gearFrame:CreateTexture(nil, 'BACKGROUND')
-gearFrame.background:SetColorTexture(33/255, 33/255, 33/255, 0.9)
+gearFrame.background:SetColorTexture(33 / 255, 33 / 255, 33 / 255, 0.9)
 gearFrame.background:SetAllPoints(gearFrame)
 
 function GearScrollFrame_Update()
@@ -876,8 +876,8 @@ function GearScrollFrame_Update()
 	local usedHeight = #buttons * height
 
 	for i = 1, #buttons do
-		if AstralGear[i+offset] then
-			buttons[i]:UpdateLevel(i+offset)
+		if AstralGear[i + offset] then
+			buttons[i]:UpdateLevel(i + offset)
 			buttons[i]:Show()
 		else
 			buttons[i]:Hide()
@@ -901,13 +901,13 @@ gearTitle:SetText(L['MYTHICGEAR'])
 
 local gearLevelMin = gearFrame:CreateFontString('$parentGearLevelMin', 'OVERLAY', 'InterUIBlack_Small')
 gearLevelMin:SetPoint('TOPLEFT', gearTitle, 'BOTTOMLEFT', 0, 0)
-local strItemLevel = string.format (ITEM_LEVEL, e.lowestGear)
-gearLevelMin:SetFormattedText('|c%s%s (%s)|r',COLOR_GRAY, strItemLevel, MINIMUM)
+local strItemLevel = string.format(ITEM_LEVEL, e.lowestGear)
+gearLevelMin:SetFormattedText('|c%s%s (%s)|r', COLOR_GRAY, strItemLevel, MINIMUM)
 
 local gearScrollFrame = CreateFrame('ScrollFrame', '$parentListContainer', AstralKeyFrameGearFrame, 'HybridScrollFrameTemplate')
 gearScrollFrame:SetSize(220, 420)
 gearScrollFrame:SetPoint('TOPLEFT', gearLevelMin, 'BOTTOMLEFT', 0, -20)
-gearScrollFrame:SetScript('OnEnter',  GearScrollFrame_OnEnter)
+gearScrollFrame:SetScript('OnEnter', GearScrollFrame_OnEnter)
 gearScrollFrame:SetScript('OnLeave', GearScrollFrame_OnLeave)
 gearScrollFrame.buttonHeight = 45
 gearScrollFrame.update = GearScrollFrame_Update
@@ -929,7 +929,7 @@ _G[gearScrollBar:GetName() .. 'ScrollUpButton']:Hide()
 local scrollButton = _G[gearScrollBar:GetName() .. 'ThumbTexture']
 scrollButton:SetHeight(50)
 scrollButton:SetWidth(4)
-scrollButton:SetColorTexture(204/255, 204/255, 204/255, SCROLL_TEXTURE_ALPHA_MAX)
+scrollButton:SetColorTexture(204 / 255, 204 / 255, 204 / 255, SCROLL_TEXTURE_ALPHA_MAX)
 
 --- Character Frames
 ----------------------------------------------------------------
@@ -950,7 +950,7 @@ characterCollapse:SetScript('OnFinished', function(self)
 end)
 
 characterCollapse:SetScript('OnUpdate', function(self)
-	self:GetRegionParent():SetAlpha(self:GetSmoothProgress()/2)
+	self:GetRegionParent():SetAlpha(self:GetSmoothProgress() / 2)
 	local left, bottom, width = AstralKeyFrame:GetRect()
 	local newWidth = FRAME_WIDTH_EXPANDED - (self:GetProgress() * 235) -- 235:: Character Frame Width
 	AstralKeyFrame:ClearAllPoints()
@@ -971,7 +971,7 @@ characterExpand:SetScript('OnPlay', function(self)
 end)
 
 characterExpand:SetScript('OnUpdate', function(self, elapsed)
-	self:GetRegionParent():SetAlpha(self:GetSmoothProgress()*2)
+	self:GetRegionParent():SetAlpha(self:GetSmoothProgress() * 2)
 	local left, bottom, width = AstralKeyFrame:GetRect()
 	local newWidth = FRAME_WIDTH_MINIMIZED + (self:GetProgress() * 235) -- 235:: Character Frame Width
 	AstralKeyFrame:ClearAllPoints()
@@ -1004,7 +1004,7 @@ affixTitle:SetText(L['AFFIXES'])
 -- Affix Frames
 -----------------------------------------------------
 
-local affixLevels = {2, 4, 7, 10}
+local affixLevels = { 2, 4, 7, 10 }
 do
 	for i = 1, 4 do
 		local frame = CreateFrame('FRAME', '$parentAffix' .. i, characterFrame)
@@ -1023,7 +1023,7 @@ do
 		if i == 1 then
 			frame:SetPoint('TOPLEFT', affixTitle, 'BOTTOMLEFT', 0, -15)
 		else
-			frame:SetPoint('LEFT', '$parentAffix' .. (i -1), 'RIGHT', 25, 0)
+			frame:SetPoint('LEFT', '$parentAffix' .. (i - 1), 'RIGHT', 25, 0)
 		end
 
 		local affixLevel = frame:CreateFontString('$parentAffixLevel' .. i, 'OVERLAY', 'InterUIBlack_Small')
@@ -1061,7 +1061,7 @@ end
 AstralKeyFrame.affixesExpanded = false
 local affixFrame = CreateFrame('FRAME', '$parentAffixFrame', AstralKeyFrameCharacterFrame)
 affixFrame:SetSize(185, 15)
-affixFrame:SetPoint('TOPLEFT', AstralKeyFrameCharacterFrameAffix1, 'BOTTOMLEFT', 0 , -10)
+affixFrame:SetPoint('TOPLEFT', AstralKeyFrameCharacterFrameAffix1, 'BOTTOMLEFT', 0, -10)
 
 local affixExpandButton = CreateFrame('BUTTON', '$parentAffixExpandButton', characterFrame)
 affixExpandButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline_keyboard_arrow_down_white_18dp')
@@ -1095,7 +1095,7 @@ do
 		elseif i == 5 then
 			frame:SetPoint('TOPLEFT', '$parentAffix1', 'BOTTOMLEFT', 0, -15)
 		else
-			frame:SetPoint('LEFT', '$parentAffix' .. (i -1), 'RIGHT', 25, 0)
+			frame:SetPoint('LEFT', '$parentAffix' .. (i - 1), 'RIGHT', 25, 0)
 		end
 		frame.texture:SetPoint('TOPLEFT', frame, 'TOPLEFT')
 		frame.texture:SetAllPoints(frame)
@@ -1141,7 +1141,7 @@ affixExpand:SetScript('OnUpdate', function(self)
 	local progress = self:GetProgress()
 
 	AstralKeyFrameCharacterFrameAffixFrame:SetHeight((progress * 85) + 15)
-	AstralKeyFrameCharacterFrameCharacterContainer:SetHeight(((1-progress) * 85) + 230)
+	AstralKeyFrameCharacterFrameCharacterContainer:SetHeight(((1 - progress) * 85) + 230)
 	AstralKeyFrameCharacterFrameCharacterTitle:SetPoint('TOPLEFT', affixFrame, 'BOTTOMLEFT', 0, -10)
 	affixExpandButton:SetPoint('BOTTOM', affixFrame, 'BOTTOM', 0, 0)
 end)
@@ -1206,7 +1206,7 @@ end)
 affixCollapse:SetScript('OnUpdate', function(self)
 	local progress = self:GetSmoothProgress()
 
-	AstralKeyFrameCharacterFrameAffixFrame:SetHeight(((1-progress) * 85) + 15)
+	AstralKeyFrameCharacterFrameAffixFrame:SetHeight(((1 - progress) * 85) + 15)
 	AstralKeyFrameCharacterFrameCharacterContainer:SetHeight((progress * 85) + 230)
 	AstralKeyFrameCharacterFrameCharacterTitle:SetPoint('TOPLEFT', affixFrame, 'BOTTOMLEFT', 0, -10)
 	affixExpandButton:SetPoint('BOTTOM', affixFrame, 'BOTTOM', 0, 0)
@@ -1251,7 +1251,7 @@ astralGuildInfo:SetBackdropBorderColor(.2, .2, .2, 1)
 astralGuildInfo:SetPoint('BOTTOM', UIParent, 'TOP', 0, -300)
 
 astralGuildInfo.text = astralGuildInfo:CreateFontString(nil, 'OVERLAY', 'InterUIRegular_Normal')
-astralGuildInfo.text:SetPoint('TOP', astralGuildInfo,'TOP', 0, -10)
+astralGuildInfo.text:SetPoint('TOP', astralGuildInfo, 'TOP', 0, -10)
 astralGuildInfo.text:SetText('Visit Astral at')
 
 astralGuildInfo.editBox = CreateFrame('EditBox', nil, astralGuildInfo, "BackdropTemplate")
@@ -1293,7 +1293,7 @@ button:SetScript('OnClick', function(self)
 e.AddEscHandler(astralGuildInfo)
 
 characterFrame.background = characterFrame:CreateTexture(nil, 'BACKGROUND')
-characterFrame.background:SetColorTexture(33/255, 33/255, 33/255, 0.8)
+characterFrame.background:SetColorTexture(33 / 255, 33 / 255, 33 / 255, 0.8)
 characterFrame.background:SetAllPoints(characterFrame)
 
 function CharacterScrollFrame_Update()
@@ -1306,8 +1306,8 @@ function CharacterScrollFrame_Update()
 	local usedHeight = #buttons * height
 
 	for i = 1, #buttons do
-		if AstralCharacters[i+offset] then
-			buttons[i]:UpdateUnit(i+offset)
+		if AstralCharacters[i + offset] then
+			buttons[i]:UpdateUnit(i + offset)
 			buttons[i]:Show()
 		else
 			buttons[i]:Hide()
@@ -1328,7 +1328,7 @@ end
 local characterScrollFrame = CreateFrame('ScrollFrame', '$parentCharacterContainer', AstralKeyFrameCharacterFrame, 'HybridScrollFrameTemplate')
 characterScrollFrame:SetSize(220, 315)
 characterScrollFrame:SetPoint('TOPLEFT', characterTitle, 'TOPLEFT', 0, -25)
-characterScrollFrame:SetScript('OnEnter',  CharacterScrollFrame_OnEnter)
+characterScrollFrame:SetScript('OnEnter', CharacterScrollFrame_OnEnter)
 characterScrollFrame:SetScript('OnLeave', CharacterScrollFrame_OnLeave)
 
 local characterScrollBar = CreateFrame('Slider', '$parentScrollBar', characterScrollFrame, 'HybridScrollBarTemplate')
@@ -1348,7 +1348,7 @@ _G[characterScrollBar:GetName() .. 'ScrollUpButton']:Hide()
 local scrollButton = _G[characterScrollBar:GetName() .. 'ThumbTexture']
 scrollButton:SetHeight(50)
 scrollButton:SetWidth(4)
-scrollButton:SetColorTexture(204/255, 204/255, 204/255, SCROLL_TEXTURE_ALPHA_MAX)
+scrollButton:SetColorTexture(204 / 255, 204 / 255, 204 / 255, SCROLL_TEXTURE_ALPHA_MAX)
 
 characterScrollFrame.buttonHeight = 45
 characterScrollFrame.update = CharacterScrollFrame_Update
@@ -1373,12 +1373,12 @@ function ListScrollFrame_Update()
 	end
 	for i = 1, math.min(sortTable.num_shown, #buttons) do
 		for j = lastIndex, #sortTable do
-			if sortTable[j+offset] and sortTable[j+offset].isShown then
+			if sortTable[j + offset] and sortTable[j + offset].isShown then
 				usedHeight = usedHeight + height
 				lastIndex = j + 1
-				buttons[i]:SetUnit(sortTable[j+offset].character_name, sortTable[j+offset].character_class, sortTable[j+offset].dungeon_id, sortTable[j+offset].key_level, sortTable[j+offset].weekly_best, sortTable[j+offset]['faction'], sortTable[j+offset]['btag'])
+				buttons[i]:SetUnit(sortTable[j + offset].character_name, sortTable[j + offset].character_class, sortTable[j + offset].dungeon_id, sortTable[j + offset].key_level, sortTable[j + offset].weekly_best, sortTable[j + offset]['faction'], sortTable[j + offset]['btag'])
 				buttons[i]:Show()
-				if selectCount > 1 and selectedUnits[sortTable[j+offset].character_name] then
+				if selectCount > 1 and selectedUnits[sortTable[j + offset].character_name] then
 					buttons[i].Highlight:Show()
 				else
 					buttons[i].Highlight:Hide()
@@ -1407,7 +1407,7 @@ local listScrollFrame = CreateFrame('ScrollFrame', '$parentListContainer', Astra
 listScrollFrame:SetSize(480, 375)
 listScrollFrame:SetPoint('TOPLEFT', tabFrame, 'BOTTOMLEFT', 10, -35)
 listScrollFrame.update = ListScrollFrame_Update
-listScrollFrame:SetScript('OnEnter',  ListScrollFrame_OnEnter)
+listScrollFrame:SetScript('OnEnter', ListScrollFrame_OnEnter)
 listScrollFrame:SetScript('OnLeave', ListScrollFrame_OnLeave)
 --[[
 local listHelperText = AstralKeyFrame:CreateFontString('$parentListHelperText', 'OVERLAY', 'InterUIBlack_ExtraLarge')
@@ -1433,7 +1433,7 @@ _G[listScrollBar:GetName() .. 'ScrollUpButton']:Hide()
 local listScrollButton = _G[listScrollBar:GetName() .. 'ThumbTexture']
 listScrollButton:SetHeight(50)
 listScrollButton:SetWidth(4)
-listScrollButton:SetColorTexture(204/255, 204/255, 204/255, SCROLL_TEXTURE_ALPHA_MIN)
+listScrollButton:SetColorTexture(204 / 255, 204 / 255, 204 / 255, SCROLL_TEXTURE_ALPHA_MIN)
 listScrollButton:SetAlpha(SCROLL_TEXTURE_ALPHA_MIN)
 listScrollFrame.buttonHeight = 15
 
@@ -1700,7 +1700,6 @@ characterButton:SetAlpha(0.5)
 characterButton:SetPoint('LEFT', dungeonButton, 'RIGHT', 10, 0)
 characterButton:SetScript('OnClick', function(self) ListButton_OnClick(self) end)
 
-
 local characterSearchButton = CreateFrame('BUTTON', '$parentCharacterSearch', contentFrame)
 characterSearchButton:SetSize(14, 14)
 characterSearchButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline_search_white_18dp')
@@ -1932,7 +1931,8 @@ end
 function e.UpdateLines()
 	if not init then return end
 	local list = e.FrameListShown()
-	if e.GetListCount(list) == 0 or list ~= 'GUILD' or list ~= 'FRIENDS' then -- There haven't been any units added to the list, show the helper text
+	if e.GetListCount(list) == 0 or list ~= 'GUILD' or list ~= 'FRIENDS' then
+		-- There haven't been any units added to the list, show the helper text
 		--AstralKeyFrameListHelperText:Show()
 	else
 		--AstralKeyFrameListHelperText:Hide()
@@ -1950,9 +1950,9 @@ function e.UpdateFrames()
 end
 
 function e.UpdateGear()
-	local strItemLevel = string.format (ITEM_LEVEL, e.lowestGear)
+	local strItemLevel = string.format(ITEM_LEVEL, e.lowestGear)
 	gearLevelMin:Hide()
-	gearLevelMin:SetFormattedText('|c%s%s (%s)|r',COLOR_GRAY, strItemLevel, MINIMUM)
+	gearLevelMin:SetFormattedText('|c%s%s (%s)|r', COLOR_GRAY, strItemLevel, MINIMUM)
 	gearLevelMin:Show()
 end
 
@@ -1962,7 +1962,7 @@ function e.UpdateCharacterFrames()
 	local id = e.GetCharacterID(e.Player())
 	if id then
 		local player = table.remove(AstralCharacters, id)
-		table.sort(AstralCharacters, function(a,b) return a.unit < b.unit end)
+		table.sort(AstralCharacters, function(a, b) return a.unit < b.unit end)
 		table.insert(AstralCharacters, 1, player)
 		e.UpdateCharacterIDs()
 	end
@@ -2000,7 +2000,7 @@ function e.UpdateSortTable()
 						table.insert(sortTable, {
 							character_name = AstralKeys[unitID].unit,
 							character_class = AstralKeys[unitID].class,
-							dungeon_id =AstralKeys[unitID].dungeon_id,
+							dungeon_id = AstralKeys[unitID].dungeon_id,
 							key_level = AstralKeys[unitID].key_level,
 							weekly_best = AstralKeys[unitID].weekly_best,
 							faction = AstralKeys[unitID].faction,
@@ -2040,7 +2040,7 @@ function e.AddUnitToSortTable(unit, btag, class, faction, mapID, level, weekly_b
 			btag = btag,
 			character_class = class,
 			faction = faction,
-			dungeon_id =mapID,
+			dungeon_id = mapID,
 			key_level = level,
 			weekly_best = weekly_best,
 			source = source,
@@ -2066,7 +2066,7 @@ function e.AddUnitToTable(unit, class, faction, listType, mapID, level, weekly_b
 	end
 
 	if not found then
-		sortedTable[listType][#sortedTable[listType] + 1] = {character_name = unit, character_class = class, mapID = mapID, key_level = level, weekly_best = weekly_best, faction = faction, btag = btag}
+		sortedTable[listType][#sortedTable[listType] + 1] = { character_name = unit, character_class = class, mapID = mapID, key_level = level, weekly_best = weekly_best, faction = faction, btag = btag }
 	end
 end
 

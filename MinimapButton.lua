@@ -17,14 +17,14 @@ local astralkeysLDB = LibStub("LibDataBroker-1.1"):NewDataObject("AstralKeys", {
 				e.AstralToggle()
 			end
 		elseif button == 'RightButton' then
-			AstralOptionsFrame:SetShown( not AstralOptionsFrame:IsShown())
-		end  
+			AstralOptionsFrame:SetShown(not AstralOptionsFrame:IsShown())
+		end
 	end,
 	OnTooltipShow = function(tooltip)
 		tooltip:AddLine('AstralKeys')
-		tooltip:AddLine(L['AKTT_LCLK'],0.8,0.8,0.8)
-		tooltip:AddLine(L['AKTT_SLCLK'],0.8,0.8,0.8)
-		tooltip:AddLine(L['AKTT_RCLK'],0.8,0.8,0.8)
+		tooltip:AddLine(L['AKTT_LCLK'], 0.8, 0.8, 0.8)
+		tooltip:AddLine(L['AKTT_SLCLK'], 0.8, 0.8, 0.8)
+		tooltip:AddLine(L['AKTT_RCLK'], 0.8, 0.8, 0.8)
 	end,
 })
 

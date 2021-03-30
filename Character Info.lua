@@ -31,7 +31,7 @@ function e.UpdateAstralGear(maxLevel)
 	wipe(AstralGear)
 	for i = 1, maxLevel do
 		local rewardWeekly, rewardDaily = C_MythicPlus.GetRewardLevelForDifficultyLevel(i)
-		table.insert(AstralGear, {weekly = rewardWeekly, daily = rewardDaily})
+		table.insert(AstralGear, { weekly = rewardWeekly, daily = rewardDaily })
 	end
 end
 

@@ -28,7 +28,7 @@ local function UpdateWeekly()
 	e.UpdateCharacterFrames()
 end
 
--- Blizzard has the same event being triggered for requesting the map information and the current M+ rewards. 
+-- Blizzard has the same event being triggered for requesting the map information and the current M+ rewards.
 local rewardsRequested = false
 local function InitData()
 	MapIds = C_ChallengeMode.GetMapTable()
@@ -72,14 +72,14 @@ function e.CreateKeyLink(mapID, keyLevel)
 			end
 		end
 	end
-	local localized_keystone = strformat(CHALLENGE_MODE_KEYSTONE_NAME,mapName)
+	local localized_keystone = strformat(CHALLENGE_MODE_KEYSTONE_NAME, mapName)
 	return strformat('|c' .. COLOUR[3] .. '|Hkeystone:%d:%d:%d:%d:%d:%d:%d|h[%s (%d)]|h|r', e.MYTHICKEY_ITEMID, mapID, keyLevel, thisAff1, thisAff2, thisAff3, thisAff4, localized_keystone, keyLevel):gsub('\124\124', '\124')
 end
 
 AstralEvents:Register('CHALLENGE_MODE_COMPLETED', function()
 	C_Timer.After(3, function()
 		C_MythicPlus.RequestRewards()
-		e.FindKeyStone(true, true)		
+		e.FindKeyStone(true, true)
 	end)
 end, 'dungeonCompleted')
 
@@ -96,7 +96,8 @@ local function ParseLootMsgForKey(...)
 	local unit = select(5, ...)
 	if not unit == e.PlayerName() then return end
 
-	if string.lower(msg):find('keystone') then -- Look a key, let's bind a function to bag_update event to find that key
+	if string.lower(msg):find('keystone') then
+		-- Look a key, let's bind a function to bag_update event to find that key
 		AstralEvents:Register('BAG_UPDATE', function()
 			e.FindKeyStone(true, true)
 			AstralEvents:Unregister('BAG_UPDATE', 'bagUpdate')
@@ -113,9 +114,7 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 	local weeklyBest = 0
 	local isChestAvailable = C_MythicPlus.IsWeeklyRewardAvailable()
 
-
 	local runHistory = C_MythicPlus.GetRunHistory(false, true)
-
 
 	for i = 1, #runHistory do
 		if runHistory[i].thisWeek then
@@ -146,15 +145,18 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 		e.PushKeyDataToFriends(msg)
 		if IsInGuild() then
 			AstralComs:NewMessage('AstralKeys', strformat('%s %s', e.UPDATE_VERSION, msg), 'GUILD')
-		else -- Not in a guild, who are you people? Whatever, gotta make it work for them as well
+		else
+			-- Not in a guild, who are you people? Whatever, gotta make it work for them as well
 			local id = e.UnitID(e.Player())
-			if id then -- Are we in the DB already?
+			if id then
+				-- Are we in the DB already?
 				AstralKeys[id][3] = tonumber(mapID)
 				AstralKeys[id][4] = tonumber(keyLevel)
 				AstralKeys[id][6] = e.Week
 				AstralKeys[id][7] = e.WeekTime()
-			else -- Nope, ok, let's add them to the DB manually.
-				AstralKeys[#AstralKeys + 1] = {e.Player(), e.PlayerClass(), tonumber(mapID), tonumber(keyLevel), e.Week, e.WeekTime()}
+			else
+				-- Nope, ok, let's add them to the DB manually.
+				AstralKeys[#AstralKeys + 1] = { e.Player(), e.PlayerClass(), tonumber(mapID), tonumber(keyLevel), e.Week, e.WeekTime() }
 				e.SetUnitID(e.Player(), #AstralKeys)
 			end
 		end
@@ -177,7 +179,6 @@ function e.UpdateCharacterBest()
 	local weeklyBest = 0
 	local runHistory = C_MythicPlus.GetRunHistory(false, true)
 
-
 	for i = 1, #runHistory do
 		if runHistory[i].thisWeek then
 			if runHistory[i].level > weeklyBest then
@@ -197,7 +198,7 @@ function e.UpdateCharacterBest()
 	end
 
 	if not found then
-		table.insert(AstralCharacters, {unit = e.Player(), class = e.PlayerClass(), weekly_best = weeklyBest, faction = e.FACTION})
+		table.insert(AstralCharacters, { unit = e.Player(), class = e.PlayerClass(), weekly_best = weeklyBest, faction = e.FACTION })
 		e.SetCharacterID(e.Player(), #AstralCharacters)
 	end
 end
