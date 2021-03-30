@@ -29,9 +29,13 @@ function e.UpdateWeeklyCharacter()
 				local dataitemLevel = 0
 				if GetDetailedItemLevelInfo(itemLink) then
 					dataitemLevel = GetDetailedItemLevelInfo(itemLink)
-					print("Got dataitemLevel:", dataitemLevel)
+					if(e.GVdebug) then
+						print("Got dataitemLevel:", dataitemLevel)
+					end
 				else
-					print("No dataitemLevel for link:",itemLink)
+					if(e.GVdebug) then
+						print("No dataitemLevel for link:",itemLink)
+					end
 				end
                 table.insert(AstralCharacters[i].vault.progress,{threshold = fetchedActivites[j].threshold, type = fetchedActivites[j].type, index = fetchedActivites[j].index, progress = fetchedActivites[j].progress, level = fetchedActivites[j].level, rewards = fetchedActivites[j].rewards, id = fetchedActivites[j].id, itemLevel = dataitemLevel})
             end
