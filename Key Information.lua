@@ -21,7 +21,7 @@ local function UpdateWeekly()
 	else
 		local id = e.UnitID(e.Player())
 		if id then
-			AstralKeys[id][5] = characterWeeklyBest
+			AstralKeys[id].weekly_best = characterWeeklyBest
 			e.UpdateFrames()
 		end
 	end
