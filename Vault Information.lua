@@ -78,7 +78,9 @@ function e.SetWeeklyItemLevel(charid, progressid, itemLVL)
 				itemLVL = 0
 			end
 			AstralCharacters[charid].vault.progress[progressid].itemLevel = itemLVL
-			print("Wrote item level", itemLVL, "to CharID", charid, "and progressid", progressid)
+			if (e.GVdebug) then
+				print("Wrote item level", itemLVL, "to CharID", charid, "and progressid", progressid)
+			end
 		end
 	end
 end

@@ -103,6 +103,11 @@ function AstralKeysVaultMixin:UpdateUnit(characterID)
 								if (e.GVdebug) then
 									print(e.VaultListShown(), "(", e.GetCharacterID(e.Player()), " ): error retrieving itemLink for tier", i, "on characterID", characterID, "with progress", j, "and progressID", progress[j].id) --debug function
 								end
+								local itemID = string.match(itemLink, "item:(%d+):")
+								if itemID ~= nil then
+									local item = Item:CreateFromItemID(tonumber(itemID))
+									item:ContinueOnItemLoad(VaultScrollFrame_Update)
+								end
 							end
 						end
 
@@ -121,12 +126,11 @@ function AstralKeysVaultMixin:UpdateUnit(characterID)
 							local lzditem, lzdlevel = strsplit("-", rewardstring)
 							tierlevel = string.format('%s%s', COLOR_GREEN, strtrim(lzdlevel))
 							tieritem = string.format('%s%s', COLOR_YELLOW, strtrim(lzditem))
-							--else
-							--	print("error:", Types[e.VaultListShown()], "==", Enum.WeeklyRewardChestThresholdType.MythicPlus, Enum.WeeklyRewardChestThresholdType.Raid, Enum.WeeklyRewardChestThresholdType.RankedPvP)
-							--	tierlevel = string.format('%s%s',COLOR_RED, "ERROR")
-							--	tieritem = string.format('%s%s',COLOR_RED, "ERROR")
 						else
 							tierfault = true
+							if (e.GVdebug) then
+								print(e.VaultListShown(), "(", e.GetCharacterID(e.Player()), " ): error finding type of data to display for tier", i, "on characterID", characterID, "with progress", j, "and progressID", progress[j].id) --debug function
+							end
 						end
 						if not tierfault then
 							_G[thisName .. "Tier" .. i .. "String"]:Hide()
@@ -144,7 +148,7 @@ function AstralKeysVaultMixin:UpdateUnit(characterID)
 			if tierfault then
 				_G[thisName .. "Tier" .. i .. "Level"]:Hide()
 				_G[thisName .. "Tier" .. i .. "Item"]:Hide()
-				_G[thisName .. "Tier" .. i .. "String"]:SetFormattedText('|c%s%s|r', COLOR_GRAY, L['NO_VAULT_DATA'])
+				_G[thisName .. "Tier" .. i .. "String"]:SetFormattedText('|c%s%s|r', COLOR_RED, L['NO_VAULT_DATA'])
 			end
 		end
 	else
