@@ -30,6 +30,7 @@ Affix names corresponding to ID
 122 Inspiring
 123 Spiteful
 124 Storming
+125 Tormented
 ]]
 
 local AFFIX_ROTATION = {
