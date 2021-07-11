@@ -87,7 +87,7 @@ local function ParseLootMsgForKey(...)
 	local unit = select(5, ...)
 	if not unit == e.PlayerName() then return end
 
-	if string.lower(msg):find('keystone') then -- Look a key, let's bind a function to bag_update event to find that key
+	if string.lower(msg):find('keystone') or string.lower(msg):find('schlüsselstein') then -- Look a key, let's bind a function to bag_update event to find that key
 		AstralEvents:Register('BAG_UPDATE', function()
 			e.FindKeyStone(true, true)
 			AstralEvents:Unregister('BAG_UPDATE', 'bagUpdate')
