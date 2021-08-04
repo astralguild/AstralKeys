@@ -28,27 +28,24 @@ local function UpdateWeekly()
 	e.UpdateCharacterFrames()
 end
 
--- Blizzard has the same event being triggered for requesting the map information and the current M+ rewards. 
-local rewardsRequested = false
+local dataInitialized
 local function InitData()
 	MapIds = C_ChallengeMode.GetMapTable()
-	if not rewardsRequested then
-		rewardsRequested = true
-		C_MythicPlus.RequestRewards()
-		return
-	end
-	AstralEvents:Unregister('CHALLENGE_MODE_MAPS_UPDATE', 'initData')
+	C_MythicPlus.RequestRewards()
+	AstralEvents:Unregister('PLAYER_ENTERING_WORLD', 'initData')
 	C_ChatInfo.RegisterAddonMessagePrefix('AstralKeys')
 	e.FindKeyStone(true, false)
-	e.UpdateCharacterBest() 	
+	e.UpdateCharacterBest()
 	if IsInGuild() then
 		AstralComs:NewMessage('AstralKeys', 'request', 'GUILD')
 	end
 
 	if UnitLevel('player') < e.EXPANSION_LEVEL then return end
 	AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', UpdateWeekly, 'weeklyCheck')
+	dataInitialized = true
 end
-AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', InitData, 'initData')
+AstralEvents:Register('PLAYER_ENTERING_WORLD', InitData, 'initData')
+
 
 --|cffa335ee|Hkeystone:158923:251:12:10:5:13:117|h[Keystone: The Underrot (12)]|h|r
 -- COLOUR[3] returns epic color hex code
@@ -82,20 +79,6 @@ AstralEvents:Register('CHALLENGE_MODE_COMPLETED', function()
 	end)
 end, 'dungeonCompleted')
 
-local function ParseLootMsgForKey(...)
-	local msg = ...
-	local unit = select(5, ...)
-	if not unit == e.PlayerName() then return end
-
-	if string.lower(msg):find('keystone') or string.lower(msg):find('schlüsselstein') then -- Look a key, let's bind a function to bag_update event to find that key
-		AstralEvents:Register('BAG_UPDATE', function()
-			e.FindKeyStone(true, true)
-			AstralEvents:Unregister('BAG_UPDATE', 'bagUpdate')
-			AstralEvents:Unregister('CHAT_MSG_LOOT', 'lootCheck')
-			end, 'bagUpdate')
-	end
-end
-
 function e.FindKeyStone(sendUpdate, anounceKey)
 	if UnitLevel('player') < e.EXPANSION_LEVEL then return end
 
@@ -122,16 +105,7 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 		msg = string.format('%s:%s:%d:%d:%d:%d:%s', e.Player(), e.PlayerClass(), mapID, keyLevel, weeklyBest, e.Week, e.FACTION)
 	end
 
-	if not mapID and not AstralEvents:IsRegistered('CHAT_MSG_LOOT', 'loot_msg_parse') then
-		AstralEvents:Register('CHAT_MSG_LOOT', ParseLootMsgForKey, 'loot_msg_parse')
-	end
-
 	local oldMap, oldLevel = e.UnitMapID(e.UnitID(e.Player())), e.UnitKeyLevel(e.UnitID(e.Player()))
-
-	-- Key found, unregister function, no longer needed
-	if mapID and AstralEvents:IsRegistered('BAG_UPDATE', 'bagUpdate') then
-		AstralEvents:Unregister('BAG_UPDATE', 'bagUpdate')
-	end
 
 	if sendUpdate and msg ~= '' then
 		e.PushKeyDataToFriends(msg)
@@ -220,3 +194,21 @@ function e.GetDifficultyColour(keyLevel)
 		return COLOUR[5]
 	end
 end
+
+local lastKey
+AstralEvents:Register('BAG_UPDATE', function()
+	for bagId = 0, 4 do
+		for slot = 1, GetContainerNumSlots(bagId) do
+			local itemID = GetContainerItemID(bagId, slot)
+			if (180653 == itemID) then
+				local itemLink = GetContainerItemLink(bagId, slot)
+				if (dataInitialized) then
+					if (itemLink ~= lastKey) then
+						e.FindKeyStone(true, false)
+					end
+				end
+				lastKey = itemLink
+			end
+		end
+	end
+end, 'bagUpdateKeyScan')
