@@ -8,7 +8,7 @@ COLOUR[3] = 'ffa335ee' -- Epic
 COLOUR[4] = 'ffff8000' -- Legendary
 COLOUR[5] = 'ffe6cc80' -- Artifact
 
-e.MYTHICKEY_ITEMID = 158923
+e.MYTHICKEY_ITEMID = 180653
 
 local MapIds = {}
 
