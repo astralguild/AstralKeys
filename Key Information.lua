@@ -72,9 +72,9 @@ function e.CreateKeyLink(mapID, keyLevel)
 	local covenantID = C_Covenants.GetActiveCovenantID()
 	local covenantData = C_Covenants.GetCovenantData(covenantID)
 	if (covenantData) then
-		return strformat('|c' .. COLOUR[3] .. '|Hkeystone:180653:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r (%s)', mapID, keyLevel, thisAff1, thisAff2, thisAff3, thisAff4, L['KEYSTONE'], mapName, keyLevel, covenantData.name):gsub('\124\124', '\124')
+		return strformat('|c' .. COLOUR[3] .. '|Hkeystone:%d:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r (%s)', e.MYTHICKEY_ITEMID, mapID, keyLevel, thisAff1, thisAff2, thisAff3, thisAff4, L['KEYSTONE'], mapName, keyLevel, covenantData.name):gsub('\124\124', '\124')
 	else
-		return strformat('|c' .. COLOUR[3] .. '|Hkeystone:180653:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r', mapID, keyLevel, thisAff1, thisAff2, thisAff3, thisAff4, L['KEYSTONE'], mapName, keyLevel):gsub('\124\124', '\124')
+		return strformat('|c' .. COLOUR[3] .. '|Hkeystone:%d:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r', e.MYTHICKEY_ITEMID, mapID, keyLevel, thisAff1, thisAff2, thisAff3, thisAff4, L['KEYSTONE'], mapName, keyLevel):gsub('\124\124', '\124')
 	end
 end
 
@@ -206,7 +206,7 @@ AstralEvents:Register('BAG_UPDATE', function()
 	for bagId = 0, 4 do
 		for slot = 1, GetContainerNumSlots(bagId) do
 			local itemID = GetContainerItemID(bagId, slot)
-			if (180653 == itemID) then
+			if (e.MYTHICKEY_ITEMID == itemID) then
 				local itemLink = GetContainerItemLink(bagId, slot)
 				if (dataInitialized) then
 					if (itemLink ~= lastKey) then
