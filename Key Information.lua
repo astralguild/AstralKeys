@@ -69,7 +69,13 @@ function e.CreateKeyLink(mapID, keyLevel)
 	if keyLevel > 8 then
 	 thisAff4 = e.AffixFour()
 	end
-	return strformat('|c' .. COLOUR[3] .. '|Hkeystone:180653:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r', mapID, keyLevel, thisAff1, thisAff2, thisAff3, thisAff4, L['KEYSTONE'], mapName, keyLevel):gsub('\124\124', '\124')
+	local covenantID = C_Covenants.GetActiveCovenantID()
+	local covenantData = C_Covenants.GetCovenantData(covenantID)
+	if (covenantData) then
+		return strformat('|c' .. COLOUR[3] .. '|Hkeystone:180653:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r (%s)', mapID, keyLevel, thisAff1, thisAff2, thisAff3, thisAff4, L['KEYSTONE'], mapName, keyLevel, covenantData.name):gsub('\124\124', '\124')
+	else
+		return strformat('|c' .. COLOUR[3] .. '|Hkeystone:180653:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r', mapID, keyLevel, thisAff1, thisAff2, thisAff3, thisAff4, L['KEYSTONE'], mapName, keyLevel):gsub('\124\124', '\124')
+	end
 end
 
 AstralEvents:Register('CHALLENGE_MODE_COMPLETED', function()
