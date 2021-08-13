@@ -333,7 +333,7 @@ end
 local function ParseGuildChatCommands(text)
 	if UnitLevel('player') ~= e.EXPANSION_LEVEL then return end -- Don't bother checking anything if the unit is unable to acquire a key
 	text = gsub(text, "^%[%a+%] ", "") -- Strip off [SomeName] from message from using Identity-2
-	if text == '!keys' then
+	if text:lower() == '!keys' then
 		local guild = GetGuildInfo('player')
 		if AstralKeysSettings.general.report_on_message['guild'] or (guild == 'Astral' and e.PlayerRealm() == 'Turalyon') then -- Guild leader for Astral desires this setting to be foreced on for members.
 			local unitID = e.UnitID(e.Player())
@@ -354,7 +354,7 @@ AstralEvents:Register('CHAT_MSG_GUILD', ParseGuildChatCommands, 'parseguildchat'
 local function ParsePartyChatCommands(text)
 	if UnitLevel('player') ~= e.EXPANSION_LEVEL then return end -- Don't bother checking anything if the unit is unable to acquire a key
 	text = gsub(text, "^%[%a+%] ", "") -- Strip off [SomeName] from message from using Identity-2
-	if text == '!keys' then
+	if text:lower() == '!keys' then
 		if AstralKeysSettings.general.report_on_message['party'] then
 			local unitID = e.UnitID(e.Player())
 			if unitID then
@@ -375,7 +375,7 @@ AstralEvents:Register('CHAT_MSG_PARTY_LEADER', ParsePartyChatCommands, 'parsepar
 local function ParseRaidChatCommands(text)
 	if UnitLevel('player') ~= e.EXPANSION_LEVEL then return end -- Don't bother checking anything if the unit is unable to acquire a key
 	text = gsub(text, "^%[%a+%] ", "") -- Strip off [SomeName] from message from using Identity-2
-	if text == '!keys' then
+	if text:lower() == '!keys' then
 		if AstralKeysSettings.general.report_on_message['raid'] then
 			local unitID = e.UnitID(e.Player())
 			if unitID then
