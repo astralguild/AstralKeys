@@ -1,8 +1,8 @@
-## Interface: 90100
+## Interface: 90105
 ## Title: Astral Keys
 ## Notes: Keystone Manager for Guilds and Friends
 ## Author: Astral
-## Version: 3.44b
+## Version: 3.45
 ## SavedVariables: AstralKeys, AstralCharacters, AstralKeysSettings, AstralMinimap, AstralAffixes, AstralLists, AstralUnits
 
 Init.lua
