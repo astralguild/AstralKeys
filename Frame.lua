@@ -389,7 +389,7 @@ AstralKeyFrame.background = AstralKeyFrame:CreateTexture(nil, 'BACKGROUND')
 AstralKeyFrame.background:SetAllPoints(AstralKeyFrame)
 AstralKeyFrame.background:SetColorTexture(0, 0, 0, 0.8)
 
-local AstralKeyToolTip = CreateFrame( "GameTooltip", "AstralKeyToolTip", AAFrame, "GameTooltipTemplate" )
+local AstralKeyToolTip = CreateFrame( "GameTooltip", "AstralKeyToolTip", AAFrame, "BackdropTemplate,GameTooltipTemplate" )
 AstralKeyToolTip:SetOwner(AstralKeyFrame, "ANCHOR_CURSOR")
 AstralKeyToolTip:SetScript('OnShow', function(self)
 	self:SetBackdrop({
