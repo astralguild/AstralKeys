@@ -600,6 +600,7 @@ do
 	function OnEnter(self)
 		if not self.id then return end -- Friend Groups adds fake units with no ide for group heeaders
 		if not AstralKeysSettings.general.show_tooltip_key.isEnabled then return end
+		if not FriendsTooltip.maxWidth then return end -- Why? Who knows
 
 		local left = FRIENDS_TOOLTIP_MAX_WIDTH - FRIENDS_TOOLTIP_MARGIN_WIDTH - FriendsTooltipAstralKeysInfo1:GetWidth()
 		local stringShown = false
@@ -610,7 +611,6 @@ do
 			local characterNameString = _G['FriendsTooltipGameAccount' .. gameIndex .. 'Name']
 			local gameInfoString = _G['FriendsTooltipGameAccount' .. gameIndex .. 'Info']
 			local astralKeyString = _G['FriendsTooltipAstralKeysInfo' .. gameIndex]
-			if not FriendsTooltip.maxWidth then return end -- Why? Who knows
 
 			if (gameAccountInfo) and (gameAccountInfo.clientProgram == BNET_CLIENT_WOW) and (gameAccountInfo.wowProjectID == 1) then -- They are playing retail WoW
 
