@@ -2,7 +2,6 @@ local _, addon = ...
 
 if not AstralAffixes then
 	AstralAffixes = {}
-	AstralAffixes.rotation = {}
 	AstralAffixes.season_start_week = 0
 	AstralAffixes.season_affix = 0
 end
@@ -35,19 +34,34 @@ Affix names corresponding to ID
 130 Encrypted
 ]]
 
+local BURSTING = 11
+local TYRANNICAL = 9
+local EXPLOSIVE = 13
+local RAGING = 6
+local SANGUINE = 8
+local VOLCANIC = 3
+local SPITEFUL = 123
+local QUAKING = 14
+local NECROTIC = 4
+local INSPIRING = 122
+local BOLSTERING = 7
+local STORMING = 124
+local GRIEVOUS = 12
+local FORTIFIED = 10
+
 local AFFIX_ROTATION = {
-	{10, 11, 3}, -- Fortified, Bursting, Volcanic
-	{9, 7, 124}, -- Tyrannical, Bolstering, Storming
-	{10, 123, 12}, -- Fortified, Spiteful, Grievous
-	{9, 122, 4}, -- Tyrannical, Inspiring, Necrotic
-	{10, 8, 14}, -- Fortified, Sanguine, Quaking
-	{9, 6, 13}, -- Tyrannical, Raging, Explosive
-	{10, 123, 3}, -- Fortified, Spiteful, Volcanic
-	{9, 7, 4}, -- Tyrannical, Bolstering, Necrotic
-	{10, 122, 124}, -- Fortified, Inspiring, Storming
-	{9, 11, 13}, -- Tyrannical, Bursting, Explosive
-	{10, 8, 12}, -- Fortified, Sanguine, Grievous
-	{9, 6, 14}, -- Tyrannical, Raging, Quaking
+	{ FORTIFIED, BURSTING, VOLCANIC },
+	{ TYRANNICAL, BOLSTERING, STORMING },
+	{ FORTIFIED, SPITEFUL, GRIEVOUS },
+	{ TYRANNICAL, INSPIRING, NECROTIC },
+	{ FORTIFIED, SANGUINE, QUAKING },
+	{ TYRANNICAL, RAGING, EXPLOSIVE },
+	{ FORTIFIED, SPITEFUL, VOLCANIC },
+	{ TYRANNICAL, BOLSTERING, NECROTIC },
+	{ FORTIFIED, INSPIRING, STORMING },
+	{ TYRANNICAL, BURSTING, EXPLOSIVE },
+	{ FORTIFIED, SANGUINE, GRIEVOUS },
+	{ TYRANNICAL, RAGING, QUAKING },
 }
 
 local AFFIX_INFO = {}
@@ -89,7 +103,6 @@ local function UpdateMythicPlusAffixes()
 	ROTATION_WEEK_POSITION = GetRotationPosition(affixes[1].id, affixes[2].id, affixes[3].id)
 
 	if SEASON_AFFIX ~= AstralAffixes.season_affix then -- Season has changed
-		AstralAffixes.rotation = {} -- Wipe the table
 		AstralAffixes.season_affix = SEASON_AFFIX -- Change the season affix
 		AstralAffixes.season_start_week = addon.Week -- Set the starting week
 	end
