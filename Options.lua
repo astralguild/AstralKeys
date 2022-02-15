@@ -1,4 +1,5 @@
 local _, addon = ...
+L = addon.L
 
 local AstralOptionsFrame = CreateFrame('FRAME', 'AstralOptionsFrame', UIParent)
 AstralOptionsFrame:SetFrameStrata('DIALOG')
