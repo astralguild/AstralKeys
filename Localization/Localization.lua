@@ -18,5 +18,3 @@ setmetatable(addon.L, {
 		return localeTable and localeTable[key] or tostring(key)
 	end
 })
-
-DEBUG_L = addon.L
