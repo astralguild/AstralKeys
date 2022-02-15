@@ -1,4 +1,4 @@
-local e, L = unpack(select(2, ...))
+local _, addon = ...
 
 local DUNGEON_TABLE = {}
 
@@ -47,7 +47,7 @@ DUNGEON_TABLE[381]['name'] = 'Spires of Ascension'
 DUNGEON_TABLE[382] = {}
 DUNGEON_TABLE[382]['name'] = 'Theater of Pain'
 
-function e.GetMapName(mapID)
+function addon.GetMapName(mapID)
 	if type(DUNGEON_TABLE[mapID]) == 'table' then
 		return DUNGEON_TABLE[mapID].name
 	else

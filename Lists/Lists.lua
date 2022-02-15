@@ -1,4 +1,5 @@
-local e, L = unpack(select(2, ...))
+local _, addon = ...
+local L = addon.L
 
 if not AstralLists then
 	AstralLists = {}
@@ -25,7 +26,7 @@ end
 -- Creates a new list
 -- @param listName string The name of the list to be created
 -- @return boolean Returns true if the list was created, false otherwise
-function e.CreateNewList(listName)
+function addon.CreateNewList(listName)
 	if not listName then
 		error('Astral Keys: CreateNewList(listName) listName expected, received ' .. type(listName))
 	end
@@ -43,7 +44,7 @@ function e.CreateNewList(listName)
 	return true
 end
 
-function e.DeleteList(targetListName)
+function addon.DeleteList(targetListName)
 	if not targetListName or type(targetListName) ~= 'string' then
 		error('AstralKeys DeleteList(targetListName) targetListName expected, received ' .. type(targetListName))
 	end
@@ -56,7 +57,7 @@ function e.DeleteList(targetListName)
 	end
 end
 
-function e.DoesListExist(list)
+function addon.DoesListExist(list)
 	if not list or type(list) ~= 'string' then
 		error('AstralKeys DoesListExist(list) String expected, recieved ' .. type(list))
 	end
@@ -70,19 +71,17 @@ function e.DoesListExist(list)
 	return false
 end
 
-function e.GetListCount(list)
+function addon.GetListCount(list)
 	if not list or type(list) ~= 'string' then
 		error('AstralKeys GetListCount(list) String expected, received ' .. type(list))
 	end
 
 	local count = 0
 
-	if e.DoesListExist(list) then
+	if addon.DoesListExist(list) then
 		for i = 1, #AstralLists do
 			if AstralLists[i].name == list then
-				for unit in pairs(AstralLists[i].units) do
-					count = count + 1
-				end
+				count = count + #AstralLists[i].units
 			end
 		end
 	end
@@ -90,7 +89,7 @@ function e.GetListCount(list)
 	return count
 end
 
-function e.AddUnitToList(unit, listName, btag)
+function addon.AddUnitToList(unit, listName, btag)
 	if not listName then
 		error('Astral Keys: AddUnitToList(unit, btag, listName) listName expected, received ' .. type(listName))
 	end
@@ -98,9 +97,9 @@ function e.AddUnitToList(unit, listName, btag)
 		error('Astral Keys: AddUnitToList(unit, btag, listName) unit expected, received ' .. type(unit))
 	end
 
-	local unitID = e.UnitID(unit)
+	local unitID = addon.UnitID(unit)
 
-	btag = e.UnitBTag(unitID)
+	btag = addon.UnitBTag(unitID)
 
 	for i = 1, #AstralLists do
 		if AstralLists[i].name == listName then
@@ -112,7 +111,7 @@ function e.AddUnitToList(unit, listName, btag)
 	return false
 end
 
-function e.RemoveUnitFromList(unit, listName)
+function addon.RemoveUnitFromList(unit, listName)
 	if not listName then
 		error('Astral Keys: RemoveUnitFromList(unit, btag, listName) listName expected, received ' .. type(listName))
 	end
@@ -128,17 +127,7 @@ function e.RemoveUnitFromList(unit, listName)
 	end
 end
 
-local function GetListUnits(listName)
-	if not listName then return end
-
-	for i = 1, #AstralLists do
-		if AstralLists[i].name == listName then
-			return AstralLists[i].units
-		end
-	end
-end
-
-function e.DoesUnitBelongToList(unitName, listName)
+function addon.DoesUnitBelongToList(unitName, listName)
 	if not unitName then
 		error('AstralKeys: DoesUnitBelongToList(unitName, listName) unitName expected, received ' .. type(unitName))
 	end
@@ -162,15 +151,5 @@ function e.DoesUnitBelongToList(unitName, listName)
 
 end
 
-local function GetLists()
-	local tbl = {}
-
-	for i = 1, AstralLists do
-		table.insert(tbl, AstralLists[i].name)
-	end
-
-	return tbl
-end
-
-e.CreateNewList('GUILD')
-e.CreateNewList('FRIENDS')
+addon.CreateNewList('GUILD')
+addon.CreateNewList('FRIENDS')

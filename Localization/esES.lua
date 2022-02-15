@@ -1,4 +1,4 @@
-local L = select(2, ...)[2]('enUS')
+local L = select(2, ...).L('enUS')
 
 -- Default string for keystone
 L['KEYSTONE'] = 'Keystone:'

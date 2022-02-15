@@ -1,4 +1,4 @@
-local e, L = unpack(select(2, ...))
+local _, addon = ...
 
 if not AstralAffixes then
 	AstralAffixes = {}
@@ -31,6 +31,8 @@ Affix names corresponding to ID
 123 Spiteful
 124 Storming
 125 Tormented
+...
+130 Encrypted
 ]]
 
 local AFFIX_ROTATION = {
@@ -52,24 +54,6 @@ local AFFIX_INFO = {}
 local SEASON_AFFIX = 0
 local ROTATION_WEEK_POSITION = 0
 local AffixOneID, AffixTwoID, AffixThreeID = 0, 0, 0 -- Used to always show the current week's affixes irregardless if the rotation is known or not
-
--- Checks to see if the current week's affixes have been stored already
--- @param affixString string String representation of affixes, single digits are padded with leading 0's. ex. 100612 would be 10, 06, 12
--- @return Boolean False by default, true the affixes are found within the db
-local function AreAffixesAlreadyStored(affixString)
-	local rotation = AstralAffixes.rotation
-	local rotationString
-
-	for i = 1, #rotation do
-		rotationString = string.format('%02d%02d%02d', rotation[i][1], rotation[i][2], rotation[i][3])
-		if rotationString == affixString then
-			return true
-		end
-	end
-
-	return false
-end
-
 
 -- Finds the index of the current week's affixes in the table
 -- @param affixOne Integers id for corresponding affix
@@ -107,15 +91,13 @@ local function UpdateMythicPlusAffixes()
 	if SEASON_AFFIX ~= AstralAffixes.season_affix then -- Season has changed
 		AstralAffixes.rotation = {} -- Wipe the table
 		AstralAffixes.season_affix = SEASON_AFFIX -- Change the season affix
-		AstralAffixes.season_start_week = e.Week -- Set the starting week
+		AstralAffixes.season_start_week = addon.Week -- Set the starting week
 	end
 
 	-- Store the affix info for all the affixes, name, description
-	local affixId = 1
 	for affixId = 1, 300 do
 		local name, desc = C_ChallengeMode.GetAffixInfo(affixId)
 		AFFIX_INFO[affixId] = {name = name, description = desc}
-		affixId = affixId + 1
 	end
 
 	-- Store the season affix info
@@ -128,7 +110,7 @@ end
 AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', UpdateMythicPlusAffixes, 'updateAffixes')
 AstralEvents:Register('MYTHIC_PLUS_CURRENT_AFFIX_UPDATE', UpdateMythicPlusAffixes, 'UpdateAffixes')
 
-function e.AffixOne(weekOffSet)
+function addon.AffixOne(weekOffSet)
 	local offSet = weekOffSet or 0
 
 	if offSet == 0 then
@@ -141,7 +123,7 @@ function e.AffixOne(weekOffSet)
 	return AFFIX_ROTATION[week][1]
 end
 
-function e.AffixTwo(weekOffSet)
+function addon.AffixTwo(weekOffSet)
 	local offSet = weekOffSet or 0
 
 	if offSet == 0 then
@@ -153,7 +135,7 @@ function e.AffixTwo(weekOffSet)
 	return AFFIX_ROTATION[week][2]
 end
 
-function e.AffixThree(weekOffSet)
+function addon.AffixThree(weekOffSet)
 	local offSet = weekOffSet or 0
 
 	if offSet == 0 then
@@ -168,11 +150,11 @@ function e.AffixThree(weekOffSet)
 end
 
 -- This is always the season affix, this doesn't get changed in a rotation
-function e.AffixFour()
+function addon.AffixFour()
 	return SEASON_AFFIX
 end
 
-function e.AffixName(id)
+function addon.AffixName(id)
 	if id ~= 0 then
 		return AFFIX_INFO[id] and AFFIX_INFO[id].name
 	else
@@ -180,7 +162,7 @@ function e.AffixName(id)
 	end
 end
 
-function e.AffixDescription(id)
+function addon.AffixDescription(id)
 	if id ~= -1 then
 		return AFFIX_INFO[id] and AFFIX_INFO[id].description
 	else
@@ -188,10 +170,8 @@ function e.AffixDescription(id)
 	end
 end
 
-function e.GetAffixID(id, weekOffSet)
-	local offSet = weekOffSet or 0
-	--local week = (e.Week + offSet) % 12
-	local week = (ROTATION_WEEK_POSITION + weekOffSet) % 12	
+function addon.GetAffixID(id, weekOffSet)
+	local week = (ROTATION_WEEK_POSITION + weekOffSet) % 12
 	if week == 0 then week = 12 end
 	return AFFIX_ROTATION[week][id] or SEASON_AFFIX
 end

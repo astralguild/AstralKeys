@@ -1,4 +1,5 @@
-local L = select(2, ...)[2]
+local _, addon = ...
+addon.L = { }
 
 local localizations = {}
 local locale = GetLocale()
@@ -6,7 +7,7 @@ if(locale == 'enGB') then
 	locale = 'enUS'
 end
 
-setmetatable(L, {
+setmetatable(addon.L, {
 	__call = function(_, newLocale)
 		localizations[newLocale] = {}
 		return localizations[newLocale]

@@ -1,14 +1,14 @@
-local e, L = unpack(select(2, ...))
+local _, addon = ...
 
-local addon = LibStub("AceAddon-3.0"):NewAddon("AstralKeys", "AceConsole-3.0")
+LibStub("AceAddon-3.0"):NewAddon(addon, "AstralKeys", "AceConsole-3.0")
 
 local astralkeysLDB = LibStub("LibDataBroker-1.1"):NewDataObject("AstralKeys", {
 	type = "data source",
 	text = "AstralKeys",
 	icon = "Interface\\AddOns\\AstralKeys\\Media\\Texture\\Logo@2x",
-	OnClick = function(self, button)
+	OnClick = function(_, button)
 		if button == 'LeftButton' then 
-			e.AstralToggle()
+			addon.AstralToggle()
 		elseif button == 'RightButton' then
 			AstralOptionsFrame:SetShown( not AstralOptionsFrame:IsShown())
 		end  
@@ -20,7 +20,7 @@ local astralkeysLDB = LibStub("LibDataBroker-1.1"):NewDataObject("AstralKeys", {
 	end,
 })
 
-e.icon = LibStub("LibDBIcon-1.0")
+addon.icon = LibStub("LibDBIcon-1.0")
 
 function addon:OnInitialize()
 	self.db = LibStub("AceDB-3.0"):New("AstralMinimap", {
@@ -30,5 +30,5 @@ function addon:OnInitialize()
 			},
 		},
 	})
-	e.icon:Register("AstralKeys", astralkeysLDB, self.db.profile.minimap)
+	addon.icon:Register("AstralKeys", astralkeysLDB, self.db.profile.minimap)
 end

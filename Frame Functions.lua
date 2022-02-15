@@ -1,18 +1,6 @@
-local e, L = unpack(select(2, ...))
+local _, addon = ...
 
-local BACKDROP = {
-bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-edgeFile = nil, tile = true, tileSize = 16, edgeSize = 16,
-insets = {left = 0, right = 0, top = 0, bottom = 0}
-}
-
-local BACKDROPBUTTON = {
-bgFile = nil,
-edgeFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 16, edgeSize = 1,
-insets = {left = 0, right = 0, top = 0, bottom = 0}
-}
-
-function e.CreateCheckBox(parent, label, width)
+function addon.CreateCheckBox(parent, label, width)
 	local checkbox = CreateFrame('CheckButton', nil, parent, "BackdropTemplate")
 	checkbox:SetSize(width or 200, 20)
 	checkbox:SetBackdrop(nil)
@@ -106,12 +94,7 @@ local function CloseDropDownMenu(frame)
 	end
 end
 
-function e.ClosePopupFrames(ignoredFrame)
-
-end
-
-
-function e.CreateDropDownFrame(name, level, parent)
+function addon.CreateDropDownFrame(name, level, parent)
 	local frame = CreateFrame('FRAME', 'AstralMenuFrame' .. name .. level, parent, "BackdropTemplate")
 	frame:Hide()
 	frame.tier = level
@@ -205,11 +188,11 @@ function e.CreateDropDownFrame(name, level, parent)
 		self:AdjustWidth()
 	end)
 
-	function frame:AddButton(name, onClick, onShow, onEnter, subMenu, subFrame)
+	function frame:AddButton(name1, onClick, onShow, onEnter, subMenu, subFrame)
 		local button = CreateButton(self)
 		button:SetWidth(self:GetWidth() - 20)
 		button:SetPoint('TOPLEFT', self.title, 'BOTTOMLEFT', 5, -20*(#self.buttons))
-		button:SetText(name)
+		button:SetText(name1)
 
 		local stringLength = button:GetFontString():GetUnboundedStringWidth()	
 
@@ -265,7 +248,7 @@ function e.CreateDropDownFrame(name, level, parent)
 	return frame
 end
 
-function e.AddEscHandler(frame)
+function addon.AddEscHandler(frame)
 	if not frame and type(frame) ~= 'table' then
 		error('frame expcted, got '.. type(frame))
 	end
