@@ -1,7 +1,8 @@
 local _, addon = ...
 addon.L = { }
 
-local localizations = {}
+local localizations = addon.L
+
 local locale = GetLocale()
 if(locale == 'enGB') then
 	locale = 'enUS'
@@ -17,3 +18,5 @@ setmetatable(addon.L, {
 		return localeTable and localeTable[key] or tostring(key)
 	end
 })
+
+DEBUG_L = addon.L
