@@ -1,4 +1,5 @@
-local e, L = unpack(select(2, ...))
+local _, addon = ...
+L = addon.L
 
 local AstralOptionsFrame = CreateFrame('FRAME', 'AstralOptionsFrame', UIParent)
 AstralOptionsFrame:SetFrameStrata('DIALOG')
@@ -75,56 +76,56 @@ local generalHeader = contentFrame:CreateFontString(nil, 'OVERLAY', 'InterUIBold
 generalHeader:SetText(L['GENERAL OPTIONS'])
 generalHeader:SetPoint('TOPLEFT', contentFrame, 'TOPLEFT')
 
-local showOffLine = e.CreateCheckBox(contentFrame, L['Show offline players'])
+local showOffLine = addon.CreateCheckBox(contentFrame, L['Show offline players'])
 showOffLine:SetPoint('TOPLEFT', generalHeader, 'BOTTOMLEFT', 10, -10)
 showOffLine:SetScript('OnClick', function(self)
 	AstralKeysSettings.frame.show_offline.isEnabled = self:GetChecked()
-	e.UpdateFrames()
+	addon.UpdateFrames()
 	HybridScrollFrame_SetOffset(AstralKeyFrameListContainer, 0)
 	end)
 
-local showMinimap = e.CreateCheckBox(contentFrame, L['Show Minimap button'])
+local showMinimap = addon.CreateCheckBox(contentFrame, L['Show Minimap button'])
 showMinimap:SetPoint('LEFT', showOffLine, 'RIGHT', 10, 0)
 showMinimap:SetScript('OnClick', function(self)
 	AstralKeysSettings.general.show_minimap_button.isEnabled = self:GetChecked()
 	if AstralKeysSettings.general.show_minimap_button.isEnabled then
-		e.icon:Show('AstralKeys')
+		addon.icon:Show('AstralKeys')
 	else
-		e.icon:Hide('AstralKeys')
+		addon.icon:Hide('AstralKeys')
 	end
 	if IsAddOnLoaded('ElvUI_Enhanced') then -- Update the layout for the minimap buttons
 		ElvUI[1]:GetModule('MinimapButtons'):UpdateLayout()
 	end
 	end)
 
-local showTooltip = e.CreateCheckBox(contentFrame, L['Show current key in tooltip'])
+local showTooltip = addon.CreateCheckBox(contentFrame, L['Show current key in tooltip'])
 showTooltip:SetPoint('TOPLEFT', showOffLine, 'BOTTOMLEFT', 0, -5)
 showTooltip:SetScript('OnClick', function(self)
 	AstralKeysSettings.general.show_tooltip_key.isEnabled = self:GetChecked()
 	end)
 
-local mingleOffline = e.CreateCheckBox(contentFrame, L['Display offline below online'])
+local mingleOffline = addon.CreateCheckBox(contentFrame, L['Display offline below online'])
 mingleOffline:SetPoint('LEFT', showTooltip, 'RIGHT', 10, 0)
-mingleOffline:SetScript('OnClick', function(self)
+mingleOffline:SetScript('OnClick', function()
 	AstralKeysSettings.frame.mingle_offline.isEnabled = not AstralKeysSettings.frame.mingle_offline.isEnabled
-	e.UpdateFrames()
+	addon.UpdateFrames()
 	end)
 
-local announceParty = e.CreateCheckBox(contentFrame, L['Announce new keys to party'])
+local announceParty = addon.CreateCheckBox(contentFrame, L['Announce new keys to party'])
 announceParty:SetPoint('TOPLEFT', showTooltip, 'BOTTOMLEFT', 0, -5)
-announceParty:SetScript('OnClick', function(self)
+announceParty:SetScript('OnClick', function()
 	AstralKeysSettings.general.announce_party.isEnabled = not AstralKeysSettings.general.announce_party.isEnabled
 	end)
 
-local announceGuild = e.CreateCheckBox(contentFrame, L['Announce new keys to guild'])
+local announceGuild = addon.CreateCheckBox(contentFrame, L['Announce new keys to guild'])
 announceGuild:SetPoint('LEFT', announceParty, 'RIGHT', 10, 0)
-announceGuild:SetScript('OnClick', function(self)
+announceGuild:SetScript('OnClick', function()
 	AstralKeysSettings.general.announce_guild.isEnabled = not AstralKeysSettings.general.announce_guild.isEnabled
 	end)
 
-local expandedTooltip = e.CreateCheckBox(contentFrame, L['EXPANDED_TOOLTIP'])
+local expandedTooltip = addon.CreateCheckBox(contentFrame, L['EXPANDED_TOOLTIP'])
 expandedTooltip:SetPoint('TOPLEFT', announceParty, 'BOTTOMLEFT', 0, -5)
-expandedTooltip:SetScript('OnClick', function (self)
+expandedTooltip:SetScript('OnClick', function ()
 	AstralKeysSettings.general.expanded_tooltip.isEnabled = not AstralKeysSettings.general.expanded_tooltip.isEnabled
 end)
 
@@ -136,27 +137,27 @@ local chatDesc = contentFrame:CreateFontString(nil, 'OVERLAY', 'InterUIRegular_S
 chatDesc:SetText(L['!KEYS_DESC'])
 chatDesc:SetPoint('TOPLEFT', chatHeader, 'BOTTOMLEFT', 5, -5)
 
-local commandRespondParty = e.CreateCheckBox(contentFrame, L['PARTY'])
+local commandRespondParty = addon.CreateCheckBox(contentFrame, L['PARTY'])
 commandRespondParty:SetPoint('TOPLEFT', chatDesc, 'BOTTOMLEFT', 5, -10)
-commandRespondParty:SetScript('OnClick', function (self)
+commandRespondParty:SetScript('OnClick', function ()
 	AstralKeysSettings.general.report_on_message['party'] = not AstralKeysSettings.general.report_on_message['party']
 end)
 
-local commandRespondGuild = e.CreateCheckBox(contentFrame, L['GUILD'])
+local commandRespondGuild = addon.CreateCheckBox(contentFrame, L['GUILD'])
 commandRespondGuild:SetPoint('LEFT', commandRespondParty, 'RIGHT', 10, 0)
-commandRespondGuild:SetScript('OnClick', function (self)
+commandRespondGuild:SetScript('OnClick', function ()
 	AstralKeysSettings.general.report_on_message['guild'] = not AstralKeysSettings.general.report_on_message['guild']
 end)
 
-local commandRespondRaid = e.CreateCheckBox(contentFrame, L['RAID'])
+local commandRespondRaid = addon.CreateCheckBox(contentFrame, L['RAID'])
 commandRespondRaid:SetPoint('LEFT', commandRespondGuild, 'RIGHT', 10, 0)
-commandRespondRaid:SetScript('OnClick', function (self)
+commandRespondRaid:SetScript('OnClick', function ()
 	AstralKeysSettings.general.report_on_message['raid'] = not AstralKeysSettings.general.report_on_message['raid']
 end)
 
-local commandRespondNoKey = e.CreateCheckBox(contentFrame, L['KEYS_RESPOND_ON_NO_KEY'])
+local commandRespondNoKey = addon.CreateCheckBox(contentFrame, L['KEYS_RESPOND_ON_NO_KEY'])
 commandRespondNoKey:SetPoint('TOPLEFT', commandRespondParty, 'BOTTOMLEFT', 0, -5)
-commandRespondNoKey:SetScript('OnClick', function (self)
+commandRespondNoKey:SetScript('OnClick', function ()
 	AstralKeysSettings.general.report_on_message['no_key'] = not AstralKeysSettings.general.report_on_message['no_key']
 end)
 
@@ -165,19 +166,19 @@ local syncHeader = contentFrame:CreateFontString(nil, 'OVERLAY', 'InterUIBold_No
 syncHeader:SetText(L['SYNC OPTIONS'])
 syncHeader:SetPoint('TOPLEFT', commandRespondNoKey, 'BOTTOMLEFT', -10, -20)
 
-local syncFriends = e.CreateCheckBox(contentFrame, L['Sync with friends'])
+local syncFriends = addon.CreateCheckBox(contentFrame, L['Sync with friends'])
 syncFriends:SetPoint('TOPLEFT', syncHeader, 'BOTTOMLEFT', 10, -10)
 syncFriends:SetScript('OnClick', function(self)
 	AstralKeysSettings.friendOptions.friend_sync.isEnabled = self:GetChecked()
 	AstralKeyFrame:ToggleLists()
-	e.ToggleFriendSync()
+	addon.ToggleFriendSync()
 	end)
 
-local otherFaction = e.CreateCheckBox(contentFrame, L['Show other faction'])
+local otherFaction = addon.CreateCheckBox(contentFrame, L['Show other faction'])
 otherFaction:SetPoint('LEFT', syncFriends, 'RIGHT', 10, 0)
 otherFaction:SetScript('OnClick', function(self)
 	AstralKeysSettings.friendOptions.show_other_faction.isEnabled = self:GetChecked()
-	e.UpdateFrames()
+	addon.UpdateFrames()
 	end)
 
 local rankFilterHeader = contentFrame:CreateFontString(nil, 'OVERLAY', 'InterUIBold_Normal')
@@ -190,7 +191,7 @@ filter_descript:SetPoint('TOPLEFT', rankFilterHeader, 'BOTTOMLEFT', 5, -5)
 
 local _ranks = {}
 for i = 1, 10 do
-	_ranks[i] = e.CreateCheckBox(contentFrame, ' ')
+	_ranks[i] = addon.CreateCheckBox(contentFrame, ' ')
 	_ranks[i].id = i
 end
 
@@ -214,8 +215,8 @@ function InitializeOptionSettings()
 	for i = 1, GuildControlGetNumRanks() do
 		_ranks[i]:SetText(GuildControlGetRankName(i))
 
-		for i = GuildControlGetNumRanks() + 1, 10 do
-			_ranks[i]:Hide()
+		for i2 = GuildControlGetNumRanks() + 1, 10 do
+			_ranks[i2]:Hide()
 		end
 
 		if i == 1 then
@@ -231,7 +232,7 @@ function InitializeOptionSettings()
 		_ranks[i]:SetScript('OnClick', function(self)
 			AstralKeysSettings.frame.rank_filter[self.id] = self:GetChecked()
 			if AstralKeysSettings.frame.list_shown == 'GUILD' then
-				e.UpdateFrames()
+				addon.UpdateFrames()
 			end
 			end)
 	end

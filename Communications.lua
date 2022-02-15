@@ -1,17 +1,14 @@
-local e, L = unpack(select(2, ...))
+local _, addon = ...
 
-local find, sub, strformat = string.find, string.sub, string.format
+local strformat = string.format
 local BNSendGameData, SendAddonMessage, SendChatMessage = BNSendGameData, C_ChatInfo.SendAddonMessage, SendChatMessage
 
 -- Variables for syncing information
 -- Will only accept information from other clients with same version settings
-local SYNC_VERSION = 'sync5'
-e.UPDATE_VERSION = 'updateV8'
+addon.UPDATE_VERSION = 'updateV8'
 
 local versionList = {}
 local highestSubVersion, highestMajorVersion = 0, 0
-
-local messageStack = {}
 
 local PrintVersion, CheckInstanceType
 
@@ -32,7 +29,7 @@ local SEND_INTERVAL_SETTING = 1 -- What intervel to use for sending key informat
 AstralComs = CreateFrame('FRAME', 'AstralComs')
 
 function AstralComs:RegisterPrefix(channel, prefix, f)
-	local channel = channel or 'GUILD' -- Defaults to guild channel
+	channel = channel or 'GUILD' -- Defaults to guild channel
 
 	if self:IsPrefixRegistered(channel, prefix) then return end -- Did we register something to the same channel with the same name?
 
@@ -138,7 +135,7 @@ function AstralComs:SendMessage()
 			msg.method(unpack(msg, 1, #msg))
 		end
 	elseif msg[3] == 'WHISPER' then
-		if e.IsFriendOnline(msg[4]) then -- Are they still logged into that toon
+		if addon.IsFriendOnline(msg[4]) then -- Are they still logged into that toon
 			msg.method(unpack(msg, 1, #msg))
 		end
 	else-- Guild/raid message, just send it
@@ -192,7 +189,7 @@ AstralComs:Init()
 -- Version checking
 
 local function VersionRequest()
-	SendAddonMessage('AstralKeys', 'versionPush ' .. e.CLIENT_VERSION .. ':' .. e.PlayerClass(), 'GUILD') -- Bypass the queue, shouldn't cause any issues, very little data is being pushed
+	SendAddonMessage('AstralKeys', 'versionPush ' .. addon.CLIENT_VERSION .. ':' .. addon.PlayerClass(), 'GUILD') -- Bypass the queue, shouldn't cause any issues, very little data is being pushed
 end
 AstralComs:RegisterPrefix('GUILD', 'versionRequest', VersionRequest)
 
@@ -213,7 +210,6 @@ PrintVersion = function()
 	local upToDate = 'Up to date: '
 	local notInstalled = 'Not installed: '
 
-	local i = 1
 	for k,v in pairs(versionList) do
 		if v.majorVersion <= highestMajorVersion and tonumber(v.subVersion) < highestSubVersion then
 			outOfDate = outOfDate .. strformat('%s(%d.%d) ', WrapTextInColorCode(Ambiguate(k, 'GUILD'), select(4, GetClassColor(v.class))), v.majorVersion, v.subVersion)
@@ -235,7 +231,7 @@ PrintVersion = function()
 	ChatFrame1:AddMessage(notInstalled)
 end
 
-function e.CheckGuildVersion()
+function addon.CheckGuildVersion()
 	if not IsInGuild() then return end
 
 	highestVersion = 0
@@ -246,44 +242,6 @@ function e.CheckGuildVersion()
 	AstralComs.delay = 0
 	AstralComs:Show()
 end
-
--- Testing
-local function GuildVersionCheckOnLogin()
-	AstralComs:NewMessage('AstralKeys', 'versionCheck ' .. e.CLIENT_VERSION, 'GUILD')
-end
---AstralEvents:Register('PLAYER_LOGIN', GuildVersionCheckOnLogin, 'versionCheck_login_guild')
-
-local function GroupVersionCheckOnJoin()
-	if IsInRaid() then
-		AstralComs:NewMessage('AstralKeys', 'versionCheck ' .. e.CLIENT_VERSION, 'RAID')
-	elseif (IsInGroup() and not IsInGroup(LE_PARTY_CATEGORY_INSTANCE) == 'INSTANCE_CHAT') then
-		AstralComs:NewMessage('AstralKeys', 'versionCheck ' .. e.CLIENT_VERSION, 'PARTY')
-	end
-end
---AstralEvents:Register('GROUP_ROSTER_UPDATE', GroupVersionCheckOnJoin, 'versionCheck_login_group')
-
-local receivedVersionMessage = false
-local function VersionCheck(version, sender)
-	if sender == e.Player() then return end
-	if not version then return end
-	if not receivedVersionMessage and (tonumber(version) > tonumber(e.CLIENT_VERSION)) then
-		receivedVersionMessage = true
-		print('You\'re version is out of date, the current version is', version)
-	else
-		local messageChannel
-		if IsInRaid() then
-			messageChannel = (not IsInRaid(LE_PARTY_CATEGORY_HOME) and IsInRaid(LE_PARTY_CATEGORY_INSTANCE)) and "INSTANCE_CHAT" or "RAID"
-		elseif IsInGroup() then
-			messageChannel = (not IsInGroup(LE_PARTY_CATEGORY_HOME) and IsInGroup(LE_PARTY_CATEGORY_INSTANCE)) and "INSTANCE_CHAT" or "PARTY"
-		elseif IsInGuild() then
-			messageChannel = 'GUILD'
-		end
-		if messageChannel then
-			--AstralComs:NewMessage('AstralKeys', 'versionCheck ' .. e.CLIENT_VERSION, messageChannel)
-		end
-	end
-end
---AstralComs:RegisterPrefix('GUILD', 'versionCheck', VersionCheck)
 
 -- Let's just disable sending information if we are doing a boss fight
 -- but keep updating individual keys if we receive them
@@ -309,19 +267,19 @@ CheckInstanceType = function()
 end
 AstralEvents:Register('PLAYER_ENTERING_WORLD', CheckInstanceType, 'entering_world')
 
-function e.AnnounceCharacterKeys(channel)
+function addon.AnnounceCharacterKeys(channel)
 	for i = 1, #AstralCharacters do
-		local id = e.UnitID(strformat('%s-%s', e.CharacterName(i), e.CharacterRealm(i)))
+		local id = addon.UnitID(strformat('%s-%s', addon.CharacterName(i), addon.CharacterRealm(i)))
 
 		if id then
-			local link = e.CreateKeyLink(e.UnitMapID(id), e.UnitKeyLevel(id))
+			local link = addon.CreateKeyLink(addon.UnitMapID(id), addon.UnitKeyLevel(id))
 			if channel == 'PARTY' and not IsInGroup() then return end
-			SendChatMessage(strformat('%s %s',e.CharacterName(i), link), channel)
+			SendChatMessage(strformat('%s %s', addon.CharacterName(i), link), channel)
 		end
 	end
 end
 
-function e.AnnounceNewKey(keyLink)
+function addon.AnnounceNewKey(keyLink)
 	if AstralKeysSettings.general.announce_party.isEnabled and IsInGroup() then
 		SendChatMessage(strformat(L['ANNOUNCE_NEW_KEY'], keyLink), 'PARTY')
 	end
@@ -331,14 +289,14 @@ function e.AnnounceNewKey(keyLink)
 end
 
 local function ParseGuildChatCommands(text)
-	if UnitLevel('player') ~= e.EXPANSION_LEVEL then return end -- Don't bother checking anything if the unit is unable to acquire a key
+	if UnitLevel('player') ~= addon.EXPANSION_LEVEL then return end -- Don't bother checking anything if the unit is unable to acquire a key
 	text = gsub(text, "^%[%a+%] ", "") -- Strip off [SomeName] from message from using Identity-2
 	if text:lower() == '!keys' then
 		local guild = GetGuildInfo('player')
-		if AstralKeysSettings.general.report_on_message['guild'] or (guild == 'Astral' and e.PlayerRealm() == 'Turalyon') then -- Guild leader for Astral desires this setting to be foreced on for members.
-			local unitID = e.UnitID(e.Player())
+		if AstralKeysSettings.general.report_on_message['guild'] or (guild == 'Astral' and addon.PlayerRealm() == 'Turalyon') then -- Guild leader for Astral desires this setting to be foreced on for members.
+			local unitID = addon.UnitID(addon.Player())
 			if unitID then
-				local keyLink = e.CreateKeyLink(e.UnitMapID(unitID), e.UnitKeyLevel(unitID))
+				local keyLink = addon.CreateKeyLink(addon.UnitMapID(unitID), addon.UnitKeyLevel(unitID))
 				if not keyLink then return end -- Something went wrong
 				SendChatMessage(string.format('Astral Keys: %s', keyLink), 'GUILD')
 			else
@@ -352,13 +310,13 @@ end
 AstralEvents:Register('CHAT_MSG_GUILD', ParseGuildChatCommands, 'parseguildchat')
 
 local function ParsePartyChatCommands(text)
-	if UnitLevel('player') ~= e.EXPANSION_LEVEL then return end -- Don't bother checking anything if the unit is unable to acquire a key
+	if UnitLevel('player') ~= addon.EXPANSION_LEVEL then return end -- Don't bother checking anything if the unit is unable to acquire a key
 	text = gsub(text, "^%[%a+%] ", "") -- Strip off [SomeName] from message from using Identity-2
 	if text:lower() == '!keys' then
 		if AstralKeysSettings.general.report_on_message['party'] then
-			local unitID = e.UnitID(e.Player())
+			local unitID = addon.UnitID(addon.Player())
 			if unitID then
-				local keyLink = e.CreateKeyLink(e.UnitMapID(unitID), e.UnitKeyLevel(unitID))
+				local keyLink = addon.CreateKeyLink(addon.UnitMapID(unitID), addon.UnitKeyLevel(unitID))
 				if not keyLink then return end -- Something went wrong
 				SendChatMessage(string.format('Astral Keys: %s', keyLink), 'PARTY')
 			else
@@ -373,17 +331,17 @@ AstralEvents:Register('CHAT_MSG_PARTY', ParsePartyChatCommands, 'parsepartychat'
 AstralEvents:Register('CHAT_MSG_PARTY_LEADER', ParsePartyChatCommands, 'parsepartychat')
 
 local function ParseRaidChatCommands(text)
-	if UnitLevel('player') ~= e.EXPANSION_LEVEL then return end -- Don't bother checking anything if the unit is unable to acquire a key
+	if UnitLevel('player') ~= addon.EXPANSION_LEVEL then return end -- Don't bother checking anything if the unit is unable to acquire a key
 	text = gsub(text, "^%[%a+%] ", "") -- Strip off [SomeName] from message from using Identity-2
 	if text:lower() == '!keys' then
 		if AstralKeysSettings.general.report_on_message['raid'] then
-			local unitID = e.UnitID(e.Player())
+			local unitID = addon.UnitID(addon.Player())
 			if unitID then
 				local link
 				for bag = 0, NUM_BAG_SLOTS do
 					local numSlots = GetContainerNumSlots(bag)
 					for slot = 1, numSlots do
-						if (GetContainerItemID(bag, slot) == e.MYTHICKEY_ITEMID) then
+						if (GetContainerItemID(bag, slot) == addon.MYTHICKEY_ITEMID) then
 							link = GetContainerItemLink(bag, slot)
 							break
 						end

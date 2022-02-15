@@ -1,5 +1,3 @@
-local e, L = unpack(select(2, ...))
-
 AstralEvents = CreateFrame('FRAME', 'AstralEvents')
 AstralEvents.dtbl = {}
 

@@ -1,6 +1,6 @@
-local e, L = unpack(select(2, ...))
+local _, addon = ...
 
-local find, sub, strformat, strlower, strfind = string.find, string.sub, string.format, string.lower, string.find
+local find, strformat, strlower, strfind = string.find, string.format, string.lower, string.find
 
 local GUILD_LIST = {}
 
@@ -14,31 +14,31 @@ local function UpdateGuildList()
 		if not name then return end
 		GUILD_LIST[name] = {rank = rankIndex + 1, isConnected = connected, guid = guid}
 	end
-	e.UpdateFrames()
+	addon.UpdateFrames()
 end
 AstralEvents:Register('GUILD_ROSTER_UPDATE', UpdateGuildList, 'guildUpdate')
 
 -- Checks to see if a unit is in the player's guild
 -- @param unit Unit name and server
-function e.UnitInGuild(unit)
+function addon.UnitInGuild(unit)
 	return GUILD_LIST[unit] or false
 end
 
-function e.GuildMemberOnline(unit)
+function addon.GuildMemberOnline(unit)
 	if not GUILD_LIST[unit] then return false
 	else
 		return GUILD_LIST[unit].isConnected
 	end
 end
 
-function e.GuildMemberRank(unit)
+function addon.GuildMemberRank(unit)
 	if not GUILD_LIST[unit] then return false
 	else
 		return GUILD_LIST[unit].rank
 	end
 end
 
-function e.GuildMemberGuid(unit)
+function addon.GuildMemberGuid(unit)
 	if not GUILD_LIST[unit] then return nil end
 	
 	return GUILD_LIST[unit].guid
@@ -47,15 +47,12 @@ end
 -- Variables for syncing information
 -- Will only accept information from other clients with same version settings
 local SYNC_VERSION = 'sync5'
-e.UPDATE_VERSION = 'updateV8'
-
-local versionList = {}
-local highestVersion = 0
+addon.UPDATE_VERSION = 'updateV8'
 
 local messageStack = {}
 
-local function UpdateUnitKey(msg, sender)
-	local timeStamp = e.WeekTime() -- part of the week we got this key update, used to determine if a key got de-leveled or not
+local function UpdateUnitKey(msg)
+	local timeStamp = addon.WeekTime() -- part of the week we got this key update, used to determine if a key got de-leveled or not
 
 	local unit, class, dungeonID, keyLevel, weekly_best, week = strsplit(':', msg)
 	
@@ -64,7 +61,7 @@ local function UpdateUnitKey(msg, sender)
 	weekly_best = tonumber(weekly_best)
 	week = tonumber(week)
 
-	local id = e.UnitID(unit) -- Is this unit in the db already?
+	local id = addon.UnitID(unit) -- Is this unit in the db already?
 
 	if id then -- Yep, just change the values then
 		AstralKeys[id].dungeon_id = dungeonID
@@ -81,26 +78,26 @@ local function UpdateUnitKey(msg, sender)
 			key_level = keyLevel,
 			week = week,
 			time_stamp = timeStamp,
-			faction = e.FACTION,
+			faction = addon.FACTION,
 			weekly_best = weekly_best,
 			source = 'guild'
 		})
 		--AstralKeys[#AstralKeys + 1] = {unit, class, dungeonID, keyLevel, weekly_best, week, timeStamp}
-		e.SetUnitID(unit, #AstralKeys)
+		addon.SetUnitID(unit, #AstralKeys)
 	end
-	e.AddUnitToList(unit, 'GUILD')
+	addon.AddUnitToList(unit, 'GUILD')
 	--e.AddUnitToTable(unit, class, faction, 'GUILD', dungeonID, keyLevel, weekly_best)
-	e.AddUnitToSortTable(unit, btag, class, e.FACTION, dungeonID, keyLevel, weekly_best, 'GUILD')
-	e.UpdateFrames()
+	addon.AddUnitToSortTable(unit, btag, class, addon.FACTION, dungeonID, keyLevel, weekly_best, 'GUILD')
+	addon.UpdateFrames()
 	msg = nil
 	-- Update character frames if we received our own key
-	if unit == e.Player() then
-		e.UpdateCharacterFrames()
+	if unit == addon.Player() then
+		addon.UpdateCharacterFrames()
 	end
 end
-AstralComs:RegisterPrefix('GUILD', e.UPDATE_VERSION, UpdateUnitKey)
+AstralComs:RegisterPrefix('GUILD', addon.UPDATE_VERSION, UpdateUnitKey)
 
-local function SyncReceive(entry, sender)
+local function SyncReceive(entry)
 	local unit, class, dungeonID, keyLevel, weekly_best, week, timeStamp
 	if AstralKeyFrame:IsShown() then
 		AstralKeyFrame:SetScript('OnUpdate', AstralKeyFrame.OnUpdate)
@@ -123,9 +120,9 @@ local function SyncReceive(entry, sender)
 		week = tonumber(week)
 		timeStamp = tonumber(timeStamp)
 
-		if week >= e.Week and e.UnitInGuild(unit) then 
+		if week >= addon.Week and addon.UnitInGuild(unit) then
 
-			local id = e.UnitID(unit)
+			local id = addon.UnitID(unit)
 			if id then
 				if AstralKeys[id].time_stamp < timeStamp then
 					AstralKeys[id].weekly_best = weekly_best >= AstralKeys[id].weekly_best and weekly_best or AstralKeys[id].weekly_best
@@ -143,14 +140,14 @@ local function SyncReceive(entry, sender)
 					key_level = keyLevel,
 					week = week,
 					time_stamp = timeStamp,
-					faction = e.FACTION,
+					faction = addon.FACTION,
 					weekly_best = weekly_best,
 					source = 'guild'
 				})
-				e.SetUnitID(unit, #AstralKeys)
+				addon.SetUnitID(unit, #AstralKeys)
 			end
-			e.AddUnitToList(unit, 'GUILD')
-			e.AddUnitToSortTable(unit, btag, class, e.FACTION, dungeonID, keyLevel, weekly_best, 'GUILD')
+			addon.AddUnitToList(unit, 'GUILD')
+			addon.AddUnitToSortTable(unit, btag, class, addon.FACTION, dungeonID, keyLevel, weekly_best, 'GUILD')
 			--e.AddUnitToTable(unit, class, faction, 'GUILD', dungeonID, keyLevel, weekly_best)
 		end
 	end
@@ -160,21 +157,21 @@ end
 AstralComs:RegisterPrefix('GUILD', SYNC_VERSION, SyncReceive)
 
 local function UpdateWeekly(weekly_best, sender)
-	local id = e.UnitID(sender)
+	local id = addon.UnitID(sender)
 	if id then
 		AstralKeys[id].weekly_best = tonumber(weekly_best)
-		AstralKeys[id].time_stamp = e.WeekTime()
-		e.UpdateFrames()
+		AstralKeys[id].time_stamp = addon.WeekTime()
+		addon.UpdateFrames()
 	end
 end
 AstralComs:RegisterPrefix('GUILD', 'updateWeekly', UpdateWeekly)
 
-function AstralKeys_PushKeyList(msg, sender)
+function AstralKeys_PushKeyList()
 	--if sender == e.Player() then return end
 
 	wipe(messageStack)
 	for i = 1, #AstralKeys do
-		if e.UnitInGuild(AstralKeys[i].unit) then -- Only send current guild keys, who wants keys from a different guild?
+		if addon.UnitInGuild(AstralKeys[i].unit) then -- Only send current guild keys, who wants keys from a different guild?
 			messageStack[#messageStack + 1] = strformat('%s_', strformat('%s:%s:%d:%d:%d:%d:%d', AstralKeys[i].unit, AstralKeys[i].class, AstralKeys[i].dungeon_id, AstralKeys[i].key_level, AstralKeys[i].weekly_best, AstralKeys[i].week, AstralKeys[i].time_stamp))
 			--messageStack[#messageStack + 1] = strformat('%s_', strformat('%s:%s:%d:%d:%d:%d:%d', AstralKeys[i][1], AstralKeys[i][2], AstralKeys[i][3], AstralKeys[i][4], AstralKeys[i][5], AstralKeys[i][6], AstralKeys[i][7]))
 			--messageStack[#messageStack + 1] = strformat('%s_', table.concat(AstralKeys[i], ':'))
@@ -199,21 +196,21 @@ AstralComs:RegisterPrefix('GUILD', 'request', AstralKeys_PushKeyList)
 local function GuildListSort(A, v)	
 	if v == 'dungeon_name' then
 		table.sort(A, function(a, b)
-			local aOnline = e.GuildMemberOnline(a.character_name) and 1 or 0
-			local bOnline = e.GuildMemberOnline(b.character_name) and 1 or 0
+			local aOnline = addon.GuildMemberOnline(a.character_name) and 1 or 0
+			local bOnline = addon.GuildMemberOnline(b.character_name) and 1 or 0
 			if not AstralKeysSettings.frame.mingle_offline.isEnabled then
 				aOnline = true
 				bOnline = true
 			end
 			if aOnline == bOnline then
 				if AstralKeysSettings.frame.orientation == 0 then
-					if e.GetMapName(a.dungeon_id) > e.GetMapName(b.dungeon_id) then
+					if addon.GetMapName(a.dungeon_id) > addon.GetMapName(b.dungeon_id) then
 						if bOnline then
 							return true
 						else
 							return false
 						end
-					elseif e.GetMapName(a.dungeon_id) < e.GetMapName(b.dungeon_id) then
+					elseif addon.GetMapName(a.dungeon_id) < addon.GetMapName(b.dungeon_id) then
 						if aOnline then
 							return false
 						else
@@ -223,13 +220,13 @@ local function GuildListSort(A, v)
 						return a.character_name < b.character_name
 					end
 				else
-					if e.GetMapName(a.dungeon_id) < e.GetMapName(b.dungeon_id) then
+					if addon.GetMapName(a.dungeon_id) < addon.GetMapName(b.dungeon_id) then
 						if aOnline then
 							return true
 						else
 							return false
 						end
-					elseif e.GetMapName(a.dungeon_id) > e.GetMapName(b.dungeon_id) then
+					elseif addon.GetMapName(a.dungeon_id) > addon.GetMapName(b.dungeon_id) then
 						if bOnline then
 							return false
 						else
@@ -245,8 +242,8 @@ local function GuildListSort(A, v)
 		end)
 	else
 		table.sort(A, function(a, b)
-			local aOnline = e.GuildMemberOnline(a.character_name) and 1 or 0
-			local bOnline = e.GuildMemberOnline(b.character_name) and 1 or 0
+			local aOnline = addon.GuildMemberOnline(a.character_name) and 1 or 0
+			local bOnline = addon.GuildMemberOnline(b.character_name) and 1 or 0
 			if not AstralKeysSettings.frame.mingle_offline.isEnabled then
 				aOnline = true
 				bOnline = true
@@ -275,7 +272,7 @@ local function GuildListSort(A, v)
 		end)
 	end
 end
-e.AddListSort('GUILD', GuildListSort)
+addon.AddListSort('GUILD', GuildListSort)
 
 local function GuildListFilter(A, filters)
 	if not type(A) == 'table' then return end
@@ -295,14 +292,14 @@ local function GuildListFilter(A, filters)
 	end
 
 	for i = 1, #A do
-		if e.UnitInGuild(A[i].character_name) then
+		if addon.UnitInGuild(A[i].character_name) then
 			if AstralKeysSettings.frame.show_offline.isEnabled then
 				A[i].isShown = true
 			else
-				A[i].isShown = e.GuildMemberOnline(A[i].character_name)
+				A[i].isShown = addon.GuildMemberOnline(A[i].character_name)
 			end
 
-			A[i].isShown = A[i].isShown and AstralKeysSettings.frame.rank_filter[e.GuildMemberRank(A[i].character_name)]
+			A[i].isShown = A[i].isShown and AstralKeysSettings.frame.rank_filter[addon.GuildMemberRank(A[i].character_name)]
 
 			local isShownInFilter = true  -- Assume there is no filter taking place
 			
@@ -310,7 +307,7 @@ local function GuildListFilter(A, filters)
 				if filterText ~= '' then
 					isShownInFilter = false -- There is a filter, now assume this unit is not to be shown
 					if field == 'dungeon_name' then
-						local mapName = e.GetMapName(A[i]['dungeon_id'])
+						local mapName = addon.GetMapName(A[i]['dungeon_id'])
 						if strfind(strlower(mapName), strlower(filterText)) then
 							isShownInFilter = true
 						end
@@ -334,25 +331,25 @@ local function GuildListFilter(A, filters)
 		end
 	end
 end
-e.AddListFilter('GUILD', GuildListFilter)
+addon.AddListFilter('GUILD', GuildListFilter)
 
 -- Guild list function for displaying character information
-local function GuildUnitFunction(self, unit, unitClass, mapID, keyLevel, weekly_best, faction, btag)
-	self.unitID = e.UnitID(unit)
+local function GuildUnitFunction(self, unit, unitClass, mapID, keyLevel, weekly_best)
+	self.unitID = addon.UnitID(unit)
 	self.levelString:SetText(keyLevel)
-	self.dungeonString:SetText(e.GetMapName(mapID))
+	self.dungeonString:SetText(addon.GetMapName(mapID))
 	self.nameString:SetText(WrapTextInColorCode(Ambiguate(unit, 'GUILD') , select(4, GetClassColor(unitClass))))
 	if weekly_best and weekly_best > 1 then
-		local color_code = e.GetDifficultyColour(weekly_best)
+		local color_code = addon.GetDifficultyColour(weekly_best)
 		self.bestString:SetText(WrapTextInColorCode(weekly_best, color_code))
 	else
 		self.bestString:SetText(nil)
 	end
 	
-	if e.GuildMemberOnline(unit) then
+	if addon.GuildMemberOnline(unit) then
 		self:SetAlpha(1)
 	else
 		self:SetAlpha(0.4)
 	end
 end
-e.AddUnitFunction('GUILD', GuildUnitFunction)
+addon.AddUnitFunction('GUILD', GuildUnitFunction)

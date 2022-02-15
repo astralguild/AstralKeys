@@ -1,4 +1,5 @@
-local e, L = unpack(select(2, ...))
+local _, addon = ...
+local L = addon.L
 local strformat = string.format
 
 local COLOUR = {}
@@ -8,24 +9,24 @@ COLOUR[3] = 'ffa335ee' -- Epic
 COLOUR[4] = 'ffff8000' -- Legendary
 COLOUR[5] = 'ffe6cc80' -- Artifact
 
-e.MYTHICKEY_ITEMID = 180653
+addon.MYTHICKEY_ITEMID = 180653
 
 local MapIds = {}
 
 local function UpdateWeekly()
-	e.UpdateCharacterBest()
-	local characterID = e.GetCharacterID(e.Player())
-	local characterWeeklyBest = e.GetCharacterBestLevel(characterID)
+	addon.UpdateCharacterBest()
+	local characterID = addon.GetCharacterID(addon.Player())
+	local characterWeeklyBest = addon.GetCharacterBestLevel(characterID)
 	if IsInGuild() then
 		AstralComs:NewMessage('AstralKeys', 'updateWeekly ' .. characterWeeklyBest, 'GUILD')
 	else
-		local id = e.UnitID(e.Player())
+		local id = addon.UnitID(addon.Player())
 		if id then
 			AstralKeys[id].weekly_best = characterWeeklyBest
-			e.UpdateFrames()
+			addon.UpdateFrames()
 		end
 	end
-	e.UpdateCharacterFrames()
+	addon.UpdateCharacterFrames()
 end
 
 local dataInitialized
@@ -34,13 +35,13 @@ local function InitData()
 	C_MythicPlus.RequestRewards()
 	AstralEvents:Unregister('PLAYER_ENTERING_WORLD', 'initData')
 	C_ChatInfo.RegisterAddonMessagePrefix('AstralKeys')
-	e.FindKeyStone(true, false)
-	e.UpdateCharacterBest()
+	addon.FindKeyStone(true, false)
+	addon.UpdateCharacterBest()
 	if IsInGuild() then
 		AstralComs:NewMessage('AstralKeys', 'request', 'GUILD')
 	end
 
-	if UnitLevel('player') < e.EXPANSION_LEVEL then return end
+	if UnitLevel('player') < addon.EXPANSION_LEVEL then return end
 	AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', UpdateWeekly, 'weeklyCheck')
 	dataInitialized = true
 end
@@ -49,53 +50,49 @@ AstralEvents:Register('PLAYER_ENTERING_WORLD', InitData, 'initData')
 
 --|cffa335ee|Hkeystone:158923:251:12:10:5:13:117|h[Keystone: The Underrot (12)]|h|r
 -- COLOUR[3] returns epic color hex code
-function e.CreateKeyLink(mapID, keyLevel)
+function addon.CreateKeyLink(mapID, keyLevel)
 	local mapName
 	if mapID == 369 or mapID == 370 then
 		mapName = C_ChallengeMode.GetMapUIInfo(mapID)		
 	else
-		mapName = e.GetMapName(mapID)
+		mapName = addon.GetMapName(mapID)
 	end
 	local thisAff1, thisAff2, thisAff3, thisAff4 = 0
 	if keyLevel > 1 then
-	 thisAff1 = e.AffixOne()
+	 thisAff1 = addon.AffixOne()
 	end
 	if keyLevel > 3 then
-	 thisAff2 = e.AffixTwo()
+	 thisAff2 = addon.AffixTwo()
 	end
 	if keyLevel > 6 then
-	 thisAff3 = e.AffixThree()
+	 thisAff3 = addon.AffixThree()
 	end
 	if keyLevel > 8 then
-	 thisAff4 = e.AffixFour()
+	 thisAff4 = addon.AffixFour()
 	end
 	local covenantID = C_Covenants.GetActiveCovenantID()
 	local covenantData = C_Covenants.GetCovenantData(covenantID)
 	if (covenantData) then
-		return strformat('|c' .. COLOUR[3] .. '|Hkeystone:%d:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r (%s)', e.MYTHICKEY_ITEMID, mapID, keyLevel, thisAff1, thisAff2, thisAff3, thisAff4, L['KEYSTONE'], mapName, keyLevel, covenantData.name):gsub('\124\124', '\124')
+		return strformat('|c' .. COLOUR[3] .. '|Hkeystone:%d:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r (%s)', addon.MYTHICKEY_ITEMID, mapID, keyLevel, thisAff1, thisAff2, thisAff3, thisAff4, L['KEYSTONE'], mapName, keyLevel, covenantData.name):gsub('\124\124', '\124')
 	else
-		return strformat('|c' .. COLOUR[3] .. '|Hkeystone:%d:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r', e.MYTHICKEY_ITEMID, mapID, keyLevel, thisAff1, thisAff2, thisAff3, thisAff4, L['KEYSTONE'], mapName, keyLevel):gsub('\124\124', '\124')
+		return strformat('|c' .. COLOUR[3] .. '|Hkeystone:%d:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r', addon.MYTHICKEY_ITEMID, mapID, keyLevel, thisAff1, thisAff2, thisAff3, thisAff4, L['KEYSTONE'], mapName, keyLevel):gsub('\124\124', '\124')
 	end
 end
 
 AstralEvents:Register('CHALLENGE_MODE_COMPLETED', function()
 	C_Timer.After(3, function()
 		C_MythicPlus.RequestRewards()
-		e.FindKeyStone(true, true)
+		addon.FindKeyStone(true, true)
 	end)
 end, 'dungeonCompleted')
 
-function e.FindKeyStone(sendUpdate, anounceKey)
-	if UnitLevel('player') < e.EXPANSION_LEVEL then return end
+function addon.FindKeyStone(sendUpdate, anounceKey)
+	if UnitLevel('player') < addon.EXPANSION_LEVEL then return end
 
 	local mapID = C_MythicPlus.GetOwnedKeystoneChallengeMapID()
 	local keyLevel = C_MythicPlus.GetOwnedKeystoneLevel()
 	local weeklyBest = 0
-	local isChestAvailable = C_MythicPlus.IsWeeklyRewardAvailable()
-	
-
 	local runHistory = C_MythicPlus.GetRunHistory(false, true)
-
 
 	for i = 1, #runHistory do
 		if runHistory[i].thisWeek then
@@ -108,32 +105,32 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 	local msg = ''
 
 	if mapID then 
-		msg = string.format('%s:%s:%d:%d:%d:%d:%s', e.Player(), e.PlayerClass(), mapID, keyLevel, weeklyBest, e.Week, e.FACTION)
+		msg = string.format('%s:%s:%d:%d:%d:%d:%s', addon.Player(), addon.PlayerClass(), mapID, keyLevel, weeklyBest, addon.Week, addon.FACTION)
 	end
 
-	local oldMap, oldLevel = e.UnitMapID(e.UnitID(e.Player())), e.UnitKeyLevel(e.UnitID(e.Player()))
+	local oldMap, oldLevel = addon.UnitMapID(addon.UnitID(addon.Player())), addon.UnitKeyLevel(addon.UnitID(addon.Player()))
 
 	if sendUpdate and msg ~= '' then
-		e.PushKeyDataToFriends(msg)
+		addon.PushKeyDataToFriends(msg)
 		if IsInGuild() then
-			AstralComs:NewMessage('AstralKeys', strformat('%s %s', e.UPDATE_VERSION, msg), 'GUILD')
+			AstralComs:NewMessage('AstralKeys', strformat('%s %s', addon.UPDATE_VERSION, msg), 'GUILD')
 		else -- Not in a guild, who are you people? Whatever, gotta make it work for them as well
-			local id = e.UnitID(e.Player())
+			local id = addon.UnitID(addon.Player())
 			if id then -- Are we in the DB already?
 				AstralKeys[id].dungeon_id = tonumber(mapID)
 				AstralKeys[id].key_level = tonumber(keyLevel)
-				AstralKeys[id].week = e.Week
-				AstralKeys[id].time_stamp = e.WeekTime()
+				AstralKeys[id].week = addon.Week
+				AstralKeys[id].time_stamp = addon.WeekTime()
 			else -- Nope, ok, let's add them to the DB manually.
 				AstralKeys[#AstralKeys + 1] = {
-					unit = e.Player(),
-					class = e.PlayerClass(),
+					unit = addon.Player(),
+					class = addon.PlayerClass(),
 					dungeon_id = tonumber(mapID),
 					key_level = tonumber(keyLevel),
-					week = e.Week,
-					time_stamp = e.WeekTime(),
+					week = addon.Week,
+					time_stamp = addon.WeekTime(),
 				}
-				e.SetUnitID(e.Player(), #AstralKeys)
+				addon.SetUnitID(addon.Player(), #AstralKeys)
 			end
 		end
 	end
@@ -143,14 +140,14 @@ function e.FindKeyStone(sendUpdate, anounceKey)
 	if tonumber(oldMap) == tonumber(mapID) and tonumber(oldLevel) == tonumber(keyLevel) then return end
 
 	if anounceKey then
-		e.AnnounceNewKey(e.CreateKeyLink(mapID, keyLevel))
+		addon.AnnounceNewKey(addon.CreateKeyLink(mapID, keyLevel))
 	end
 end
 
 -- Finds best map clear fothe week for logged on character. If character already is in database
 -- updates the information, else creates new entry for character
-function e.UpdateCharacterBest()
-	if UnitLevel('player') < e.EXPANSION_LEVEL then return end
+function addon.UpdateCharacterBest()
+	if UnitLevel('player') < addon.EXPANSION_LEVEL then return end
 
 	local weeklyBest = 0
 	local runHistory = C_MythicPlus.GetRunHistory(false, true)
@@ -167,7 +164,7 @@ function e.UpdateCharacterBest()
 	local found = false
 
 	for i = 1, #AstralCharacters do
-		if AstralCharacters[i].unit == e.Player() then
+		if AstralCharacters[i].unit == addon.Player() then
 			found = true
 			AstralCharacters[i].weekly_best = weeklyBest
 			break
@@ -175,18 +172,18 @@ function e.UpdateCharacterBest()
 	end
 
 	if not found then
-		table.insert(AstralCharacters, {unit = e.Player(), class = e.PlayerClass(), weekly_best = weeklyBest, faction = e.FACTION})
-		e.SetCharacterID(e.Player(), #AstralCharacters)
+		table.insert(AstralCharacters, { unit = addon.Player(), class = addon.PlayerClass(), weekly_best = weeklyBest, faction = addon.FACTION})
+		addon.SetCharacterID(addon.Player(), #AstralCharacters)
 	end
 end
 
 local function MythicPlusStart()
-	e.FindKeyStone(true, false)
+	addon.FindKeyStone(true, false)
 end
 
 AstralEvents:Register('CHALLENGE_MODE_START', MythicPlusStart, 'PlayerEnteredMythic')
 
-function e.GetDifficultyColour(keyLevel)
+function addon.GetDifficultyColour(keyLevel)
 	if type(keyLevel) ~= 'number' then return COLOUR[1] end -- return white for any strings or non-number values
 	if keyLevel <= 4 then
 		return COLOUR[1]
@@ -206,11 +203,11 @@ AstralEvents:Register('BAG_UPDATE', function()
 	for bagId = 0, 4 do
 		for slot = 1, GetContainerNumSlots(bagId) do
 			local itemID = GetContainerItemID(bagId, slot)
-			if (e.MYTHICKEY_ITEMID == itemID) then
+			if (addon.MYTHICKEY_ITEMID == itemID) then
 				local itemLink = GetContainerItemLink(bagId, slot)
 				if (dataInitialized) then
 					if (itemLink ~= lastKey) then
-						e.FindKeyStone(true, false)
+						addon.FindKeyStone(true, false)
 					end
 				end
 				lastKey = itemLink

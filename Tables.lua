@@ -1,4 +1,4 @@
-local e, L = unpack(select(2, ...))
+local _, addon = ...
 
 local FILTER_METHOD = {}
 local SORT_MEDTHOD = {}
@@ -24,11 +24,11 @@ local function ListFilter(A, filters)
 		if AstralKeysSettings.frame.show_offline.isEnabled then
 			A[i].isShown = true
 		else
-			A[i].isShown = e.IsUnitOnline(A[i].character_name)
+			A[i].isShown = addon.IsUnitOnline(A[i].character_name)
 		end
 
 		if not AstralKeysSettings.friendOptions.show_other_faction.isEnabled then
-			A[i].isShown = A[i].isShown and tonumber(A[i].faction) == e.FACTION
+			A[i].isShown = A[i].isShown and tonumber(A[i].faction) == addon.FACTION
 		end
 
 		local isShownInFilter = true -- Assume there is no filter taking place
@@ -37,7 +37,7 @@ local function ListFilter(A, filters)
 				if filterText ~= '' then
 					isShownInFilter = false -- There is a filter, now assume this unit is not to be shown
 					if field == 'dungeon_name' then
-						local mapName = e.GetMapName(A[i]['dungeon_id'])
+						local mapName = addon.GetMapName(A[i]['dungeon_id'])
 						if strfind(strlower(mapName), strlower(filterText)) then
 							isShownInFilter = true
 						end
@@ -88,25 +88,25 @@ end
 local function ListSort(A, v)
 	if v == 'dungeon_name' then
 		table.sort(A, function(a, b)
-			local aOnline = e.IsUnitOnline(a.character_name) and 1 or 0
-			local bOnline = e.IsUnitOnline(b.character_name) and 1 or 0
+			local aOnline = addon.IsUnitOnline(a.character_name) and 1 or 0
+			local bOnline = addon.IsUnitOnline(b.character_name) and 1 or 0
 			if not AstralKeysSettings.frame.mingle_offline.isEnabled then
 				aOnline = true
 				bOnline = true
 			end
 			if aOnline == bOnline then
 				if AstralKeysSettings.frame.orientation == 0 then
-					if e.GetMapName(a.dungeon_id) > e.GetMapName(b.dungeon_id) then
+					if addon.GetMapName(a.dungeon_id) > addon.GetMapName(b.dungeon_id) then
 						return true
-					elseif e.GetMapName(b.dungeon_id) > e.GetMapName(a.dungeon_id) then
+					elseif addon.GetMapName(b.dungeon_id) > addon.GetMapName(a.dungeon_id) then
 						return false
 					else
 						return a.character_name < b.character_name
 					end
 				else
-					if e.GetMapName(a.dungeon_id) > e.GetMapName(b.dungeon_id) then
+					if addon.GetMapName(a.dungeon_id) > addon.GetMapName(b.dungeon_id) then
 						return false
-					elseif e.GetMapName(b.dungeon_id) > e.GetMapName(a.dungeon_id) then
+					elseif addon.GetMapName(b.dungeon_id) > addon.GetMapName(a.dungeon_id) then
 						return true
 					else
 						return CompareUnitNames(a, b)
@@ -119,8 +119,8 @@ local function ListSort(A, v)
 	else
 		if v == 'character_name' then
 			table.sort(A, function(a, b)
-				local aOnline = e.IsUnitOnline(a.character_name) and 1 or 0
-				local bOnline = e.IsUnitOnline(b.character_name) and 1 or 0
+				local aOnline = addon.IsUnitOnline(a.character_name) and 1 or 0
+				local bOnline = addon.IsUnitOnline(b.character_name) and 1 or 0
 				if not AstralKeysSettings.frame.mingle_offline.isEnabled then
 					aOnline = true
 					bOnline = true
@@ -133,8 +133,8 @@ local function ListSort(A, v)
 			end)
 		else
 			table.sort(A, function(a, b) 
-				local aOnline = e.IsUnitOnline(a.character_name) and 1 or 0
-				local bOnline = e.IsUnitOnline(b.character_name) and 1 or 0
+				local aOnline = addon.IsUnitOnline(a.character_name) and 1 or 0
+				local bOnline = addon.IsUnitOnline(b.character_name) and 1 or 0
 				if not AstralKeysSettings.frame.mingle_offline.isEnabled then
 					aOnline = true
 					bOnline = true
@@ -167,27 +167,27 @@ local function ListSort(A, v)
 	end
 end
 
-function e.AddListFilter(list, f)
+function addon.AddListFilter(list, f)
 	if type(list) ~= 'string' and list == '' then return end
 	if type(f) ~= 'function' then return end
 
 	FILTER_METHOD[list] = f
 end
 
-function e.AddListSort(list, f)
+function addon.AddListSort(list, f)
 	if type(list) ~= 'string' and list == '' then return end
 	if type(f) ~= 'function' then return end
 
 	SORT_MEDTHOD[list] = f
 end
 
-function e.UpdateTable(tbl, filters)
+function addon.UpdateTable(tbl, filters)
 	tbl.num_shown = 0
 	--FILTER_METHOD[e.FrameListShown()](tbl, filters)
 	ListFilter(tbl, filters)
 end
 
-function e.SortTable(A, v)
+function addon.SortTable(A, v)
 	ListSort(A, v)
 	--SORT_MEDTHOD[e.FrameListShown()](A, v)
 end

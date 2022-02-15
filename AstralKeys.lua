@@ -1,6 +1,6 @@
-local e, L = unpack(select(2, ...))
-e.Week = 0
-e.EXPANSION_LEVEL = 60
+local _, addon = ...
+addon.Week = 0
+addon.EXPANSION_LEVEL = 60
 
 if not AstralKeys then AstralKeys = {} end
 if not AstralCharacters then AstralCharacters = {} end
@@ -11,13 +11,13 @@ initializeTime[2] = 1500447600 -- EU Wednesday at reset
 initializeTime[3] = 1500505200 -- CN Thursday at reset
 initializeTime[4] = 0
 
-function e.WeekTime()
+function addon.WeekTime()
 	local region = GetCurrentRegion()
 
 	if region ~= 3 then
-		return GetServerTime() - initializeTime[1] - 604800 * e.Week
+		return GetServerTime() - initializeTime[1] - 604800 * addon.Week
 	else
-		return GetServerTime() - initializeTime[2] - 604800 * e.Week
+		return GetServerTime() - initializeTime[2] - 604800 * addon.Week
 	end
 end
 
@@ -36,29 +36,29 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 	end
 
 	if UnitFactionGroup('player') == 'Alliance' then
-		e.FACTION = 0
+		addon.FACTION = 0
 	else
-		e.FACTION = 1
+		addon.FACTION = 1
 	end
 	
 	local region = GetCurrentRegion()
 	local currentTime = GetServerTime()
 	local d = date('*t', currentTime)
-	local hourOffset, minOffset = math.modf(difftime(currentTime, time(date('!*t', currentTime))))/3600
+	local hourOffset = math.modf(difftime(currentTime, time(date('!*t', currentTime))))/3600
 
 	if region ~= 3 then -- Non EU
-		e.Week = math.floor((GetServerTime() - initializeTime[1]) / 604800)
+		addon.Week = math.floor((GetServerTime() - initializeTime[1]) / 604800)
 	else
-		e.Week = math.floor((GetServerTime() - initializeTime[2]) / 604800)
+		addon.Week = math.floor((GetServerTime() - initializeTime[2]) / 604800)
 	end
 
-	e.SetPlayerNameRealm()
-	e.SetPlayerClass()
+	addon.SetPlayerNameRealm()
+	addon.SetPlayerClass()
 
 	if currentTime > AstralKeysSettings.general.init_time then
 		wipe(AstralCharacters)
 		wipe(AstralKeys)
-		AstralKeysSettings.general.init_time = e.DataResetTime()
+		AstralKeysSettings.general.init_time = addon.DataResetTime()
 	end
 
 	if d.wday == 3 and d.hour < (16 + hourOffset + (d.isdst and 1 or 0)) and region ~= 3 then
@@ -76,16 +76,16 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 				end
 
 				if time(date('*t', GetServerTime())) > AstralKeysSettings.general.init_time then					
-					e.WipeCharacterList()
-					e.WipeUnitList()
-					e.WipeFriendList()
+					addon.WipeCharacterList()
+					addon.WipeUnitList()
+					addon.WipeFriendList()
 					C_MythicPlus.RequestRewards()
 					AstralCharacters = {}
 					AstralKeys = {}
-					AstralKeysSettings.general.init_time = e.DataResetTime()
-					e.Week = math.floor((GetServerTime() - initializeTime[1]) / 604800)
-					e.FindKeyStone(true, false)
-					e.UpdateAffixes()
+					AstralKeysSettings.general.init_time = addon.DataResetTime()
+					addon.Week = math.floor((GetServerTime() - initializeTime[1]) / 604800)
+					addon.FindKeyStone(true, false)
+					addon.UpdateAffixes()
 					self:SetScript('OnUpdate', nil)
 					self = nil
 					return nil
@@ -108,16 +108,16 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 				end
 
 				if time(date('*t', GetServerTime())) > AstralKeysSettings.general.init_time then
-					e.WipeCharacterList()
-					e.WipeUnitList()
-					e.WipeFriendList()
+					addon.WipeCharacterList()
+					addon.WipeUnitList()
+					addon.WipeFriendList()
 					C_MythicPlus.RequestRewards()
 					AstralCharacters = {}
 					AstralKeys = {}
-					AstralKeysSettings.general.init_time = e.DataResetTime()
-					e.FindKeyStone(true, false)
-					e.Week = math.floor((GetServerTime() - initializeTime[2]) / 604800)
-					e.UpdateAffixes()
+					AstralKeysSettings.general.init_time = addon.DataResetTime()
+					addon.FindKeyStone(true, false)
+					addon.Week = math.floor((GetServerTime() - initializeTime[2]) / 604800)
+					addon.UpdateAffixes()
 					self:SetScript('OnUpdate', nil)
 					self = nil
 					return nil
@@ -145,20 +145,20 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 
 	for i = 1, #AstralKeys do -- index guild units
 		if AstralKeys[i] and AstralKeys[i].unit then
-			e.SetUnitID(AstralKeys[i].unit, i)
-			e.AddUnitToSortTable(AstralKeys[i].unit, AstralKeys[i].btag, AstralKeys[i].class, AstralKeys[i].faction, AstralKeys[i].dungeon_id, AstralKeys[i].key_level, AstralKeys[i].weekly_best)
+			addon.SetUnitID(AstralKeys[i].unit, i)
+			addon.AddUnitToSortTable(AstralKeys[i].unit, AstralKeys[i].btag, AstralKeys[i].class, AstralKeys[i].faction, AstralKeys[i].dungeon_id, AstralKeys[i].key_level, AstralKeys[i].weekly_best)
 			--e.AddUnitToTable(AstralKeys[i].unit, AstralKeys[i].class, AstralKeys[i].faction, 'GUILD', AstralKeys[i].dungeon_id, AstralKeys[i].key_level, AstralKeys[i].weekly_best)
 		end
 	end
 
 	for i = 1, #AstralCharacters do -- index player's characters
 		if AstralCharacters[i] and AstralCharacters[i].unit then
-			e.SetCharacterID(AstralCharacters[i].unit, i)
+			addon.SetCharacterID(AstralCharacters[i].unit, i)
 		end
 	end	
 	
 	if AstralAffixes.season_start_week == 0 then -- Addon has just initialized for the fisrt time or saved variables have been lost. 
-		AstralAffixes.season_start_week = e.Week
+		AstralAffixes.season_start_week = addon.Week
 	end
 	C_MythicPlus.RequestMapInfo() -- Gets info on affixes and current season...
 	C_MythicPlus.RequestCurrentAffixes() -- Who knows what this actually does...

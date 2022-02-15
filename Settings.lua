@@ -1,10 +1,9 @@
-local ADDON_NAME = ...
-local e, L = unpack(select(2, ...))
+local ADDON_NAME, addon = ...
 
 -- Reset time 15:00 UTC AMERICAS
 -- 07:00 UTC EU
 
-function e.DataResetTime()
+function addon.DataResetTime()
 	local region = GetCurrentRegion()
 	local serverTime = GetServerTime()
 	local d = date('*t', serverTime)
@@ -48,7 +47,7 @@ if not AstralKeysSettings then
 	AstralKeysSettings = {}
 end
 
-function e:AddDefaultSettings(category, name, data)
+function addon:AddDefaultSettings(category, name, data)
 	if not category or type(category) ~= 'string' then
 		error('AddDefaultSettings(category, name, data) category: string expected, received ' .. type(category))
 	end
@@ -81,57 +80,57 @@ function e:AddDefaultSettings(category, name, data)
 	end
 end
 
-local function LoadDefaultSettings(addon)
-	if addon ~= ADDON_NAME then return end
+local function LoadDefaultSettings(addonName)
+	if addonName ~= ADDON_NAME then return end
 	if not AstralKeysSettings.new_settings_config then
 		wipe(AstralKeysSettings)
 		AstralKeysSettings.new_settings_config = true
 	end
 
-	e.CLIENT_VERSION = GetAddOnMetadata('AstralKeys', 'Version')
-	e:SetUIScale()
-	_G['AstralEngine'] = e
+	addon.CLIENT_VERSION = GetAddOnMetadata('AstralKeys', 'Version')
+	addon:SetUIScale()
+	_G['AstralEngine'] = addon
 
 	-- General options
-	e:AddDefaultSettings('general', 'init_time', e.DataResetTime())
-	e:AddDefaultSettings('general', 'show_minimap_button', 
+	addon:AddDefaultSettings('general', 'init_time', addon.DataResetTime())
+	addon:AddDefaultSettings('general', 'show_minimap_button',
 	{
 		isEnabled = true,
 	})
-	e:AddDefaultSettings('general', 'show_tooltip_key', {
+	addon:AddDefaultSettings('general', 'show_tooltip_key', {
 		isEnabled = true,
 	})
-	e:AddDefaultSettings('general', 'announce_party', {
+	addon:AddDefaultSettings('general', 'announce_party', {
 		isEnabled = true,
 	})
-	e:AddDefaultSettings('general', 'announce_guild', {
+	addon:AddDefaultSettings('general', 'announce_guild', {
 		isEnabled = false,
 	})
-	e:AddDefaultSettings('general', 'report_on_message', 
+	addon:AddDefaultSettings('general', 'report_on_message',
 	{
 		['party'] = true,
 		['raid'] = false,
 		['guild'] = false,
 		['no_key'] = false,
 	})
-	e:AddDefaultSettings('general', 'expanded_tooltip', {
+	addon:AddDefaultSettings('general', 'expanded_tooltip', {
 		isEnabled = true,
 	})
 
 	--Frame settings, collapsed, saved sorting, etc
-	e:AddDefaultSettings('frame', 'orientation', 1)
-	e:AddDefaultSettings('frame', 'sorth_method', 'character_name')
-	e:AddDefaultSettings('frame', 'isCollapsed', {
+	addon:AddDefaultSettings('frame', 'orientation', 1)
+	addon:AddDefaultSettings('frame', 'sorth_method', 'character_name')
+	addon:AddDefaultSettings('frame', 'isCollapsed', {
 		isEnabled = false,
 	})
-	e:AddDefaultSettings('frame', 'current_list', 'GUILD')
-	e:AddDefaultSettings('frame', 'show_offline', {
+	addon:AddDefaultSettings('frame', 'current_list', 'GUILD')
+	addon:AddDefaultSettings('frame', 'show_offline', {
 		isEnabled = true,
 	})
-	e:AddDefaultSettings('frame', 'mingle_offline', {
+	addon:AddDefaultSettings('frame', 'mingle_offline', {
 		isEnabled = false,
 	})
-	e:AddDefaultSettings('frame', 'rank_filter', 
+	addon:AddDefaultSettings('frame', 'rank_filter',
 	{
 		[1] = true,
 		[2] = true,
@@ -146,10 +145,10 @@ local function LoadDefaultSettings(addon)
 	})
 
 	-- Friend syncing options
-	e:AddDefaultSettings('friendOptions', 'friend_sync', {
+	addon:AddDefaultSettings('friendOptions', 'friend_sync', {
 		isEnabled = true,
 	})
-	e:AddDefaultSettings('friendOptions', 'show_other_faction', {
+	addon:AddDefaultSettings('friendOptions', 'show_other_faction', {
 		isEnabled = true,
 	})
 	AstralEvents:Unregister('ADDON_LOADED', 'LoadDefaultSettings')
@@ -157,10 +156,10 @@ end
 
 AstralEvents:Register('ADDON_LOADED', LoadDefaultSettings, 'LoadDefaultSettings')
 
-function e.FrameListShown()
+function addon.FrameListShown()
 	return AstralKeysSettings.frame.current_list
 end
 
-function e.SetFrameListShown(listName)
+function addon.SetFrameListShown(listName)
 	AstralKeysSettings.frame.current_list = listName
 end
