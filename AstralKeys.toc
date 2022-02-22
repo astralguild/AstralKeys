@@ -1,8 +1,8 @@
-## Interface: 90105
+## Interface: 90200
 ## Title: Astral Keys
 ## Notes: Keystone Manager for Guilds and Friends
 ## Author: Astral
-## Version: 3.46
+## Version: 3.47
 ## SavedVariables: AstralKeys, AstralCharacters, AstralKeysSettings, AstralMinimap, AstralAffixes, AstralLists, AstralUnits
 ## X-Wago-ID: baNDZoKo
 ## X-Curse-Project-ID: 265199
