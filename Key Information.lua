@@ -55,7 +55,7 @@ function addon.CreateKeyLink(mapID, keyLevel)
 	if mapID == 369 or mapID == 370 then
 		mapName = C_ChallengeMode.GetMapUIInfo(mapID)		
 	else
-		mapName = addon.GetMapName(mapID)
+		mapName = addon.GetMapName(mapID, true)
 	end
 	local thisAff1, thisAff2, thisAff3, thisAff4 = 0
 	if keyLevel > 1 then
