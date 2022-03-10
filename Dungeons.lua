@@ -18,6 +18,7 @@ local function SetDungeonTable()
 		end
 		local colon = string.find(name, ":")
 		if (colon) then
+			DUNGEON_TABLE[mapID .. "F"] = L[name]
 			name = string.sub(name, colon + 2)
 		end
 		DUNGEON_TABLE[mapID] = L[name]
@@ -39,6 +40,9 @@ DUNGEON_TABLE[382] = L["Theater of Pain"]
 DUNGEON_TABLE[391] = L["Streets of Wonder"]
 DUNGEON_TABLE[392] = L["So'leah's Gambit"]
 
-function addon.GetMapName(mapID)
-	return DUNGEON_TABLE[mapID]
+DUNGEON_TABLE["391F"] = L["Tazavesh: Streets of Wonder"]
+DUNGEON_TABLE["392F"] = L["Tazavesh: So'leah's Gambit"]
+
+function addon.GetMapName(mapID, full)
+	return (full and DUNGEON_TABLE[mapID .. "F"]) or DUNGEON_TABLE[mapID]
 end
