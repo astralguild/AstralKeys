@@ -1,4 +1,5 @@
 local _, addon = ...
+local L = addon.L
 
 local strformat = string.format
 local BNSendGameData, SendAddonMessage, SendChatMessage = BNSendGameData, C_ChatInfo.SendAddonMessage, SendChatMessage
