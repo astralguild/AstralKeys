@@ -1,48 +1,57 @@
 local L = select(2, ...).L('ruRU')
 
 -- Default string for keystone
-L['KEYSTONE'] = 'Keystone:'
+L['KEYSTONE'] = 'Ключ:'
 
 -- Default tab names
-L['GUILD'] = GUILD
-L['FRIENDS'] = FRIENDS
-L['PARTY'] = PARTY
-L['RAID'] = RAID
+L['GUILD'] = 'ГИЛЬДИЯ'
+L['FRIENDS'] = 'ДРУЗЬЯ'
+L['PARTY'] = 'ГРУППА'
+L['RAID'] = 'РЕЙД'
 
 -- Column Headers
-L['LEVEL'] = LEVEL
-L['DUNGEON'] = DUNGEONS
-L['CHARACTER'] = CHARACTER
+L['LEVEL'] = 'УРОВЕНЬ'
+L['DUNGEON'] = 'ПОДЗЕМЕЛЬЯ'
+L['CHARACTER'] = 'ПЕРСОНАЖ'
 
 -- Subsection Headers
-L['CHARACTERS'] = 'CHARACTERS'
-L['AFFIXES'] = 'AFFIXES'
+L['CHARACTERS'] = 'ПЕРСОНАЖИ'
+L['AFFIXES'] = 'АФФИКСЫ'
 
 -- Character Labels
-L['CURRENT_KEY'] = 'CURRENT'
-L['WEEKLY_BEST'] = 'WKLY BEST'
+L['CURRENT_KEY'] = 'ТЕКУЩИЙ'
+L['WEEKLY_BEST'] = 'ЛУЧШЕЕ ЗА НЕДЕЛЮ'
 
 L['CHARACTER_DUNGEON_NOT_RAN'] = 'No mythic+ ran'
-L['CHARACTER_KEY_NOT_FOUND'] = 'No key found'
+L['CHARACTER_KEY_NOT_FOUND'] = 'Ключ не найден'
 
 
 -- Dropdown menu selections
-L['Whisper'] = WHISPER
-L['INVITE'] = INVITE
-L['SUGGEST_INVITE'] = SUGGEST_INVITE
-L['REQUEST_INVITE'] = REQUEST_INVITE
-L['CANCEL'] = CANCEL
+L['REPORT_TO'] = 'Сообщить'
+L['Whisper'] = 'ШЁПОТ'
+L['INVITE'] = 'ПРИГЛАШЕНИЕ'
+L['SUGGEST_INVITE'] = 'ПРЕДЛОЖИТЬ ПРИГЛАШЕНИЕ'
+L['REQUEST_INVITE'] = 'ЗАПРОС ПРИГЛАШЕНИЯ'
+L['CANCEL'] = 'ОТМЕНИТЬ'
+L['NEW_LIST_DESCRIPTION'] = 'Название нового списка'
+L['CREATE_NEW_LIST'] = 'Создать новый список'
+L['REMOVE_UNIT_FROM_LIST'] = 'Убрать из списка'
+L['ADD_TO_LIST'] = 'Добавить единицу(ы) в список'
+L['ADD_REMOVE_LIST'] = 'Добавить или удалить список'
+L['DELETE_LIST'] = 'Удалить список'
+L['LIST_ADD_HELPER_TEXT'] = 'Добавьте единицы в список, щелкнув правой кнопкой мыши единицу в списке друзей или знакомых.'
+L['OKAY'] = 'ОК'
 
 -- Announce messages
-L['ANNOUNCE_NEW_KEY'] = 'Astral Keys: New key %s'
-L['NO_KEY'] = 'No key'
-L['KEYS_RESPOND_ON_NO_KEY'] = 'Respond even if you do not have a key'
+L['ANNOUNCE_NEW_KEY'] = 'Astral Keys: новый ключ %s'
+L['NO_KEY'] = 'Нет ключа'
+L['KEYS_RESPOND_ON_NO_KEY'] = 'Отвечать, даже если у Вас нет ключа'
 
 
 -- Search field texts
-L['FILTER_TEXT_DUNGEON'] = 'Filter by dungeon'
-L['FILTER_TEXT_CHARACTER'] = 'Filter by character name'
+L['FILTER_TEXT_DUNGEON'] = 'Фильтр по подземелью'
+L['FILTER_TEXT_CHARACTER'] = 'Фильтр по имени персонажа'
 
 -- Options
-L['!KEYS_DESC'] = 'Respond to !keys command in the following chat channels'
-L['EXPANDED_TOOLTIP'] = 'Show affix description in the tooltip'
+L['!KEYS_DESC'] = 'Отвечать на команду !keys в следующих каналах чата'
+L['EXPANDED_TOOLTIP'] = 'Показывать описание аффикса во всплывающей подсказке'
