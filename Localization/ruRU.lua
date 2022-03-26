@@ -22,7 +22,7 @@ L['AFFIXES'] = 'АФФИКСЫ'
 L['CURRENT_KEY'] = 'ТЕКУЩИЙ'
 L['WEEKLY_BEST'] = 'ЛУЧШЕЕ ЗА НЕДЕЛЮ'
 
-L['CHARACTER_DUNGEON_NOT_RAN'] = 'No mythic+ ran'
+L['CHARACTER_DUNGEON_NOT_RAN'] = 'Не пройдено ключей'
 L['CHARACTER_KEY_NOT_FOUND'] = 'Ключ не найден'
 
 
