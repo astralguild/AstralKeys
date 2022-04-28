@@ -300,6 +300,7 @@ local function ParseGuildChatCommands(text)
 				local keyLink = addon.CreateKeyLink(addon.UnitMapID(unitID), addon.UnitKeyLevel(unitID))
 				if not keyLink then return end -- Something went wrong
 				SendChatMessage(string.format('Astral Keys: %s', keyLink), 'GUILD')
+				ReportTimewalkingKey('GUILD')
 			else
 				if AstralKeysSettings.general.report_on_message.no_key then
 					SendChatMessage(strformat('%s: %s', 'Astral Keys', L['NO_KEY']), 'GUILD')
@@ -320,6 +321,7 @@ local function ParsePartyChatCommands(text)
 				local keyLink = addon.CreateKeyLink(addon.UnitMapID(unitID), addon.UnitKeyLevel(unitID))
 				if not keyLink then return end -- Something went wrong
 				SendChatMessage(string.format('Astral Keys: %s', keyLink), 'PARTY')
+				ReportTimewalkingKey('PARTY')	
 			else
 				if AstralKeysSettings.general.report_on_message.no_key then
 					SendChatMessage(strformat('%s: %s', 'Astral Keys', L['NO_KEY']), 'PARTY')
@@ -330,6 +332,21 @@ local function ParsePartyChatCommands(text)
 end
 AstralEvents:Register('CHAT_MSG_PARTY', ParsePartyChatCommands, 'parsepartychat')
 AstralEvents:Register('CHAT_MSG_PARTY_LEADER', ParsePartyChatCommands, 'parsepartychat')
+
+function ReportTimewalkingKey(reportType) 
+	local timeWalkingLink 
+	for bag = 0, NUM_BAG_SLOTS do
+		local numSlots = GetContainerNumSlots(bag)
+		for slot = 1, numSlots do
+			if (GetContainerItemID(bag, slot) == addon.TIMEWALKINGKEY_ITEMID) then
+				timeWalkingLink = GetContainerItemLink(bag, slot)
+				break
+			end
+		end
+	end
+	if not timeWalkingLink then return end -- something went wrong, or key doesn't exist this week
+	SendChatMessage(string.format('Astral Keys: %s', link), reportType)
+end
 
 local function ParseRaidChatCommands(text)
 	if UnitLevel('player') ~= addon.EXPANSION_LEVEL then return end -- Don't bother checking anything if the unit is unable to acquire a key
@@ -350,6 +367,7 @@ local function ParseRaidChatCommands(text)
 				end
 				if not link then return end -- something went wrong
 				SendChatMessage(string.format('Astral Keys: %s', link), 'RAID')	
+				ReportTimewalkingKey('RAID')
 			else
 				if AstralKeysSettings.general.report_on_message.no_key then
 					SendChatMessage(strformat('%s: %s', 'Astral Keys', L['NO_KEY']), 'RAID')

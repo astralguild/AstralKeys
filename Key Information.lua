@@ -10,6 +10,7 @@ COLOUR[4] = 'ffff8000' -- Legendary
 COLOUR[5] = 'ffe6cc80' -- Artifact
 
 addon.MYTHICKEY_ITEMID = 180653
+addon.TIMEWALKINGKEY_ITEMID = 187786
 
 local MapIds = {}
 
@@ -78,6 +79,26 @@ function addon.CreateKeyLink(mapID, keyLevel)
 		return strformat('|c' .. COLOUR[3] .. '|Hkeystone:%d:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r', addon.MYTHICKEY_ITEMID, mapID, keyLevel, thisAff1, thisAff2, thisAff3, thisAff4, L['KEYSTONE'], mapName, keyLevel):gsub('\124\124', '\124')
 	end
 end
+
+-- Prints out the same link as the CreateKeyLink but only if the Timewalking Key is found. Otherwise nothing is done.
+function addon.CreateTimewalkingKeyLink(mapID, keyLevel)
+   local mapName = addon.GetMapName(mapID, true)
+   local thisAff1, thisAff2, thisAff3, thisAff4 = 0
+	if keyLevel > 1 then
+	 thisAff1 = addon.TimewalkingAffixOne()
+	end
+	if keyLevel > 3 then
+	 thisAff2 = addon.TimewalkingAffixTwo()
+	end
+	if keyLevel > 6 then
+	 thisAff3 = addon.TimewalkingAffixThree()
+	end
+	if keyLevel > 8 then
+	 thisAff4 = addon.TimewalkingAffixFour()
+	end
+	return strformat('|c' .. COLOUR[3] .. '|Hkeystone:%d:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r', addon.TIMEWALKINGKEY_ITEMID, mapID, keyLevel, thisAff1, thisAff2, thisAff3, thisAff4, L['KEYSTONE'], mapName, keyLevel):gsub('\124\124', '\124')
+end
+
 
 AstralEvents:Register('CHALLENGE_MODE_COMPLETED', function()
 	C_Timer.After(3, function()
