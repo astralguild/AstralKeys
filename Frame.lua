@@ -725,16 +725,10 @@ do
 		local frame = CreateFrame('FRAME', '$parentAffix' .. i, characterFrame)
 		frame.id = i
 
-		local mask = frame:CreateMaskTexture()
-		mask:SetTexture("Interface\\MINIMAP\\UI-Minimap-Background", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
-		mask:SetSize(32, 32)
-		mask:SetPoint("CENTER")
-
 		frame.affixID = 0
 		frame:SetSize(32, 32)
 		frame.icon = frame:CreateTexture(nil, 'ARTWORK')
-				
-		frame.icon:AddMaskTexture(mask)
+
 
 		if i == 1 then
 			frame:SetPoint('TOPLEFT', affixTitle, 'BOTTOMLEFT', 0, -15)
@@ -790,17 +784,10 @@ do
 			frame.weekOffset = 2
 		end
 
-		local mask = frame:CreateMaskTexture()
-		mask:SetTexture("Interface\\MINIMAP\\UI-Minimap-Background", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
-		mask:SetSize(32, 32)
-		mask:SetPoint("CENTER")
-
 		frame.affixID = 0
 		frame:SetSize(32, 32)
 		frame.texture = frame:CreateTexture(nil, 'ARTWORK')
-				
-		frame.texture:AddMaskTexture(mask)
-
+		
 		if i == 1 then
 			frame:SetPoint('TOPLEFT', affixFrame, 'TOPLEFT', 0, 0)
 		elseif i == 5 then
