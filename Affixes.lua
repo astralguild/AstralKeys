@@ -64,6 +64,14 @@ local AFFIX_ROTATION = {
 	{ TYRANNICAL, BOLSTERING, EXPLOSIVE },
 }
 
+-- Timewalking Affixes
+local INFERNAL = 129
+
+local LEGION_AFFIX_ROTATION = {
+	{ TYRANNICAL, BURSTING, VOLCANIC, INFERNAL },
+	{ FORTIFIED, SANGUINE, QUAKING, INFERNAL }
+}
+
 local AFFIX_INFO = {}
 local SEASON_AFFIX = 0
 local ROTATION_WEEK_POSITION = 0
@@ -165,6 +173,23 @@ end
 -- This is always the season affix, this doesn't get changed in a rotation
 function addon.AffixFour()
 	return SEASON_AFFIX
+end
+
+-- These are hardcoded and should be updated once we get back into the Timewalking event
+function addon.TimewalkingAffixOne() 
+	return LEGION_AFFIX_ROTATION[0][1]
+end
+
+function addon.TimewalkingAffixTwo()
+	return LEGION_AFFIX_ROTATION[0][2]
+end
+
+function addon.TimewaklingAffixThree()
+	return LEGION_AFFIX_ROTATION[0][3]
+end
+
+function addon.TimewalkingAffixFour()
+	return LEGION_AFFIX_ROTATION[0][4]
 end
 
 function addon.AffixName(id)
