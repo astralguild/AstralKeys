@@ -1579,7 +1579,7 @@ local function InitializeFrame()
 	end
 	UpdateTabs()
 
-	guildVersionString:SetFormattedText('Astral - Turalyon (US) %s', addon.CLIENT_VERSION)
+	guildVersionString:SetFormattedText('Astral - Area 52 (US) %s', addon.CLIENT_VERSION)
 
 	if AstralKeysSettings.frame.isCollapsed.isEnabled then
 		collapseButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline-first_page-24px@2x')
