@@ -1,7 +1,7 @@
 local L = select(2, ...).L('zhTW')
 
 -- Default string for keystone
-L['KEYSTONE'] = 'Keystone:'
+L['KEYSTONE'] = '鑰石:'
 
 -- Default tab names
 L['GUILD'] = GUILD
@@ -15,15 +15,15 @@ L['DUNGEON'] = DUNGEONS
 L['CHARACTER'] = CHARACTER
 
 -- Subsection Headers
-L['CHARACTERS'] = 'CHARACTERS'
-L['AFFIXES'] = 'AFFIXES'
+L['CHARACTERS'] = '角色'
+L['AFFIXES'] = '詞綴'
 
 -- Character Labels
-L['CURRENT_KEY'] = 'CURRENT'
-L['WEEKLY_BEST'] = 'WKLY BEST'
+L['CURRENT_KEY'] = '目前鑰石'
+L['WEEKLY_BEST'] = '當周最佳'
 
-L['CHARACTER_DUNGEON_NOT_RAN'] = 'No mythic+ ran'
-L['CHARACTER_KEY_NOT_FOUND'] = 'No key found'
+L['CHARACTER_DUNGEON_NOT_RAN'] = '還沒有打過大秘'
+L['CHARACTER_KEY_NOT_FOUND'] = '找不到鑰石'
 
 
 -- Dropdown menu selections
@@ -34,15 +34,15 @@ L['REQUEST_INVITE'] = REQUEST_INVITE
 L['CANCEL'] = CANCEL
 
 -- Announce messages
-L['ANNOUNCE_NEW_KEY'] = 'Astral Keys: New key %s'
-L['NO_KEY'] = 'No key'
-L['KEYS_RESPOND_ON_NO_KEY'] = 'Respond even if you do not have a key'
+L['ANNOUNCE_NEW_KEY'] = 'Astral Keys: 新的鑰石是 %s'
+L['NO_KEY'] = '沒有鑰石'
+L['KEYS_RESPOND_ON_NO_KEY'] = '即使你沒有鑰石時也回應'
 
 
 -- Search field texts
-L['FILTER_TEXT_DUNGEON'] = 'Filter by dungeon'
-L['FILTER_TEXT_CHARACTER'] = 'Filter by character name'
+L['FILTER_TEXT_DUNGEON'] = '根據地城過濾'
+L['FILTER_TEXT_CHARACTER'] = '根據角色名稱過濾'
 
 -- Options
-L['!KEYS_DESC'] = 'Respond to !keys command in the following chat channels'
-L['EXPANDED_TOOLTIP'] = 'Show affix description in the tooltip'
+L['!KEYS_DESC'] = '在以下頻道回應 !keys 指令'
+L['EXPANDED_TOOLTIP'] = '在提示中顯示詞綴敘述'
