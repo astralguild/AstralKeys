@@ -29,17 +29,21 @@ end
 AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', SetDungeonTable, 'SetDungeonTable')
 
 -- Shadowlands Dungeons
-DUNGEON_TABLE[375] = L["Mists of Tirna Scithe"]
-DUNGEON_TABLE[376] = L["The Necrotic Wake"]
-DUNGEON_TABLE[377] = L["De Other Side"]
-DUNGEON_TABLE[378] = L["Halls of Atonement"]
-DUNGEON_TABLE[379] = L["Plaguefall"]
-DUNGEON_TABLE[380] = L["Sanguine Depths"]
-DUNGEON_TABLE[381] = L["Spires of Ascension"]
-DUNGEON_TABLE[382] = L["Theater of Pain"]
+
+DUNGEON_TABLE[169] = L["Iron Docks"]
+DUNGEON_TABLE[166] = L["Grimrail Depot"]
+DUNGEON_TABLE[227] = L["Lower Karazhan"]
+DUNGEON_TABLE[234] = L["Upper Karazhan"]
+DUNGEON_TABLE[370] = L["Mechagon Workshop"]
+DUNGEON_TABLE[369] = L["Mechagon Junkyard"]
 DUNGEON_TABLE[391] = L["Streets of Wonder"]
 DUNGEON_TABLE[392] = L["So'leah's Gambit"]
 
+
+DUNGEON_TABLE["227F"] = L["Return to Karazhan: Lower"]
+DUNGEON_TABLE["234F"] = L["Return to Karazhan: Upper"]
+DUNGEON_TABLE["370F"] = L["Operation: Mechagon - Workshop"]
+DUNGEON_TABLE["369F"] = L["Operation: Mechagon - Junkyard"]
 DUNGEON_TABLE["391F"] = L["Tazavesh: Streets of Wonder"]
 DUNGEON_TABLE["392F"] = L["Tazavesh: So'leah's Gambit"]
 
