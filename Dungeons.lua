@@ -3,31 +3,6 @@ local L = addon.L
 
 local DUNGEON_TABLE = {}
 
-local function SetDungeonTable()
-	local dungeonTable = C_ChallengeMode.GetMapTable()
-
-	if not dungeonTable then
-		C_MythicPlus.RequestMapInfo()
-	end
-
-	for _, mapID in pairs(dungeonTable) do
-		local name = C_ChallengeMode.GetMapUIInfo(mapID)
-		if not name then 
-			C_MythicPlus.RequestMapInfo()
-			break
-		end
-		local colon = string.find(name, ":")
-		if (colon) then
-			DUNGEON_TABLE[mapID .. "F"] = L[name]
-			name = string.sub(name, colon + 2)
-		end
-		DUNGEON_TABLE[mapID] = L[name]
-	end
-	AstralEvents:Unregister('CHALLENGE_MODE_MAPS_UPDATE', 'SetDungeonTable')
-end
-
-AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', SetDungeonTable, 'SetDungeonTable')
-
 -- Shadowlands Dungeons
 
 DUNGEON_TABLE[169] = L["Iron Docks"]
