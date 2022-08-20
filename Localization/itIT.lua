@@ -23,8 +23,7 @@ L['CURRENT_KEY'] = 'Corrente'
 L['WEEKLY_BEST'] = 'Migl sett'
 
 L['CHARACTER_DUNGEON_NOT_RAN'] = 'Nessuna run M+'
-L['CHARACTER_KEY_NOT_FOUND'] = 'Nessuna chiave trovata'
-
+L['CHARACTER_KEY_NOT_FOUND'] = 'Nessuna chiave'
 
 -- Dropdown menu selections
 L['REPORT_TO'] = 'Linka in'
@@ -68,3 +67,20 @@ L['Sync with friends'] = 'Sincronizza con gli amici'
 L['Show other faction'] = 'Sincronizza le altre fazioni'
 L['Rank Filter'] = 'Filtro per rango'
 L['Include these ranks in the guild listing'] = 'Includi questi ranghi nella lista di gilda'
+
+-- Dungeons name
+L["Iron Docks"] = 'Darsena di Ferro'
+L["Grimrail Depot"] = 'Treno Frecciacupa'
+L["Lower Karazhan"] = 'Karazhan Inferiore'
+L["Upper Karazhan"] = 'Karazhan Superiore'
+L["Mechagon Workshop"] = 'Officina di Meccagon'
+L["Mechagon Junkyard"] = 'Discarica di Meccagon'
+L["Streets of Wonder"] = 'Strade di Tazavesh'
+L["So'leah's Gambit"] = 'Azzardo di Tazavesh'
+
+L["Return to Karazhan: Lower"] = 'Ritorno a Karazhan: Inferiore'
+L["Return to Karazhan: Upper"] = 'Ritorno a Karazhan: Superiore'
+L["Operation: Mechagon - Workshop"] = 'Operazione: Meccagon - Officina'
+L["Operation: Mechagon - Junkyard"] = 'Operazione: Meccagon - Discarica'
+L["Tazavesh: Streets of Wonder"] = 'Tazavesh: Strade delle Meraviglie'
+L["Tazavesh: So'leah's Gambit"] = 'Tazavesh: Azzardo di So\'leah'
