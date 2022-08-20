@@ -343,9 +343,12 @@ function ReportTimewalkingKey(reportType)
 				break
 			end
 		end
+		if timeWalkingLink then
+			break
+		end
 	end
 	if not timeWalkingLink then return end -- something went wrong, or key doesn't exist this week
-	SendChatMessage(string.format('Astral Keys: %s', link), reportType)
+	SendChatMessage(string.format('Astral Keys: %s', timeWalkingLink), reportType)
 end
 
 local function ParseRaidChatCommands(text)
