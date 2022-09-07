@@ -56,7 +56,7 @@ L["Upper Karazhan"] = 'Karazhan sommet'
 L["Mechagon Workshop"] = 'Atelier de Mécagone'
 L["Mechagon Junkyard"] = 'Casse de Mécagone'
 L["Streets of Wonder"] = 'Rue des Merveilles'
-L["So'leah's Gambit"] = 'Stratagème de So'leah'
+L["So'leah's Gambit"] = "Stratagème de So'leah"
 
 
 L["Return to Karazhan: Lower"] = 'Retour à Karazhan: bas'
