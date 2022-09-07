@@ -49,7 +49,7 @@ L['EXPANDED_TOOLTIP'] = 'Show affix description in the tooltip'
 
 -- Shadowlands Dungeons
 
-L["Iron Docks"] = 'Dock de fer'
+L["Iron Docks"] = 'Quais de fer'
 L["Grimrail Depot"] = 'Dépôt de Tristerail'
 L["Lower Karazhan"] = 'Karazhan bas'
 L["Upper Karazhan"] = 'Karazhan sommet'
