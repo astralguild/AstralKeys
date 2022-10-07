@@ -637,7 +637,7 @@ do
 		FriendsTooltipAstralKeysInfo1:Hide()
 	end
 
-	local buttons = FriendsListFrameScrollFrame.buttons
+	local buttons = FriendsListFrame.ScrollBox
 	for i = 1, #buttons do
 		local button = buttons[i]
 		local oldOnEnter = button.OnEnter

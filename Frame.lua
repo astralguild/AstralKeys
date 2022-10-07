@@ -478,7 +478,7 @@ settingsButton:SetScript('OnClick', function()
 	AstralOptionsFrame:SetShown( not AstralOptionsFrame:IsShown())
 	end)
 
-LoadAddOn("Blizzard_WeeklyRewards")
+--[[ LoadAddOn("Blizzard_WeeklyRewards")
 local greatVaultButton = CreateFrame('BUTTON', '$parentGreatVaultButton', menuBar)
 greatVaultButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\great-vault@2x')
 greatVaultButton:SetSize(24, 24)
@@ -499,7 +499,7 @@ function ToggleGreatVault()
 		WeeklyRewardsFrame:Hide()
 	else WeeklyRewardsFrame:Show()
 	end
-end
+end ]]
 
 local logo_Astral = CreateFrame('BUTTON', nil, menuBar)
 logo_Astral:SetSize(32, 32)
@@ -766,7 +766,6 @@ characterExpand:SetScript('OnPlay', function(self)
 	end)
 
 characterExpand:SetScript('OnUpdate', function(self)
-		self:GetRegionParent():SetAlpha(self:GetSmoothProgress()*2)
 		local left, bottom, width = AstralKeyFrame:GetRect()
 		local newWidth = FRAME_WIDTH_MINIMIZED + (self:GetProgress() * 215) -- 215:: Character Frame Width
 		AstralKeyFrame:ClearAllPoints()
