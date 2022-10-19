@@ -672,7 +672,7 @@ local function TooltipHook(self)
     end
 end
 
-GameTooltip:HookScript('OnTooltipSetUnit', TooltipHook)
+TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, TooltipHook)
 
 local function FriendUnitFunction(self, unit, class, mapID, keyLevel, weekly_best, faction, btag)
 	self.unitID = addon.UnitID(unit)
