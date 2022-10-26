@@ -672,8 +672,8 @@ local function TooltipHook(self)
     end
 end
 
-TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, TooltipHook)
-
+-- enable for 10.0.2 TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, TooltipHook)
+GameTooltip:HookScript('OnTooltipSetUnit', TooltipHook)
 local function FriendUnitFunction(self, unit, class, mapID, keyLevel, weekly_best, faction, btag)
 	self.unitID = addon.UnitID(unit)
 	self.levelString:SetText(keyLevel)
