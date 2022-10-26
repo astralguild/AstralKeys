@@ -46,3 +46,22 @@ L['FILTER_TEXT_CHARACTER'] = 'Filter by character name'
 -- Options
 L['!KEYS_DESC'] = 'Respond to !keys command in the following chat channels'
 L['EXPANDED_TOOLTIP'] = 'Show affix description in the tooltip'
+
+-- Shadowlands Dungeons
+
+L["Iron Docks"] = 'Quais de fer'
+L["Grimrail Depot"] = 'Dépôt de Tristerail'
+L["Lower Karazhan"] = 'Karazhan bas'
+L["Upper Karazhan"] = 'Karazhan sommet'
+L["Mechagon Workshop"] = 'Atelier de Mécagone'
+L["Mechagon Junkyard"] = 'Casse de Mécagone'
+L["Streets of Wonder"] = 'Rue des Merveilles'
+L["So'leah's Gambit"] = "Stratagème de So'leah"
+
+
+L["Return to Karazhan: Lower"] = 'Retour à Karazhan: bas'
+L["Return to Karazhan: Upper"] = 'Retour à Karazhan: sommet'
+L["Operation: Mechagon - Workshop"] = 'Opération: Mécagone - Atelier'
+L["Operation: Mechagon - Junkyard"] = 'Opération: Mécagone - Casse'
+L["Tazavesh: Streets of Wonder"] = 'Tazavesh: Rue des Merveilles'
+L["Tazavesh: So'leah's Gambit"] = "Tazavesh: Stratagème de So'leah"
