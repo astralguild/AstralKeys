@@ -125,7 +125,7 @@ function AstralKeysListMixin:OnClick(button)
 			ToggleFrame(AstralMenuFrameUnit1)
 		else
 			AstralMenuFrameReport1:Hide()
-			AstralMenuFrameUnit2:Hide()
+			AstralMenuFrameTabs1:Hide()
 			AstralMenuFrameUnit1:ClearAllPoints()
 			local uiScale = UIParent:GetScale()
 
@@ -253,9 +253,25 @@ local function CreateList_OnEnter(self)
 	self.buttonParent:Show()
 	unitPopup:Hide()
 	subUnitPopup:Hide()
-	--AstralMenuFrameTabs1:Hide()
-	--AstralMenuFrameTabs2:Hide()
+	AstralMenuFrameTabs1:Hide()
 end
+
+local AstralKeyFrame = CreateFrame('FRAME', 'AstralKeyFrame', UIParent)
+AstralKeyFrame:SetFrameStrata('DIALOG')
+AstralKeyFrame:SetWidth(715)
+AstralKeyFrame:SetHeight(490)
+AstralKeyFrame:SetPoint('CENTER', UIParent, 'CENTER')
+AstralKeyFrame:EnableMouse(true)
+AstralKeyFrame:SetMovable(true)
+AstralKeyFrame:RegisterForDrag('LeftButton')
+AstralKeyFrame:EnableKeyboard(true)
+AstralKeyFrame:SetPropagateKeyboardInput(true)
+AstralKeyFrame:SetClampedToScreen(true)
+AstralKeyFrame:Hide()
+AstralKeyFrame.updateDelay = 0
+AstralKeyFrame.background = AstralKeyFrame:CreateTexture(nil, 'BACKGROUND')
+AstralKeyFrame.background:SetAllPoints(AstralKeyFrame)
+AstralKeyFrame.background:SetColorTexture(0, 0, 0, 0.8)
 
 local createListEditBox = CreateFrame('EditBox', nil, UIParent, "BackdropTemplate")
 createListEditBox:SetFrameStrata('TOOLTIP')
@@ -311,26 +327,68 @@ createListEditBox:SetScript('OnEscapePressed', function(self)
 	self.buttonParent:GetParent():AdjustWidth()
 end)
 
+local listHelperText = AstralKeyFrame:CreateFontString('$parentListHelperText', 'OVERLAY', 'InterUIBlack_ExtraLarge')
+listHelperText:SetWidth(300)
+listHelperText:SetJustifyH('CENTER')
+listHelperText:SetPoint('TOP', AstralKeyFrameListContainer, 'TOP', 20, 100)
+listHelperText:SetText(L['LIST_ADD_HELPER_TEXT'])
+listHelperText:SetTextColor(1, 1, 1, 0.5)
+listHelperText:Hide()
+
 createListEditBox:SetScript('OnEnterPressed', CreateList_OnEnter)
 
-unitPopup:AddButton(L['CANCEL'])
+local function CreateList(self)
+	createListEditBox:Hide()
+	createListEditBox.buttonParent = self
+	createListEditBox:ClearAllPoints()
+	createListEditBox:SetPoint('LEFT', self, 'LEFT')
+	createListEditBox:Show()
+	self:GetParent():AdjustWidth(math.max(createListEditBox:GetWidth(), createListEditBox.description:GetUnboundedStringWidth()) + createListOkayButton:GetWidth())
+	self:Hide()
+end
 
-local AstralKeyFrame = CreateFrame('FRAME', 'AstralKeyFrame', UIParent)
-AstralKeyFrame:SetFrameStrata('DIALOG')
-AstralKeyFrame:SetWidth(715)
-AstralKeyFrame:SetHeight(490)
-AstralKeyFrame:SetPoint('CENTER', UIParent, 'CENTER')
-AstralKeyFrame:EnableMouse(true)
-AstralKeyFrame:SetMovable(true)
-AstralKeyFrame:RegisterForDrag('LeftButton')
-AstralKeyFrame:EnableKeyboard(true)
-AstralKeyFrame:SetPropagateKeyboardInput(true)
-AstralKeyFrame:SetClampedToScreen(true)
-AstralKeyFrame:Hide()
-AstralKeyFrame.updateDelay = 0
-AstralKeyFrame.background = AstralKeyFrame:CreateTexture(nil, 'BACKGROUND')
-AstralKeyFrame.background:SetAllPoints(AstralKeyFrame)
-AstralKeyFrame.background:SetColorTexture(0, 0, 0, 0.8)
+local function BuildLists(frame)
+	frame:ClearButtons()
+	for i = 1, #AstralLists do
+		if AstralLists[i].name ~= 'GUILD' and AstralLists[i].name ~= 'FRIENDS' then
+			frame:AddButton(AstralLists[i].name, function(self)
+				for unit in pairs(selectedUnits) do
+					local unit = unit
+					local btag addon.UnitBTag(addon.UnitID(unit))
+					local list = self:GetText()
+					addon.AddUnitToList(unit, list, btag)
+				end
+			end, nil, nil, nil)
+		end
+	end
+	local newListButton = frame:AddButton(L['CREATE_NEW_LIST'], CreateList)
+	newListButton:SetScript('OnClick', function(self)
+		CreateList(self)
+	end)
+end
+
+unitPopup:AddButton(L['ADD_TO_LIST'], nil, nil, function() BuildLists(subUnitPopup) end, true, subUnitPopup)
+
+local function RemoveUnitsFromList()
+	if addon.FrameListShown() == 'GUILD' or addon.FrameListShown() == 'FRIENDS' then return end
+	local list = addon.FrameListShown()
+	for unit in pairs(selectedUnits) do
+		addon.RemoveUnitFromList(unit, list)
+	end
+	addon.UpdateSortTable()
+	addon.UpdateFrames()
+end
+
+local function RemoveUnit_OnShow(self)
+	if addon.FrameListShown() == 'GUILD' or addon.FrameListShown() == 'FRIENDS' then
+		self:SetText(WrapTextInColorCode(self:GetText(), 'ff9d9d9d'))
+	else
+		self:SetText(L['REMOVE_UNIT_FROM_LIST'])
+	end
+end
+
+unitPopup:AddButton(L['REMOVE_UNIT_FROM_LIST'], RemoveUnitsFromList, RemoveUnit_OnShow)
+unitPopup:AddButton(L['CANCEL'])
 
 local AstralKeyToolTip = CreateFrame( "GameTooltip", "AstralKeyToolTip", AAFrame, "BackdropTemplate,GameTooltipTemplate" )
 AstralKeyToolTip:SetOwner(AstralKeyFrame, "ANCHOR_CURSOR")
@@ -398,9 +456,7 @@ reportButton:SetScript('OnLeave', function(self)
 end)
 reportButton:SetScript('OnClick', function(self)
 	AstralMenuFrameUnit1:Hide()
-	AstralMenuFrameUnit2:Hide()
-	--AstralMenuFrameTabs1:Hide()
-	--AstralMenuFrameTabs2:Hide()
+	AstralMenuFrameTabs1:Hide()
 	AstralMenuFrameReport1:SetPoint('TOPLEFT', self, 'TOPRIGHT', 10, -3)
 	AstralMenuFrameReport1:SetShown( not AstralMenuFrameReport1:IsShown())
 	end)
@@ -422,7 +478,7 @@ settingsButton:SetScript('OnClick', function()
 	AstralOptionsFrame:SetShown( not AstralOptionsFrame:IsShown())
 	end)
 
-LoadAddOn("Blizzard_WeeklyRewards")
+--[[ LoadAddOn("Blizzard_WeeklyRewards")
 local greatVaultButton = CreateFrame('BUTTON', '$parentGreatVaultButton', menuBar)
 greatVaultButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\great-vault@2x')
 greatVaultButton:SetSize(24, 24)
@@ -443,7 +499,7 @@ function ToggleGreatVault()
 		WeeklyRewardsFrame:Hide()
 	else WeeklyRewardsFrame:Show()
 	end
-end
+end ]]
 
 local logo_Astral = CreateFrame('BUTTON', nil, menuBar)
 logo_Astral:SetSize(32, 32)
@@ -484,7 +540,7 @@ closeButton:GetNormalTexture():SetVertexColor(.8, .8, .8, 0.8)
 closeButton:SetScript('OnClick', function()
 	AstralKeyFrame:Hide()
 end)
-closeButton:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', -14, -14)
+closeButton:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', -10, -10)
 closeButton:SetScript('OnEnter', function(self)
 	self:GetNormalTexture():SetVertexColor(126/255, 126/255, 126/255, 0.8)
 end)
@@ -499,12 +555,9 @@ end)
 tabFrame = CreateFrame('FRAME', '$parentTabFrame', AstralKeyFrame)
 tabFrame.offSet = 0
 tabFrame:SetSize(420, 45)
-tabFrame:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', -30, 0)
---tabFrame.t = tabFrame:CreateTexture(nil, 'ARTWORK')
---tabFrame.t:SetAllPoints(tabFrame)
---tabFrame.t:SetColorTexture(0, .5, 1)
+tabFrame:SetPoint('TOPRIGHT', AstralKeyFrame, 'TOPRIGHT', -30, 10)
 tabFrame.buttons = {}
---[[
+
 local newTabButton = CreateFrame('BUTTON', '$parentNewListButton', tabFrame)
 newTabButton:SetSize(17, 17)
 newTabButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline_add_white_18dp')
@@ -513,19 +566,16 @@ newTabButton:SetPoint('RIGHT', tabFrame, 'RIGHT')
 
 newTabButton:SetScript('OnClick', function(self)
 	AstralMenuFrameUnit1:Hide()
-	AstralMenuFrameUnit2:Hide()
 	AstralMenuFrameReport1:Hide()
-	--AstralMenuFrameTabs2:Hide()
-	--AstralMenuFrameTabs1:SetPoint('TOPLEFT', self, 'TOPRIGHT', 10, -3)
-	--AstralMenuFrameTabs1:SetShown(not AstralMenuFrameTabs1:IsShown())
+	AstralMenuFrameTabs1:SetPoint('TOPLEFT', self, 'TOPRIGHT', 10, -3)
+	AstralMenuFrameTabs1:SetShown(not AstralMenuFrameTabs1:IsShown())
 end)
-]]
+
 -- Use arrows to display lists are on either side of curent offset
---[[
 local tabFrameLeftButton = CreateFrame('BUTTON', '$parentLeftButton', tabFrame)
 tabFrameLeftButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline_keyboard_arrow_left_white_18dp')
 tabFrameLeftButton:SetSize(12, 12)
-tabFrameLeftButton:SetPoint('LEFT', tabFrame, 'LEFT', 10, -4)
+tabFrameLeftButton:SetPoint('LEFT', tabFrame, 'LEFT', 10, -2)
 tabFrameLeftButton:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
 tabFrameLeftButton:SetScript('OnClick', function(self)
 	if self:GetParent().offSet < 1 then
@@ -539,7 +589,7 @@ end)
 local tabFrameRightButton = CreateFrame('BUTTON', '$parentLeftButton', tabFrame)
 tabFrameRightButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline_keyboard_arrow_right_white_24dp')
 tabFrameRightButton:SetSize(12, 12)
-tabFrameRightButton:SetPoint('RIGHT', tabFrame, 'RIGHT', -5, -4)
+tabFrameRightButton:SetPoint('RIGHT', tabFrame, 'RIGHT', 3, -2)
 tabFrameRightButton:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
 tabFrameRightButton:SetScript('OnClick', function(self)
 	if self:GetParent().buttons[#self:GetParent().buttons]:IsShown() then
@@ -550,7 +600,7 @@ tabFrameRightButton:SetScript('OnClick', function(self)
 		UpdateTabs()
 	end
 end)
-]]
+
 function UpdateTabs()
 	local buttons = AstralKeyFrameTabFrame.buttons
 	local offSet = AstralKeyFrameTabFrame.offSet
@@ -585,21 +635,28 @@ function UpdateTabs()
 			end
 		end
 	end
-	--newTabButton:ClearAllPoints()
-	--newTabButton:SetPoint('LEFT', buttons[buttonsUsed], 'RIGHT', 10, 2)
+	newTabButton:ClearAllPoints()
+	newTabButton:SetPoint('LEFT', buttons[buttonsUsed], 'RIGHT', 5, 0)
 end
 
 local function Tab_OnClick(self, button)
+	local next = next
 	if button == 'LeftButton' then
 		C_FriendList.ShowFriends()
 	    if addon.FrameListShown() ~= self.listName then
 	    	ClearSelectedUnits()
-	        addon.SetFrameListShown(self.listName)
-	        HybridScrollFrame_SetOffset(AstralKeyFrameListContainer, 0)
-	        UpdateTabs()
-			addon.UpdateSortTable()
-	        addon.UpdateFrames()
-	        AstralKeyFrameListContainer.scrollBar:SetValue(0)
+				addon.SetFrameListShown(self.listName)
+				HybridScrollFrame_SetOffset(AstralKeyFrameListContainer, 0)
+				UpdateTabs()
+				addon.UpdateSortTable()
+				addon.UpdateFrames()
+				AstralKeyFrameListContainer.scrollBar:SetValue(0)
+				-- enable if GetListCount is fixed
+				--[[ if (self.listName ~= "GUILD" and self.listName ~= "FRIENDS") and addon.GetListCount(self.listName) == 0 then
+					listHelperText:Show()
+				else
+					listHelperText:Hide()
+				end ]]
 	    end
 	end
 end
@@ -649,6 +706,28 @@ function RemoveTab(name)
 	end
 end
 
+local tabPopup = addon.CreateDropDownFrame('Tabs', 1, UIParent)
+tabPopup:SetTitle(L['ADD_REMOVE_LIST'])
+local subTabPopup = addon.CreateDropDownFrame('Tabs', 2, UIParent)
+subTabPopup:SetTitle(L['DELETE_LIST'])
+local tabFrameNewListButton = tabPopup:AddButton(L['CREATE_NEW_LIST'], CreateList)
+
+tabFrameNewListButton:SetScript('OnClick', CreateList)
+
+local function RemoveList(frame)
+	frame:ClearButtons()
+	for i = 1, #AstralLists do
+		if AstralLists[i].name ~= 'GUILD' and AstralLists[i].name ~= 'FRIENDS' then
+			frame:AddButton(AstralLists[i].name, function(self)
+				addon.DeleteList(self:GetText())
+				RemoveTab(self:GetText(), tabFrame)
+				UpdateTabs()
+			end)
+		end
+	end
+end
+tabPopup:AddButton(L['DELETE_LIST'], nil, nil, function () RemoveList(subTabPopup) end, true, subTabPopup)
+
 -- Middle panel construction, Affixe info, character info, guild/version string
 local characterFrame = CreateFrame('FRAME', '$parentCharacterFrame', AstralKeyFrame)
 characterFrame:SetSize(215, 490)
@@ -687,7 +766,6 @@ characterExpand:SetScript('OnPlay', function(self)
 	end)
 
 characterExpand:SetScript('OnUpdate', function(self)
-		self:GetRegionParent():SetAlpha(self:GetSmoothProgress()*2)
 		local left, bottom, width = AstralKeyFrame:GetRect()
 		local newWidth = FRAME_WIDTH_MINIMIZED + (self:GetProgress() * 215) -- 215:: Character Frame Width
 		AstralKeyFrame:ClearAllPoints()
@@ -1105,14 +1183,7 @@ listScrollFrame:SetPoint('TOPLEFT', tabFrame, 'BOTTOMLEFT', 10, -35)
 listScrollFrame.update = ListScrollFrame_Update
 listScrollFrame:SetScript('OnEnter',  ListScrollFrame_OnEnter)
 listScrollFrame:SetScript('OnLeave', ListScrollFrame_OnLeave)
---[[
-local listHelperText = AstralKeyFrame:CreateFontString('$parentListHelperText', 'OVERLAY', 'InterUIBlack_ExtraLarge')
-listHelperText:SetWidth(300)
-listHelperText:SetJustifyH('CENTER')
-listHelperText:SetPoint('TOP', AstralKeyFrameListContainer, 'TOP', 0, -100)
-listHelperText:SetText(L['LIST_ADD_HELPER_TEXT'])
-listHelperText:SetTextColor(1, 1, 1, 0.5)
-]]
+
 local listScrollBar = CreateFrame('Slider', '$parentScrollBar', listScrollFrame, 'HybridScrollBarTemplate')
 listScrollBar:SetWidth(10)
 listScrollBar:SetPoint('TOPLEFT', listScrollFrame, 'TOPRIGHT')

@@ -8,7 +8,6 @@ function addon.CreateCheckBox(parent, label, width)
 	checkbox:SetNormalFontObject(InterUIRegular_Normal)
 	checkbox:SetText(label)
 
-	checkbox:SetNormalTexture(nil)
 	checkbox:SetBackdropColor(0, 0, 0)
 
 	checkbox:SetPushedTextOffset(1,-1)
@@ -58,7 +57,7 @@ local function CreateButton(parent)
 		texture:SetBlendMode('BLEND')
 		texture:SetPoint('TOPLEFT', 1, -1)
 		texture:SetPoint('BOTTOMRIGHT', -1, 1)
-		texture:SetGradientAlpha('HORIZONTAL', .5, .5, .5, .8, .5, .5, .5, 0)
+		texture:SetGradient('HORIZONTAL', CreateColor(.5, .5, .5, .8), CreateColor(.5, .5, .5, 0))
 		button:SetHighlightTexture(texture)
 
 		button.menuTexture = button:CreateTexture(nil, 'ARTWORK')

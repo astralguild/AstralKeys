@@ -71,6 +71,7 @@ function addon.DoesListExist(list)
 	return false
 end
 
+-- this doesn't work :)
 function addon.GetListCount(list)
 	if not list or type(list) ~= 'string' then
 		error('AstralKeys GetListCount(list) String expected, received ' .. type(list))

@@ -222,10 +222,10 @@ end
 local lastKey
 AstralEvents:Register('BAG_UPDATE', function()
 	for bagId = 0, 4 do
-		for slot = 1, GetContainerNumSlots(bagId) do
-			local itemID = GetContainerItemID(bagId, slot)
+		for slot = 1, C_Container.GetContainerNumSlots(bagId) do
+			local itemID = C_Container.GetContainerItemID(bagId, slot)
 			if (addon.MYTHICKEY_ITEMID == itemID) then
-				local itemLink = GetContainerItemLink(bagId, slot)
+				local itemLink = C_Container.GetContainerItemLink(bagId, slot)
 				if (dataInitialized) then
 					if (itemLink ~= lastKey) then
 						addon.FindKeyStone(true, false)
