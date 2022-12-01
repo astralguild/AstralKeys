@@ -103,10 +103,10 @@ local function UpdateMythicPlusAffixes()
 		return
 	end
 	
-	SEASON_AFFIX = affixes[4].id -- Set the season affix id
 	AffixOneID = affixes[1].id
 	AffixTwoID = affixes[2].id
 	AffixThreeID = affixes[3].id
+	SEASON_AFFIX = affixes[4].id -- Set the season affix id
 
 	ROTATION_WEEK_POSITION = GetRotationPosition(affixes[1].id, affixes[2].id, affixes[3].id)
 
@@ -128,8 +128,8 @@ local function UpdateMythicPlusAffixes()
 	AstralEvents:Unregister('CHALLENGE_MODE_MAPS_UPDATE', 'updateAffixes')
 	AstralEvents:Unregister('MYTHIC_PLUS_CURRENT_AFFIX_UPDATE', 'updateAffixes')
 end
-AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', UpdateMythicPlusAffixes, 'updateAffixes')
-AstralEvents:Register('MYTHIC_PLUS_CURRENT_AFFIX_UPDATE', UpdateMythicPlusAffixes, 'UpdateAffixes')
+--AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', UpdateMythicPlusAffixes, 'updateAffixes')
+--AstralEvents:Register('MYTHIC_PLUS_CURRENT_AFFIX_UPDATE', UpdateMythicPlusAffixes, 'UpdateAffixes')
 
 function addon.AffixOne(weekOffSet)
 	local offSet = weekOffSet or 0
