@@ -650,7 +650,7 @@ do
 
 	FriendsTooltip:HookScript('OnHide', OnHide)
 	FriendsTooltip:HookScript('OnEnter', OnEnter)
-	--hooksecurefunc('FriendsFrameTooltip_Show', OnEnter)
+	hooksecurefunc('FriendsFrameTooltip_Show', OnEnter)
 end
 
 local function TooltipHook(self)
