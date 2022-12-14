@@ -335,11 +335,11 @@ AstralEvents:Register('CHAT_MSG_PARTY_LEADER', ParsePartyChatCommands, 'parsepar
 
 function ReportTimewalkingKey(reportType) 
 	local timeWalkingLink 
-	for bag = 0, NUM_BAG_SLOTS do
-		local numSlots = GetContainerNumSlots(bag)
+	for bag = 0, 4 do
+		local numSlots = C_Container.GetContainerNumSlots(bag)
 		for slot = 1, numSlots do
-			if (GetContainerItemID(bag, slot) == addon.TIMEWALKINGKEY_ITEMID) then
-				timeWalkingLink = GetContainerItemLink(bag, slot)
+			if (C_Container.GetContainerItemID(bag, slot) == addon.TIMEWALKINGKEY_ITEMID) then
+				timeWalkingLink = C_Container.GetContainerItemLink(bag, slot)
 				break
 			end
 		end
@@ -359,11 +359,11 @@ local function ParseRaidChatCommands(text)
 			local unitID = addon.UnitID(addon.Player())
 			if unitID then
 				local link
-				for bag = 0, NUM_BAG_SLOTS do
-					local numSlots = GetContainerNumSlots(bag)
+				for bag = 0, 4 do
+					local numSlots = C_Container.GetContainerNumSlots(bag)
 					for slot = 1, numSlots do
-						if (GetContainerItemID(bag, slot) == addon.MYTHICKEY_ITEMID) then
-							link = GetContainerItemLink(bag, slot)
+						if (C_Container.GetContainerItemID(bag, slot) == addon.MYTHICKEY_ITEMID) then
+							link = C_Container.GetContainerItemLink(bag, slot)
 							break
 						end
 					end
