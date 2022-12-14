@@ -1,6 +1,6 @@
 local _, addon = ...
 addon.Week = 0
-addon.EXPANSION_LEVEL = 60
+addon.EXPANSION_LEVEL = 70
 
 if not AstralKeys then AstralKeys = {} end
 if not AstralCharacters then AstralCharacters = {} end
