@@ -42,27 +42,25 @@ local SANGUINE = 8
 local VOLCANIC = 3
 local SPITEFUL = 123
 local QUAKING = 14
-local NECROTIC = 4
-local INSPIRING = 122
 local BOLSTERING = 7
 local STORMING = 124
 local GRIEVOUS = 12
 local FORTIFIED = 10
 
 local AFFIX_ROTATION = {
-	{ FORTIFIED, BURSTING, STORMING },
-	{ TYRANNICAL, RAGING, VOLCANIC },
-	{ FORTIFIED, INSPIRING, GRIEVOUS },
-	{ TYRANNICAL, SPITEFUL, NECROTIC },
-	{ FORTIFIED, BOLSTERING, QUAKING },
-	{ TYRANNICAL, SANGUINE, STORMING },
-	{ FORTIFIED, RAGING, EXPLOSIVE },
-	{ TYRANNICAL, BURSTING, VOLCANIC },
+	{ FORTIFIED, RAGING, QUAKING },
+	{ TYRANNICAL, BURSTING, GRIEVOUS },
+	{ FORTIFIED, SANGUINE, VOLCANIC },
+	{ TYRANNICAL, RAGING, STORMING },
 	{ FORTIFIED, SPITEFUL, GRIEVOUS },
-	{ TYRANNICAL, INSPIRING, QUAKING },
-	{ FORTIFIED, SANGUINE, GRIEVOUS },
-	{ TYRANNICAL, BOLSTERING, EXPLOSIVE },
+	{ TYRANNICAL, SANGUINE, EXPLOSIVE },
+	{ FORTIFIED, BOLSTERING, STORMING },
+	{ TYRANNICAL, SPITEFUL, QUAKING },
+	{ FORTIFIED, BURSTING, EXPLOSIVE },
+	{ TYRANNICAL, BOLSTERING, VOLCANIC },
 }
+
+local AFFIX_ROTATION_WEEKS = 10
 
 -- Timewalking Affixes
 local INFERNAL = 129
@@ -140,7 +138,7 @@ function addon.AffixOne(weekOffSet)
 
 	local week = (ROTATION_WEEK_POSITION + weekOffSet) % 12
 	--local week = (e.Week + offSet) % 12
-	if week == 0 then week = 12 end
+	if week == 0 then week = AFFIX_ROTATION_WEEKS end
 	return AFFIX_ROTATION[week][1]
 end
 
@@ -150,9 +148,9 @@ function addon.AffixTwo(weekOffSet)
 	if offSet == 0 then
 		return AffixTwoID
 	end
-	local week = (ROTATION_WEEK_POSITION + weekOffSet) % 12
+	local week = (ROTATION_WEEK_POSITION + weekOffSet) % AFFIX_ROTATION_WEEKS
 --	local week = (e.Week + offSet) % 12
-	if week == 0 then week = 12 end
+	if week == 0 then week = AFFIX_ROTATION_WEEKS end
 	return AFFIX_ROTATION[week][2]
 end
 
@@ -163,9 +161,9 @@ function addon.AffixThree(weekOffSet)
 		return AffixThreeID
 	end
 
-	local week = (ROTATION_WEEK_POSITION + weekOffSet) % 12	
+	local week = (ROTATION_WEEK_POSITION + weekOffSet) % AFFIX_ROTATION_WEEKS	
 --	local week = (e.Week + offSet) % 12
-	if week == 0 then week = 12 end
+	if week == 0 then week = AFFIX_ROTATION_WEEKS end
 	return AFFIX_ROTATION[week][3]
 
 end
@@ -209,7 +207,7 @@ function addon.AffixDescription(id)
 end
 
 function addon.GetAffixID(id, weekOffSet)
-	local week = (ROTATION_WEEK_POSITION + weekOffSet) % 12
-	if week == 0 then week = 12 end
+	local week = (ROTATION_WEEK_POSITION + weekOffSet) % AFFIX_ROTATION_WEEKS
+	if week == 0 then week = AFFIX_ROTATION_WEEKS end
 	return AFFIX_ROTATION[week][id] or SEASON_AFFIX
 end
