@@ -61,6 +61,18 @@ L['Rank Filter'] = '階級過濾器'
 L['Include these ranks in the guild listing'] = '在工會列表中包含以下公會階級'
 
 -- Dungeon Name
+-- MOP
+L["Temple"] = '玉蛟寺' -- short-form
+L["Temple of the Jade Serpent"] = '玉蛟寺'
+
+-- WOD
+L["Shadowmoon"] = '影月墓地' -- short-form
+L["Shadowmoon Burial Grounds"] = '影月墓地'
+
+-- LEGION
+L["Court of Stars"] = '眾星之廷'
+
+-- BFA
 L["Iron Docks"] = '鋼鐵碼頭'
 L["Grimrail Depot"] = '恐軌車站'
 L["Lower Karazhan"] = '卡拉贊下層'
@@ -69,3 +81,11 @@ L["Mechagon Workshop"] = '機械岡工坊'
 L["Mechagon Junkyard"] = '機械岡廢料場'
 L["Streets of Wonder"] = '塔札維許街道'
 L["So'leah's Gambit"] = '塔札維許的險招'
+
+-- DRAGONFLIGHT
+L["Ruby Life Pools"] = '晶紅生命之池'
+L["Algeth'ar Academy"] = '阿爾蓋薩學院'
+L["The Azure Vault"] = '蒼藍密庫'
+L["Azure Vault"] = '蒼藍密庫' -- short-form
+L["The Nokhud Offensive"] = '諾庫德進攻據點'
+L["Nokhud Offensive"] = '諾庫德進攻據點' -- short-form
