@@ -68,7 +68,7 @@ L['Show other faction'] = 'Sincronizza le altre fazioni'
 L['Rank Filter'] = 'Filtro per rango'
 L['Include these ranks in the guild listing'] = 'Includi questi ranghi nella lista di gilda'
 
--- Dungeons name
+-- BFA
 L["Iron Docks"] = 'Darsena di Ferro'
 L["Grimrail Depot"] = 'Treno Frecciacupa'
 L["Lower Karazhan"] = 'Karazhan Inferiore'
@@ -84,3 +84,23 @@ L["Operation: Mechagon - Workshop"] = 'Operazione: Meccagon - Officina'
 L["Operation: Mechagon - Junkyard"] = 'Operazione: Meccagon - Discarica'
 L["Tazavesh: Streets of Wonder"] = 'Tazavesh: Strade delle Meraviglie'
 L["Tazavesh: So'leah's Gambit"] = 'Tazavesh: Azzardo di So\'leah'
+
+-- MOP
+L["Temple"] = 'Tempio della Serpe di Giada' -- short-form
+L["Temple of the Jade Serpent"] = 'Tempio della Serpe di Giada'
+
+-- WOD
+L["Shadowmoon"] = 'Necropoli dei Torvaluna' -- short-form
+L["Shadowmoon Burial Grounds"] = 'Necropoli dei Torvaluna'
+
+-- LEGION
+L["Halls of Valor"] = 'Sale del Valore'
+L["Court of Stars"] = 'Corte delle Stelle'
+
+-- DRAGONFLIGHT
+L["Ruby Life Pools"] = 'Pozze della Vita di Rubino'
+L["Algeth'ar Academy"] = 'Accademia di Algeth\'ar'
+L["The Azure Vault"] = 'Cripta Azzurra'
+L["Azure Vault"] = 'Cripta Azzurra' -- short-form
+L["The Nokhud Offensive"] = 'Offensiva dei Nokhud'
+L["Nokhud Offensive"] = 'Offensiva dei Nokhud' -- short-form
