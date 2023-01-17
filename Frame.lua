@@ -17,8 +17,9 @@ local COLOR_BLUE_BNET = 'ff82c5ff'
 local SCROLL_TEXTURE_ALPHA_MIN = 0.25
 local SCROLL_TEXTURE_ALPHA_MAX = 0.6
 
-local FRAME_WIDTH_EXPANDED = 725
 local FRAME_WIDTH_MINIMIZED = 500
+local CHARACTER_INFO_FRAME_SIZE = 260
+local FRAME_WIDTH_EXPANDED = FRAME_WIDTH_MINIMIZED + CHARACTER_INFO_FRAME_SIZE
 
 local FILTER_FIELDS = {}
 FILTER_FIELDS['key_level'] = ''
@@ -63,7 +64,7 @@ function AstralKeysCharacterMixin:UpdateUnit(characterID)
 	end
 
 	if currentMapID then
-		self.keyStringValue:SetFormattedText('%d %s', currentKeyLevel, addon.GetMapName(currentMapID))
+		self.keyStringValue:SetFormattedText('%d %s', currentKeyLevel, addon.GetMapName(currentMapID, true))
 	else
 		self.keyStringValue:SetFormattedText('|c%s%s|r', COLOR_GRAY, L['CHARACTER_KEY_NOT_FOUND'])
 	end
@@ -258,7 +259,7 @@ end
 
 local AstralKeyFrame = CreateFrame('FRAME', 'AstralKeyFrame', UIParent)
 AstralKeyFrame:SetFrameStrata('DIALOG')
-AstralKeyFrame:SetWidth(715)
+AstralKeyFrame:SetWidth(FRAME_WIDTH_EXPANDED)
 AstralKeyFrame:SetHeight(490)
 AstralKeyFrame:SetPoint('CENTER', UIParent, 'CENTER')
 AstralKeyFrame:EnableMouse(true)
@@ -478,7 +479,7 @@ settingsButton:SetScript('OnClick', function()
 	AstralOptionsFrame:SetShown( not AstralOptionsFrame:IsShown())
 	end)
 
---[[ LoadAddOn("Blizzard_WeeklyRewards")
+LoadAddOn("Blizzard_WeeklyRewards")
 local greatVaultButton = CreateFrame('BUTTON', '$parentGreatVaultButton', menuBar)
 greatVaultButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\great-vault@2x')
 greatVaultButton:SetSize(24, 24)
@@ -493,13 +494,14 @@ end)
 greatVaultButton:SetScript('OnClick', function()
 	ToggleGreatVault()
 end)
+WeeklyRewardExpirationWarningDialog:Hide()
 
 function ToggleGreatVault()
 	if WeeklyRewardsFrame:IsShown() then
 		WeeklyRewardsFrame:Hide()
 	else WeeklyRewardsFrame:Show()
 	end
-end ]]
+end
 
 local logo_Astral = CreateFrame('BUTTON', nil, menuBar)
 logo_Astral:SetSize(32, 32)
@@ -551,7 +553,7 @@ end)
 -- Tab bar at the top, only show 5 and then start scrolling
 
 -- MenuBar 50px
--- Middle Frame 215px
+-- Middle Frame CHARACTER_INFO_FRAME_SIZEpx
 tabFrame = CreateFrame('FRAME', '$parentTabFrame', AstralKeyFrame)
 tabFrame.offSet = 0
 tabFrame:SetSize(420, 45)
@@ -730,7 +732,7 @@ tabPopup:AddButton(L['DELETE_LIST'], nil, nil, function () RemoveList(subTabPopu
 
 -- Middle panel construction, Affixe info, character info, guild/version string
 local characterFrame = CreateFrame('FRAME', '$parentCharacterFrame', AstralKeyFrame)
-characterFrame:SetSize(215, 490)
+characterFrame:SetSize(CHARACTER_INFO_FRAME_SIZE, 490)
 characterFrame:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 51, 0)
 
 characterFrame.collapse = characterFrame:CreateAnimationGroup()
@@ -747,7 +749,7 @@ characterCollapse:SetScript('OnFinished', function(self)
 characterCollapse:SetScript('OnUpdate', function(self)
 	self:GetRegionParent():SetAlpha(self:GetSmoothProgress()/2)
 	local left, bottom, width = AstralKeyFrame:GetRect()
-	local newWidth = FRAME_WIDTH_EXPANDED - (self:GetProgress() * 215) -- 215:: Character Frame Width
+	local newWidth = FRAME_WIDTH_EXPANDED - (self:GetProgress() * CHARACTER_INFO_FRAME_SIZE) -- CHARACTER_INFO_FRAME_SIZE:: Character Frame Width
 	AstralKeyFrame:ClearAllPoints()
 	AstralKeyFrame:SetPoint('BOTTOMLEFT', UIParent, 'BOTTOMLEFT', left + width - newWidth, bottom)
 	AstralKeyFrame:SetWidth(newWidth)
@@ -767,7 +769,7 @@ characterExpand:SetScript('OnPlay', function(self)
 
 characterExpand:SetScript('OnUpdate', function(self)
 		local left, bottom, width = AstralKeyFrame:GetRect()
-		local newWidth = FRAME_WIDTH_MINIMIZED + (self:GetProgress() * 215) -- 215:: Character Frame Width
+		local newWidth = FRAME_WIDTH_MINIMIZED + (self:GetProgress() * CHARACTER_INFO_FRAME_SIZE) -- CHARACTER_INFO_FRAME_SIZE:: Character Frame Width
 		AstralKeyFrame:ClearAllPoints()
 		AstralKeyFrame:SetPoint('BOTTOMLEFT', UIParent, 'BOTTOMLEFT', left + width - newWidth, bottom)
 		AstralKeyFrame:SetWidth(newWidth)
@@ -1102,7 +1104,7 @@ local function CharacterScrollFrame_OnLeave()
 end
 
 local characterScrollFrame = CreateFrame('ScrollFrame', '$parentCharacterContainer', AstralKeyFrameCharacterFrame, 'HybridScrollFrameTemplate')
-characterScrollFrame:SetSize(180, 315)
+characterScrollFrame:SetSize(CHARACTER_INFO_FRAME_SIZE, 315)
 characterScrollFrame:SetPoint('TOPLEFT', characterTitle, 'TOPLEFT', 0, -25)
 characterScrollFrame:SetScript('OnEnter',  CharacterScrollFrame_OnEnter)
 characterScrollFrame:SetScript('OnLeave', CharacterScrollFrame_OnLeave)
