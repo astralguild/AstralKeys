@@ -1,5 +1,5 @@
 ## Interface: 101000
-## Title: |cffa335eeAstral|r |cffffffffKeys|r
+## Title: Astral |cffff8000Keys|r
 ## Notes: Keystone Manager for Guilds and Friends
 ## Author: Astral
 ## Version: 3.77
