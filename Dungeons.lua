@@ -36,6 +36,15 @@ DUNGEON_TABLE["401F"] = L["The Azure Vault"]
 DUNGEON_TABLE["165F"] = L["Shadowmoon Burial Grounds"]
 DUNGEON_TABLE["2F"] =   L["Temple of the Jade Serpent"]
 
+DUNGEON_TABLE[403] = L["Uldaman: Legacy of Tyr"]
+DUNGEON_TABLE[404] = L["Neltharus"]
+DUNGEON_TABLE[405] = L["Brackenhide Hollow"]
+DUNGEON_TABLE[406] = L["Halls of Infusion"]
+DUNGEON_TABLE[438] = L["The Vortex Pinnacle"]
+DUNGEON_TABLE[206] = L["Neltharion's Lair"]
+DUNGEON_TABLE[245] = L["Freehold"]
+DUNGEON_TABLE[251] = L["The Underrot"]
+
 function addon.GetMapName(mapID, full)
 	return (full and DUNGEON_TABLE[mapID .. "F"]) or DUNGEON_TABLE[mapID]
 end
