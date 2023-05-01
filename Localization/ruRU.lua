@@ -68,3 +68,24 @@ L['Sync with friends'] = 'Синхронизация с друзьями'
 L['Show other faction'] = 'Показать другую фракцию'
 L['Rank Filter'] = 'Фильтр рангов'
 L['Include these ranks in the guild listing'] = 'Включить эти звания в список гильдии'
+
+-- Dungeon Name
+-- MOP
+L["Temple of the Jade Serpent"] = 'Храм Нефритовой Змеи'
+L["Temple"] = L["Temple of the Jade Serpent"] -- short-form
+
+-- WOD
+L["Shadowmoon Burial Grounds"] = 'Некрополь Призрачной Луны'
+L["Shadowmoon"] = L["Shadowmoon Burial Grounds"] -- short-form
+
+-- LEGION
+L["Court of Stars"] = 'Квартал Звезд'
+L["Halls of Valor"] = 'Чертоги Доблести'
+
+-- DRAGONFLIGHT
+L["Ruby Life Pools"] = 'Рубиновые Омуты Жизни'
+L["Algeth'ar Academy"] = "Академия Алгет'ар"
+L["The Azure Vault"] = "Лазурное хранилище"
+L["Azure Vault"] = L["The Azure Vault"]
+L["The Nokhud Offensive"] = 'Наступление клана Нокхуд'
+L["Nokhud Offensive"] = L["The Nokhud Offensive"] -- short-form
