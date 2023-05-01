@@ -71,6 +71,7 @@ L["Shadowmoon Burial Grounds"] = '影月墓地'
 
 -- LEGION
 L["Court of Stars"] = '眾星之廷'
+L["Halls of Valor"] = '英靈殿'
 
 -- BFA
 L["Iron Docks"] = '鋼鐵碼頭'
