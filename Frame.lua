@@ -87,11 +87,11 @@ function AstralKeysCharacterMixin:OnLoad()
 	self.keyString:SetText(L['CURRENT_KEY'])
 end
 
-function AstralKeysListMixin:SetUnit(unit, class, mapID, keyLevel, weekly_best, faction, btag, len)
+function AstralKeysListMixin:SetUnit(unit, class, mapID, keyLevel, weekly_best, faction, btag)
 	self.unitID = addon.UnitID(unit)
 	self.levelString:SetText(keyLevel)
 	self.dungeonString:SetText(addon.GetMapName(mapID))
-	self.dungeonString:SetWidth(len)
+	self.dungeonString:SetWidth(200)
 	if weekly_best and weekly_best > 1 then
 		local color_code = addon.GetDifficultyColour(weekly_best)
 		self.bestString:SetText(WrapTextInColorCode(weekly_best, color_code))
@@ -1143,26 +1143,18 @@ function ListScrollFrame_Update()
 	local height = scrollFrame.buttonHeight
 	local usedHeight = 0
 	local lastIndex = 1
-	local max_len = 155
 
 	local selectCount = 0
 	for _ in pairs(selectedUnits) do
 		selectCount = selectCount + 1
 	end
 
-	for i = 1, #sortTable do
-		if sortTable[i] and sortTable[i].dungeon_id then
-			max_len = math.max(7*#addon.GetMapName(sortTable[i].dungeon_id),max_len)
-		end
-	end
-	dungeonButton:SetSize(max_len,20)
-
 	for i = 1, math.min(sortTable.num_shown, #buttons) do
 		for j = lastIndex, #sortTable do
 			if sortTable[j+offset] and sortTable[j+offset].isShown then
 				usedHeight = usedHeight + height
 				lastIndex = j + 1
-				buttons[i]:SetUnit(sortTable[j+offset].character_name, sortTable[j+offset].character_class, sortTable[j+offset].dungeon_id, sortTable[j+offset].key_level, sortTable[j+offset].weekly_best, sortTable[j+offset]['faction'], sortTable[j+offset]['btag'],max_len)
+				buttons[i]:SetUnit(sortTable[j+offset].character_name, sortTable[j+offset].character_class, sortTable[j+offset].dungeon_id, sortTable[j+offset].key_level, sortTable[j+offset].weekly_best, sortTable[j+offset]['faction'], sortTable[j+offset]['btag'])
 				buttons[i]:Show()
 				if selectCount > 1 and selectedUnits[sortTable[j+offset].character_name] then
 					buttons[i].Highlight:Show()
@@ -1355,9 +1347,9 @@ keyLevelSearchCloseButton:SetScript('OnClick', function(self)
 	addon.UpdateFrames()
 	end)
 
-dungeonButton = CreateFrame('BUTTON', '$parentDungeonButton', contentFrame)
+local dungeonButton = CreateFrame('BUTTON', '$parentDungeonButton', contentFrame)
 dungeonButton.sortMethod = 'dungeon_name'
-dungeonButton:SetSize(155, 20)
+dungeonButton:SetSize(200, 20)
 dungeonButton:SetNormalFontObject(InterUIBlack_Small)
 dungeonButton:GetNormalFontObject():SetJustifyH('LEFT')
 dungeonButton:SetText(L['DUNGEON'])
