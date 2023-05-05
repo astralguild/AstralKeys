@@ -95,6 +95,7 @@ function AstralKeysListMixin:SetUnit(unit, class, mapID, keyLevel, weekly_best, 
 	if weekly_best and weekly_best > 1 then
 		local color_code = addon.GetDifficultyColour(weekly_best)
 		self.bestString:SetText(WrapTextInColorCode(weekly_best, color_code))
+		self.bestString:SetWidth(self.bestString:GetUnboundedStringWidth() + 15)
 	else
 		self.bestString:SetText(nil)
 	end
@@ -1182,7 +1183,7 @@ local function ListScrollFrame_OnLeave()
 end
 
 local listScrollFrame = CreateFrame('ScrollFrame', '$parentListContainer', AstralKeyFrame, 'HybridScrollFrameTemplate')
-listScrollFrame:SetSize(455, 375)
+listScrollFrame:SetSize(475, 375)
 listScrollFrame:SetPoint('TOPLEFT', tabFrame, 'BOTTOMLEFT', 10, -35)
 listScrollFrame.update = ListScrollFrame_Update
 listScrollFrame:SetScript('OnEnter',  ListScrollFrame_OnEnter)
