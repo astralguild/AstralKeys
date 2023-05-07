@@ -44,4 +44,5 @@ Key Information.lua
 AstralKeys.lua
 Frame Functions.lua
 Frame.xml
+MinimapButton.lua
 Options.lua
