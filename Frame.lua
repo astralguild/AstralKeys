@@ -1832,6 +1832,10 @@ function addon.AstralToggle()
 	AstralKeyFrame:SetShown(not AstralKeyFrame:IsShown())
 end
 
+function OpenAstralKeysWindow()
+	addon.AstralToggle()
+end
+
 SLASH_ASTRALKEYS1 = '/astralkeys'
 SLASH_ASTRALKEYS2 = '/ak'
 SLASH_ASTRALKEYSV1 = '/akv'
