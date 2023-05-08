@@ -21,6 +21,24 @@ function addon.WeekTime()
 	end
 end
 
+function addon.RefreshData()
+	addon.WipeCharacterList()
+	addon.WipeUnitList()
+	addon.WipeFriendList()
+	C_MythicPlus.RequestRewards()
+	AstralCharacters = {}
+	AstralKeys = {}
+	AstralKeysSettings.general.init_time = addon.DataResetTime()
+	addon.FindKeyStone(true, false)
+	addon.UpdateAffixes()
+	if IsInGuild() then
+		C_GuildInfo.GuildRoster()
+	end
+	addon.SetPlayerNameRealm()
+	addon.SetPlayerClass()
+	InitData()
+end
+
 AstralEvents:Register('PLAYER_LOGIN', function()
 
 	local major, minor = string.match(GetAddOnMetadata('AstralKeys', 'version'), '(%d+).(%d+)')
@@ -40,7 +58,7 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 	else
 		addon.FACTION = 1
 	end
-	
+
 	local region = GetCurrentRegion()
 	local currentTime = GetServerTime()
 	local d = date('*t', currentTime)
@@ -75,17 +93,9 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 					self.first = false
 				end
 
-				if time(date('*t', GetServerTime())) > AstralKeysSettings.general.init_time then					
-					addon.WipeCharacterList()
-					addon.WipeUnitList()
-					addon.WipeFriendList()
-					C_MythicPlus.RequestRewards()
-					AstralCharacters = {}
-					AstralKeys = {}
-					AstralKeysSettings.general.init_time = addon.DataResetTime()
+				if time(date('*t', GetServerTime())) > AstralKeysSettings.general.init_time then		
+					addon.RefreshData()
 					addon.Week = math.floor((GetServerTime() - initializeTime[1]) / 604800)
-					addon.FindKeyStone(true, false)
-					addon.UpdateAffixes()
 					self:SetScript('OnUpdate', nil)
 					self = nil
 					return nil
@@ -108,16 +118,8 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 				end
 
 				if time(date('*t', GetServerTime())) > AstralKeysSettings.general.init_time then
-					addon.WipeCharacterList()
-					addon.WipeUnitList()
-					addon.WipeFriendList()
-					C_MythicPlus.RequestRewards()
-					AstralCharacters = {}
-					AstralKeys = {}
-					AstralKeysSettings.general.init_time = addon.DataResetTime()
-					addon.FindKeyStone(true, false)
+					addon.RefreshData()
 					addon.Week = math.floor((GetServerTime() - initializeTime[2]) / 604800)
-					addon.UpdateAffixes()
 					self:SetScript('OnUpdate', nil)
 					self = nil
 					return nil

@@ -505,6 +505,22 @@ function ToggleGreatVault()
 	end
 end
 
+local refreshButton = CreateFrame('BUTTON', '$parentRefreshButton', menuBar)
+refreshButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\noun-sync')
+refreshButton:SetSize(24, 24)
+refreshButton:GetNormalTexture():SetVertexColor(.8, .8, .8, 0.8)
+refreshButton:SetPoint('TOP', greatVaultButton, 'BOTTOM', 0, -20)
+refreshButton:SetScript('OnEnter', function(self)
+	self:GetNormalTexture():SetVertexColor(126/255, 126/255, 126/255, 0.8)
+end)
+refreshButton:SetScript('OnLeave', function(self)
+	self:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
+end)
+refreshButton:SetScript('OnClick', function()
+	addon.RefreshData()
+	addon.UpdateFrames()
+end)
+
 local logo_Astral = CreateFrame('BUTTON', nil, menuBar)
 logo_Astral:SetSize(32, 32)
 logo_Astral:SetPoint('BOTTOMLEFT', menuBar, 'BOTTOMLEFT', 10, 10)

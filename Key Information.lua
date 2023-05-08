@@ -31,7 +31,7 @@ local function UpdateWeekly()
 end
 
 local dataInitialized
-local function InitData()
+function InitData()
 	MapIds = C_ChallengeMode.GetMapTable()
 	C_MythicPlus.RequestRewards()
 	AstralEvents:Unregister('PLAYER_ENTERING_WORLD', 'initData')
