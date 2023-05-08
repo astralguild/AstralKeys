@@ -62,16 +62,17 @@ function addon.CreateKeyLink(mapID, keyLevel)
 	if keyLevel > 1 then
 	 thisAff1 = addon.AffixOne()
 	end
-	if keyLevel > 3 then
+	if keyLevel > 6 then
 	 thisAff2 = addon.AffixTwo()
 	end
-	if keyLevel > 6 then
+	if keyLevel > 13 then
 	 thisAff3 = addon.AffixThree()
 	end
-	if keyLevel > 8 then
-	 thisAff4 = addon.AffixFour()
-	end
-	return strformat('|c' .. COLOUR[3] .. '|Hkeystone:%d:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r', addon.MYTHICKEY_ITEMID, mapID, keyLevel, thisAff1, thisAff2, thisAff3, thisAff4, L['KEYSTONE'], mapName, keyLevel):gsub('\124\124', '\124')
+	-- if keyLevel > 8 then
+	--  thisAff4 = addon.AffixFour() season affix removed in DF S2
+	-- end
+	-- return strformat('|c' .. COLOUR[3] .. '|Hkeystone:%d:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r', addon.MYTHICKEY_ITEMID, mapID, keyLevel, thisAff1, thisAff2, thisAff3, thisAff4, L['KEYSTONE'], mapName, keyLevel):gsub('\124\124', '\124')
+	return strformat('|c' .. COLOUR[3] .. '|Hkeystone:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r', addon.MYTHICKEY_ITEMID, mapID, keyLevel, thisAff1, thisAff2, thisAff3, L['KEYSTONE'], mapName, keyLevel):gsub('\124\124', '\124')
 
 end
 

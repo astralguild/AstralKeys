@@ -898,8 +898,10 @@ do
 
 		function frame:UpdateInfo()
 			self.affixID = addon.GetAffixID(self.id, self.weekOffset)
-			local _, _, texture = C_ChallengeMode.GetAffixInfo(self.affixID)
-			self.texture:SetTexture(texture)
+			if self.affixID and self.affixID ~= 0 then
+				local _, _, texture = C_ChallengeMode.GetAffixInfo(self.affixID)
+				self.texture:SetTexture(texture)
+			end
 		end
 
 		frame:SetScript('OnEnter', function(self)
