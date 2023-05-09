@@ -1845,6 +1845,14 @@ function addon.AddUnitToTable(unit, class, faction, listType, mapID, level, week
 	end
 end
 
+function addon.AstralMain(arg)
+	if arg and (arg == 'sync' or arg == 'refresh') then
+		addon.RefreshData()
+		return
+	end
+	addon.AstralToggle()
+end
+
 function addon.AstralToggle()
 	if not init then InitializeFrame() end
 	AstralKeyFrame:SetShown(not AstralKeyFrame:IsShown())
@@ -1857,9 +1865,6 @@ end
 SLASH_ASTRALKEYS1 = '/astralkeys'
 SLASH_ASTRALKEYS2 = '/ak'
 SLASH_ASTRALKEYSV1 = '/akv'
-SLASH_ASTRALKEYSREFRESH1 = '/ak sync'
-SLASH_ASTRALKEYSREFRESH2 = '/ak refresh'
 
-SlashCmdList['ASTRALKEYS'] = addon.AstralToggle;
+SlashCmdList['ASTRALKEYS'] = addon.AstralMain;
 SlashCmdList['ASTRALKEYSV'] = addon.CheckGuildVersion
-SlashCmdList['ASTRALKEYSREFRESH'] = addon.RefreshData
