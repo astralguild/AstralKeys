@@ -104,7 +104,7 @@ local function UpdateMythicPlusAffixes()
 	AffixOneID = affixes[1].id
 	AffixTwoID = affixes[2].id
 	AffixThreeID = affixes[3].id
-	if #affixes > 4 then
+	if #affixes > 3 then
 		SEASON_AFFIX = affixes[4].id -- Set the season affix id
 	end
 
