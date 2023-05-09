@@ -100,11 +100,13 @@ local function UpdateMythicPlusAffixes()
 		C_MythicPlus.RequestCurrentAffixes()
 		return
 	end
-	
+
 	AffixOneID = affixes[1].id
 	AffixTwoID = affixes[2].id
 	AffixThreeID = affixes[3].id
-	SEASON_AFFIX = affixes[4].id -- Set the season affix id
+	if #affixes > 3 then
+		SEASON_AFFIX = affixes[4].id -- Set the season affix id
+	end
 
 	ROTATION_WEEK_POSITION = GetRotationPosition(affixes[1].id, affixes[2].id, affixes[3].id)
 
@@ -120,9 +122,11 @@ local function UpdateMythicPlusAffixes()
 	end
 
 	-- Store the season affix info
-	local name, desc = C_ChallengeMode.GetAffixInfo(SEASON_AFFIX)
-	AFFIX_INFO[SEASON_AFFIX] = {name = name, description = desc}
-	
+	if SEASON_AFFIX > 0 then
+		local name, desc = C_ChallengeMode.GetAffixInfo(SEASON_AFFIX)
+		AFFIX_INFO[SEASON_AFFIX] = {name = name, description = desc}
+	end
+
 	AstralEvents:Unregister('CHALLENGE_MODE_MAPS_UPDATE', 'updateAffixes')
 	AstralEvents:Unregister('MYTHIC_PLUS_CURRENT_AFFIX_UPDATE', 'updateAffixes')
 end

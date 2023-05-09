@@ -505,6 +505,22 @@ function ToggleGreatVault()
 	end
 end
 
+-- local refreshButton = CreateFrame('BUTTON', '$parentRefreshButton', menuBar)
+-- refreshButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\sync')
+-- refreshButton:SetSize(24, 24)
+-- refreshButton:GetNormalTexture():SetVertexColor(.6, .6, .6, .8)
+-- refreshButton:SetPoint('TOP', greatVaultButton, 'BOTTOM', 0, -20)
+-- refreshButton:SetScript('OnEnter', function(self)
+-- 	self:GetNormalTexture():SetVertexColor(126/255, 126/255, 126/255, 0.8)
+-- end)
+-- refreshButton:SetScript('OnLeave', function(self)
+-- 	self:GetNormalTexture():SetVertexColor(.6, .6, .6, .8)
+-- end)
+-- refreshButton:SetScript('OnClick', function()
+-- 	addon.RefreshData()
+-- 	addon.UpdateFrames()
+-- end)
+
 local logo_Astral = CreateFrame('BUTTON', nil, menuBar)
 logo_Astral:SetSize(32, 32)
 logo_Astral:SetPoint('BOTTOMLEFT', menuBar, 'BOTTOMLEFT', 10, 10)
@@ -882,8 +898,10 @@ do
 
 		function frame:UpdateInfo()
 			self.affixID = addon.GetAffixID(self.id, self.weekOffset)
-			local _, _, texture = C_ChallengeMode.GetAffixInfo(self.affixID)
-			self.texture:SetTexture(texture)
+			if self.affixID and self.affixID ~= 0 then
+				local _, _, texture = C_ChallengeMode.GetAffixInfo(self.affixID)
+				self.texture:SetTexture(texture)
+			end
 		end
 
 		frame:SetScript('OnEnter', function(self)
@@ -1827,6 +1845,14 @@ function addon.AddUnitToTable(unit, class, faction, listType, mapID, level, week
 	end
 end
 
+function addon.AstralMain(arg)
+	if arg and (arg == 'sync' or arg == 'refresh') then
+		addon.RefreshData()
+		return
+	end
+	addon.AstralToggle()
+end
+
 function addon.AstralToggle()
 	if not init then InitializeFrame() end
 	AstralKeyFrame:SetShown(not AstralKeyFrame:IsShown())
@@ -1840,5 +1866,5 @@ SLASH_ASTRALKEYS1 = '/astralkeys'
 SLASH_ASTRALKEYS2 = '/ak'
 SLASH_ASTRALKEYSV1 = '/akv'
 
-SlashCmdList['ASTRALKEYS'] = addon.AstralToggle;
+SlashCmdList['ASTRALKEYS'] = addon.AstralMain;
 SlashCmdList['ASTRALKEYSV'] = addon.CheckGuildVersion
