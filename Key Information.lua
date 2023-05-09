@@ -69,7 +69,6 @@ function addon.CreateKeyLink(mapID, keyLevel)
 		if keyLevel > 13 then
 		thisAff3 = addon.AffixThree() -- season affix removed in DF S2
 		end
-		return strformat('|c' .. COLOUR[3] .. '|Hkeystone:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r', addon.MYTHICKEY_ITEMID, mapID, keyLevel, thisAff1, thisAff2, thisAff3, L['KEYSTONE'], mapName, keyLevel):gsub('\124\124', '\124')
 	else
 		if keyLevel > 1 then
 			thisAff1 = addon.AffixOne()
@@ -83,8 +82,8 @@ function addon.CreateKeyLink(mapID, keyLevel)
 		 if keyLevel > 8 then
 			thisAff4 = addon.AffixFour()
 		 end
-		 return strformat('|c' .. COLOUR[3] .. '|Hkeystone:%d:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r', addon.MYTHICKEY_ITEMID, mapID, keyLevel, thisAff1, thisAff2, thisAff3, thisAff4, L['KEYSTONE'], mapName, keyLevel):gsub('\124\124', '\124')
 	end
+	return strformat('|c' .. COLOUR[3] .. '|Hkeystone:%d:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r', addon.MYTHICKEY_ITEMID, mapID, keyLevel, thisAff1, thisAff2, thisAff3, thisAff4, L['KEYSTONE'], mapName, keyLevel):gsub('\124\124', '\124')
 end
 
 -- Prints out the same link as the CreateKeyLink but only if the Timewalking Key is found. Otherwise nothing is done.
