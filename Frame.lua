@@ -1145,7 +1145,7 @@ _G[characterScrollBar:GetName() .. 'ScrollUpButton']:Hide()
 
 local scrollButton = _G[characterScrollBar:GetName() .. 'ThumbTexture']
 scrollButton:SetHeight(50)
-scrollButton:SetWidth(4)
+scrollButton:SetWidth(8)
 scrollButton:SetColorTexture(204/255, 204/255, 204/255, SCROLL_TEXTURE_ALPHA_MAX)
 
 characterScrollFrame.buttonHeight = 45
@@ -1201,7 +1201,7 @@ local function ListScrollFrame_OnLeave()
 end
 
 local listScrollFrame = CreateFrame('ScrollFrame', '$parentListContainer', AstralKeyFrame, 'HybridScrollFrameTemplate')
-listScrollFrame:SetSize(475, 375)
+listScrollFrame:SetSize(485, 375)
 listScrollFrame:SetPoint('TOPLEFT', tabFrame, 'BOTTOMLEFT', 10, -35)
 listScrollFrame.update = ListScrollFrame_Update
 listScrollFrame:SetScript('OnEnter',  ListScrollFrame_OnEnter)
@@ -1210,7 +1210,7 @@ listScrollFrame:SetScript('OnLeave', ListScrollFrame_OnLeave)
 local listScrollBar = CreateFrame('Slider', '$parentScrollBar', listScrollFrame, 'HybridScrollBarTemplate')
 listScrollBar:SetWidth(10)
 listScrollBar:SetPoint('TOPLEFT', listScrollFrame, 'TOPRIGHT')
-listScrollBar:SetPoint('BOTTOMLEFT', listScrollFrame, 'BOTTOMRIGHT', 1, 0)
+listScrollBar:SetPoint('BOTTOMLEFT', listScrollFrame, 'BOTTOMRIGHT', -10, 0)
 listScrollBar:SetScript('OnEnter', ListScrollFrame_OnEnter)
 listScrollBar:SetScript('OnLeave', ListScrollFrame_OnLeave)
 
@@ -1222,13 +1222,13 @@ _G[listScrollBar:GetName() .. 'ScrollUpButton']:Hide()
 
 local listScrollButton = _G[listScrollBar:GetName() .. 'ThumbTexture']
 listScrollButton:SetHeight(50)
-listScrollButton:SetWidth(4)
+listScrollButton:SetWidth(8)
 listScrollButton:SetColorTexture(204/255, 204/255, 204/255, SCROLL_TEXTURE_ALPHA_MIN)
 listScrollButton:SetAlpha(SCROLL_TEXTURE_ALPHA_MIN)
 listScrollFrame.buttonHeight = 15
 
 local contentFrame = CreateFrame('FRAME', 'AstralContentFrame', AstralKeyFrame)
-contentFrame:SetSize(450, 390)
+contentFrame:SetSize(485, 390)
 contentFrame:SetPoint('TOPLEFT', tabFrame, 'BOTTOMLEFT', 0, -30)
 
 local function ListButton_OnClick(self)
