@@ -1124,7 +1124,7 @@ local function CharacterScrollFrame_OnLeave()
 end
 
 local characterScrollFrame = CreateFrame('ScrollFrame', '$parentCharacterContainer', AstralKeyFrameCharacterFrame, 'HybridScrollFrameTemplate')
-characterScrollFrame:SetSize(CHARACTER_INFO_FRAME_SIZE, 315)
+characterScrollFrame:SetSize(CHARACTER_INFO_FRAME_SIZE - 40, 315)
 characterScrollFrame:SetPoint('TOPLEFT', characterTitle, 'TOPLEFT', 0, -25)
 characterScrollFrame:SetScript('OnEnter',  CharacterScrollFrame_OnEnter)
 characterScrollFrame:SetScript('OnLeave', CharacterScrollFrame_OnLeave)
