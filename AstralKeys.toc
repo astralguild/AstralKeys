@@ -28,6 +28,7 @@ fonts.xml
 Events.lua
 Tables.lua
 Settings.lua
+Dialog.lua
 Communications.lua
 
 Lists.lua

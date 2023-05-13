@@ -22,21 +22,29 @@ function addon.WeekTime()
 end
 
 function addon.RefreshData()
-	addon.WipeCharacterList()
-	addon.WipeUnitList()
-	addon.WipeFriendList()
-	C_MythicPlus.RequestRewards()
-	AstralCharacters = {}
-	AstralKeys = {}
-	AstralKeysSettings.general.init_time = addon.DataResetTime()
-	addon.FindKeyStone(true, false)
-	addon.UpdateAffixes()
-	if IsInGuild() then
-		C_GuildInfo.GuildRoster()
+	local elapsed = time() - addon.refreshTime
+
+	if addon.refreshTime == 0 or (elapsed >= ASTRAL_KEYS_REFRESH_INTERVAL) then
+		addon.WipeCharacterList()
+		addon.WipeUnitList()
+		addon.WipeFriendList()
+		C_MythicPlus.RequestRewards()
+		AstralCharacters = {}
+		AstralKeys = {}
+		AstralKeysSettings.general.init_time = addon.DataResetTime()
+		addon.FindKeyStone(true, false)
+		addon.UpdateAffixes()
+		if IsInGuild() then
+			C_GuildInfo.GuildRoster()
+		end
+		addon.SetPlayerNameRealm()
+		addon.SetPlayerClass()
+		InitData()
+
+		addon.refreshTime = time()
+		return true
 	end
-	addon.SetPlayerNameRealm()
-	addon.SetPlayerClass()
-	InitData()
+	return false
 end
 
 AstralEvents:Register('PLAYER_LOGIN', function()

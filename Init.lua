@@ -2,6 +2,10 @@ local _, addon = ...
 
 local uiScale, mult
 
+addon.refreshTime = 0
+
+ASTRAL_KEYS_REFRESH_INTERVAL = 30 -- seconds
+
 function addon:SetUIScale()
 	local scale = string.match( GetCVar( "gxWindowedResolution" ), "%d+x(%d+)" )
 	uiScale = UIParent:GetScale()
