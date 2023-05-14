@@ -61,6 +61,9 @@ L['Rank Filter'] = '階級過濾器'
 L['Include these ranks in the guild listing'] = '在工會列表中包含以下公會階級'
 
 -- Dungeon Name
+--CATA
+L["The Vortex Pinnacle"] = '漩渦尖塔'
+
 -- MOP
 L["Temple"] = '玉蛟寺' -- short-form
 L["Temple of the Jade Serpent"] = '玉蛟寺'
@@ -68,20 +71,23 @@ L["Temple of the Jade Serpent"] = '玉蛟寺'
 -- WOD
 L["Shadowmoon"] = '影月墓地' -- short-form
 L["Shadowmoon Burial Grounds"] = '影月墓地'
+L["Iron Docks"] = '鋼鐵碼頭'
+L["Grimrail Depot"] = '恐軌車站'
 
 -- LEGION
 L["Court of Stars"] = '眾星之廷'
 L["Halls of Valor"] = '英靈殿'
-
--- BFA
-L["Iron Docks"] = '鋼鐵碼頭'
-L["Grimrail Depot"] = '恐軌車站'
+L["Neltharion's Lair"] = '奈薩里奧巢穴'
 L["Lower Karazhan"] = '卡拉贊下層'
 L["Upper Karazhan"] = '卡拉贊上層'
+
+-- BFA
 L["Mechagon Workshop"] = '機械岡工坊'
 L["Mechagon Junkyard"] = '機械岡廢料場'
 L["Streets of Wonder"] = '塔札維許街道'
 L["So'leah's Gambit"] = '塔札維許的險招'
+L["Freehold"] = '自由港'
+L["The Underrot"] = '幽腐深窟'
 
 -- DRAGONFLIGHT
 L["Ruby Life Pools"] = '晶紅生命之池'
@@ -90,3 +96,7 @@ L["The Azure Vault"] = '蒼藍密庫'
 L["Azure Vault"] = '蒼藍密庫' -- short-form
 L["The Nokhud Offensive"] = '諾庫德進攻據點'
 L["Nokhud Offensive"] = '諾庫德進攻據點' -- short-form
+L["Uldaman: Legacy of Tyr"] = '奧達曼' -- short-form
+L["Neltharus"] = '奈薩魯斯堡'
+L["Brackenhide Hollow"] = '蕨皮谷'
+L["Halls of Infusion"] = '灌注迴廊'
