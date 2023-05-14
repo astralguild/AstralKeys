@@ -294,7 +294,7 @@ local function ParseGuildChatCommands(text)
 	text = gsub(text, "^%[%a+%] ", "") -- Strip off [SomeName] from message from using Identity-2
 	if text:lower() == '!keys' then
 		local guild = GetGuildInfo('player')
-		if AstralKeysSettings.general.report_on_message['guild'] or (guild == 'Astral' and addon.PlayerRealm() == 'Turalyon') then -- Guild leader for Astral desires this setting to be foreced on for members.
+		if AstralKeysSettings.general.report_on_message['guild'] or (guild == 'Astral' and addon.PlayerRealm() == 'Area 52') then -- Guild leader for Astral desires this setting to be foreced on for members.
 			local unitID = addon.UnitID(addon.Player())
 			if unitID then
 				local keyLink = addon.CreateKeyLink(addon.UnitMapID(unitID), addon.UnitKeyLevel(unitID))
