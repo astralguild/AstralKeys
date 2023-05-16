@@ -105,13 +105,26 @@ function addon.CreateTimewalkingKeyLink(mapID, keyLevel)
 	return strformat('|c' .. COLOUR[3] .. '|Hkeystone:%d:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r', addon.TIMEWALKINGKEY_ITEMID, mapID, keyLevel, thisAff1, thisAff2, thisAff3, thisAff4, L['KEYSTONE'], mapName, keyLevel):gsub('\124\124', '\124')
 end
 
-
 AstralEvents:Register('CHALLENGE_MODE_COMPLETED', function()
 	C_Timer.After(3, function()
 		C_MythicPlus.RequestRewards()
 		addon.FindKeyStone(true, true)
 	end)
 end, 'dungeonCompleted')
+
+AstralEvents:Register('CHALLENGE_MODE_MEMBER_INFO_UPDATED', function()
+	C_Timer.After(3, function()
+		C_MythicPlus.RequestRewards()
+		addon.FindKeyStone(true, false)
+	end)
+end, 'keyUpdated')
+
+AstralEvents:Register('CHALLENGE_MODE_RESET', function()
+	C_Timer.After(3, function()
+		C_MythicPlus.RequestRewards()
+		addon.FindKeyStone(true, false)
+	end)
+end, 'dungeonReset')
 
 function addon.FindKeyStone(sendUpdate, anounceKey)
 	if UnitLevel('player') < addon.EXPANSION_LEVEL then return end
