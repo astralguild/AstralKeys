@@ -91,7 +91,7 @@ L["Neltharion's Lair"] = 'Логово Нелтариона'
 -- BFA
 L["Freehold"] = 'Вольная Гавань'
 L["The Underrot"] = 'Подгнилье'
-L["Underrot"] = L["The Underrot"]'
+L["Underrot"] = L["The Underrot"]
 
 -- DRAGONFLIGHT
 L["Ruby Life Pools"] = 'Рубиновые Омуты Жизни'
