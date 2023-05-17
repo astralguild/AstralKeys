@@ -96,7 +96,7 @@ L["Underrot"] = L["The Underrot"]'
 -- DRAGONFLIGHT
 L["Ruby Life Pools"] = 'Рубиновые Омуты Жизни'
 L["Algeth'ar Academy"] = "Академия Алгет'ар"
-L["The Azure Vault"] = 'Лазурное хранилище"
+L["The Azure Vault"] = "Лазурное хранилище"
 L["Azure Vault"] = L["The Azure Vault"]
 L["Brackenhide Hollow"] = 'Лощина Бурошкуров'
 L["Neltharus"] = 'Нелтарий'
