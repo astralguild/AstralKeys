@@ -23,7 +23,7 @@ function addon.WeekTime()
 	end
 end
 
-function addon.Week()
+function addon.GetWeek()
 	local region = GetCurrentRegion()
 	if region == 3 then  -- EU
 		return math.floor((GetServerTime() - initializeTime[2]) / 604800)
@@ -113,7 +113,7 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 	local d = date('*t', currentTime)
 	local hourOffset = math.modf(difftime(currentTime, time(date('!*t', currentTime)))) / 3600
 
-	addon.Week = addon.Week()
+	addon.Week = addon.GetWeek()
 
 	addon.SetPlayerNameRealm()
 	addon.SetPlayerClass()
