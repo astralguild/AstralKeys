@@ -11,6 +11,9 @@ COLOUR[5] = 'ffe6cc80' -- Artifact
 
 addon.MYTHICKEY_ITEMID = 180653
 addon.TIMEWALKINGKEY_ITEMID = 187786
+addon.MYTHICKEY_REROLL_NPC = 197915
+addon.MYTHICKEY_CITY_NPC = 197711
+addon.MYTHICKEY_NPC_NAME = 'Lindormi'
 
 local MapIds = {}
 
@@ -125,6 +128,16 @@ AstralEvents:Register('CHALLENGE_MODE_RESET', function()
 		addon.FindKeyStone(true, false)
 	end)
 end, 'dungeonReset')
+
+AstralEvents:Register('GOSSIP_CLOSED', function()
+	local _, _, _, _, _, npc_id, _ = strsplit('-', UnitGUID('target'))
+	if GetUnitName('target') == addon.MYTHICKEY_NPC_NAME or npc_id == addon.MYTHICKEY_CITY_NPC or npc_id == addon.MYTHICKEY_REROLL_NPC then
+		C_Timer.After(3, function()
+			C_MythicPlus.RequestRewards()
+			addon.FindKeyStone(true, false)
+		end)
+	end
+end, 'keyRerolled')
 
 function addon.FindKeyStone(sendUpdate, anounceKey)
 	if UnitLevel('player') < addon.EXPANSION_LEVEL then return end
