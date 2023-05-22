@@ -43,6 +43,7 @@ L['OKAY'] = 'ОК'
 
 -- Announce messages
 L['ANNOUNCE_NEW_KEY'] = 'Astral Keys: Nuova chiave %s'
+L['ANNOUNCE_REROLLED_KEY'] = 'Astral Keys: Rerolled key %s to %s'
 L['NO_KEY'] = 'No key'
 L['KEYS_RESPOND_ON_NO_KEY'] = 'Rispondi anche se non hai chiavi'
 

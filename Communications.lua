@@ -280,12 +280,19 @@ function addon.AnnounceCharacterKeys(channel)
 	end
 end
 
-function addon.AnnounceNewKey(keyLink)
+function addon.AnnounceNewKey(id2, lvl2, id1, lvl1)
+	local key1, key2 = addon.CreateKeyLink(id1, lvl1), addon.CreateKeyLink(id2, lvl2)
+	local msg = ''
+	if lvl1 == lvl2 then
+		msg = strformat(L['ANNOUNCE_REROLLED_KEY'], key1, key2)
+	else
+		msg = strformat(L['ANNOUNCE_NEW_KEY'], key1)
+	end
 	if AstralKeysSettings.general.announce_party.isEnabled and IsInGroup() then
-		SendChatMessage(strformat(L['ANNOUNCE_NEW_KEY'], keyLink), 'PARTY')
+		SendChatMessage(msg, 'PARTY')
 	end
 	if AstralKeysSettings.general.announce_guild.isEnabled and IsInGuild() then
-		SendChatMessage(strformat(L['ANNOUNCE_NEW_KEY'], keyLink), 'GUILD')
+		SendChatMessage(msg, 'GUILD')
 	end
 end
 

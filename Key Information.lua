@@ -11,9 +11,7 @@ COLOUR[5] = 'ffe6cc80' -- Artifact
 
 addon.MYTHICKEY_ITEMID = 180653
 addon.TIMEWALKINGKEY_ITEMID = 187786
-addon.MYTHICKEY_REROLL_NPC = 197915
-addon.MYTHICKEY_CITY_NPC = 197711
-addon.MYTHICKEY_NPC_NAME = 'Lindormi'
+addon.MYTHICKEY_REROLL_NPCID = 197915
 
 local MapIds = {}
 
@@ -118,7 +116,7 @@ end, 'dungeonCompleted')
 AstralEvents:Register('CHALLENGE_MODE_MEMBER_INFO_UPDATED', function()
 	C_Timer.After(3, function()
 		C_MythicPlus.RequestRewards()
-		addon.FindKeyStone(true, false)
+		addon.FindKeyStone(true, true)
 	end)
 end, 'keyUpdated')
 
@@ -130,16 +128,17 @@ AstralEvents:Register('CHALLENGE_MODE_RESET', function()
 end, 'dungeonReset')
 
 AstralEvents:Register('GOSSIP_CLOSED', function()
-	local _, _, _, _, _, npc_id, _ = strsplit('-', UnitGUID('target'))
-	if GetUnitName('target') == addon.MYTHICKEY_NPC_NAME or npc_id == addon.MYTHICKEY_CITY_NPC or npc_id == addon.MYTHICKEY_REROLL_NPC then
-		C_Timer.After(3, function()
+	local guid = UnitGUID('target')
+	if guid ~= nil then
+		local _, _, _, _, _, npc_id, _ = strsplit('-', UnitGUID('target'))
+		if npc_id == addon.MYTHICKEY_REROLL_NPC then
 			C_MythicPlus.RequestRewards()
-			addon.FindKeyStone(true, false)
-		end)
+			addon.FindKeyStone(true, true)
+		end
 	end
 end, 'keyRerolled')
 
-function addon.FindKeyStone(sendUpdate, anounceKey)
+function addon.FindKeyStone(sendUpdate, announceKey)
 	if UnitLevel('player') < addon.EXPANSION_LEVEL then return end
 
 	local mapID = C_MythicPlus.GetOwnedKeystoneChallengeMapID()
@@ -157,7 +156,7 @@ function addon.FindKeyStone(sendUpdate, anounceKey)
 
 	local msg = ''
 
-	if mapID then 
+	if mapID then
 		msg = string.format('%s:%s:%d:%d:%d:%d:%s', addon.Player(), addon.PlayerClass(), mapID, keyLevel, weeklyBest, addon.Week, addon.FACTION)
 	end
 
@@ -190,14 +189,14 @@ function addon.FindKeyStone(sendUpdate, anounceKey)
 	msg = nil
 
 	-- Ok, time to check if we need to announce a new key or not
-	if tonumber(oldMap) == tonumber(mapID) and tonumber(oldLevel) == tonumber(keyLevel) then return end
+	if tonumber(oldMap) == tonumber(mapID) then return end
 
-	if anounceKey then
-		addon.AnnounceNewKey(addon.CreateKeyLink(mapID, keyLevel))
+	if announceKey then
+		addon.AnnounceNewKey(mapID, keyLevel, oldMap, oldLevel)
 	end
 end
 
--- Finds best map clear fothe week for logged on character. If character already is in database
+-- Finds best map clear for the week for logged on character. If character already is in database
 -- updates the information, else creates new entry for character
 function addon.UpdateCharacterBest()
 	if UnitLevel('player') < addon.EXPANSION_LEVEL then return end
@@ -260,7 +259,7 @@ AstralEvents:Register('BAG_UPDATE', function()
 				local itemLink = C_Container.GetContainerItemLink(bagId, slot)
 				if (dataInitialized) then
 					if (itemLink ~= lastKey) then
-						addon.FindKeyStone(true, false)
+						addon.FindKeyStone(true, true)
 					end
 				end
 				lastKey = itemLink

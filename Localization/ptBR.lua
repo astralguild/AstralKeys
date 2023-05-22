@@ -35,6 +35,7 @@ L['CANCEL'] = CANCEL
 
 -- Announce messages
 L['ANNOUNCE_NEW_KEY'] = 'Astral Keys: New key %s'
+L['ANNOUNCE_REROLLED_KEY'] = 'Astral Keys: Rerolled key %s to %s'
 L['NO_KEY'] = 'No key'
 L['KEYS_RESPOND_ON_NO_KEY'] = 'Respond even if you do not have a key'
 
