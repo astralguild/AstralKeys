@@ -9,6 +9,8 @@ COLOUR[3] = 'ffa335ee' -- Epic
 COLOUR[4] = 'ffff8000' -- Legendary
 COLOUR[5] = 'ffe6cc80' -- Artifact
 
+addon.keystone = {level = 0, id = 0, link = nil}
+
 addon.MYTHICKEY_ITEMID = 180653
 addon.TIMEWALKINGKEY_ITEMID = 187786
 addon.MYTHICKEY_REROLL_NPCID = 197915
@@ -46,6 +48,7 @@ function InitData()
 	if UnitLevel('player') < addon.EXPANSION_LEVEL then return end
 	AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', UpdateWeekly, 'weeklyCheck')
 	dataInitialized = true
+	addon.ScanBagsForKey()
 end
 AstralEvents:Register('PLAYER_ENTERING_WORLD', InitData, 'initData')
 
@@ -106,19 +109,16 @@ function addon.CreateTimewalkingKeyLink(mapID, keyLevel)
 	return strformat('|c' .. COLOUR[3] .. '|Hkeystone:%d:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r', addon.TIMEWALKINGKEY_ITEMID, mapID, keyLevel, thisAff1, thisAff2, thisAff3, thisAff4, L['KEYSTONE'], mapName, keyLevel):gsub('\124\124', '\124')
 end
 
+function addon.CheckAndAnnounceKeyStone()
+	C_MythicPlus.RequestRewards()
+	addon.FindKeyStone(true, true)
+end
+
 AstralEvents:Register('CHALLENGE_MODE_COMPLETED', function()
 	C_Timer.After(3, function()
-		C_MythicPlus.RequestRewards()
-		addon.FindKeyStone(true, true)
+		addon.CheckAndAnnounceKeyStone()
 	end)
 end, 'dungeonCompleted')
-
-AstralEvents:Register('CHALLENGE_MODE_MEMBER_INFO_UPDATED', function()
-	C_Timer.After(3, function()
-		C_MythicPlus.RequestRewards()
-		addon.FindKeyStone(true, true)
-	end)
-end, 'keyUpdated')
 
 AstralEvents:Register('CHALLENGE_MODE_RESET', function()
 	C_Timer.After(3, function()
@@ -126,17 +126,6 @@ AstralEvents:Register('CHALLENGE_MODE_RESET', function()
 		addon.FindKeyStone(true, false)
 	end)
 end, 'dungeonReset')
-
-AstralEvents:Register('GOSSIP_CLOSED', function()
-	local guid = UnitGUID('target')
-	if guid ~= nil then
-		local _, _, _, _, _, npc_id, _ = strsplit('-', UnitGUID('target'))
-		if npc_id == addon.MYTHICKEY_REROLL_NPC then
-			C_MythicPlus.RequestRewards()
-			addon.FindKeyStone(true, true)
-		end
-	end
-end, 'keyRerolled')
 
 function addon.FindKeyStone(sendUpdate, announceKey)
 	if UnitLevel('player') < addon.EXPANSION_LEVEL then return end
@@ -159,8 +148,6 @@ function addon.FindKeyStone(sendUpdate, announceKey)
 	if mapID then
 		msg = string.format('%s:%s:%d:%d:%d:%d:%s', addon.Player(), addon.PlayerClass(), mapID, keyLevel, weeklyBest, addon.Week, addon.FACTION)
 	end
-
-	local oldMap, oldLevel = addon.UnitMapID(addon.UnitID(addon.Player())), addon.UnitKeyLevel(addon.UnitID(addon.Player()))
 
 	if sendUpdate and msg ~= '' then
 		addon.PushKeyDataToFriends(msg)
@@ -188,11 +175,11 @@ function addon.FindKeyStone(sendUpdate, announceKey)
 	end
 	msg = nil
 
-	-- Ok, time to check if we need to announce a new key or not
-	if tonumber(oldMap) == tonumber(mapID) then return end
+	if tonumber(addon.keystone.id) == tonumber(mapID) then return end
+	addon.keystone = {level = keyLevel, id = mapID, link = nil}
 
 	if announceKey then
-		addon.AnnounceNewKey(mapID, keyLevel, oldMap, oldLevel)
+		addon.AnnounceNewKey()
 	end
 end
 
@@ -250,20 +237,26 @@ function addon.GetDifficultyColour(keyLevel)
 	end
 end
 
-local lastKey
-AstralEvents:Register('BAG_UPDATE', function()
+function addon.ScanBagsForKey()
 	for bagId = 0, 4 do
 		for slot = 1, C_Container.GetContainerNumSlots(bagId) do
 			local itemID = C_Container.GetContainerItemID(bagId, slot)
 			if (addon.MYTHICKEY_ITEMID == itemID) then
 				local itemLink = C_Container.GetContainerItemLink(bagId, slot)
 				if (dataInitialized) then
-					if (itemLink ~= lastKey) then
-						addon.FindKeyStone(true, true)
+					if (itemLink ~= addon.keystone.link) then
+						addon.FindKeyStone(true, false)
 					end
 				end
-				lastKey = itemLink
+				addon.keystone.link = itemLink
 			end
 		end
 	end
-end, 'bagUpdateKeyScan')
+end
+
+AstralEvents:Register('ITEM_CHANGED', function(previousLink, newLink)
+	if addon.keystone.link == previousLink then
+		addon.CheckAndAnnounceKeyStone()
+		addon.keystone.link = newLink
+	end
+end, 'keystoneChanged')

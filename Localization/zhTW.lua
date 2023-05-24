@@ -35,7 +35,6 @@ L['CANCEL'] = CANCEL
 
 -- Announce messages
 L['ANNOUNCE_NEW_KEY'] = 'Astral Keys: 新的鑰石是 %s'
-L['ANNOUNCE_REROLLED_KEY'] = 'Astral Keys: Rerolled key %s to %s'
 L['NO_KEY'] = '沒有鑰石'
 L['KEYS_RESPOND_ON_NO_KEY'] = '即使你沒有鑰石時也回應'
 
