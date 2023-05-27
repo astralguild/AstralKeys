@@ -22,6 +22,8 @@ DUNGEON_TABLE["369F"] = L["Operation: Mechagon - Junkyard"]
 DUNGEON_TABLE["391F"] = L["Tazavesh: Streets of Wonder"]
 DUNGEON_TABLE["392F"] = L["Tazavesh: So'leah's Gambit"]
 
+-- Dragonflight Dungeons
+
 DUNGEON_TABLE[399] = L["Ruby Life Pools"]
 DUNGEON_TABLE[400] = L["The Nokhud Offensive"]
 DUNGEON_TABLE[401] = L["The Azure Vault"]

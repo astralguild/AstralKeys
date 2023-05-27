@@ -9,13 +9,11 @@ COLOUR[3] = 'ffa335ee' -- Epic
 COLOUR[4] = 'ffff8000' -- Legendary
 COLOUR[5] = 'ffe6cc80' -- Artifact
 
-addon.keystone = {level = 0, id = 0, link = nil}
+addon.keystone = {level = 0, id = 0}
 
 addon.MYTHICKEY_ITEMID = 180653
 addon.TIMEWALKINGKEY_ITEMID = 187786
 addon.MYTHICKEY_REROLL_NPCID = 197915
-
-local MapIds = {}
 
 local function UpdateWeekly()
 	addon.UpdateCharacterBest()
@@ -33,12 +31,17 @@ local function UpdateWeekly()
 	addon.UpdateCharacterFrames()
 end
 
-local dataInitialized
+function addon.CacheKeystone()
+	local mapID = C_MythicPlus.GetOwnedKeystoneChallengeMapID()
+	local keyLevel = C_MythicPlus.GetOwnedKeystoneLevel()
+	addon.keystone = {level = keyLevel, mapID = mapID}
+end
+
 function InitData()
-	MapIds = C_ChallengeMode.GetMapTable()
-	C_MythicPlus.RequestRewards()
 	AstralEvents:Unregister('PLAYER_ENTERING_WORLD', 'initData')
+	C_MythicPlus.RequestRewards()
 	C_ChatInfo.RegisterAddonMessagePrefix('AstralKeys')
+	addon.CacheKeystone()
 	addon.FindKeyStone(true, false)
 	addon.UpdateCharacterBest()
 	if IsInGuild() then
@@ -47,8 +50,7 @@ function InitData()
 
 	if UnitLevel('player') < addon.EXPANSION_LEVEL then return end
 	AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', UpdateWeekly, 'weeklyCheck')
-	dataInitialized = true
-	addon.ScanBagsForKey()
+	AstralEvents:Register('PLAYER_ENTERING_WORLD', addon.CacheKeystone, 'keystoneRecache')
 end
 AstralEvents:Register('PLAYER_ENTERING_WORLD', InitData, 'initData')
 
@@ -58,7 +60,7 @@ AstralEvents:Register('PLAYER_ENTERING_WORLD', InitData, 'initData')
 function addon.CreateKeyLink(mapID, keyLevel)
 	local mapName
 	if mapID == 369 or mapID == 370 then
-		mapName = C_ChallengeMode.GetMapUIInfo(mapID)		
+		mapName = C_ChallengeMode.GetMapUIInfo(mapID)
 	else
 		mapName = addon.GetMapName(mapID, true)
 	end
@@ -109,14 +111,10 @@ function addon.CreateTimewalkingKeyLink(mapID, keyLevel)
 	return strformat('|c' .. COLOUR[3] .. '|Hkeystone:%d:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r', addon.TIMEWALKINGKEY_ITEMID, mapID, keyLevel, thisAff1, thisAff2, thisAff3, thisAff4, L['KEYSTONE'], mapName, keyLevel):gsub('\124\124', '\124')
 end
 
-function addon.CheckAndAnnounceKeyStone()
-	C_MythicPlus.RequestRewards()
-	addon.FindKeyStone(true, true)
-end
-
 AstralEvents:Register('CHALLENGE_MODE_COMPLETED', function()
 	C_Timer.After(3, function()
-		addon.CheckAndAnnounceKeyStone()
+		C_MythicPlus.RequestRewards()
+		addon.FindKeyStone(true, true)
 	end)
 end, 'dungeonCompleted')
 
@@ -127,13 +125,25 @@ AstralEvents:Register('CHALLENGE_MODE_RESET', function()
 	end)
 end, 'dungeonReset')
 
+AstralEvents:Register('CHALLENGE_MODE_START', function()
+	addon.FindKeyStone(true, false)
+end, 'PlayerEnteredMythic')
+
+AstralEvents:Register('ITEM_CHANGED', function(link, newLink)
+	addon.FindKeyStone(true, true)
+end, 'keystoneMaybeChanged')
+
 function addon.FindKeyStone(sendUpdate, announceKey)
 	if UnitLevel('player') < addon.EXPANSION_LEVEL then return end
 
 	local mapID = C_MythicPlus.GetOwnedKeystoneChallengeMapID()
 	local keyLevel = C_MythicPlus.GetOwnedKeystoneLevel()
+
 	local weeklyBest = 0
 	local runHistory = C_MythicPlus.GetRunHistory(false, true)
+
+	if addon.keystone.level == keyLevel and addon.keystone.id == mapID then return end -- nothing to do
+	addon.keystone = {level = keyLevel, id = mapID}
 
 	for i = 1, #runHistory do
 		if runHistory[i].thisWeek then
@@ -144,11 +154,9 @@ function addon.FindKeyStone(sendUpdate, announceKey)
 	end
 
 	local msg = ''
-
 	if mapID then
 		msg = string.format('%s:%s:%d:%d:%d:%d:%s', addon.Player(), addon.PlayerClass(), mapID, keyLevel, weeklyBest, addon.Week, addon.FACTION)
 	end
-
 	if sendUpdate and msg ~= '' then
 		addon.PushKeyDataToFriends(msg)
 		if IsInGuild() then
@@ -174,9 +182,6 @@ function addon.FindKeyStone(sendUpdate, announceKey)
 		end
 	end
 	msg = nil
-
-	if tonumber(addon.keystone.id) == tonumber(mapID) then return end
-	addon.keystone = {level = keyLevel, id = mapID, link = nil}
 
 	if announceKey then
 		addon.AnnounceNewKey()
@@ -216,12 +221,6 @@ function addon.UpdateCharacterBest()
 	end
 end
 
-local function MythicPlusStart()
-	addon.FindKeyStone(true, false)
-end
-
-AstralEvents:Register('CHALLENGE_MODE_START', MythicPlusStart, 'PlayerEnteredMythic')
-
 function addon.GetDifficultyColour(keyLevel)
 	if type(keyLevel) ~= 'number' then return COLOUR[1] end -- return white for any strings or non-number values
 	if keyLevel <= 4 then
@@ -236,27 +235,3 @@ function addon.GetDifficultyColour(keyLevel)
 		return COLOUR[5]
 	end
 end
-
-function addon.ScanBagsForKey()
-	for bagId = 0, 4 do
-		for slot = 1, C_Container.GetContainerNumSlots(bagId) do
-			local itemID = C_Container.GetContainerItemID(bagId, slot)
-			if (addon.MYTHICKEY_ITEMID == itemID) then
-				local itemLink = C_Container.GetContainerItemLink(bagId, slot)
-				if (dataInitialized) then
-					if (itemLink ~= addon.keystone.link) then
-						addon.FindKeyStone(true, false)
-					end
-				end
-				addon.keystone.link = itemLink
-			end
-		end
-	end
-end
-
-AstralEvents:Register('ITEM_CHANGED', function(previousLink, newLink)
-	if addon.keystone.link == previousLink then
-		addon.CheckAndAnnounceKeyStone()
-		addon.keystone.link = newLink
-	end
-end, 'keystoneChanged')

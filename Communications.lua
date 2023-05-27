@@ -370,7 +370,7 @@ local function ParseRaidChatCommands(text)
 					end
 				end
 				if not link then return end -- something went wrong
-				SendChatMessage(string.format('Astral Keys: %s', link), 'RAID')	
+				SendChatMessage(string.format('Astral Keys: %s', link), 'RAID')
 				ReportTimewalkingKey('RAID')
 			else
 				if AstralKeysSettings.general.report_on_message.no_key then
