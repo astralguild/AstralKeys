@@ -1,5 +1,4 @@
 local _, addon = ...
-local L = addon.L
 local strformat = string.format
 
 local COLOUR = {}
@@ -31,18 +30,11 @@ local function UpdateWeekly()
 	addon.UpdateCharacterFrames()
 end
 
-function addon.CacheKeystone()
-	local mapID = C_MythicPlus.GetOwnedKeystoneChallengeMapID()
-	local keyLevel = C_MythicPlus.GetOwnedKeystoneLevel()
-	addon.keystone = {level = keyLevel, mapID = mapID}
-end
-
-function InitData()
+function InitKeystoneData()
 	AstralEvents:Unregister('PLAYER_ENTERING_WORLD', 'initData')
 	C_MythicPlus.RequestRewards()
 	C_ChatInfo.RegisterAddonMessagePrefix('AstralKeys')
-	addon.CacheKeystone()
-	addon.FindKeyStone(true, false)
+	addon.CheckKeystone(true)
 	addon.UpdateCharacterBest()
 	if IsInGuild() then
 		AstralComs:NewMessage('AstralKeys', 'request', 'GUILD')
@@ -50,10 +42,31 @@ function InitData()
 
 	if UnitLevel('player') < addon.EXPANSION_LEVEL then return end
 	AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', UpdateWeekly, 'weeklyCheck')
-	AstralEvents:Register('PLAYER_ENTERING_WORLD', addon.CacheKeystone, 'keystoneRecache')
+	AstralEvents:Register('PLAYER_ENTERING_WORLD', addon.CheckKeystone, 'keystoneCheck')
 end
-AstralEvents:Register('PLAYER_ENTERING_WORLD', InitData, 'initData')
 
+AstralEvents:Register('PLAYER_ENTERING_WORLD', InitKeystoneData, 'initData')
+AstralEvents:Register('ITEM_CHANGED', addon.CheckKeystone, 'keystoneMaybeChanged')
+AstralEvents:Register('CHALLENGE_MODE_RESET', addon.CheckKeystone, 'dungeonReset')
+AstralEvents:Register('CHALLENGE_MODE_START', addon.CheckKeystone, 'dungeonStart')
+AstralEvents:Register('CHALLENGE_MODE_COMPLETED', function()
+	C_Timer.After(3, function()
+		C_MythicPlus.RequestRewards()
+		addon.CheckKeystone()
+	end)
+end, 'dungeonCompleted')
+
+function addon.CheckKeystone(force)
+	local mapID = C_MythicPlus.GetOwnedKeystoneChallengeMapID()
+	local keyLevel = C_MythicPlus.GetOwnedKeystoneLevel()
+  if force or addon.keystone.id == nil then
+    addon.PushKeystone(false)
+  elseif mapID ~= addon.keystone.id or keyLevel ~= addon.keystone.level then
+    addon.PushKeystone(true)
+  else
+    addon.keystone = {level = keyLevel, mapID = mapID}
+  end
+end
 
 --|cffa335ee|Hkeystone:158923:251:12:10:5:13:117|h[Keystone: The Underrot (12)]|h|r
 -- COLOUR[3] returns epic color hex code
@@ -111,29 +124,7 @@ function addon.CreateTimewalkingKeyLink(mapID, keyLevel)
 	return strformat('|c' .. COLOUR[3] .. '|Hkeystone:%d:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r', addon.TIMEWALKINGKEY_ITEMID, mapID, keyLevel, thisAff1, thisAff2, thisAff3, thisAff4, L['KEYSTONE'], mapName, keyLevel):gsub('\124\124', '\124')
 end
 
-AstralEvents:Register('CHALLENGE_MODE_COMPLETED', function()
-	C_Timer.After(3, function()
-		C_MythicPlus.RequestRewards()
-		addon.FindKeyStone(true, true)
-	end)
-end, 'dungeonCompleted')
-
-AstralEvents:Register('CHALLENGE_MODE_RESET', function()
-	C_Timer.After(3, function()
-		C_MythicPlus.RequestRewards()
-		addon.FindKeyStone(true, false)
-	end)
-end, 'dungeonReset')
-
-AstralEvents:Register('CHALLENGE_MODE_START', function()
-	addon.FindKeyStone(true, false)
-end, 'PlayerEnteredMythic')
-
-AstralEvents:Register('ITEM_CHANGED', function(link, newLink)
-	addon.FindKeyStone(true, true)
-end, 'keystoneMaybeChanged')
-
-function addon.FindKeyStone(sendUpdate, announceKey)
+function addon.PushKeystone(announceKey)
 	if UnitLevel('player') < addon.EXPANSION_LEVEL then return end
 
 	local mapID = C_MythicPlus.GetOwnedKeystoneChallengeMapID()
@@ -142,7 +133,6 @@ function addon.FindKeyStone(sendUpdate, announceKey)
 	local weeklyBest = 0
 	local runHistory = C_MythicPlus.GetRunHistory(false, true)
 
-	if addon.keystone.level == keyLevel and addon.keystone.id == mapID then return end -- nothing to do
 	addon.keystone = {level = keyLevel, id = mapID}
 
 	for i = 1, #runHistory do
@@ -157,7 +147,7 @@ function addon.FindKeyStone(sendUpdate, announceKey)
 	if mapID then
 		msg = string.format('%s:%s:%d:%d:%d:%d:%s', addon.Player(), addon.PlayerClass(), mapID, keyLevel, weeklyBest, addon.Week, addon.FACTION)
 	end
-	if sendUpdate and msg ~= '' then
+	if msg ~= '' then
 		addon.PushKeyDataToFriends(msg)
 		if IsInGuild() then
 			AstralComs:NewMessage('AstralKeys', strformat('%s %s', addon.UPDATE_VERSION, msg), 'GUILD')
@@ -184,7 +174,7 @@ function addon.FindKeyStone(sendUpdate, announceKey)
 	msg = nil
 
 	if announceKey then
-		addon.AnnounceNewKey()
+		addon.AnnounceKey()
 	end
 end
 

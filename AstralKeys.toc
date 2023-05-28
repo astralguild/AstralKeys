@@ -40,7 +40,7 @@ Affixes.lua
 Unit Information.lua
 Character Info.lua
 Dungeons.lua
-Key Information.lua
+Keystone.lua
 
 AstralKeys.lua
 Frame Functions.lua

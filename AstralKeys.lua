@@ -45,7 +45,7 @@ function addon.RefreshData()
 		AstralCharacters = {}
 		AstralKeys = {}
 		AstralKeysSettings.general.init_time = addon.DataResetTime()
-		addon.FindKeyStone(true, false)
+		addon.PushKeystone(false)
 		addon.UpdateAffixes()
 		if IsInGuild() then
 			C_GuildInfo.GuildRoster()
