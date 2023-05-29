@@ -8,7 +8,7 @@ COLOUR[3] = 'ffa335ee' -- Epic
 COLOUR[4] = 'ffff8000' -- Legendary
 COLOUR[5] = 'ffe6cc80' -- Artifact
 
-addon.keystone = {level = 0, id = 0}
+addon.keystone = {}
 
 addon.MYTHICKEY_ITEMID = 180653
 addon.TIMEWALKINGKEY_ITEMID = 187786
@@ -30,41 +30,18 @@ local function UpdateWeekly()
 	addon.UpdateCharacterFrames()
 end
 
-function InitKeystoneData()
-	AstralEvents:Unregister('PLAYER_ENTERING_WORLD', 'initData')
-	C_MythicPlus.RequestRewards()
-	C_ChatInfo.RegisterAddonMessagePrefix('AstralKeys')
-	addon.CheckKeystone(true)
-	addon.UpdateCharacterBest()
-	if IsInGuild() then
-		AstralComs:NewMessage('AstralKeys', 'request', 'GUILD')
-	end
-
-	if UnitLevel('player') < addon.EXPANSION_LEVEL then return end
-	AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', UpdateWeekly, 'weeklyCheck')
-	AstralEvents:Register('PLAYER_ENTERING_WORLD', addon.CheckKeystone, 'keystoneCheck')
+function addon.GetCurrentKeystone()
+	return C_MythicPlus.GetOwnedKeystoneChallengeMapID(), C_MythicPlus.GetOwnedKeystoneLevel()
 end
 
-AstralEvents:Register('PLAYER_ENTERING_WORLD', InitKeystoneData, 'initData')
-AstralEvents:Register('ITEM_CHANGED', addon.CheckKeystone, 'keystoneMaybeChanged')
-AstralEvents:Register('CHALLENGE_MODE_RESET', addon.CheckKeystone, 'dungeonReset')
-AstralEvents:Register('CHALLENGE_MODE_START', addon.CheckKeystone, 'dungeonStart')
-AstralEvents:Register('CHALLENGE_MODE_COMPLETED', function()
-	C_Timer.After(3, function()
-		C_MythicPlus.RequestRewards()
-		addon.CheckKeystone()
-	end)
-end, 'dungeonCompleted')
-
-function addon.CheckKeystone(force)
-	local mapID = C_MythicPlus.GetOwnedKeystoneChallengeMapID()
-	local keyLevel = C_MythicPlus.GetOwnedKeystoneLevel()
-  if force or addon.keystone.id == nil then
-    addon.PushKeystone(false)
-  elseif mapID ~= addon.keystone.id or keyLevel ~= addon.keystone.level then
+function addon.CheckKeystone()
+	local id, l = addon.GetCurrentKeystone()
+	if not addon.keystone.id then
+		addon.PushKeystone(false)
+	elseif id ~= addon.keystone.id or l ~= addon.keystone.level then
     addon.PushKeystone(true)
   else
-    addon.keystone = {level = keyLevel, mapID = mapID}
+    addon.keystone = {level = l, id = id}
   end
 end
 
@@ -127,8 +104,7 @@ end
 function addon.PushKeystone(announceKey)
 	if UnitLevel('player') < addon.EXPANSION_LEVEL then return end
 
-	local mapID = C_MythicPlus.GetOwnedKeystoneChallengeMapID()
-	local keyLevel = C_MythicPlus.GetOwnedKeystoneLevel()
+	local mapID, keyLevel = addon.GetCurrentKeystone()
 
 	local weeklyBest = 0
 	local runHistory = C_MythicPlus.GetRunHistory(false, true)
@@ -225,3 +201,29 @@ function addon.GetDifficultyColour(keyLevel)
 		return COLOUR[5]
 	end
 end
+
+function InitKeystoneData()
+	AstralEvents:Unregister('PLAYER_ENTERING_WORLD', 'initData')
+	C_MythicPlus.RequestRewards()
+	C_ChatInfo.RegisterAddonMessagePrefix('AstralKeys')
+	addon.PushKeystone(false)
+	addon.UpdateCharacterBest()
+	if IsInGuild() then
+		AstralComs:NewMessage('AstralKeys', 'request', 'GUILD')
+	end
+
+	if UnitLevel('player') < addon.EXPANSION_LEVEL then return end
+	AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', UpdateWeekly, 'weeklyCheck')
+	AstralEvents:Register('PLAYER_ENTERING_WORLD', addon.CheckKeystone, 'keystoneCheck')
+end
+
+AstralEvents:Register('PLAYER_ENTERING_WORLD', InitKeystoneData, 'initData')
+AstralEvents:Register('ITEM_CHANGED', addon.CheckKeystone, 'keystoneMaybeChanged')
+AstralEvents:Register('CHALLENGE_MODE_RESET', addon.CheckKeystone, 'dungeonReset')
+AstralEvents:Register('CHALLENGE_MODE_START', addon.CheckKeystone, 'dungeonStart')
+AstralEvents:Register('CHALLENGE_MODE_COMPLETED', function()
+	C_Timer.After(3, function()
+		C_MythicPlus.RequestRewards()
+		addon.CheckKeystone()
+	end)
+end, 'dungeonCompleted')
