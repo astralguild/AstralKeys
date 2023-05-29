@@ -36,7 +36,7 @@ end
 
 function addon.CheckKeystone()
 	local id, l = addon.GetCurrentKeystone()
-	if not addon.keystone.id then
+	if (not addon.keystone.id) or (id == addon.keystone.id and l < addon.keystone.level) then
 		addon.PushKeystone(false)
 	elseif id ~= addon.keystone.id or l ~= addon.keystone.level then
     addon.PushKeystone(true)
@@ -162,7 +162,6 @@ function addon.UpdateCharacterBest()
 	local weeklyBest = 0
 	local runHistory = C_MythicPlus.GetRunHistory(false, true)
 
-
 	for i = 1, #runHistory do
 		if runHistory[i].thisWeek then
 			if runHistory[i].level > weeklyBest then
@@ -172,7 +171,6 @@ function addon.UpdateCharacterBest()
 	end
 
 	local found = false
-
 	for i = 1, #AstralCharacters do
 		if AstralCharacters[i].unit == addon.Player() then
 			found = true
