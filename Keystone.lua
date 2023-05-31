@@ -226,12 +226,16 @@ AstralEvents:Register('CHALLENGE_MODE_COMPLETED', function()
 		addon.CheckKeystone()
 	end)
 end, 'dungeonCompleted')
-AstralEvents:Register('GOSSIP_CLOSED', function()
+AstralEvents:Register('GOSSIP_SHOW', function()
 	local guid = UnitGUID('target')
 	if guid ~= nil then
-		local _, _, _, _, _, npc_id, _ = strsplit('-', guid)
-		if npc_id == addon.MYTHICKEY_CITY_NPC then
-			addon.CheckKeystone()
+		local npc_id = select(6, strsplit('-', guid))
+		if tonumber(npc_id) == addon.MYTHICKEY_CITY_NPCID then
+			AstralEvents:Register('GOSSIP_CLOSED', function()
+				AstralEvents:Unregister('GOSSIP_CLOSED', 'keystoneGossipClosed')
+				C_MythicPlus.RequestRewards()
+				addon.CheckKeystone()
+			end, 'keystoneGossipClosed')
 		end
 	end
 end, 'keystoneObtained')
