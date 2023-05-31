@@ -52,7 +52,7 @@ function addon.RefreshData()
 		end
 		addon.SetPlayerNameRealm()
 		addon.SetPlayerClass()
-		InitData()
+		InitKeystoneData()
 
 		addon.refreshTime = time()
 		return true

@@ -13,6 +13,7 @@ addon.keystone = {}
 addon.MYTHICKEY_ITEMID = 180653
 addon.TIMEWALKINGKEY_ITEMID = 187786
 addon.MYTHICKEY_REROLL_NPCID = 197915
+addon.MYTHICKEY_CITY_NPCID = 197711
 
 local function UpdateWeekly()
 	addon.UpdateCharacterBest()
@@ -225,3 +226,12 @@ AstralEvents:Register('CHALLENGE_MODE_COMPLETED', function()
 		addon.CheckKeystone()
 	end)
 end, 'dungeonCompleted')
+AstralEvents:Register('GOSSIP_CLOSED', function()
+	local guid = UnitGUID('target')
+	if guid ~= nil then
+		local _, _, _, _, _, npc_id, _ = strsplit('-', guid)
+		if npc_id == addon.MYTHICKEY_CITY_NPC then
+			addon.CheckKeystone()
+		end
+	end
+end, 'keystoneObtained')
