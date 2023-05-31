@@ -280,12 +280,13 @@ function addon.AnnounceCharacterKeys(channel)
 	end
 end
 
-function addon.AnnounceNewKey(keyLink)
+function addon.AnnounceKey()
+	local msg = strformat(L['ANNOUNCE_NEW_KEY'], addon.CreateKeyLink(addon.keystone.id, addon.keystone.level))
 	if AstralKeysSettings.general.announce_party.isEnabled and IsInGroup() then
-		SendChatMessage(strformat(L['ANNOUNCE_NEW_KEY'], keyLink), 'PARTY')
+		SendChatMessage(msg, 'PARTY')
 	end
 	if AstralKeysSettings.general.announce_guild.isEnabled and IsInGuild() then
-		SendChatMessage(strformat(L['ANNOUNCE_NEW_KEY'], keyLink), 'GUILD')
+		SendChatMessage(msg, 'GUILD')
 	end
 end
 
@@ -369,7 +370,7 @@ local function ParseRaidChatCommands(text)
 					end
 				end
 				if not link then return end -- something went wrong
-				SendChatMessage(string.format('Astral Keys: %s', link), 'RAID')	
+				SendChatMessage(string.format('Astral Keys: %s', link), 'RAID')
 				ReportTimewalkingKey('RAID')
 			else
 				if AstralKeysSettings.general.report_on_message.no_key then
