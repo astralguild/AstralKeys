@@ -295,10 +295,9 @@ local function ParseGuildChatCommands(text)
 	text = gsub(text, "^%[%a+%] ", "") -- Strip off [SomeName] from message from using Identity-2
 	if text:lower() == '!keys' then
 		local guild = GetGuildInfo('player')
-		if AstralKeysSettings.general.report_on_message['guild'] or (guild == 'Astral' and addon.PlayerRealm() == 'Area 52') then -- Guild leader for Astral desires this setting to be foreced on for members.
-			local unitID = addon.UnitID(addon.Player())
-			if unitID then
-				local keyLink = addon.CreateKeyLink(addon.UnitMapID(unitID), addon.UnitKeyLevel(unitID))
+		if AstralKeysSettings.general.report_on_message['guild'] or (guild == 'Astral' and addon.PlayerRealm() == 'Area52') then -- Guild leader for Astral desires this setting to be foreced on for members.
+			if addon.keystone.id then
+				local keyLink = addon.CreateKeyLink(addon.keystone.id, addon.keystone.level)
 				if not keyLink then return end -- Something went wrong
 				SendChatMessage(string.format('Astral Keys: %s', keyLink), 'GUILD')
 				ReportTimewalkingKey('GUILD')
@@ -317,12 +316,11 @@ local function ParsePartyChatCommands(text)
 	text = gsub(text, "^%[%a+%] ", "") -- Strip off [SomeName] from message from using Identity-2
 	if text:lower() == '!keys' then
 		if AstralKeysSettings.general.report_on_message['party'] then
-			local unitID = addon.UnitID(addon.Player())
-			if unitID then
-				local keyLink = addon.CreateKeyLink(addon.UnitMapID(unitID), addon.UnitKeyLevel(unitID))
+			if addon.keystone.id then
+				local keyLink = addon.CreateKeyLink(addon.keystone.id, addon.keystone.level)
 				if not keyLink then return end -- Something went wrong
 				SendChatMessage(string.format('Astral Keys: %s', keyLink), 'PARTY')
-				ReportTimewalkingKey('PARTY')	
+				ReportTimewalkingKey('PARTY')
 			else
 				if AstralKeysSettings.general.report_on_message.no_key then
 					SendChatMessage(strformat('%s: %s', 'Astral Keys', L['NO_KEY']), 'PARTY')
@@ -334,8 +332,8 @@ end
 AstralEvents:Register('CHAT_MSG_PARTY', ParsePartyChatCommands, 'parsepartychat')
 AstralEvents:Register('CHAT_MSG_PARTY_LEADER', ParsePartyChatCommands, 'parsepartychat')
 
-function ReportTimewalkingKey(reportType) 
-	local timeWalkingLink 
+function ReportTimewalkingKey(reportType)
+	local timeWalkingLink
 	for bag = 0, 4 do
 		local numSlots = C_Container.GetContainerNumSlots(bag)
 		for slot = 1, numSlots do
@@ -357,20 +355,10 @@ local function ParseRaidChatCommands(text)
 	text = gsub(text, "^%[%a+%] ", "") -- Strip off [SomeName] from message from using Identity-2
 	if text:lower() == '!keys' then
 		if AstralKeysSettings.general.report_on_message['raid'] then
-			local unitID = addon.UnitID(addon.Player())
-			if unitID then
-				local link
-				for bag = 0, 4 do
-					local numSlots = C_Container.GetContainerNumSlots(bag)
-					for slot = 1, numSlots do
-						if (C_Container.GetContainerItemID(bag, slot) == addon.MYTHICKEY_ITEMID) then
-							link = C_Container.GetContainerItemLink(bag, slot)
-							break
-						end
-					end
-				end
-				if not link then return end -- something went wrong
-				SendChatMessage(string.format('Astral Keys: %s', link), 'RAID')
+			if addon.keystone.id then
+				local keyLink = addon.CreateKeyLink(addon.keystone.id, addon.keystone.level)
+				if not keyLink then return end -- Something went wrong
+				SendChatMessage(string.format('Astral Keys: %s', keyLink), 'RAID')
 				ReportTimewalkingKey('RAID')
 			else
 				if AstralKeysSettings.general.report_on_message.no_key then

@@ -1,4 +1,5 @@
 local _, addon = ...
+local L = addon.L
 local strformat = string.format
 
 local COLOUR = {}
@@ -55,51 +56,48 @@ function addon.CreateKeyLink(mapID, keyLevel)
 	else
 		mapName = addon.GetMapName(mapID, true)
 	end
-	local thisAff1, thisAff2, thisAff3, thisAff4 = 0
-	if addon.AffixFour() == 0 then
-		if keyLevel > 1 then
-		thisAff1 = addon.AffixOne()
-		end
+	local a1, a2, a3, a4
+	if keyLevel > 1 then
+		a1 = addon.AffixOne()
+	end
+	if addon.AffixFour() == 0 then -- season affix removed in DF S2
 		if keyLevel > 6 then
-		thisAff2 = addon.AffixTwo()
+		a2 = addon.AffixTwo()
 		end
 		if keyLevel > 13 then
-		thisAff3 = addon.AffixThree() -- season affix removed in DF S2
+		a3 = addon.AffixThree()
 		end
-	else
-		if keyLevel > 1 then
-			thisAff1 = addon.AffixOne()
-		 end
-		 if keyLevel > 3 then
-			thisAff2 = addon.AffixTwo()
-		 end
-		 if keyLevel > 6 then
-			thisAff3 = addon.AffixThree()
-		 end
-		 if keyLevel > 8 then
-			thisAff4 = addon.AffixFour()
-		 end
+	else -- include season affix
+		if keyLevel > 3 then
+		a2 = addon.AffixTwo()
+		end
+		if keyLevel > 6 then
+		a3 = addon.AffixThree()
+		end
+		if keyLevel > 8 then
+		a4 = addon.AffixFour()
+		end
 	end
-	return strformat('|c' .. COLOUR[3] .. '|Hkeystone:%d:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r', addon.MYTHICKEY_ITEMID, mapID, keyLevel, thisAff1, thisAff2, thisAff3, thisAff4, L['KEYSTONE'], mapName, keyLevel):gsub('\124\124', '\124')
+	return strformat('|c' .. COLOUR[3] .. '|Hkeystone:%d:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r', addon.MYTHICKEY_ITEMID, mapID, keyLevel, a1, a2, a3, a4, L['KEYSTONE'] or 'Keystone:', mapName, keyLevel):gsub('\124\124', '\124')
 end
 
 -- Prints out the same link as the CreateKeyLink but only if the Timewalking Key is found. Otherwise nothing is done.
 function addon.CreateTimewalkingKeyLink(mapID, keyLevel)
-   local mapName = addon.GetMapName(mapID, true)
-   local thisAff1, thisAff2, thisAff3, thisAff4 = 0
+	local mapName = addon.GetMapName(mapID, true)
+	local a1, a2, a3, a4
 	if keyLevel > 1 then
-	 thisAff1 = addon.TimewalkingAffixOne()
+	 a1 = addon.TimewalkingAffixOne()
 	end
 	if keyLevel > 3 then
-	 thisAff2 = addon.TimewalkingAffixTwo()
+	 a2 = addon.TimewalkingAffixTwo()
 	end
 	if keyLevel > 6 then
-	 thisAff3 = addon.TimewalkingAffixThree()
+	 a3 = addon.TimewalkingAffixThree()
 	end
 	if keyLevel > 8 then
-	 thisAff4 = addon.TimewalkingAffixFour()
+	 a4 = addon.TimewalkingAffixFour()
 	end
-	return strformat('|c' .. COLOUR[3] .. '|Hkeystone:%d:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r', addon.TIMEWALKINGKEY_ITEMID, mapID, keyLevel, thisAff1, thisAff2, thisAff3, thisAff4, L['KEYSTONE'], mapName, keyLevel):gsub('\124\124', '\124')
+	return strformat('|c' .. COLOUR[3] .. '|Hkeystone:%d:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r', addon.TIMEWALKINGKEY_ITEMID, mapID, keyLevel, a1, a2, a3, a4, L['KEYSTONE'] or 'Keystone:', mapName, keyLevel):gsub('\124\124', '\124')
 end
 
 function addon.PushKeystone(announceKey)
@@ -217,7 +215,6 @@ function InitKeystoneData()
 end
 
 AstralEvents:Register('PLAYER_ENTERING_WORLD', InitKeystoneData, 'initData')
-AstralEvents:Register('ITEM_CHANGED', addon.CheckKeystone, 'keystoneMaybeChanged')
 AstralEvents:Register('CHALLENGE_MODE_RESET', addon.CheckKeystone, 'dungeonReset')
 AstralEvents:Register('CHALLENGE_MODE_START', addon.CheckKeystone, 'dungeonStart')
 AstralEvents:Register('CHALLENGE_MODE_COMPLETED', function()
@@ -226,13 +223,21 @@ AstralEvents:Register('CHALLENGE_MODE_COMPLETED', function()
 		addon.CheckKeystone()
 	end)
 end, 'dungeonCompleted')
+AstralEvents:Register('ITEM_CHANGED', function()
+	C_Timer.After(3, function()
+		C_MythicPlus.RequestRewards()
+		addon.CheckKeystone()
+	end)
+end, 'keystoneMaybeChanged')
 AstralEvents:Register('GOSSIP_CLOSED', function()
 	local guid = UnitGUID('target')
 	if guid ~= nil then
 		local npc_id = select(6, strsplit('-', guid))
 		if tonumber(npc_id) == addon.MYTHICKEY_CITY_NPCID then
-			C_MythicPlus.RequestRewards()
-			addon.CheckKeystone()
+			C_Timer.After(3, function()
+				C_MythicPlus.RequestRewards()
+				addon.CheckKeystone()
+			end)
 		end
 	end
 end, 'keystoneObtainedOrDepleted')
