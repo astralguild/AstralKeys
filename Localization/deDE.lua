@@ -46,7 +46,7 @@ L['OKAY'] = OKAY
 L['ANNOUNCE_NEW_KEY'] = 'Astral Keys: Neuer Schlüssel %s'
 L['NO_KEY'] = 'Kein Schlüssel'
 L['KEYS_RESPOND_ON_NO_KEY'] = 'Ohne eigenen Schlüssel reagieren'
-
+L['KEYS_RESPOND_WITH_ALL_CHARACTERS'] = 'Respond with all characters'
 
 -- Search field texts
 L['FILTER_TEXT_DUNGEON'] = 'Sortierung nach Dungeon'

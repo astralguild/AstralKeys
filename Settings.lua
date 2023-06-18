@@ -112,6 +112,7 @@ local function LoadDefaultSettings(addonName)
 		['raid'] = false,
 		['guild'] = false,
 		['no_key'] = false,
+		['all_characters'] = false,
 	})
 	addon:AddDefaultSettings('general', 'expanded_tooltip', {
 		isEnabled = true,
