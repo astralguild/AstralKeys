@@ -37,7 +37,7 @@ L['CANCEL'] = CANCEL
 L['ANNOUNCE_NEW_KEY'] = 'Astral Keys: 新的鑰石是 %s'
 L['NO_KEY'] = '沒有鑰石'
 L['KEYS_RESPOND_ON_NO_KEY'] = '即使你沒有鑰石時也回應'
-
+L['KEYS_RESPOND_WITH_ALL_CHARACTERS'] = 'Respond with all characters'
 
 -- Search field texts
 L['FILTER_TEXT_DUNGEON'] = '根據地城過濾'

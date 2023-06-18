@@ -161,6 +161,11 @@ commandRespondNoKey:SetScript('OnClick', function ()
 	AstralKeysSettings.general.report_on_message['no_key'] = not AstralKeysSettings.general.report_on_message['no_key']
 end)
 
+local commandRespondAllCharacters = addon.CreateCheckBox(contentFrame, L['KEYS_RESPOND_WITH_ALL_CHARACTERS'])
+commandRespondAllCharacters:SetPoint('LEFT', commandRespondNoKey, 'RIGHT', 10, 0)
+commandRespondAllCharacters:SetScript('OnClick', function ()
+	AstralKeysSettings.general.report_on_message['all_characters'] = not AstralKeysSettings.general.report_on_message['all_characters']
+end)
 
 local syncHeader = contentFrame:CreateFontString(nil, 'OVERLAY', 'InterUIBold_Normal')
 syncHeader:SetText(L['SYNC OPTIONS'])
@@ -205,6 +210,7 @@ function InitializeOptionSettings()
 	commandRespondGuild:SetChecked(AstralKeysSettings.general.report_on_message['guild'])
 	commandRespondRaid:SetChecked(AstralKeysSettings.general.report_on_message['raid'])
 	commandRespondNoKey:SetChecked(AstralKeysSettings.general.report_on_message['no_key'])
+	commandRespondAllCharacters:SetChecked(AstralKeysSettings.general.report_on_message['all_characters'])
 
 	showOffLine:SetChecked(AstralKeysSettings.frame.show_offline.isEnabled)
 	mingleOffline:SetChecked(AstralKeysSettings.frame.mingle_offline.isEnabled)
@@ -258,6 +264,7 @@ AstralOptionsFrame:SetScript('OnShow', function(self)
 	commandRespondGuild:SetChecked(AstralKeysSettings.general.report_on_message['guild'])
 	commandRespondRaid:SetChecked(AstralKeysSettings.general.report_on_message['raid'])
 	commandRespondNoKey:SetChecked(AstralKeysSettings.general.report_on_message['no_key'])
+	commandRespondAllCharacters:SetChecked(AstralKeysSettings.general.report_on_message['all_characters'])
 
 	showOffLine:SetChecked(AstralKeysSettings.frame.show_offline.isEnabled)
 	mingleOffline:SetChecked(AstralKeysSettings.frame.mingle_offline.isEnabled)

@@ -45,8 +45,8 @@ L['OKAY'] = OKAY
 -- Announce messages
 L['ANNOUNCE_NEW_KEY'] = 'Astral Keys: New key %s'
 L['NO_KEY'] = 'No key'
-L['KEYS_RESPOND_ON_NO_KEY'] = 'Respond even if you do not have a key'
-
+L['KEYS_RESPOND_ON_NO_KEY'] = 'Respond even if no key'
+L['KEYS_RESPOND_WITH_ALL_CHARACTERS'] = 'Respond with all characters'
 
 -- Search field texts
 L['FILTER_TEXT_DUNGEON'] = 'Filter by dungeon'

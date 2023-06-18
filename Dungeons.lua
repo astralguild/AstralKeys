@@ -48,5 +48,6 @@ DUNGEON_TABLE[245] = L["Freehold"]
 DUNGEON_TABLE[251] = L["The Underrot"]
 
 function addon.GetMapName(mapID, full)
+	if not mapID then return nil end
 	return (full and DUNGEON_TABLE[mapID .. "F"]) or DUNGEON_TABLE[mapID]
 end

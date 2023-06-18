@@ -4,6 +4,8 @@ local L = addon.L
 local strformat = string.format
 local BNSendGameData, SendAddonMessage, SendChatMessage = BNSendGameData, C_ChatInfo.SendAddonMessage, SendChatMessage
 
+addon.KEYS_TEXT_COMMAND = '!keys'
+
 -- Variables for syncing information
 -- Will only accept information from other clients with same version settings
 addon.UPDATE_VERSION = 'updateV8'
@@ -268,14 +270,18 @@ CheckInstanceType = function()
 end
 AstralEvents:Register('PLAYER_ENTERING_WORLD', CheckInstanceType, 'entering_world')
 
-function addon.AnnounceCharacterKeys(channel)
+function addon.AnnounceCharacterKeys(channel, prefix)
 	for i = 1, #AstralCharacters do
 		local id = addon.UnitID(strformat('%s-%s', addon.CharacterName(i), addon.CharacterRealm(i)))
 
 		if id then
 			local link = addon.CreateKeyLink(addon.UnitMapID(id), addon.UnitKeyLevel(id))
 			if channel == 'PARTY' and not IsInGroup() then return end
-			SendChatMessage(strformat('%s %s', addon.CharacterName(i), link), channel)
+			if prefix then
+				SendChatMessage(strformat('Astral Keys: %s %s', addon.CharacterName(i), link), channel)
+			else
+				SendChatMessage(strformat('%s %s', addon.CharacterName(i), link), channel)
+			end
 		end
 	end
 end
@@ -293,10 +299,12 @@ end
 local function ParseGuildChatCommands(text)
 	if UnitLevel('player') ~= addon.EXPANSION_LEVEL then return end -- Don't bother checking anything if the unit is unable to acquire a key
 	text = gsub(text, "^%[%a+%] ", "") -- Strip off [SomeName] from message from using Identity-2
-	if text:lower() == '!keys' then
+	if text:lower() == addon.KEYS_TEXT_COMMAND then
 		local guild = GetGuildInfo('player')
 		if AstralKeysSettings.general.report_on_message['guild'] or (guild == 'Astral' and addon.PlayerRealm() == 'Area52') then -- Guild leader for Astral desires this setting to be foreced on for members.
-			if addon.keystone.id then
+			if AstralKeysSettings.general.report_on_message['all_characters'] then
+				addon.AnnounceCharacterKeys('GUILD', true)
+			elseif addon.keystone.id then
 				local keyLink = addon.CreateKeyLink(addon.keystone.id, addon.keystone.level)
 				if not keyLink then return end -- Something went wrong
 				SendChatMessage(string.format('Astral Keys: %s', keyLink), 'GUILD')
@@ -314,9 +322,11 @@ AstralEvents:Register('CHAT_MSG_GUILD', ParseGuildChatCommands, 'parseguildchat'
 local function ParsePartyChatCommands(text)
 	if UnitLevel('player') ~= addon.EXPANSION_LEVEL then return end -- Don't bother checking anything if the unit is unable to acquire a key
 	text = gsub(text, "^%[%a+%] ", "") -- Strip off [SomeName] from message from using Identity-2
-	if text:lower() == '!keys' then
+	if text:lower() == addon.KEYS_TEXT_COMMAND then
 		if AstralKeysSettings.general.report_on_message['party'] then
-			if addon.keystone.id then
+			if AstralKeysSettings.general.report_on_message['all_characters'] then
+				addon.AnnounceCharacterKeys('PARTY', true)
+			elseif addon.keystone.id then
 				local keyLink = addon.CreateKeyLink(addon.keystone.id, addon.keystone.level)
 				if not keyLink then return end -- Something went wrong
 				SendChatMessage(string.format('Astral Keys: %s', keyLink), 'PARTY')
@@ -353,9 +363,11 @@ end
 local function ParseRaidChatCommands(text)
 	if UnitLevel('player') ~= addon.EXPANSION_LEVEL then return end -- Don't bother checking anything if the unit is unable to acquire a key
 	text = gsub(text, "^%[%a+%] ", "") -- Strip off [SomeName] from message from using Identity-2
-	if text:lower() == '!keys' then
+	if text:lower() == addon.KEYS_TEXT_COMMAND then
 		if AstralKeysSettings.general.report_on_message['raid'] then
-			if addon.keystone.id then
+			if AstralKeysSettings.general.report_on_message['all_characters'] then
+				addon.AnnounceCharacterKeys('RAID', true)
+			elseif addon.keystone.id then
 				local keyLink = addon.CreateKeyLink(addon.keystone.id, addon.keystone.level)
 				if not keyLink then return end -- Something went wrong
 				SendChatMessage(string.format('Astral Keys: %s', keyLink), 'RAID')

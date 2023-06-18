@@ -46,7 +46,7 @@ L['OKAY'] = 'ОК'
 L['ANNOUNCE_NEW_KEY'] = 'Astral Keys: новый ключ %s'
 L['NO_KEY'] = 'Нет ключа'
 L['KEYS_RESPOND_ON_NO_KEY'] = 'Отвечать, даже если у Вас нет ключа'
-
+L['KEYS_RESPOND_WITH_ALL_CHARACTERS'] = 'Respond with all characters'
 
 -- Search field texts
 L['FILTER_TEXT_DUNGEON'] = 'Фильтр по подземелью'
