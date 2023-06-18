@@ -162,7 +162,7 @@ commandRespondNoKey:SetScript('OnClick', function ()
 end)
 
 local commandRespondAllCharacters = addon.CreateCheckBox(contentFrame, L['KEYS_RESPOND_WITH_ALL_CHARACTERS'])
-commandRespondAllCharacters:SetPoint('TOPLEFT', commandRespondNoKey, 'BOTTOMLEFT', 0, -5)
+commandRespondAllCharacters:SetPoint('LEFT', commandRespondNoKey, 'RIGHT', 10, 0)
 commandRespondAllCharacters:SetScript('OnClick', function ()
 	AstralKeysSettings.general.report_on_message['all_characters'] = not AstralKeysSettings.general.report_on_message['all_characters']
 end)
