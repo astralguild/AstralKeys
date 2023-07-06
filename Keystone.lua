@@ -39,9 +39,9 @@ end
 function addon.CheckKeystone()
 	local id, l = addon.GetCurrentKeystone()
 	if (not addon.keystone.id) or (id == addon.keystone.id and l < addon.keystone.level) then
-		addon.PushKeystone(false)
+		addon.PushKeystone(false, id, l)
 	elseif id ~= addon.keystone.id or l ~= addon.keystone.level then
-    addon.PushKeystone(true)
+    addon.PushKeystone(true, id, l)
   else
     addon.keystone = {level = l, id = id}
   end
@@ -56,6 +56,8 @@ function addon.CreateKeyLink(mapID, keyLevel)
 	else
 		mapName = addon.GetMapName(mapID, true)
 	end
+	keyLevel = keyLevel or C_MythicPlus.GetOwnedKeystoneLevel()
+	if not mapName or not keyLevel then return end
 	local a1, a2, a3, a4
 	if keyLevel > 1 then
 		a1 = addon.AffixOne()
@@ -100,10 +102,12 @@ function addon.CreateTimewalkingKeyLink(mapID, keyLevel)
 	return strformat('|c' .. COLOUR[3] .. '|Hkeystone:%d:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r', addon.TIMEWALKINGKEY_ITEMID, mapID, keyLevel, a1, a2, a3, a4, L['KEYSTONE'] or 'Keystone:', mapName, keyLevel):gsub('\124\124', '\124')
 end
 
-function addon.PushKeystone(announceKey)
+function addon.PushKeystone(announceKey, mapID, keyLevel)
 	if UnitLevel('player') < addon.EXPANSION_LEVEL then return end
 
-	local mapID, keyLevel = addon.GetCurrentKeystone()
+	if not mapID or not keyLevel then
+		mapID, keyLevel = addon.GetCurrentKeystone()
+	end
 
 	local weeklyBest = 0
 	local runHistory = C_MythicPlus.GetRunHistory(false, true)
