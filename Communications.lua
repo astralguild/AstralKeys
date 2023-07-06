@@ -287,7 +287,9 @@ function addon.AnnounceCharacterKeys(channel, prefix)
 end
 
 function addon.AnnounceKey()
-	local msg = strformat(L['ANNOUNCE_NEW_KEY'], addon.CreateKeyLink(addon.keystone.id, addon.keystone.level))
+	local link = addon.CreateKeyLink(addon.keystone.id, addon.keystone.level)
+	if not link then return end
+	local msg = strformat(L['ANNOUNCE_NEW_KEY'], link)
 	if AstralKeysSettings.general.announce_party.isEnabled and IsInGroup() then
 		SendChatMessage(msg, 'PARTY')
 	end
