@@ -540,7 +540,7 @@ local logo_Astral = CreateFrame('BUTTON', nil, menuBar)
 logo_Astral:SetSize(32, 32)
 logo_Astral:SetPoint('BOTTOMLEFT', menuBar, 'BOTTOMLEFT', 10, 10)
 logo_Astral:SetAlpha(0.8)
-logo_Astral:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\Logo@2x')
+logo_Astral:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\logo.png')
 
 logo_Astral:SetScript('OnClick', function()
 	astralGuildInfo:SetShown(not astralGuildInfo:IsShown())
