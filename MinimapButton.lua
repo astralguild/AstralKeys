@@ -5,7 +5,7 @@ LibStub("AceAddon-3.0"):NewAddon(addon, "AstralKeys", "AceConsole-3.0")
 local astralkeysLDB = LibStub("LibDataBroker-1.1"):NewDataObject("AstralKeys", {
 	type = "data source",
 	text = "AstralKeys",
-	icon = "Interface\\AddOns\\AstralKeys\\Media\\Texture\\minimap.png",
+	icon = "Interface\\AddOns\\AstralKeys\\Media\\Texture\\Logo@2x",
 	OnClick = function(_, button)
 		if button == 'LeftButton' then 
 			addon.AstralToggle()

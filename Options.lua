@@ -48,7 +48,7 @@ divider:SetPoint('TOP', logo_Key, 'BOTTOM', 0, -20)
 local logo_Astral = menuBar:CreateTexture(nil, 'ARTWORK')
 logo_Astral:SetAlpha(0.8)
 logo_Astral:SetSize(32, 32)
-logo_Astral:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\logo.png', nil, nil, 'TRILINEAR')
+logo_Astral:SetTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\Logo@2x')
 logo_Astral:SetPoint('BOTTOMLEFT', menuBar, 'BOTTOMLEFT', 10, 10)
 
 local closeButton = CreateFrame('BUTTON', '$parentCloseButton', AstralOptionsFrame)

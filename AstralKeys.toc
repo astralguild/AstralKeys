@@ -6,7 +6,7 @@
 ## SavedVariables: AstralKeys, AstralCharacters, AstralKeysSettings, AstralMinimap, AstralAffixes, AstralLists, AstralUnits
 ## X-Wago-ID: baNDZoKo
 ## X-Curse-Project-ID: 265199
-## IconTexture: Interface\AddOns\AstralKeys\Media\Texture\minimap.png
+## IconTexture: Interface\AddOns\AstralKeys\Media\Texture\Logo@2x
 ## AddonCompartmentFunc: OpenAstralKeysWindow
 
 Init.lua
