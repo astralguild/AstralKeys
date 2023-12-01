@@ -91,3 +91,16 @@ L["The Vortex Pinnacle"] = 'Der Vortexgipfel'
 L["Neltharion's Lair"] = 'Neltharions Hort'
 L["Freehold"] = 'Freihafen'
 L["The Underrot"] = 'Der Tiefenpfuhl'
+
+L["Dawn of the Infinite: Galakrond's Fall"] = 'Dämmerung des Ewigen: Galakronds Sturz'
+L["DotI: Galakrond's Fall"] = 'DdE: Galakronds Sturz'
+L["Dawn of the Infinite: Murozond's Rise"] = 'Dämmerung des Ewigen: Murozonds Erhebung'
+L["DotI: Murozond's Rise"] = 'DdE: Murozonds Erhebung'
+L["Atal'Dazar"] = "Atal'Dazar"
+L["Waycrest Manor"] = 'Das Kronsteiganwesen'
+L["Darkheart Thicket"] = 'Das Finsterherzdickicht'
+L["Black Rook Hold"] = 'Die Rabenwehr'
+L["The Everbloom"] = 'Der Immergrüne Flor'
+L["Throne of the Tides"] = 'Thron der Gezeiten'
+
+
