@@ -1,4 +1,4 @@
-## Interface: 100200
+## Interface: 100205
 ## Title: Astral |cffff8000Keys|r
 ## Notes: Keystone Manager for Guilds and Friends
 ## Author: Astral
