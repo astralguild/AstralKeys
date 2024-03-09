@@ -90,11 +90,7 @@ function addon.WipeFriendList()
 end
 
 function addon.IsFriendOnline(unit)
-	if not FRIEND_LIST[unit] then
-		return false
-	else
-		return FRIEND_LIST[unit].isConnected
-	end
+	return (FRIEND_LIST[unit] and FRIEND_LIST[unit].isConnected) or (NonBNFriend_List[unit] and NonBNFriend_List[unit].isConnected)
 end
 ----------------------------------------------------
 ----------------------------------------------------
