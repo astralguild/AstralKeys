@@ -63,10 +63,10 @@ function addon.CreateKeyLink(mapID, keyLevel)
 		a1 = addon.AffixOne()
 	end
 	if addon.AffixFour() == 0 then -- season affix removed in DF S2
-		if keyLevel > 6 then
+		if keyLevel >= 5 then
 		a2 = addon.AffixTwo()
 		end
-		if keyLevel > 13 then
+		if keyLevel >= 10 then
 		a3 = addon.AffixThree()
 		end
 	else -- include season affix
@@ -190,13 +190,13 @@ end
 
 function addon.GetDifficultyColour(keyLevel)
 	if type(keyLevel) ~= 'number' then return COLOUR[1] end -- return white for any strings or non-number values
-	if keyLevel <= 4 then
+	if keyLevel <= 2 then
 		return COLOUR[1]
-	elseif keyLevel <= 9 then
+	elseif keyLevel <= 4 then
 		return COLOUR[2]
-	elseif keyLevel <= 14 then
+	elseif keyLevel <= 7 then
 		return COLOUR[3]
-	elseif keyLevel <= 19 then
+	elseif keyLevel <= 10 then
 		return COLOUR[4]
 	else
 		return COLOUR[5]
