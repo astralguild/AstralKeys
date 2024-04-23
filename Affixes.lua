@@ -58,7 +58,7 @@ local AFFIX_ROTATION = {
 	-- { FORTIFIED, INCORPOREAL, SANGUINE },
 	-- { TYRANNICAL, ENTANGLING, BOLSTERING },
 	-- { FORTIFIED, VOLCANIC, SPITEFUL },
-	-- { TYRANNICAL, STORMING, RAGING },
+	{ TYRANNICAL, STORMING, RAGING },
 	-- { FORTIFIED, ENTANGLING, BOLSTERING },
 	-- { TYRANNICAL, INCORPOREAL, SPITEFUL },
 	-- { FORTIFIED, AFFLICTED, RAGING },
@@ -220,5 +220,12 @@ end
 function addon.GetAffixID(id, weekOffSet)
 	local week = (ROTATION_WEEK_POSITION + weekOffSet) % AFFIX_ROTATION_WEEKS
 	if week == 0 then week = AFFIX_ROTATION_WEEKS end
+	if week > #AFFIX_ROTATION-1 then
+		if id == 4 then
+			return SEASON_AFFIX
+		end
+		local affixes = C_MythicPlus.GetCurrentAffixes()
+		return affixes[id].ID or SEASON_AFFIX
+	end
 	return AFFIX_ROTATION[week][id] or SEASON_AFFIX
 end
