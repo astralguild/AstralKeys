@@ -57,3 +57,15 @@ L["Darkheart Thicket"] = '黑心林地'
 L["Black Rook Hold"] = '黑鸦堡垒'
 L["The Everbloom"] = '永茂林地'
 L["Throne of the Tides"] = '潮汐王座'
+
+-- DF S4
+L["Ruby Life Pools"] = '红玉新生法池'
+L["Algeth'ar Academy"] = '艾杰斯亚学院'
+L["The Azure Vault"] = '碧蓝魔馆'
+L["Azure Vault"] = '碧蓝魔馆' -- short-form
+L["The Nokhud Offensive"] = '诺库德阻击战'
+L["Nokhud Offensive"] = '诺库德阻击战' -- short-form
+L["Uldaman: Legacy of Tyr"] = '奥达曼: 提尔的遗产' -- short-form
+L["Neltharus"] = '奈萨鲁斯'
+L["Brackenhide Hollow"] = '蕨皮山谷'
+L["Halls of Infusion"] = '注能大厅'
