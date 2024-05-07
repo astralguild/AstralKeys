@@ -1,7 +1,7 @@
 local L = select(2, ...).L('zhCN')
 
 -- Default string for keystone
-L['KEYSTONE'] = 'Keystone:'
+L['KEYSTONE'] = '钥石:'
 
 -- Default tab names
 L['GUILD'] = GUILD
@@ -15,12 +15,12 @@ L['DUNGEON'] = DUNGEONS
 L['CHARACTER'] = CHARACTER
 
 -- Subsection Headers
-L['CHARACTERS'] = 'CHARACTERS'
-L['AFFIXES'] = 'AFFIXES'
+L['CHARACTERS'] = '角色'
+L['AFFIXES'] = '词缀'
 
 -- Character Labels
-L['CURRENT_KEY'] = 'CURRENT'
-L['WEEKLY_BEST'] = 'WKLY BEST'
+L['CURRENT_KEY'] = '当前钥石'
+L['WEEKLY_BEST'] = '本周最佳'
 
 L['CHARACTER_DUNGEON_NOT_RAN'] = 'No mythic+ ran'
 L['CHARACTER_KEY_NOT_FOUND'] = 'No key found'
