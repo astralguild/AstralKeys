@@ -332,7 +332,7 @@ end)
 
 local listHelperText = AstralKeyFrame:CreateFontString('$parentListHelperText', 'OVERLAY', 'InterUIBlack_ExtraLarge')
 listHelperText:SetWidth(300)
-listHelperText:SetJustifyH('MIDDLE')
+listHelperText:SetJustifyH('CENTER')
 listHelperText:SetPoint('TOP', AstralKeyFrameListContainer, 'TOP', 20, 100)
 listHelperText:SetText(L['LIST_ADD_HELPER_TEXT'])
 listHelperText:SetTextColor(1, 1, 1, 0.5)
@@ -586,7 +586,7 @@ end)
 -- Tab bar at the top, only show 5 and then start scrolling
 
 -- MenuBar 50px
--- Middle Frame CHARACTER_INFO_FRAME_SIZEpx
+-- CENTER Frame CHARACTER_INFO_FRAME_SIZEpx
 tabFrame = CreateFrame('FRAME', '$parentTabFrame', AstralKeyFrame)
 tabFrame.offSet = 0
 tabFrame:SetSize(460, 45)
@@ -706,7 +706,7 @@ function CreateNewTab(name, parent, ...)
 	tab.listName = name
 	tab:SetNormalFontObject(InterUIBlack_Small)
 	tab:SetText(L[name])
-	tab:GetFontString():SetJustifyH('MIDDLE')
+	tab:GetFontString():SetJustifyH('CENTER')
 	tab:SetWidth(50)
 	tab:SetHeight(15)
 	tab:SetScript('OnClick', function(self, button) Tab_OnClick(self, button) end)
@@ -763,7 +763,7 @@ local function RemoveList(frame)
 end
 tabPopup:AddButton(L['DELETE_LIST'], nil, nil, function () RemoveList(subTabPopup) end, true, subTabPopup)
 
--- Middle panel construction, Affixe info, character info, guild/version string
+-- CENTER panel construction, Affixe info, character info, guild/version string
 local characterFrame = CreateFrame('FRAME', '$parentCharacterFrame', AstralKeyFrame)
 characterFrame:SetSize(CHARACTER_INFO_FRAME_SIZE, 490)
 characterFrame:SetPoint('TOPLEFT', AstralKeyFrame, 'TOPLEFT', 51, 0)
@@ -1153,7 +1153,7 @@ characterScrollBar:SetScript('OnLeave', CharacterScrollFrame_OnLeave)
 
 -- Re-skin the scroll Bar
 characterScrollBar.ScrollBarTop:Hide()
-characterScrollBar.ScrollBarMiddle:Hide()
+characterScrollBar.ScrollBarCENTER:Hide()
 characterScrollBar.ScrollBarBottom:Hide()
 _G[characterScrollBar:GetName() .. 'ScrollDownButton']:Hide()
 _G[characterScrollBar:GetName() .. 'ScrollUpButton']:Hide()
@@ -1230,7 +1230,7 @@ listScrollBar:SetScript('OnEnter', ListScrollFrame_OnEnter)
 listScrollBar:SetScript('OnLeave', ListScrollFrame_OnLeave)
 
 listScrollBar.ScrollBarTop:Hide()
-listScrollBar.ScrollBarMiddle:Hide()
+listScrollBar.ScrollBarCENTER:Hide()
 listScrollBar.ScrollBarBottom:Hide()
 _G[listScrollBar:GetName() .. 'ScrollDownButton']:Hide()
 _G[listScrollBar:GetName() .. 'ScrollUpButton']:Hide()
@@ -1264,7 +1264,7 @@ local keyLevelButton = CreateFrame('BUTTON', '$parentKeyLevelButton', contentFra
 keyLevelButton.sortMethod = 'key_level'
 keyLevelButton:SetSize(40, 20)
 keyLevelButton:SetNormalFontObject(InterUIBlack_Small)
-keyLevelButton:GetNormalFontObject():SetJustifyH('MIDDLE')
+keyLevelButton:GetNormalFontObject():SetJustifyH('CENTER')
 keyLevelButton:SetText(L['LEVEL'])
 keyLevelButton:SetAlpha(0.5)
 keyLevelButton:SetPoint('TOPLEFT', tabFrame, 'BOTTOMLEFT', 16, -5)
@@ -1614,7 +1614,7 @@ local weeklyBestButton = CreateFrame('BUTTON', '$parentWeeklyBestButton', conten
 weeklyBestButton.sortMethod = 'weekly_best'
 weeklyBestButton:SetSize(70, 20)
 weeklyBestButton:SetNormalFontObject(InterUIBlack_Small)
-characterButton:GetNormalFontObject():SetJustifyH('MIDDLE')
+characterButton:GetNormalFontObject():SetJustifyH('CENTER')
 weeklyBestButton:SetText(L['WEEKLY_BEST'])
 weeklyBestButton:SetAlpha(0.5)
 weeklyBestButton:SetPoint('LEFT', characterButton, 'RIGHT')
