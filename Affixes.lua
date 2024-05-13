@@ -55,16 +55,16 @@ local AFFLICTED = 135
 local INCORPOREAL = 136
 
 local AFFIX_ROTATION = {
-	-- { FORTIFIED, INCORPOREAL, SANGUINE },
-	-- { TYRANNICAL, ENTANGLING, BOLSTERING },
-	-- { FORTIFIED, VOLCANIC, SPITEFUL },
 	{ TYRANNICAL, STORMING, RAGING },
-	-- { FORTIFIED, ENTANGLING, BOLSTERING },
-	-- { TYRANNICAL, INCORPOREAL, SPITEFUL },
-	-- { FORTIFIED, AFFLICTED, RAGING },
-	-- { TYRANNICAL, VOLCANIC, SANGUINE },
-	-- { FORTIFIED, STORMING, BURSTING },
-	-- { TYRANNICAL, AFFLICTED, BOLSTERING },
+	{ FORTIFIED, ENTANGLING, BOLSTERING },
+	{ TYRANNICAL, INCORPOREAL, SPITEFUL },
+	{ FORTIFIED, AFFLICTED, RAGING },
+	{ TYRANNICAL, VOLCANIC, SANGUINE },
+	{ FORTIFIED, STORMING, BURSTING },
+	{ TYRANNICAL, AFFLICTED, BOLSTERING },
+	{ FORTIFIED, INCORPOREAL, SANGUINE },
+	{ TYRANNICAL, ENTANGLING, BOLSTERING },
+	{ FORTIFIED, VOLCANIC, SPITEFUL },
 }
 
 local AFFIX_ROTATION_WEEKS = 10
@@ -78,9 +78,8 @@ local LEGION_AFFIX_ROTATION = {
 }
 
 local AFFIX_INFO = {}
-local SEASON_AFFIX = 0
 local ROTATION_WEEK_POSITION = 0
-local AffixOneID, AffixTwoID, AffixThreeID = 0, 0, 0 -- Used to always show the current week's affixes irregardless if the rotation is known or not
+local AffixOneID, AffixTwoID, AffixThreeID, AffixSeasonID = 0, 0, 0, 0 -- Used to always show the current week's affixes irregardless if the rotation is known or not
 
 -- Finds the index of the current week's affixes in the table
 -- @param affixOne Integers id for corresponding affix
@@ -92,8 +91,7 @@ local function GetRotationPosition(affixOne, affixTwo, affixThree)
 
 	for i = 1, #AFFIX_ROTATION do
 		if AFFIX_ROTATION[i][1] == affixOne and AFFIX_ROTATION[i][2] == affixTwo and AFFIX_ROTATION[i][3] == affixThree then
-			returnIndex = i
-			break
+			return i
 		end
 	end
 
@@ -112,13 +110,13 @@ local function UpdateMythicPlusAffixes()
 	AffixTwoID = affixes[2].id
 	AffixThreeID = affixes[3].id
 	if #affixes > 3 then
-		SEASON_AFFIX = affixes[4].id -- Set the season affix id
+		AffixSeasonID = affixes[4].id
 	end
 
 	ROTATION_WEEK_POSITION = GetRotationPosition(affixes[1].id, affixes[2].id, affixes[3].id)
 
-	if SEASON_AFFIX ~= AstralAffixes.season_affix then -- Season has changed
-		AstralAffixes.season_affix = SEASON_AFFIX -- Change the season affix
+	if AffixSeasonID ~= AstralAffixes.season_affix then -- Season has changed
+		AstralAffixes.season_affix = AffixSeasonID -- Change the season affix
 		AstralAffixes.season_start_week = addon.Week -- Set the starting week
 	end
 
@@ -129,14 +127,15 @@ local function UpdateMythicPlusAffixes()
 	end
 
 	-- Store the season affix info
-	if SEASON_AFFIX > 0 then
-		local name, desc = C_ChallengeMode.GetAffixInfo(SEASON_AFFIX)
-		AFFIX_INFO[SEASON_AFFIX] = {name = name, description = desc}
+	if AffixSeasonID > 0 then
+		local name, desc = C_ChallengeMode.GetAffixInfo(AffixSeasonID)
+		AFFIX_INFO[AffixSeasonID] = {name = name, description = desc}
 	end
 
 	AstralEvents:Unregister('CHALLENGE_MODE_MAPS_UPDATE', 'updateAffixes')
 	AstralEvents:Unregister('MYTHIC_PLUS_CURRENT_AFFIX_UPDATE', 'updateAffixes')
 end
+
 AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', UpdateMythicPlusAffixes, 'updateAffixes')
 AstralEvents:Register('MYTHIC_PLUS_CURRENT_AFFIX_UPDATE', UpdateMythicPlusAffixes, 'UpdateAffixes')
 
@@ -181,7 +180,7 @@ end
 
 -- This is always the season affix, this doesn't get changed in a rotation
 function addon.AffixFour()
-	return SEASON_AFFIX
+	return AffixSeasonID
 end
 
 -- These are hardcoded and should be updated once we get back into the Timewalking event
@@ -222,10 +221,10 @@ function addon.GetAffixID(id, weekOffSet)
 	if week == 0 then week = AFFIX_ROTATION_WEEKS end
 	if week > #AFFIX_ROTATION-1 then
 		if id == 4 then
-			return SEASON_AFFIX
+			return AffixSeasonID
 		end
 		local affixes = C_MythicPlus.GetCurrentAffixes()
-		return affixes[id].ID or SEASON_AFFIX
+		return affixes[id].ID or AffixSeasonID
 	end
-	return AFFIX_ROTATION[week][id] or SEASON_AFFIX
+	return AFFIX_ROTATION[week][id] or AffixSeasonID
 end

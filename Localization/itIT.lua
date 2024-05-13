@@ -54,6 +54,7 @@ L['FILTER_TEXT_CHARACTER'] = 'Filtra per nome'
 -- Options
 L['!KEYS_DESC'] = 'Rispondi al comando !keys nei seguenti canali di chat'
 L['EXPANDED_TOOLTIP'] = 'Mostra descrizione dei modificatori nel tooltip'
+L['Show enemy forces in tooltip'] = 'Show enemy forces in tooltip'
 L['GENERAL OPTIONS'] = 'Opzioni generali'
 L['Show offline players'] = 'Mostra giocatori offline'
 L['Show Minimap button'] = 'Mostra bottone minimappa'

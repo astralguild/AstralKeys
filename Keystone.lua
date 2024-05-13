@@ -10,6 +10,7 @@ COLOUR[4] = 'ffff8000' -- Legendary
 COLOUR[5] = 'ffe6cc80' -- Artifact
 
 addon.keystone = {}
+addon.inKey = false
 
 addon.MYTHICKEY_ITEMID = 180653
 addon.TIMEWALKINGKEY_ITEMID = 187786
@@ -219,13 +220,20 @@ function InitKeystoneData()
 end
 
 AstralEvents:Register('PLAYER_ENTERING_WORLD', InitKeystoneData, 'initData')
-AstralEvents:Register('CHALLENGE_MODE_RESET', addon.CheckKeystone, 'dungeonReset')
-AstralEvents:Register('CHALLENGE_MODE_START', addon.CheckKeystone, 'dungeonStart')
+AstralEvents:Register('CHALLENGE_MODE_RESET', function()
+	addon.CheckKeystone()
+	addon.inKey = false
+end, 'dungeonReset')
+AstralEvents:Register('CHALLENGE_MODE_START', function()
+	addon.CheckKeystone()
+	addon.inKey = true
+end, 'dungeonStart')
 AstralEvents:Register('CHALLENGE_MODE_COMPLETED', function()
 	C_Timer.After(3, function()
 		C_MythicPlus.RequestRewards()
 		addon.CheckKeystone()
 	end)
+	addon.inKey = false
 end, 'dungeonCompleted')
 AstralEvents:Register('ITEM_CHANGED', function()
 	C_Timer.After(3, function()

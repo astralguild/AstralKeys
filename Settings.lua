@@ -100,6 +100,9 @@ local function LoadDefaultSettings(addonName)
 	addon:AddDefaultSettings('general', 'show_tooltip_key', {
 		isEnabled = true,
 	})
+	addon:AddDefaultSettings('general', 'show_tooltip_forces', {
+		isEnabled = false,
+	})
 	addon:AddDefaultSettings('general', 'announce_party', {
 		isEnabled = true,
 	})

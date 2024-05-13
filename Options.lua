@@ -129,6 +129,12 @@ expandedTooltip:SetScript('OnClick', function ()
 	AstralKeysSettings.general.expanded_tooltip.isEnabled = not AstralKeysSettings.general.expanded_tooltip.isEnabled
 end)
 
+local showForces = addon.CreateCheckBox(contentFrame, L['Show enemy forces in tooltip'])
+showForces:SetPoint('LEFT', expandedTooltip, 'RIGHT', 10, 0)
+showForces:SetScript('OnClick', function(self)
+	AstralKeysSettings.general.show_tooltip_forces.isEnabled = self:GetChecked()
+	end)
+
 local chatHeader = contentFrame:CreateFontString(nil, 'OVERLAY', 'InterUIBold_Normal')
 chatHeader:SetText(L['!keys chat command'])
 chatHeader:SetPoint('TOPLEFT', expandedTooltip, 'BOTTOMLEFT', -10, -20)
@@ -203,6 +209,7 @@ end
 function InitializeOptionSettings()
 	showMinimap:SetChecked(AstralKeysSettings.general.show_minimap_button.isEnabled)
 	showTooltip:SetChecked(AstralKeysSettings.general.show_tooltip_key.isEnabled)
+	showForces:SetChecked(AstralKeysSettings.general.show_tooltip_forces.isEnabled)
 	announceParty:SetChecked(AstralKeysSettings.general.announce_party.isEnabled)
 	announceGuild:SetChecked(AstralKeysSettings.general.announce_guild.isEnabled)
 	expandedTooltip:SetChecked(AstralKeysSettings.general.expanded_tooltip.isEnabled)
@@ -257,6 +264,7 @@ AstralOptionsFrame:SetScript('OnShow', function(self)
 
 	showMinimap:SetChecked(AstralKeysSettings.general.show_minimap_button.isEnabled)
 	showTooltip:SetChecked(AstralKeysSettings.general.show_tooltip_key.isEnabled)
+	showForces:SetChecked(AstralKeysSettings.general.show_tooltip_forces.isEnabled)
 	announceParty:SetChecked(AstralKeysSettings.general.announce_party.isEnabled)
 	announceGuild:SetChecked(AstralKeysSettings.general.announce_guild.isEnabled)
 	expandedTooltip:SetChecked(AstralKeysSettings.general.expanded_tooltip.isEnabled)
