@@ -45,7 +45,8 @@ L['FILTER_TEXT_CHARACTER'] = 'Filter by character name'
 
 -- Options
 L['!KEYS_DESC'] = 'Respond to !keys command in the following chat channels'
-L['EXPANDED_TOOLTIP'] = 'Show affix description in the tooltip'
+L['EXPANDED_TOOLTIP'] = 'Show affix description in tooltip'
+L['Show enemy forces in tooltip'] = 'Show enemy forces in tooltip'
 
 -- Shadowlands Dungeons
 
