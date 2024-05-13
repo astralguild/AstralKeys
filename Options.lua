@@ -104,12 +104,6 @@ showTooltip:SetScript('OnClick', function(self)
 	AstralKeysSettings.general.show_tooltip_key.isEnabled = self:GetChecked()
 	end)
 
-local showForces = addon.CreateCheckBox(contentFrame, L['Show enemy forces in tooltip'])
-showForces:SetPoint('TOPLEFT', showTooltip, 'BOTTOMLEFT', 0, -5)
-showForces:SetScript('OnClick', function(self)
-	AstralKeysSettings.general.show_tooltip_forces.isEnabled = self:GetChecked()
-	end)
-
 local mingleOffline = addon.CreateCheckBox(contentFrame, L['Display offline below online'])
 mingleOffline:SetPoint('LEFT', showTooltip, 'RIGHT', 10, 0)
 mingleOffline:SetScript('OnClick', function()
