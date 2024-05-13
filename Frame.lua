@@ -1153,7 +1153,7 @@ characterScrollBar:SetScript('OnLeave', CharacterScrollFrame_OnLeave)
 
 -- Re-skin the scroll Bar
 characterScrollBar.ScrollBarTop:Hide()
-characterScrollBar.ScrollBarCenter:Hide()
+characterScrollBar.ScrollBarMiddle:Hide()
 characterScrollBar.ScrollBarBottom:Hide()
 _G[characterScrollBar:GetName() .. 'ScrollDownButton']:Hide()
 _G[characterScrollBar:GetName() .. 'ScrollUpButton']:Hide()
@@ -1230,7 +1230,7 @@ listScrollBar:SetScript('OnEnter', ListScrollFrame_OnEnter)
 listScrollBar:SetScript('OnLeave', ListScrollFrame_OnLeave)
 
 listScrollBar.ScrollBarTop:Hide()
-listScrollBar.ScrollBarCenter:Hide()
+listScrollBar.ScrollBarMiddle:Hide()
 listScrollBar.ScrollBarBottom:Hide()
 _G[listScrollBar:GetName() .. 'ScrollDownButton']:Hide()
 _G[listScrollBar:GetName() .. 'ScrollUpButton']:Hide()
