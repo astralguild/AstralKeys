@@ -467,10 +467,10 @@
 	<Font name="AstralFontLarge" inherits="AstralFont_Large" justifyH="LEFT" virtual="true">
 		<Color r="1" g="1" b="1" a="1"/>
 	</Font>
-	<Font name="AstralFontNormalCenter" inherits="GameFontNormal" justifyH="CENTER" virtual="true">
+	<Font name="AstralFontNormalCenter" inherits="GameFontNormal" justifyH="MIDDLE" virtual="true">
 		<Color r="1" g="1" b="1" a="1"/>
 	</Font>
-	<Font name="AstralFontLargeCenter" inherits="AstralFont_Large" justifyH="CENTER" virtual="true">
+	<Font name="AstralFontLargeCenter" inherits="AstralFont_Large" justifyH="MIDDLE" virtual="true">
 		<Color r="1" g="1" b="1" a="1"/>
 	</Font>
 </Ui>
