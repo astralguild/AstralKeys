@@ -1,7 +1,7 @@
 local L = select(2, ...).L('zhCN')
 
 -- Default string for keystone
-L['KEYSTONE'] = 'Keystone:'
+L['KEYSTONE'] = '钥石:'
 
 -- Default tab names
 L['GUILD'] = GUILD
@@ -15,12 +15,12 @@ L['DUNGEON'] = DUNGEONS
 L['CHARACTER'] = CHARACTER
 
 -- Subsection Headers
-L['CHARACTERS'] = 'CHARACTERS'
-L['AFFIXES'] = 'AFFIXES'
+L['CHARACTERS'] = '角色'
+L['AFFIXES'] = '词缀'
 
 -- Character Labels
-L['CURRENT_KEY'] = 'CURRENT'
-L['WEEKLY_BEST'] = 'WKLY BEST'
+L['CURRENT_KEY'] = '当前钥石'
+L['WEEKLY_BEST'] = '本周最佳'
 
 L['CHARACTER_DUNGEON_NOT_RAN'] = 'No mythic+ ran'
 L['CHARACTER_KEY_NOT_FOUND'] = 'No key found'
@@ -58,3 +58,15 @@ L["Darkheart Thicket"] = '黑心林地'
 L["Black Rook Hold"] = '黑鸦堡垒'
 L["The Everbloom"] = '永茂林地'
 L["Throne of the Tides"] = '潮汐王座'
+
+-- DF S4
+L["Ruby Life Pools"] = '红玉新生法池'
+L["Algeth'ar Academy"] = '艾杰斯亚学院'
+L["The Azure Vault"] = '碧蓝魔馆'
+L["Azure Vault"] = '碧蓝魔馆' -- short-form
+L["The Nokhud Offensive"] = '诺库德阻击战'
+L["Nokhud Offensive"] = '诺库德阻击战' -- short-form
+L["Uldaman: Legacy of Tyr"] = '奥达曼: 提尔的遗产' -- short-form
+L["Neltharus"] = '奈萨鲁斯'
+L["Brackenhide Hollow"] = '蕨皮山谷'
+L["Halls of Infusion"] = '注能大厅'
