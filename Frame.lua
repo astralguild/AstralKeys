@@ -489,7 +489,7 @@ settingsButton:SetScript('OnClick', function()
 	AstralOptionsFrame:SetShown( not AstralOptionsFrame:IsShown())
 	end)
 
-LoadAddOn("Blizzard_WeeklyRewards")
+C_AddOns.LoadAddOn("Blizzard_WeeklyRewards")
 local greatVaultButton = CreateFrame('BUTTON', '$parentGreatVaultButton', menuBar)
 greatVaultButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\great-vault@2x')
 greatVaultButton:SetSize(24, 24)

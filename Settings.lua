@@ -87,7 +87,7 @@ local function LoadDefaultSettings(addonName)
 		AstralKeysSettings.new_settings_config = true
 	end
 
-	addon.CLIENT_VERSION = GetAddOnMetadata('AstralKeys', 'Version')
+	addon.CLIENT_VERSION = C_AddOns.GetAddOnMetadata('AstralKeys', 'Version')
 	addon:SetUIScale()
 	_G['AstralEngine'] = addon
 

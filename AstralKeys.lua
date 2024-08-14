@@ -90,7 +90,7 @@ function addon.handleRegionReset(d, regionInitializeTime)
 end
 
 AstralEvents:Register('PLAYER_LOGIN', function()
-	local major, minor = string.match(GetAddOnMetadata('AstralKeys', 'version'), '(%d+).(%d+)')
+	local major, minor = string.match(C_AddOns.GetAddOnMetadata('AstralKeys', 'version'), '(%d+).(%d+)')
 
 	if tonumber(major) == 3 and tonumber(minor) > 25 and not AstralKeysSettings.wipedOldTables then -- Changed to single table in 3.26
 		wipe(AstralKeys)
