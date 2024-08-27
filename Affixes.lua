@@ -105,6 +105,10 @@ local function UpdateMythicPlusAffixes()
 		C_MythicPlus.RequestCurrentAffixes()
 		return
 	end
+	
+	if #affixes == 0 then -- Affixes can be empty at start of expac?
+		return
+	end
 
 	AffixOneID = affixes[1].id
 	AffixTwoID = affixes[2].id
