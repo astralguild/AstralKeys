@@ -93,7 +93,7 @@ showMinimap:SetScript('OnClick', function(self)
 	else
 		addon.icon:Hide('AstralKeys')
 	end
-	if IsAddOnLoaded('ElvUI_Enhanced') then -- Update the layout for the minimap buttons
+	if C_AddOns.IsAddOnLoaded('ElvUI_Enhanced') then -- Update the layout for the minimap buttons
 		ElvUI[1]:GetModule('MinimapButtons'):UpdateLayout()
 	end
 	end)
