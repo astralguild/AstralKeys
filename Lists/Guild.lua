@@ -103,10 +103,6 @@ local function SyncReceive(entry)
 		AstralKeyFrame:SetScript('OnUpdate', AstralKeyFrame.OnUpdate)
 		AstralKeyFrame.updateDelay = 0
 	end
-	
-	if addon.AddUnitToSortTable == nil then
-		return
-	end
 
 	local _pos = 0
 	while find(entry, '_', _pos) do
