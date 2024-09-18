@@ -3,7 +3,12 @@ local _, addon = ...
 if not AstralAffixes then
 	AstralAffixes = {}
 	AstralAffixes.season_start_week = 0
-	AstralAffixes.season_affix = 0
+	AstralAffixes.season_id = 0
+end
+
+-- Migration to season_id instead of season_affix
+if not AstralAffixes.season_id then
+	AstralAffixes.season_id = 0
 end
 
 --[[
@@ -53,18 +58,21 @@ local FORTIFIED = 10
 local ENTANGLING = 134
 local AFFLICTED = 135
 local INCORPOREAL = 136
+local XALATATHS_BARGAIN_ASCENDANT = 148
+local XALATATHS_GUILE = 147
+local CHALLENGERS_PERIL = 152
 
 local AFFIX_ROTATION = {
-	{ TYRANNICAL, STORMING, RAGING },
-	{ FORTIFIED, ENTANGLING, BOLSTERING },
-	{ TYRANNICAL, INCORPOREAL, SPITEFUL },
-	{ FORTIFIED, AFFLICTED, RAGING },
-	{ TYRANNICAL, VOLCANIC, SANGUINE },
-	{ FORTIFIED, STORMING, BURSTING },
-	{ TYRANNICAL, AFFLICTED, BOLSTERING },
-	{ FORTIFIED, INCORPOREAL, SANGUINE },
-	{ TYRANNICAL, ENTANGLING, BOLSTERING },
-	{ FORTIFIED, VOLCANIC, SPITEFUL },
+	{ XALATATHS_BARGAIN_ASCENDANT, TYRANNICAL, CHALLENGERS_PERIL, FORTIFIED, XALATATHS_GUILE }, -- Rest of rotation TBD
+	{ XALATATHS_BARGAIN_ASCENDANT, XALATATHS_GUILE, XALATATHS_GUILE, XALATATHS_GUILE, XALATATHS_GUILE  },
+	{ XALATATHS_BARGAIN_ASCENDANT, XALATATHS_GUILE, XALATATHS_GUILE, XALATATHS_GUILE, XALATATHS_GUILE },
+	{ XALATATHS_BARGAIN_ASCENDANT, XALATATHS_GUILE, XALATATHS_GUILE, XALATATHS_GUILE, XALATATHS_GUILE },
+	{ XALATATHS_BARGAIN_ASCENDANT, XALATATHS_GUILE, XALATATHS_GUILE, XALATATHS_GUILE, XALATATHS_GUILE },
+	{ XALATATHS_BARGAIN_ASCENDANT, XALATATHS_GUILE, XALATATHS_GUILE, XALATATHS_GUILE, XALATATHS_GUILE },
+	{ XALATATHS_BARGAIN_ASCENDANT, XALATATHS_GUILE, XALATATHS_GUILE, XALATATHS_GUILE, XALATATHS_GUILE },
+	{ XALATATHS_BARGAIN_ASCENDANT, XALATATHS_GUILE, XALATATHS_GUILE, XALATATHS_GUILE, XALATATHS_GUILE },
+	{ XALATATHS_BARGAIN_ASCENDANT, XALATATHS_GUILE, XALATATHS_GUILE, XALATATHS_GUILE, XALATATHS_GUILE },
+	{ XALATATHS_BARGAIN_ASCENDANT, XALATATHS_GUILE, XALATATHS_GUILE, XALATATHS_GUILE, XALATATHS_GUILE },
 }
 
 local AFFIX_ROTATION_WEEKS = 10
@@ -79,23 +87,26 @@ local LEGION_AFFIX_ROTATION = {
 
 local AFFIX_INFO = {}
 local ROTATION_WEEK_POSITION = 0
+local AffixIDs = {}
 local AffixOneID, AffixTwoID, AffixThreeID, AffixSeasonID = 0, 0, 0, 0 -- Used to always show the current week's affixes irregardless if the rotation is known or not
 
 -- Finds the index of the current week's affixes in the table
--- @param affixOne Integers id for corresponding affix
--- @param affixTwo Integers id for corresponding affix
--- @param affixThree Integers id for corresponding affix
+-- @param affixIds Array of integers for the corresponding affix
 -- @return returnIndex integer defaults to 0 if the affixes are not found in the table, else returns the index the rotation is found
-local function GetRotationPosition(affixOne, affixTwo, affixThree)
-	local returnIndex = 0
-
+local function GetRotationPosition(affixIds)
 	for i = 1, #AFFIX_ROTATION do
-		if AFFIX_ROTATION[i][1] == affixOne and AFFIX_ROTATION[i][2] == affixTwo and AFFIX_ROTATION[i][3] == affixThree then
+		local matches = true
+		for j = 1, #affixIds do
+			if AFFIX_ROTATION[i][j] ~= affixIds[j] then
+				matches = false
+				break
+			end
+		end
+		if matches then
 			return i
 		end
 	end
-
-	return returnIndex
+	return 0
 end
 
 local function UpdateMythicPlusAffixes()
@@ -109,31 +120,23 @@ local function UpdateMythicPlusAffixes()
 	if #affixes == 0 then -- Affixes can be empty at start of expac?
 		return
 	end
-
-	AffixOneID = affixes[1].id
-	AffixTwoID = affixes[2].id
-	AffixThreeID = affixes[3].id
-	if #affixes > 3 then
-		AffixSeasonID = affixes[4].id
+	
+	for i = 1, #affixes do
+	  AffixIDs[i] = affixes[i].id
 	end
 
-	ROTATION_WEEK_POSITION = GetRotationPosition(affixes[1].id, affixes[2].id, affixes[3].id)
+	ROTATION_WEEK_POSITION = GetRotationPosition(AffixIDs)
 
-	if AffixSeasonID ~= AstralAffixes.season_affix then -- Season has changed
-		AstralAffixes.season_affix = AffixSeasonID -- Change the season affix
+	if C_MythicPlus.GetCurrentSeason() ~= AstralAffixes.season_id then -- Season has changed
+		AstralAffixes.season_id = C_MythicPlus.GetCurrentSeason() -- Change the season id
 		AstralAffixes.season_start_week = addon.Week -- Set the starting week
 	end
 
 	-- Store the affix info for all the affixes, name, description
+	-- TODO: what on earth is this
 	for affixId = 1, 300 do
 		local name, desc = C_ChallengeMode.GetAffixInfo(affixId)
 		AFFIX_INFO[affixId] = {name = name, description = desc}
-	end
-
-	-- Store the season affix info
-	if AffixSeasonID > 0 then
-		local name, desc = C_ChallengeMode.GetAffixInfo(AffixSeasonID)
-		AFFIX_INFO[AffixSeasonID] = {name = name, description = desc}
 	end
 
 	AstralEvents:Unregister('CHALLENGE_MODE_MAPS_UPDATE', 'updateAffixes')
@@ -143,11 +146,12 @@ end
 AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', UpdateMythicPlusAffixes, 'updateAffixes')
 AstralEvents:Register('MYTHIC_PLUS_CURRENT_AFFIX_UPDATE', UpdateMythicPlusAffixes, 'UpdateAffixes')
 
+-- TODO: This is yikes now that there are 5 affixes. plsfix when have time
 function addon.AffixOne(weekOffSet)
 	local offSet = weekOffSet or 0
 
 	if offSet == 0 then
-		return AffixOneID
+		return AffixIDs[1]
 	end
 
 	local week = (ROTATION_WEEK_POSITION + weekOffSet) % 12
@@ -160,7 +164,7 @@ function addon.AffixTwo(weekOffSet)
 	local offSet = weekOffSet or 0
 
 	if offSet == 0 then
-		return AffixTwoID
+		return AffixIDs[2]
 	end
 	local week = (ROTATION_WEEK_POSITION + weekOffSet) % AFFIX_ROTATION_WEEKS
 --	local week = (e.Week + offSet) % 12
@@ -172,19 +176,39 @@ function addon.AffixThree(weekOffSet)
 	local offSet = weekOffSet or 0
 
 	if offSet == 0 then
-		return AffixThreeID
+		return AffixIDs[3]
 	end
 
 	local week = (ROTATION_WEEK_POSITION + weekOffSet) % AFFIX_ROTATION_WEEKS	
 --	local week = (e.Week + offSet) % 12
 	if week == 0 then week = AFFIX_ROTATION_WEEKS end
 	return AFFIX_ROTATION[week][3]
-
 end
 
--- This is always the season affix, this doesn't get changed in a rotation
 function addon.AffixFour()
-	return AffixSeasonID
+	local offSet = weekOffSet or 0
+
+	if offSet == 0 then
+		return AffixIDs[4]
+	end
+
+	local week = (ROTATION_WEEK_POSITION + weekOffSet) % AFFIX_ROTATION_WEEKS	
+--	local week = (e.Week + offSet) % 12
+	if week == 0 then week = AFFIX_ROTATION_WEEKS end
+	return AFFIX_ROTATION[week][4]
+end
+
+function addon.AffixFive()
+	local offSet = weekOffSet or 0
+
+	if offSet == 0 then
+		return AffixIDs[5]
+	end
+
+	local week = (ROTATION_WEEK_POSITION + weekOffSet) % AFFIX_ROTATION_WEEKS	
+--	local week = (e.Week + offSet) % 12
+	if week == 0 then week = AFFIX_ROTATION_WEEKS end
+	return AFFIX_ROTATION[week][5]
 end
 
 -- These are hardcoded and should be updated once we get back into the Timewalking event
@@ -224,11 +248,8 @@ function addon.GetAffixID(id, weekOffSet)
 	local week = (ROTATION_WEEK_POSITION + weekOffSet) % AFFIX_ROTATION_WEEKS
 	if week == 0 then week = AFFIX_ROTATION_WEEKS end
 	if week > #AFFIX_ROTATION-1 then
-		if id == 4 then
-			return AffixSeasonID
-		end
 		local affixes = C_MythicPlus.GetCurrentAffixes()
-		return affixes[id].ID or AffixSeasonID
+		return affixes[id].id or 0
 	end
-	return AFFIX_ROTATION[week][id] or AffixSeasonID
+	return AFFIX_ROTATION[week][id] or 0
 end

@@ -834,7 +834,7 @@ affixTitle:SetText(L['AFFIXES'])
 -----------------------------------------------------
 
 do
-	for i = 1, 4 do
+	for i = 1, addon.NUM_AFFIXES do
 		local frame = CreateFrame('FRAME', '$parentAffix' .. i, characterFrame)
 		frame.id = i
 
@@ -846,7 +846,11 @@ do
 		if i == 1 then
 			frame:SetPoint('TOPLEFT', affixTitle, 'BOTTOMLEFT', 0, -15)
 		else
-			frame:SetPoint('LEFT', '$parentAffix' .. (i -1), 'RIGHT', 15, 0)
+			local offset = 20
+			if i % addon.NUM_AFFIXES == 0  then
+				offset = 5
+			end
+			frame:SetPoint('LEFT', '$parentAffix' .. (i -1), 'RIGHT', offset, 0)
 		end
 		frame.icon:SetAllPoints(frame)
 
@@ -888,10 +892,10 @@ affixExpandButton:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
 affixExpandButton:SetPoint('BOTTOM', affixFrame, 'BOTTOM', 0, 0)
 
 do
-	for i = 1, 8 do
+	for i = 1, (2 * addon.NUM_AFFIXES) do
 		local frame = CreateFrame('FRAME', '$parentAffix' .. i, affixFrame)
-		frame.id = (i % 4) == 0 and 4 or i % 4
-		if i < 5 then
+		frame.id = (i % addon.NUM_AFFIXES) == 0 and addon.NUM_AFFIXES or i % addon.NUM_AFFIXES
+		if i < (addon.NUM_AFFIXES + 1) then
 			frame.weekOffset = 1
 		else
 			frame.weekOffset = 2
@@ -903,10 +907,14 @@ do
 		
 		if i == 1 then
 			frame:SetPoint('TOPLEFT', affixFrame, 'TOPLEFT', 0, 0)
-		elseif i == 5 then
+		elseif i == (addon.NUM_AFFIXES + 1) then
 			frame:SetPoint('TOPLEFT', '$parentAffix1', 'BOTTOMLEFT', 0, -15)
 		else
-			frame:SetPoint('LEFT', '$parentAffix' .. (i -1), 'RIGHT', 15, 0)
+			local offset = 20
+			if i % addon.NUM_AFFIXES == 0  then
+				offset = 5
+			end
+			frame:SetPoint('LEFT', '$parentAffix' .. (i -1), 'RIGHT', offset, 0)
 		end
 		frame.texture:SetPoint('TOPLEFT', frame, 'TOPLEFT')
 		frame.texture:SetAllPoints(frame)
@@ -967,14 +975,14 @@ affixIconsExpand:SetSmoothing('IN_OUT')
 affixIconsExpand:SetStartDelay(0.1)
 
 affixIconsExpand:SetScript('OnPlay', function()
-	for i = 1, 8 do
+	for i = 1, (addon.NUM_AFFIXES * 2) do
 		_G['AstralKeyFrameCharacterFrameAffixFrameAffix' .. i]:Show()
 	end
 	end)
 
 affixIconsExpand:SetScript('OnUpdate', function(self)
 	local alpha = self:GetSmoothProgress()
-	for i = 1, 8 do
+	for i = 1, (addon.NUM_AFFIXES * 2) do
 		_G['AstralKeyFrameCharacterFrameAffixFrameAffix' .. i]:SetAlpha(alpha)
 	end
 	end)
@@ -992,14 +1000,14 @@ affixIconsCollapse:SetSmoothing('IN_OUT')
 affixIconsCollapse:SetStartDelay(0.1)
 
 affixIconsCollapse:SetScript('OnFinished', function()
-	for i = 1, 8 do
+	for i = 1, (addon.NUM_AFFIXES * 2) do
 		_G['AstralKeyFrameCharacterFrameAffixFrameAffix' .. i]:Hide()
 	end
 	end)
 
 affixIconsCollapse:SetScript('OnUpdate', function(self)
 	local alpha = self:GetSmoothProgress()
-	for i = 1, 8 do
+	for i = 1, (addon.NUM_AFFIXES * 2) do
 		_G['AstralKeyFrameCharacterFrameAffixFrameAffix' .. i]:SetAlpha(alpha)
 	end
 	end)
@@ -1717,8 +1725,9 @@ function addon.UpdateAffixes()
 	AstralKeyFrameCharacterFrameAffix2:UpdateInfo(addon.AffixTwo())
 	AstralKeyFrameCharacterFrameAffix3:UpdateInfo(addon.AffixThree())
 	AstralKeyFrameCharacterFrameAffix4:UpdateInfo(addon.AffixFour())
+	AstralKeyFrameCharacterFrameAffix5:UpdateInfo(addon.AffixFive())
 
-	for i = 1, 8 do
+	for i = 1, (2 * addon.NUM_AFFIXES) do
 		_G['AstralKeyFrameCharacterFrameAffixFrameAffix' .. i]:UpdateInfo()
 	end
 end
