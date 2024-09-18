@@ -58,6 +58,22 @@ DUNGEON_TABLE[199] = L["Black Rook Hold"]
 DUNGEON_TABLE[168] = L["The Everbloom"]
 DUNGEON_TABLE[456] = L["Throne of the Tides"]
 
+-- The War Within Dungeons
+
+DUNGEON_TABLE[500] = L["The Rookery"]
+DUNGEON_TABLE[501] = L["The Stonevault"]
+DUNGEON_TABLE[502] = L["City of Threads"]
+DUNGEON_TABLE[503] = L["Ara-Kara, City of Echoes"]
+DUNGEON_TABLE[504] = L["Darkflame Cleft"]
+DUNGEON_TABLE[505] = L["The Dawnbreaker"]
+DUNGEON_TABLE[506] = L["Cinderbrew Meadery"]
+DUNGEON_TABLE[507] = L["Grim Batol"]
+
+DUNGEON_TABLE[353] = L["Siege of Boralus"]
+DUNGEON_TABLE[375] = L["Mists of Tirna Scithe"]
+DUNGEON_TABLE[376] = L["The Necrotic Wake"]
+
+
 function addon.GetMapName(mapID, full)
 	if not mapID then return nil end
 	return (full and DUNGEON_TABLE[mapID .. "F"]) or DUNGEON_TABLE[mapID]
