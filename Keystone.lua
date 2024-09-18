@@ -71,9 +71,9 @@ function addon.CreateKeyLink(mapID, keyLevel)
 	end
 	if keyLevel > 9 then
 		a4 = addon.AffixFour()
-		a5 = addon.AffixFive()
 	end
-	return strformat('|c' .. COLOUR[3] .. '|Hkeystone:%d:%d:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r', addon.MYTHICKEY_ITEMID, mapID, keyLevel, a1, a2, a3, a4, a5, L['KEYSTONE'] or 'Keystone:', mapName, keyLevel):gsub('\124\124', '\124')
+	-- /script SendChatMessage("\124cffa335ee\124Hkeystone:180653:375:20:148:9:152:10\124h[Keystone: Mists of Tirna Scithe (20)]\124h\124r", 'SAY')
+	return strformat('|c' .. COLOUR[3] .. '|Hkeystone:%d:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r', addon.MYTHICKEY_ITEMID, mapID, keyLevel, a1, a2, a3, a4, L['KEYSTONE'] or 'Keystone:', mapName, keyLevel):gsub('\124\124', '\124')
 end
 
 -- Prints out the same link as the CreateKeyLink but only if the Timewalking Key is found. Otherwise nothing is done.
