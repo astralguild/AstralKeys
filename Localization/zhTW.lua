@@ -100,3 +100,17 @@ L["Uldaman: Legacy of Tyr"] = '奧達曼' -- short-form
 L["Neltharus"] = '奈薩魯斯堡'
 L["Brackenhide Hollow"] = '蕨皮谷'
 L["Halls of Infusion"] = '灌注迴廊'
+
+--TWW S1
+L["The Rookery"] = '培育所'
+L["The Stonevault"] = '石庫'
+L["City of Threads"] = '蛛絲城'
+L["Ara-Kara, City of Echoes"] = '『回音之城』厄拉卡拉'
+L["Darkflame Cleft"] = '暗焰裂縫'
+L["The Dawnbreaker"] = '破曉者號'
+L["Cinderbrew Meadery"] = '燼釀酒莊'
+
+L["Grim Batol"] = '格瑞姆巴托'
+L["Siege of Boralus"] = '波拉勒斯圍城戰'
+L["Mists of Tirna Scithe"] = '特那希迷霧'
+L["The Necrotic Wake"] = '死靈戰地'
