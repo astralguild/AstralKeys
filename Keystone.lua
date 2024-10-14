@@ -59,7 +59,7 @@ function addon.CreateKeyLink(mapID, keyLevel)
 	end
 	keyLevel = keyLevel or C_MythicPlus.GetOwnedKeystoneLevel()
 	if not mapName or not keyLevel then return end
-	local a1, a2, a3, a4, a5
+	local a1, a2, a3, a4
 	if keyLevel > 1 then
 		a1 = addon.AffixOne()
 	end 
@@ -71,6 +71,14 @@ function addon.CreateKeyLink(mapID, keyLevel)
 	end
 	if keyLevel > 9 then
 		a4 = addon.AffixFour()
+	end
+	-- For 12+ keys, the first Xalatath's affix gets dropped and everything shifts forward,
+	-- then the fourth affix becomes Xalatath's Guile
+	if keyLevel > 12 then
+		a1 = a2
+		a2 = a3
+		a3 = a4
+		a4 = addon.AffixFive()
 	end
 	-- /script SendChatMessage("\124cffa335ee\124Hkeystone:180653:375:20:148:9:152:10\124h[Keystone: Mists of Tirna Scithe (20)]\124h\124r", 'SAY')
 	return strformat('|c' .. COLOUR[3] .. '|Hkeystone:%d:%d:%d:%d:%d:%d:%d|h[%s %s (%d)]|h|r', addon.MYTHICKEY_ITEMID, mapID, keyLevel, a1, a2, a3, a4, L['KEYSTONE'] or 'Keystone:', mapName, keyLevel):gsub('\124\124', '\124')
