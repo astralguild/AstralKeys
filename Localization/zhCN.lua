@@ -74,6 +74,9 @@ L["Are you sure you want to refresh all key data?"] = "您确定要刷新所有�
 L["Yes"] = "是"
 L["No"] = "否"
 
+-- MinimapButton
+L['Left click to toggle main window'] = "左键点击打开窗口"
+L['Right Click to toggle options'] = "右键点击打开设置"
 
 -- Dungeon Name
 --CATA
