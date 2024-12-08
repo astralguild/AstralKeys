@@ -23,7 +23,7 @@ StaticPopupDialogs['ASTRAL_KEYS_REFRESH_CONFIRM_DIALOG'] = {
 }
 
 StaticPopupDialogs['ASTRAL_KEYS_REFRESH_SUCCESS_DIALOG'] = {
-  text = L['Refreshing key data.'],
+  text = L["Refreshed key data."],
   button1 = "Ok",
   OnAccept = function()
   end,
