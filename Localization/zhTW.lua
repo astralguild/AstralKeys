@@ -73,10 +73,14 @@ L['You need to wait more than 30 seconds before refreshing again.'] = '您需要
 L["Are you sure you want to refresh all key data?"] = "您確定要刷新所有鑰石数据嗎？"
 L["Yes"] = "是"
 L["No"] = "否"
+L["Refreshed key data."] = "刷新鑰石數據"
 
 -- MinimapButton
 L['Left click to toggle main window'] = "左鍵點擊打開窗口"
 L['Right Click to toggle options'] = "右鍵點擊打開設置"
+
+-- Lists/Friends
+L['Current Keystone'] = '目前鑰石'
 
 -- Dungeon Name
 --CATA
