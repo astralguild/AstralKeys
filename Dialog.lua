@@ -1,9 +1,10 @@
 local _, addon = ...
+local L = addon.L
 
 StaticPopupDialogs['ASTRAL_KEYS_REFRESH_CONFIRM_DIALOG'] = {
-  text = "Are you sure you want to refresh all key data?",
-  button1 = "Yes",
-  button2 = "No",
+  text = L["Are you sure you want to refresh all key data?"],
+  button1 = L["Yes"],
+  button2 = L["No"],
   OnAccept = function(self, data, data2)
     local refresh = addon.RefreshData()
     if refresh then
@@ -22,7 +23,7 @@ StaticPopupDialogs['ASTRAL_KEYS_REFRESH_CONFIRM_DIALOG'] = {
 }
 
 StaticPopupDialogs['ASTRAL_KEYS_REFRESH_SUCCESS_DIALOG'] = {
-  text = "Refreshed key data.",
+  text = L["Refreshed key data."],
   button1 = "Ok",
   OnAccept = function()
   end,
@@ -33,7 +34,7 @@ StaticPopupDialogs['ASTRAL_KEYS_REFRESH_SUCCESS_DIALOG'] = {
 }
 
 StaticPopupDialogs['ASTRAL_KEYS_REFRESH_FAILURE_DIALOG'] = {
-  text = "You need to wait more than 30 seconds before refreshing again.",
+  text = L["You need to wait more than 30 seconds before refreshing again."],
   button1 = "Ok",
   OnAccept = function()
   end,

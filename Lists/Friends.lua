@@ -1,4 +1,5 @@
 local _, addon = ...
+local L = addon.L
 
 local SYNC_VERSION = 'sync4'
 local UPDATE_VERSION = 'update4'
@@ -662,7 +663,7 @@ local function TooltipHook(self)
     local id = addon.UnitID(unit)
     if id then
     	GameTooltip:AddLine(' ')
-        GameTooltip:AddLine('Current Keystone')
+        GameTooltip:AddLine(L['Current Keystone'])
         GameTooltip:AddDoubleLine(addon.GetMapName(addon.UnitMapID(id)), addon.UnitKeyLevel(id), 1, 1, 1, 1, 1, 1)
         return
     end
