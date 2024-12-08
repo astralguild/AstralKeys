@@ -74,6 +74,10 @@ L["Are you sure you want to refresh all key data?"] = "您確定要刷新所有�
 L["Yes"] = "是"
 L["No"] = "否"
 
+-- MinimapButton
+L['Left click to toggle main window'] = "左鍵點擊打開窗口"
+L['Right Click to toggle options'] = "右鍵點擊打開設置"
+
 -- Dungeon Name
 --CATA
 L["The Vortex Pinnacle"] = '漩渦尖塔'
