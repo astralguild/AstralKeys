@@ -1,4 +1,5 @@
 local _, addon = ...
+local L = addon.L
 
 LibStub("AceAddon-3.0"):NewAddon(addon, "AstralKeys", "AceConsole-3.0")
 
@@ -15,8 +16,8 @@ local astralkeysLDB = LibStub("LibDataBroker-1.1"):NewDataObject("AstralKeys", {
 	end,
 	OnTooltipShow = function(tooltip)
 		tooltip:AddLine("Astral Keys")
-		tooltip:AddLine('Left click to toggle main window')
-		tooltip:AddLine('Right Click to toggle options')
+		tooltip:AddLine(L['Left click to toggle main window'])
+		tooltip:AddLine(L['Right Click to toggle options'])
 	end,
 })
 
