@@ -74,6 +74,7 @@ L["Are you sure you want to refresh all key data?"] = "您确定要刷新所有�
 L["Yes"] = "是"
 L["No"] = "否"
 L["Refreshed key data."] = "刷新钥石数据"
+L["You need to wait more than 30 seconds before refreshing again."] = "您需要等待 30 秒以上才能再次刷新。"
 
 -- MinimapButton
 L['Left click to toggle main window'] = "左键点击打开窗口"
