@@ -663,7 +663,7 @@ local function TooltipHook(self)
     local id = addon.UnitID(unit)
     if id then
     	GameTooltip:AddLine(' ')
-        GameTooltip:AddLine(L['CURRENT_KEY'])
+        GameTooltip:AddLine(L['Current Keystone'])
         GameTooltip:AddDoubleLine(addon.GetMapName(addon.UnitMapID(id)), addon.UnitKeyLevel(id), 1, 1, 1, 1, 1, 1)
         return
     end
