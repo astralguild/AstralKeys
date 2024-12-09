@@ -6,7 +6,7 @@ L['KEYSTONE'] = '钥石:'
 -- Default tab names
 L['Report'] = '通报'
 L['REPORT_TO'] = '通报到'
-L['GUILD'] = GUILD
+L['GUILD'] = GUILD    -- 使用系统代码，无需本地化翻译
 L['FRIENDS'] = FRIENDS
 L['PARTY'] = PARTY
 L['RAID'] = RAID
@@ -29,7 +29,7 @@ L['CHARACTER_KEY_NOT_FOUND'] = '未发现钥石'
 
 
 -- Dropdown menu selections
-L['Whisper'] = WHISPER
+L['Whisper'] = WHISPER   -- 使用系统代码，无需本地化翻译
 L['INVITE'] = INVITE
 L['SUGGEST_INVITE'] = SUGGEST_INVITE
 L['REQUEST_INVITE'] = REQUEST_INVITE
