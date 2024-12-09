@@ -48,12 +48,12 @@ L['FILTER_TEXT_CHARACTER'] = '根据角色名称过滤'
 -- Options
 L['Settings'] = '设置'
 L['!KEYS_DESC'] = '在以下频道回应 !keys 指令'
-L['EXPANDED_TOOLTIP'] = '在工具提示中显示词缀描述'
+L['EXPANDED_TOOLTIP'] = '在鼠标提示中显示词缀描述'
 L['GENERAL OPTIONS'] = '一般选项'
 L['Show offline players'] = '显示离线角色'
 L['Show Minimap button'] = '显示小地图图标'
-L['Show current key in tooltip'] = '在工具提示中显示钥石信息'
-L['Show enemy forces in tooltip'] = '在工具提示中显示敌方部队'
+L['Show current key in tooltip'] = '在鼠标提示中显示钥石信息'
+L['Show enemy forces in tooltip'] = '在鼠标提示中显示敌方部队'
 L['Display offline below online'] = '在线角色下面显示离线角色'
 L['Announce new keys to party'] = '在队伍频道通报钥石'
 L['Announce new keys to guild'] = '在公会频道通报钥石'
@@ -84,56 +84,69 @@ L['Right Click to toggle options'] = "右键点击打开设置"
 L['Current Keystone'] = '当前钥石'
 
 -- Dungeon Name
---CATA
-L["The Vortex Pinnacle"] = '旋云之巅'
+-- Cataclysm
+L["Grim Batol"] = "格瑞姆巴托"
+L["The Vortex Pinnacle"] = "旋云之巅"
+L["Throne of the Tides"] = "潮汐王座"
 
--- MOP
-L["Temple"] = '青龙寺'
-L["Temple of the Jade Serpent"] = '青龙寺'
+-- Mists of Pandaria
+L["Temple of the Jade Serpent"] = "青龙寺"
 
--- WOD
-L["Shadowmoon"] = '影月墓地'
-L["Shadowmoon Burial Grounds"] = '影月墓地'
-L["Iron Docks"] = '钢铁码头'
-L["Grimrail Depot"] = '恐轨车站'
+-- Warlords of Draenor
+L["Grimrail Depot"] = "恐轨车站"
+L["Iron Docks"] = "钢铁码头"
+L["Shadowmoon Burial Grounds"] = "影月墓地"
+L["The Everbloom"] = "永茂林地"
 
--- LEGION
-L["Court of Stars"] = '群星庭院'
-L["Halls of Valor"] = '英灵殿'
-L["Neltharion's Lair"] = '奈萨里奥的巢穴'
-L["Lower Karazhan"] = '卡拉赞下层'
-L["Upper Karazhan"] = '卡拉赞上层'
+-- Legion
+L["Black Rook Hold"] = "黑鸦堡垒"
+L["Court of Stars"] = "群星庭院"
+L["Darkheart Thicket"] = "黑心林地"
+L["Halls of Valor"] = "英灵殿"
+L["Lower Karazhan"] = "卡拉赞：下层"  -- 重返卡拉赞：下层
+L["Neltharion's Lair"] = "奈萨里奥的巢穴"
+L["Return to Karazhan: Lower"] = "卡拉赞：下层"  -- 重返卡拉赞：下层
+L["Return to Karazhan: Upper"] = "卡拉赞：上层"  -- 重返卡拉赞：上层
+L["Upper Karazhan"] = "卡拉赞：上层"  -- 重返卡拉赞：上层
 
--- BFA
-L["Mechagon Workshop"] = '麦卡贡-车间'
-L["Mechagon Junkyard"] = '麦卡贡-废料场'
-L["Streets of Wonder"] = '琳彩天街'
-L["So'leah's Gambit"] = '索·莉亚的宏图'
-L["Freehold"] = '自由镇'
-L["The Underrot"] = '地渊孢林'
+-- Battle for Azeroth
+L["Atal'Dazar"] = "阿塔达萨"
+L["Freehold"] = "自由镇"
+L["Mechagon Junkyard"] = "麦卡贡-废料场"  -- 麦卡贡行动-废料场
+L["Mechagon Workshop"] = "麦卡贡-车间"  -- 麦卡贡行动-车间
+L["Operation: Mechagon - Junkyard"] = "麦卡贡-废料场"  -- 麦卡贡行动-废料场
+L["Operation: Mechagon - Workshop"] = "麦卡贡-车间"  -- 麦卡贡行动-车间
+L["Siege of Boralus"] = "围攻伯拉勒斯"
+L["The Underrot"] = "地渊孢林"
+L["Waycrest Manor"] = "维克雷斯庄园"
 
--- DRAGONFLIGHT
-L["Ruby Life Pools"] = '红玉新生法池'
-L["Algeth'ar Academy"] = '艾杰斯亚学院'
-L["The Azure Vault"] = '碧蓝魔馆'
-L["Azure Vault"] = '碧蓝魔馆'
-L["The Nokhud Offensive"] = '诺库德阻击战'
-L["Nokhud Offensive"] = '诺库德阻击战'
-L["Uldaman: Legacy of Tyr"] = '奥达曼'
-L["Neltharus"] = '奈萨鲁斯'
-L["Brackenhide Hollow"] = '蕨皮山谷'
-L["Halls of Infusion"] = '注能大厅'
+-- Shadowlands
+L["Mists of Tirna Scithe"] = "塞兹仙林的迷雾"
+L["So'leah's Gambit"] = "索·莉亚的宏图"  -- 塔扎维什：索·莉亚的宏图
+L["Streets of Wonder"] = "琳彩天街"  -- 塔扎维什：琳彩天街
+L["Tazavesh: So'leah's Gambit"] = "索·莉亚的宏图"  -- 塔扎维什：索·莉亚的宏图
+L["Tazavesh: Streets of Wonder"] = "琳彩天街"  -- 塔扎维什：琳彩天街
+L["The Necrotic Wake"] = "通灵战潮"
 
---TWW S1
-L["The Rookery"] = '驭雷栖巢'
-L["The Stonevault"] = '矶石宝库'
-L["City of Threads"] = '千丝之城'
-L["Ara-Kara, City of Echoes"] = '艾拉-卡拉，回响之城'
-L["Darkflame Cleft"] = '暗焰裂口'
-L["The Dawnbreaker"] = '破晨号'
-L["Cinderbrew Meadery"] = '燧酿酒庄'
+-- Dragonflight
+L["Algeth'ar Academy"] = "艾杰斯亚学院"
+L["Brackenhide Hollow"] = "蕨皮山谷"
+L["Dawn of the Infinite: Galakrond's Fall"] = "迦拉克隆的陨落"  -- 永恒黎明：迦拉克隆的陨落
+L["Dawn of the Infinite: Murozond's Rise"] = "姆诺兹多的崛起"  -- 永恒黎明：姆诺兹多的崛起
+L["DotI: Galakrond's Fall"] = "迦拉克隆的陨落"  -- 永恒黎明：迦拉克隆的陨落
+L["DotI: Murozond's Rise"] = "姆诺兹多的崛起"  -- 永恒黎明：姆诺兹多的崛起
+L["Halls of Infusion"] = "注能大厅"
+L["Neltharus"] = "奈萨鲁斯"
+L["Ruby Life Pools"] = "红玉新生法池"
+L["The Azure Vault"] = "碧蓝魔馆"
+L["The Nokhud Offensive"] = "诺库德阻击战"
+L["Uldaman: Legacy of Tyr"] = "奥达曼：提尔"  -- 奥达曼：提尔的遗产
 
-L["Grim Batol"] = '格瑞姆巴托'
-L["Siege of Boralus"] = '围攻伯拉勒斯'
-L["Mists of Tirna Scithe"] = '塞兹仙林的迷雾'
-L["The Necrotic Wake"] = '通灵战潮'
+-- The War Within Dungeons
+L["Ara-Kara, City of Echoes"] = "回响之城"  -- 艾拉-卡拉，回响之城
+L["Cinderbrew Meadery"] = "燧酿酒庄"
+L["City of Threads"] = "千丝之城"
+L["Darkflame Cleft"] = "暗焰裂口"
+L["The Dawnbreaker"] = "破晨号"
+L["The Rookery"] = "驭雷栖巢"
+L["The Stonevault"] = "矶石宝库"
