@@ -140,10 +140,10 @@ L["Neltharus"] = "奈萨鲁斯"
 L["Ruby Life Pools"] = "红玉新生法池"
 L["The Azure Vault"] = "碧蓝魔馆"
 L["The Nokhud Offensive"] = "诺库德阻击战"
-L["Uldaman: Legacy of Tyr"] = "奥达曼：提尔的遗产"
+L["Uldaman: Legacy of Tyr"] = "奥达曼：提尔"  -- 奥达曼：提尔的遗产
 
 -- The War Within Dungeons
-L["Ara-Kara, City of Echoes"] = "艾拉-卡拉，回响之城"
+L["Ara-Kara, City of Echoes"] = "回响之城"  -- 艾拉-卡拉，回响之城
 L["Cinderbrew Meadery"] = "燧酿酒庄"
 L["City of Threads"] = "千丝之城"
 L["Darkflame Cleft"] = "暗焰裂口"
