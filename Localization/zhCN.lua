@@ -48,12 +48,12 @@ L['FILTER_TEXT_CHARACTER'] = '根据角色名称过滤'
 -- Options
 L['Settings'] = '设置'
 L['!KEYS_DESC'] = '在以下频道回应 !keys 指令'
-L['EXPANDED_TOOLTIP'] = '在工具提示中显示词缀描述'
+L['EXPANDED_TOOLTIP'] = '在鼠标提示中显示词缀描述'
 L['GENERAL OPTIONS'] = '一般选项'
 L['Show offline players'] = '显示离线角色'
 L['Show Minimap button'] = '显示小地图图标'
-L['Show current key in tooltip'] = '在工具提示中显示钥石信息'
-L['Show enemy forces in tooltip'] = '在工具提示中显示敌方部队'
+L['Show current key in tooltip'] = '在鼠标提示中显示钥石信息'
+L['Show enemy forces in tooltip'] = '在鼠标提示中显示敌方部队'
 L['Display offline below online'] = '在线角色下面显示离线角色'
 L['Announce new keys to party'] = '在队伍频道通报钥石'
 L['Announce new keys to guild'] = '在公会频道通报钥石'
@@ -103,17 +103,17 @@ L["Black Rook Hold"] = "黑鸦堡垒"
 L["Court of Stars"] = "群星庭院"
 L["Darkheart Thicket"] = "黑心林地"
 L["Halls of Valor"] = "英灵殿"
-L["Lower Karazhan"] = "卡拉赞：下层"
+L["Lower Karazhan"] = "卡拉赞：下层"  -- 重返卡拉赞：下层
 L["Neltharion's Lair"] = "奈萨里奥的巢穴"
 L["Return to Karazhan: Lower"] = "卡拉赞：下层"  -- 重返卡拉赞：下层
 L["Return to Karazhan: Upper"] = "卡拉赞：上层"  -- 重返卡拉赞：上层
-L["Upper Karazhan"] = "卡拉赞：上层"
+L["Upper Karazhan"] = "卡拉赞：上层"  -- 重返卡拉赞：上层
 
 -- Battle for Azeroth
 L["Atal'Dazar"] = "阿塔达萨"
 L["Freehold"] = "自由镇"
-L["Mechagon Junkyard"] = "麦卡贡-废料场"
-L["Mechagon Workshop"] = "麦卡贡-车间"
+L["Mechagon Junkyard"] = "麦卡贡-废料场"  -- 麦卡贡行动-废料场
+L["Mechagon Workshop"] = "麦卡贡-车间"  -- 麦卡贡行动-车间
 L["Operation: Mechagon - Junkyard"] = "麦卡贡-废料场"  -- 麦卡贡行动-废料场
 L["Operation: Mechagon - Workshop"] = "麦卡贡-车间"  -- 麦卡贡行动-车间
 L["Siege of Boralus"] = "围攻伯拉勒斯"
@@ -122,8 +122,8 @@ L["Waycrest Manor"] = "维克雷斯庄园"
 
 -- Shadowlands
 L["Mists of Tirna Scithe"] = "塞兹仙林的迷雾"
-L["So'leah's Gambit"] = "索·莉亚的宏图"
-L["Streets of Wonder"] = "琳彩天街"
+L["So'leah's Gambit"] = "索·莉亚的宏图"  -- 塔扎维什：索·莉亚的宏图
+L["Streets of Wonder"] = "琳彩天街"  -- 塔扎维什：琳彩天街
 L["Tazavesh: So'leah's Gambit"] = "索·莉亚的宏图"  -- 塔扎维什：索·莉亚的宏图
 L["Tazavesh: Streets of Wonder"] = "琳彩天街"  -- 塔扎维什：琳彩天街
 L["The Necrotic Wake"] = "通灵战潮"
