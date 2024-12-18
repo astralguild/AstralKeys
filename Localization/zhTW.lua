@@ -84,56 +84,69 @@ L['Right Click to toggle options'] = "右鍵點擊打開設置"
 L['Current Keystone'] = '目前鑰石'
 
 -- Dungeon Name
---CATA
-L["The Vortex Pinnacle"] = '漩渦尖塔'
+-- Cataclysm
+L["Grim Batol"] = "格瑞姆巴托"
+L["The Vortex Pinnacle"] = "漩渦尖塔"
+L["Throne of the Tides"] = "海潮王座"
 
--- MOP
-L["Temple"] = '玉蛟寺' -- short-form
-L["Temple of the Jade Serpent"] = '玉蛟寺'
+-- Mists of Pandaria
+L["Temple of the Jade Serpent"] = "玉蛟寺"
 
--- WOD
-L["Shadowmoon"] = '影月墓地' -- short-form
-L["Shadowmoon Burial Grounds"] = '影月墓地'
-L["Iron Docks"] = '鋼鐵碼頭'
-L["Grimrail Depot"] = '恐軌車站'
+-- Warlords of Draenor
+L["Grimrail Depot"] = "恐軌車站"
+L["Iron Docks"] = "鋼鐵碼頭"
+L["Shadowmoon Burial Grounds"] = "影月墓地"
+L["The Everbloom"] = "永茂林"
 
--- LEGION
-L["Court of Stars"] = '眾星之廷'
-L["Halls of Valor"] = '英靈殿'
-L["Neltharion's Lair"] = '奈薩里奧巢穴'
-L["Lower Karazhan"] = '卡拉贊下層'
-L["Upper Karazhan"] = '卡拉贊上層'
+-- Legion
+L["Black Rook Hold"] = "玄鴉堡"
+L["Court of Stars"] = "眾星之廷"
+L["Darkheart Thicket"] = "暗心灌木林"
+L["Halls of Valor"] = "英靈殿"
+L["Lower Karazhan"] = "卡拉贊下層"
+L["Neltharion's Lair"] = "奈薩里奧巢穴"
+L["Return to Karazhan: Lower"] = "卡拉贊：下層"  
+L["Return to Karazhan: Upper"] = "卡拉贊：上層"  
+L["Upper Karazhan"] = "卡拉贊上層"
 
--- BFA
-L["Mechagon Workshop"] = '機械岡工坊'
-L["Mechagon Junkyard"] = '機械岡廢料場'
-L["Streets of Wonder"] = '塔札維許街道'
-L["So'leah's Gambit"] = '塔札維許的險招'
-L["Freehold"] = '自由港'
-L["The Underrot"] = '幽腐深窟'
+-- Battle for Azeroth
+L["Atal'Dazar"] = "阿塔達薩"
+L["Freehold"] = "自由港"
+L["Mechagon Junkyard"] = "機械岡廢料場"
+L["Mechagon Workshop"] = "機械岡工坊"
+L["Operation: Mechagon - Junkyard"] = "機械岡-廢料場"  
+L["Operation: Mechagon - Workshop"] = "機械岡-工坊"  
+L["Siege of Boralus"] = "波拉勒斯圍城戰"
+L["The Underrot"] = "幽腐深窟"
+L["Waycrest Manor"] = "威奎斯特莊園"
 
--- DRAGONFLIGHT
-L["Ruby Life Pools"] = '晶紅生命之池'
-L["Algeth'ar Academy"] = '阿爾蓋薩學院'
-L["The Azure Vault"] = '蒼藍密庫'
-L["Azure Vault"] = '蒼藍密庫' -- short-form
-L["The Nokhud Offensive"] = '諾庫德進攻據點'
-L["Nokhud Offensive"] = '諾庫德進攻據點' -- short-form
-L["Uldaman: Legacy of Tyr"] = '奧達曼' -- short-form
-L["Neltharus"] = '奈薩魯斯堡'
-L["Brackenhide Hollow"] = '蕨皮谷'
-L["Halls of Infusion"] = '灌注迴廊'
+-- Shadowlands
+L["Mists of Tirna Scithe"] = "特那希迷霧"
+L["So'leah's Gambit"] = "塔札維許的險招"
+L["Streets of Wonder"] = "塔札維許街道"
+L["Tazavesh: So'leah's Gambit"] = "塔札維許的險招"  
+L["Tazavesh: Streets of Wonder"] = "塔札維許街道"  
+L["The Necrotic Wake"] = "死靈戰地"
 
---TWW S1
-L["The Rookery"] = '培育所'
-L["The Stonevault"] = '石庫'
-L["City of Threads"] = '蛛絲城'
-L["Ara-Kara, City of Echoes"] = '『回音之城』厄拉卡拉'
-L["Darkflame Cleft"] = '暗焰裂縫'
-L["The Dawnbreaker"] = '破曉者號'
-L["Cinderbrew Meadery"] = '燼釀酒莊'
+-- Dragonflight
+L["Algeth'ar Academy"] = "阿爾蓋薩學院"
+L["Brackenhide Hollow"] = "蕨皮谷"
+L["Dawn of the Infinite: Galakrond's Fall"] = "葛拉克朗殞命之地"  -- 葛拉克朗殞命之地 - 恆龍黎明
+L["Dawn of the Infinite: Murozond's Rise"] = "姆多茲諾崛起之地"  -- 姆多茲諾崛起之地 - 恆龍黎明
+L["DotI: Galakrond's Fall"] = "葛拉克朗殞命之地"  -- 葛拉克朗殞命之地 - 恆龍黎明
+L["DotI: Murozond's Rise"] = "姆多茲諾崛起之地"  -- 姆多茲諾崛起之地 - 恆龍黎明
+L["Halls of Infusion"] = "灌注迴廊"
+L["Neltharus"] = "奈薩魯斯堡"
+L["Ruby Life Pools"] = "晶紅生命之池"
+L["The Azure Vault"] = "蒼藍密庫"
+L["The Nokhud Offensive"] = "諾庫德進攻據點"
+L["Uldaman: Legacy of Tyr"] = "奧達曼"
 
-L["Grim Batol"] = '格瑞姆巴托'
-L["Siege of Boralus"] = '波拉勒斯圍城戰'
-L["Mists of Tirna Scithe"] = '特那希迷霧'
-L["The Necrotic Wake"] = '死靈戰地'
+-- The War Within Dungeons
+L["Ara-Kara, City of Echoes"] = "『回音之城』厄拉卡拉"
+L["Cinderbrew Meadery"] = "燼釀酒莊"
+L["City of Threads"] = "蛛絲城"
+L["Darkflame Cleft"] = "暗焰裂縫"
+L["The Dawnbreaker"] = "破曉者號"
+L["The Rookery"] = "培育所"
+L["The Stonevault"] = "石庫"
