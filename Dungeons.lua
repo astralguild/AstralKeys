@@ -60,6 +60,7 @@ DUNGEON_TABLE[456] = L["Throne of the Tides"]
 
 -- The War Within Dungeons
 
+DUNGEON_TABLE[499] = L["Priory of the Sacred Flame"]
 DUNGEON_TABLE[500] = L["The Rookery"]
 DUNGEON_TABLE[501] = L["The Stonevault"]
 DUNGEON_TABLE[502] = L["City of Threads"]
@@ -72,6 +73,11 @@ DUNGEON_TABLE[507] = L["Grim Batol"]
 DUNGEON_TABLE[353] = L["Siege of Boralus"]
 DUNGEON_TABLE[375] = L["Mists of Tirna Scithe"]
 DUNGEON_TABLE[376] = L["The Necrotic Wake"]
+DUNGEON_TABLE[382] = L["Theater of Pain"]
+DUNGEON_TABLE[247] = L["The MOTHERLODE!!"]
+
+DUNGEON_TABLE[525] = L["Operation: Floodgate"]
+
 
 
 function addon.GetMapName(mapID, full)
