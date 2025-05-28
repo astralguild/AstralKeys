@@ -155,8 +155,8 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 		if AstralKeys[i] and AstralKeys[i].unit then
 			addon.SetUnitID(AstralKeys[i].unit, i)
 			addon.AddUnitToSortTable(AstralKeys[i].unit, AstralKeys[i].btag, AstralKeys[i].class, AstralKeys[i].faction,
-				AstralKeys[i].dungeon_id, AstralKeys[i].key_level, AstralKeys[i].weekly_best)
-			--e.AddUnitToTable(AstralKeys[i].unit, AstralKeys[i].class, AstralKeys[i].faction, 'GUILD', AstralKeys[i].dungeon_id, AstralKeys[i].key_level, AstralKeys[i].weekly_best)
+				AstralKeys[i].dungeon_id, AstralKeys[i].key_level, AstralKeys[i].weekly_best, AstralKeys[i].mplus_score)
+			--e.AddUnitToTable(AstralKeys[i].unit, AstralKeys[i].class, AstralKeys[i].faction, 'GUILD', AstralKeys[i].dungeon_id, AstralKeys[i].key_level, AstralKeys[i].weekly_best, AstralKeys[i].mplus_score)
 		end
 	end
 
@@ -169,6 +169,7 @@ AstralEvents:Register('PLAYER_LOGIN', function()
 	if AstralAffixes.season_start_week == 0 then -- Addon has just initialized for the fisrt time or saved variables have been lost.
 		AstralAffixes.season_start_week = addon.Week
 	end
+
 	C_MythicPlus.RequestMapInfo()     -- Gets info on affixes and current season...
 	C_MythicPlus.RequestCurrentAffixes() -- Who knows what this actually does...
 end, 'login')

@@ -46,19 +46,20 @@ end
 
 -- Variables for syncing information
 -- Will only accept information from other clients with same version settings
-local SYNC_VERSION = 'sync5'
-addon.UPDATE_VERSION = 'updateV8'
+local SYNC_VERSION = 'sync6'
+addon.UPDATE_VERSION = 'updateV9'
 
 local messageStack = {}
 
 local function UpdateUnitKey(msg)
 	local timeStamp = addon.WeekTime() -- part of the week we got this key update, used to determine if a key got de-leveled or not
 
-	local unit, class, dungeonID, keyLevel, weekly_best, week = strsplit(':', msg)
+	local unit, class, dungeonID, keyLevel, weekly_best, week, mplus_score = strsplit(':', msg)
 	
 	dungeonID = tonumber(dungeonID)
 	keyLevel = tonumber(keyLevel)
 	weekly_best = tonumber(weekly_best)
+	mplus_score = tonumber(mplus_score)
 	week = tonumber(week)
 
 	local id = addon.UnitID(unit) -- Is this unit in the db already?
@@ -67,10 +68,12 @@ local function UpdateUnitKey(msg)
 		AstralKeys[id].dungeon_id = dungeonID
 		AstralKeys[id].key_level = keyLevel
 		AstralKeys[id].weekly_best = weekly_best
+		AstralKeys[id].mplus_score = mplus_score
 		AstralKeys[id].week = week
 		AstralKeys[id].time_stamp = timeStamp
+		addon.PrintDebug('UpdateUnitKey', addon.DebugTableToString(AstralKeys[id]), msg)
 	else -- Nope, let's add them to the DB and index their position
-		table.insert(AstralKeys, {
+		local character = {
 			unit = unit,
 			btag = btag,
 			class = class,
@@ -80,14 +83,17 @@ local function UpdateUnitKey(msg)
 			time_stamp = timeStamp,
 			faction = addon.FACTION,
 			weekly_best = weekly_best,
+			mplus_score = mplus_score,
 			source = 'guild'
-		})
-		--AstralKeys[#AstralKeys + 1] = {unit, class, dungeonID, keyLevel, weekly_best, week, timeStamp}
+		}
+		table.insert(AstralKeys, character)
+		--AstralKeys[#AstralKeys + 1] = {unit, class, dungeonID, keyLevel, weekly_best, mplus_score, week, timeStamp}
 		addon.SetUnitID(unit, #AstralKeys)
+		addon.PrintDebug('UpdateUnitKey', addon.DebugTableToString(AstralKeys[id]), msg, '(inserted)')
 	end
 	addon.AddUnitToList(unit, 'GUILD')
-	--e.AddUnitToTable(unit, class, faction, 'GUILD', dungeonID, keyLevel, weekly_best)
-	addon.AddUnitToSortTable(unit, btag, class, addon.FACTION, dungeonID, keyLevel, weekly_best, 'GUILD')
+	--e.AddUnitToTable(unit, class, faction, 'GUILD', dungeonID, keyLevel, weekly_best, mplus_score)
+	addon.AddUnitToSortTable(unit, btag, class, addon.FACTION, dungeonID, keyLevel, weekly_best, mplus_score, 'GUILD')
 	addon.UpdateFrames()
 	msg = nil
 	-- Update character frames if we received our own key
@@ -98,7 +104,7 @@ end
 AstralComs:RegisterPrefix('GUILD', addon.UPDATE_VERSION, UpdateUnitKey)
 
 local function SyncReceive(entry)
-	local unit, class, dungeonID, keyLevel, weekly_best, week, timeStamp
+	local unit, class, dungeonID, keyLevel, weekly_best, mplus_score, week, timeStamp
 	if AstralKeyFrame:IsShown() then
 		AstralKeyFrame:SetScript('OnUpdate', AstralKeyFrame.OnUpdate)
 		AstralKeyFrame.updateDelay = 0
@@ -106,10 +112,7 @@ local function SyncReceive(entry)
 
 	local _pos = 0
 	while find(entry, '_', _pos) do
-		
-		--unit, class, dungeonID, keyLevel, weekly_best, week, timeStamp = string.split(':', entry:sub(_pos, entry:find('_', _pos) - 1))
-
-		class, dungeonID, keyLevel, weekly_best, week, timeStamp = entry:match(':(%a+):(%d+):(%d+):(%d+):(%d+):(%d)', entry:find(':', _pos))
+		class, dungeonID, keyLevel, weekly_best, week, timeStamp, mplus_score = entry:match(':(%a+):(%d+):(%d+):(%d+):(%d+):(%d+):(%d+)', entry:find(':', _pos))
 		unit = entry:sub(_pos, entry:find(':', _pos) - 1)
 		
 		_pos = find(entry, '_', _pos) + 1
@@ -117,22 +120,24 @@ local function SyncReceive(entry)
 		dungeonID = tonumber(dungeonID)
 		keyLevel = tonumber(keyLevel)
 		weekly_best = tonumber(weekly_best)
+		mplus_score = tonumber(mplus_score)
 		week = tonumber(week)
 		timeStamp = tonumber(timeStamp)
 
 		if week >= addon.Week and addon.UnitInGuild(unit) then
-
 			local id = addon.UnitID(unit)
 			if id then
 				if AstralKeys[id].time_stamp < timeStamp then
-					AstralKeys[id].weekly_best = weekly_best >= AstralKeys[id].weekly_best and weekly_best or AstralKeys[id].weekly_best
+					AstralKeys[id].weekly_best = ((not AstralKeys[id].weekly_best) and weekly_best) or (weekly_best >= AstralKeys[id].weekly_best and weekly_best) or (AstralKeys[id].weekly_best)
+					AstralKeys[id].mplus_score = ((not AstralKeys[id].mplus_score) and mplus_score) or (mplus_score >= AstralKeys[id].mplus_score and mplus_score) or (AstralKeys[id].mplus_score)
 					AstralKeys[id].dungeon_id = dungeonID
 					AstralKeys[id].key_level = keyLevel
 					AstralKeys[id].week = week
 					AstralKeys[id].time_stamp = timeStamp
+					addon.PrintDebug('Guild/SyncReceive', addon.DebugTableToString(AstralKeys[id]))
 				end
 			else
-				table.insert(AstralKeys, {
+				local character = {
 					unit = unit,
 					btag = btag,
 					class = class,
@@ -142,39 +147,41 @@ local function SyncReceive(entry)
 					time_stamp = timeStamp,
 					faction = addon.FACTION,
 					weekly_best = weekly_best,
+					mplus_score = mplus_score,
 					source = 'guild'
-				})
+				}
+				table.insert(AstralKeys, character)
 				addon.SetUnitID(unit, #AstralKeys)
+				addon.PrintDebug('Guild/SyncReceive', addon.DebugTableToString(character), '(inserted)')
 			end
 			addon.AddUnitToList(unit, 'GUILD')
-			addon.AddUnitToSortTable(unit, btag, class, addon.FACTION, dungeonID, keyLevel, weekly_best, 'GUILD')
-			--e.AddUnitToTable(unit, class, faction, 'GUILD', dungeonID, keyLevel, weekly_best)
+			addon.AddUnitToSortTable(unit, btag, class, addon.FACTION, dungeonID, keyLevel, weekly_best, mplus_score, 'GUILD')
+			--e.AddUnitToTable(unit, class, faction, 'GUILD', dungeonID, keyLevel, weekly_best, mplus_score)
 		end
 	end
-	unit, class, dungeonID, keyLevel, weekly_best, week, timeStamp = nil, nil, nil, nil, nil, nil, nil
+	unit, class, dungeonID, keyLevel, weekly_best, week, timeStamp, mplus_score = nil, nil, nil, nil, nil, nil, nil, nil
 	entry = nil
 end
 AstralComs:RegisterPrefix('GUILD', SYNC_VERSION, SyncReceive)
 
-local function UpdateWeekly(weekly_best, sender)
+local function UpdateWeekly(weekly_best, mplus_score, sender)
 	local id = addon.UnitID(sender)
 	if id then
 		AstralKeys[id].weekly_best = tonumber(weekly_best)
+		AstralKeys[id].mplus_score = tonumber(mplus_score)
 		AstralKeys[id].time_stamp = addon.WeekTime()
 		addon.UpdateFrames()
+		addon.PrintDebug('Guild/UpdateWeekly', addon.DebugTableToString(AstralKeys[id]))
 	end
 end
 AstralComs:RegisterPrefix('GUILD', 'updateWeekly', UpdateWeekly)
 
 function AstralKeys_PushKeyList()
-	--if sender == e.Player() then return end
-
 	wipe(messageStack)
+
 	for i = 1, #AstralKeys do
 		if addon.UnitInGuild(AstralKeys[i].unit) then -- Only send current guild keys, who wants keys from a different guild?
-			messageStack[#messageStack + 1] = strformat('%s_', strformat('%s:%s:%d:%d:%d:%d:%d', AstralKeys[i].unit, AstralKeys[i].class, AstralKeys[i].dungeon_id, AstralKeys[i].key_level, AstralKeys[i].weekly_best, AstralKeys[i].week, AstralKeys[i].time_stamp))
-			--messageStack[#messageStack + 1] = strformat('%s_', strformat('%s:%s:%d:%d:%d:%d:%d', AstralKeys[i][1], AstralKeys[i][2], AstralKeys[i][3], AstralKeys[i][4], AstralKeys[i][5], AstralKeys[i][6], AstralKeys[i][7]))
-			--messageStack[#messageStack + 1] = strformat('%s_', table.concat(AstralKeys[i], ':'))
+			messageStack[#messageStack + 1] = strformat('%s_', strformat('%s:%s:%d:%d:%d:%d:%d:%d', AstralKeys[i].unit, AstralKeys[i].class, AstralKeys[i].dungeon_id, AstralKeys[i].key_level, AstralKeys[i].weekly_best, AstralKeys[i].week, AstralKeys[i].time_stamp, AstralKeys[i].mplus_score))
 		end
 	end
  
@@ -182,6 +189,7 @@ function AstralKeys_PushKeyList()
 	while messageStack[1] do
 		msg = strformat('%s%s', msg, messageStack[1])
 		if msg:len() < 235 then -- Keep the message length less than 255 or player will disconnect
+			-- TODO: do not completely clear message and batch; see how ART does this
 			table.remove(messageStack, 1)
 		else
 			AstralComs:NewMessage('AstralKeys', strformat('%s %s', SYNC_VERSION, msg), 'GUILD')
@@ -334,16 +342,24 @@ end
 addon.AddListFilter('GUILD', GuildListFilter)
 
 -- Guild list function for displaying character information
-local function GuildUnitFunction(self, unit, unitClass, mapID, keyLevel, weekly_best)
+local function GuildUnitFunction(self, unit, unitClass, mapID, keyLevel, weekly_best, mplus_score)
 	self.unitID = addon.UnitID(unit)
 	self.levelString:SetText(keyLevel)
 	self.dungeonString:SetText(addon.GetMapName(mapID))
 	self.nameString:SetText(WrapTextInColorCode(Ambiguate(unit, 'GUILD') , select(4, GetClassColor(unitClass))))
+
 	if weekly_best and weekly_best > 1 then
-		local color_code = addon.GetDifficultyColour(weekly_best)
-		self.bestString:SetText(WrapTextInColorCode(weekly_best, color_code))
+		local colour = addon.GetDifficultyColour(weekly_best)
+		self.bestString:SetText(WrapTextInColorCode(weekly_best, colour))
 	else
 		self.bestString:SetText(nil)
+	end
+
+	if mplus_score then
+		local colour = addon.GetScoreColour(mplus_score)
+		self.scoreString:SetText(WrapTextInColorCode(mplus_score, colour))
+	else
+		self.scoreString:SetText(nil)
 	end
 	
 	if addon.GuildMemberOnline(unit) then

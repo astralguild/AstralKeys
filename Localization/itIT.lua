@@ -20,9 +20,11 @@ L['AFFIXES'] = 'MODIFICATORI'
 
 -- Character Labels
 L['CURRENT_KEY'] = 'Corrente'
+L['MPLUS_SCORE'] = 'M+ SCORE'
 L['WEEKLY_BEST'] = 'Migl sett'
 
 L['CHARACTER_DUNGEON_NOT_RAN'] = 'Nessuna run M+'
+L['CHARACTER_SCORE_NOT_FOUND'] = 'No mythic+ score recorded'
 L['CHARACTER_KEY_NOT_FOUND'] = 'Nessuna chiave'
 
 -- Dropdown menu selections

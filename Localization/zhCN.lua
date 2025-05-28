@@ -22,9 +22,11 @@ L['AFFIXES'] = '词缀'
 
 -- Character Labels
 L['CURRENT_KEY'] = '当前钥石'
+L['MPLUS_SCORE'] = 'M+ SCORE'
 L['WEEKLY_BEST'] = '本周最佳'
 
 L['CHARACTER_DUNGEON_NOT_RAN'] = '尚未进行大秘境'
+L['CHARACTER_SCORE_NOT_FOUND'] = 'No mythic+ score recorded'
 L['CHARACTER_KEY_NOT_FOUND'] = '未发现钥石'
 
 
