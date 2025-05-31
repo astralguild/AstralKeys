@@ -61,3 +61,8 @@ function addon.UnitWeeklyBest(id)
 	if not id then return nil end
 	return AstralKeys[id].weekly_best
 end
+
+function addon.UnitMplusScore(id)
+	if not id then return nil end
+	return AstralKeys[id].mplus_score
+end

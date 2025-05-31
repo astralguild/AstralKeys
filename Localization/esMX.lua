@@ -20,9 +20,11 @@ L['AFFIXES'] = 'AFFIXES'
 
 -- Character Labels
 L['CURRENT_KEY'] = 'CURRENT'
+L['MPLUS_SCORE'] = 'M+ SCORE'
 L['WEEKLY_BEST'] = 'WKLY BEST'
 
 L['CHARACTER_DUNGEON_NOT_RAN'] = 'No mythic+ ran'
+L['CHARACTER_SCORE_NOT_FOUND'] = 'No mythic+ score recorded'
 L['CHARACTER_KEY_NOT_FOUND'] = 'No key found'
 
 

@@ -72,6 +72,17 @@ function addon.GetCharacterFaction(id)
 	return AstralCharacters[id].faction
 end
 
+-- Retrieves M+ score for character
+-- @param id int ID for the character
+-- @return int M+ score
+function addon.GetCharacterMplusScore(id)
+	if AstralCharacters[id] and AstralCharacters[id].mplus_score then
+		return AstralCharacters[id].mplus_score
+	else
+		return nil
+	end
+end
+
 -- Clears character IDs
 function addon.WipeCharacterList()
 	wipe(characterList)

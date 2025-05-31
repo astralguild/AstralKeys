@@ -9,7 +9,7 @@ Character Frame Template
 -->
 	<Button name="AstralCharacterFrameTemplate" virtual="true" mixin="AstralKeysCharacterMixin">
 		<Size>
-			<AbsDimension x="180" y="50"/>
+			<AbsDimension x="180" y="65"/>
 		</Size>
 		<Layers>
 			<Layer level="ARTOWKR">
@@ -29,12 +29,20 @@ Character Frame Template
 						<Anchor point="TOPLEFT" relativeTo="$parentNameString" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentWeeklyString" inherits="InterUIBold_Tiny" wordwrap="false" parentKey="weeklyString" text="WKLY BEST" alpha="0.5"  justifyH="LEFT">
+				<FontString name="$parentWeeklyString" inherits="InterUIBold_Tiny" wordwrap="false" parentKey="weeklyString" text="WKLY BEST" alpha="0.5" justifyH="LEFT">
 					<Size>
 						<AbsDimension x="70" y="15"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentKeyString" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentMplusScoreString" inherits="InterUIBold_Tiny" wordwrap="false" parentKey="mplusScoreString" text="M+ SCORE" alpha="0.5" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentWeeklyString" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentKeyStringValue" inherits="InterUIRegular_Small" wordwrap="false" parentKey="keyStringValue" justifyH="LEFT">
@@ -45,6 +53,11 @@ Character Frame Template
 				<FontString name="$parentWeeklyStringValue" inherits="InterUIRegular_Small" wordwrap="false" parentKey="weeklyStringValue" justifyH="LEFT">
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentWeeklyString" relativePoint="RIGHT" x="0" y=".5"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentMplusScoreValue" inherits="InterUIRegular_Small" wordwrap="false" parentKey="mplusScoreValue" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentMplusScoreString" relativePoint="RIGHT" x="0" y=".5"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -86,12 +99,20 @@ Character Frame Template
 						<Anchor point="LEFT" relativeTo="$parentDungeonString" relativePoint="RIGHT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentBestString" inherits="InterUIBlack_Normal" justifyH='RIGHT' wordwrap="false" parentKey="bestString">
+				<FontString name="$parentScoreString" inherits="InterUIBlack_Normal" justifyH='RIGHT' wordwrap="false" parentKey="scoreString">
 					<Size>
 						<AbsDimension x="20" y="15"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentNameString" relativePoint="RIGHT" x="10" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentBestString" inherits="InterUIBlack_Normal" justifyH='RIGHT' wordwrap="false" parentKey="bestString">
+					<Size>
+						<AbsDimension x="20" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentScoreString" relativePoint="RIGHT" x="10" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>

@@ -19,14 +19,19 @@ addon.MYTHICKEY_CITY_NPCID = 197711
 
 local function UpdateWeekly()
 	addon.UpdateCharacterBest()
+
 	local characterID = addon.GetCharacterID(addon.Player())
 	local characterWeeklyBest = addon.GetCharacterBestLevel(characterID)
+	local characterScore = addon.GetCharacterMplusScore(characterID)
+
 	if IsInGuild() then
 		AstralComs:NewMessage('AstralKeys', 'updateWeekly ' .. characterWeeklyBest, 'GUILD')
 	else
 		local id = addon.UnitID(addon.Player())
 		if id then
 			AstralKeys[id].weekly_best = characterWeeklyBest
+			AstralKeys[id].mplus_score = characterScore
+			addon.PrintDebug('Keystone/UpdateWeekly', addon.DebugTableToString(AstralKeys[id]))
 			addon.UpdateFrames()
 		end
 	end
@@ -108,6 +113,8 @@ function addon.PushKeystone(announceKey, mapID, keyLevel)
 	end
 
 	local weeklyBest = 0
+	local mplusSummary = C_PlayerInfo.GetPlayerMythicPlusRatingSummary('player')
+	local mplusScore = mplusSummary.currentSeasonScore
 	local runHistory = C_MythicPlus.GetRunHistory(false, true)
 
 	addon.keystone = {level = keyLevel, id = mapID}
@@ -122,7 +129,7 @@ function addon.PushKeystone(announceKey, mapID, keyLevel)
 
 	local msg = ''
 	if mapID then
-		msg = string.format('%s:%s:%d:%d:%d:%d:%s', addon.Player(), addon.PlayerClass(), mapID, keyLevel, weeklyBest, addon.Week, addon.FACTION)
+		msg = string.format('%s:%s:%d:%d:%d:%d:%s', addon.Player(), addon.PlayerClass(), mapID, keyLevel, weeklyBest, addon.Week, mplusScore, addon.FACTION)
 	end
 	if msg ~= '' then
 		addon.PushKeyDataToFriends(msg)
@@ -161,6 +168,8 @@ function addon.UpdateCharacterBest()
 	if UnitLevel('player') < addon.EXPANSION_LEVEL then return end
 
 	local weeklyBest = 0
+	local mplusSummary = C_PlayerInfo.GetPlayerMythicPlusRatingSummary('player')
+	local mplusScore = mplusSummary.currentSeasonScore
 	local runHistory = C_MythicPlus.GetRunHistory(false, true)
 
 	for i = 1, #runHistory do
@@ -176,18 +185,24 @@ function addon.UpdateCharacterBest()
 		if AstralCharacters[i].unit == addon.Player() then
 			found = true
 			AstralCharacters[i].weekly_best = weeklyBest
+			AstralCharacters[i].mplus_score = mplusScore
+			addon.PrintDebug('UpdateCharacterBest', addon.DebugTableToString(AstralCharacters[i]), 'Found: ', found)
 			break
 		end
 	end
 
 	if not found then
-		table.insert(AstralCharacters, { unit = addon.Player(), class = addon.PlayerClass(), weekly_best = weeklyBest, faction = addon.FACTION})
+		local character = { unit = addon.Player(), class = addon.PlayerClass(), weekly_best = weeklyBest, mplus_score = mplusScore, faction = addon.FACTION }
+		table.insert(AstralCharacters, character)
+		addon.PrintDebug('UpdateCharacterBest', addon.DebugTableToString(character), 'Found: ', found)
 		addon.SetCharacterID(addon.Player(), #AstralCharacters)
 	end
+
 end
 
 function addon.GetDifficultyColour(keyLevel)
 	if type(keyLevel) ~= 'number' then return COLOUR[1] end -- return white for any strings or non-number values
+
 	if keyLevel <= 2 then
 		return COLOUR[1]
 	elseif keyLevel <= 4 then
@@ -199,6 +214,11 @@ function addon.GetDifficultyColour(keyLevel)
 	else
 		return COLOUR[5]
 	end
+end
+
+function addon.GetScoreColour(mplusScore)
+	local colour = C_ChallengeMode.GetDungeonScoreRarityColor(mplusScore)
+	return colour:GenerateHexColor()
 end
 
 function InitKeystoneData()
