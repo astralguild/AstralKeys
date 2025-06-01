@@ -285,7 +285,7 @@ local function PushKeysToFriends(target)
 		local id = addon.UnitID(AstralCharacters[i].unit)
 		if id then -- We have a key for this character, let's get the message and queue it up
 			local map, level = addon.UnitMapID(id), addon.UnitKeyLevel(id)
-			messageStack[#messageStack + 1] = strformat('%s_', strformat('%s:%s:%d:%d:%d:%d:%d:%d', AstralCharacters[i].unit, addon.UnitClass(id), map, level, addon.Week, AstralKeys[id][7], AstralCharacters[i].faction, AstralCharacters[i].weekly_best, AstralCharacters[i].mplus_score)) -- name-server:class:mapID:keyLevel:week#:weekTime:faction:weekly
+			messageStack[#messageStack + 1] = strformat('%s_', strformat('%s:%s:%d:%d:%d:%d:%d:%d:%d', AstralCharacters[i].unit, addon.UnitClass(id), map, level, addon.Week, AstralKeys[id][7], AstralCharacters[i].faction, AstralCharacters[i].weekly_best, AstralCharacters[i].mplus_score)) -- name-server:class:mapID:keyLevel:week#:weekTime:faction:weekly
 		end
 	end
 
