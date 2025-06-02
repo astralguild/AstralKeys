@@ -1,7 +1,7 @@
 local _, addon = ...
 local L = addon.L
 
-local SYNC_VERSION = 'sync5'
+local SYNC_VERSION = 'sync6'
 local UPDATE_VERSION = 'update5'
 
 local COLOR_BLUE_BNET = 'ff82c5ff'
