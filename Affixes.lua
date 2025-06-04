@@ -248,10 +248,18 @@ end
 
 function addon.GetAffixID(id, weekOffSet)
 	local week = (ROTATION_WEEK_POSITION + weekOffSet) % AFFIX_ROTATION_WEEKS
-	if week == 0 then week = AFFIX_ROTATION_WEEKS end
-	if week > #AFFIX_ROTATION-1 then
-		local affixes = C_MythicPlus.GetCurrentAffixes()
-		return affixes[id].id or 0
+
+	if week == 0 then
+		week = AFFIX_ROTATION_WEEKS
 	end
+
+	if week > #AFFIX_ROTATION then
+		local affixes = C_MythicPlus.GetCurrentAffixes()
+		if affixes[id] ~= nil then
+			return affixes[id].id
+		end
+		return 0
+	end
+
 	return AFFIX_ROTATION[week][id] or 0
 end
