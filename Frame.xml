@@ -99,7 +99,7 @@ Character Frame Template
 						<Anchor point="LEFT" relativeTo="$parentDungeonString" relativePoint="RIGHT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentScoreString" inherits="InterUIBlack_Normal" justifyH='RIGHT' wordwrap="false" parentKey="scoreString">
+				<FontString name="$parentScoreString" inherits="InterUIBlack_Normal" justifyH='CENTER' wordwrap="false" parentKey="scoreString">
 					<Size>
 						<AbsDimension x="20" y="15"/>
 					</Size>
@@ -107,7 +107,7 @@ Character Frame Template
 						<Anchor point="LEFT" relativeTo="$parentNameString" relativePoint="RIGHT" x="10" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentBestString" inherits="InterUIBlack_Normal" justifyH='RIGHT' wordwrap="false" parentKey="bestString">
+				<FontString name="$parentBestString" inherits="InterUIBlack_Normal" justifyH='CENTER' wordwrap="false" parentKey="bestString">
 					<Size>
 						<AbsDimension x="20" y="15"/>
 					</Size>

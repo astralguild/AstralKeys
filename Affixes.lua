@@ -90,7 +90,7 @@ local LEGION_AFFIX_ROTATION = {
 local AFFIX_INFO = {}
 local ROTATION_WEEK_POSITION = 0
 local AffixIDs = {}
-local AffixOneID, AffixTwoID, AffixThreeID, AffixSeasonID = 0, 0, 0, 0 -- Used to always show the current week's affixes irregardless if the rotation is known or not
+local AffixOneID, AffixTwoID, AffixThreeID = 0, 0, 0 -- Used to always show the current week's affixes irregardless if the rotation is known or not
 
 -- Finds the index of the current week's affixes in the table
 -- @param affixIds Array of integers for the corresponding affix

@@ -694,8 +694,7 @@ local function FriendUnitFunction(self, unit, class, mapID, keyLevel, weekly_bes
 	self.dungeonString:SetText(addon.GetMapName(mapID))
 
 	if weekly_best and weekly_best > 1 then
-		local colour = addon.GetDifficultyColour(weekly_best)
-		self.bestString:SetText(WrapTextInColorCode(weekly_best, colour))
+		self.bestString:SetText(weekly_best)
 	else
 		self.bestString:SetText(nil)
 	end

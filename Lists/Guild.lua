@@ -349,8 +349,7 @@ local function GuildUnitFunction(self, unit, unitClass, mapID, keyLevel, weekly_
 	self.nameString:SetText(WrapTextInColorCode(Ambiguate(unit, 'GUILD') , select(4, GetClassColor(unitClass))))
 
 	if weekly_best and weekly_best > 1 then
-		local colour = addon.GetDifficultyColour(weekly_best)
-		self.bestString:SetText(WrapTextInColorCode(weekly_best, colour))
+		self.bestString:SetText(weekly_best)
 	else
 		self.bestString:SetText(nil)
 	end

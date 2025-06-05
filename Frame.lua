@@ -59,7 +59,7 @@ function AstralKeysCharacterMixin:UpdateUnit(characterID)
 	self.nameString:SetText(WrapTextInColorCode(unit, select(4, GetClassColor(unitClass))))
 
 	if bestKey ~= 0 then
-		self.weeklyStringValue:SetText(WrapTextInColorCode(bestKey, addon.GetDifficultyColour(bestKey)))
+		self.weeklyStringValue:SetText(bestKey)
 	else
 		self.weeklyStringValue:SetText(WrapTextInColorCode(L['CHARACTER_DUNGEON_NOT_RAN'], COLOR_GRAY))
 	end
@@ -105,19 +105,18 @@ function AstralKeysListMixin:SetUnit(unit, class, mapID, keyLevel, weekly_best, 
 		local colour = addon.GetScoreColour(mplus_score)
 		-- TODO: this is all such a mess to figure out widths (just the whole list frame in general); clean up
 		self.scoreString:SetText(WrapTextInColorCode(mplus_score, colour))
-		self.scoreString:SetWidth(math.max(self.scoreString:GetUnboundedStringWidth() + 15, 45))
+		self.scoreString:SetWidth(math.max(self.scoreString:GetUnboundedStringWidth() + 15, 55))
 	else
 		self.scoreString:SetText(nil)
-		self.scoreString:SetWidth(45)
+		self.scoreString:SetWidth(55)
 	end
 
 	if weekly_best and weekly_best > 1 then
-		local colour = addon.GetDifficultyColour(weekly_best)
-		self.bestString:SetText(WrapTextInColorCode(weekly_best, colour))
-		self.bestString:SetWidth(math.max(self.bestString:GetUnboundedStringWidth() + 15, 45))
+		self.bestString:SetText(weekly_best)
+		self.bestString:SetWidth(math.max(self.bestString:GetUnboundedStringWidth() + 15, 55))
 	else
 		self.bestString:SetText(nil)
-		self.bestString:SetWidth(45)
+		self.bestString:SetWidth(55)
 	end
 
 	if addon.FrameListShown() == 'GUILD' then
