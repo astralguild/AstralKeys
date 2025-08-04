@@ -11,6 +11,7 @@ DUNGEON_TABLE[227] = L["Lower Karazhan"]
 DUNGEON_TABLE[234] = L["Upper Karazhan"]
 DUNGEON_TABLE[370] = L["Mechagon Workshop"]
 DUNGEON_TABLE[369] = L["Mechagon Junkyard"]
+DUNGEON_TABLE[378] = L["Halls of Atonement"]
 DUNGEON_TABLE[391] = L["Streets of Wonder"]
 DUNGEON_TABLE[392] = L["So'leah's Gambit"]
 
@@ -77,6 +78,7 @@ DUNGEON_TABLE[382] = L["Theater of Pain"]
 DUNGEON_TABLE[247] = L["The MOTHERLODE!!"]
 
 DUNGEON_TABLE[525] = L["Operation: Floodgate"]
+DUNGEON_TABLE[542] = L["Eco-Dome Al'dani"]
 
 
 
