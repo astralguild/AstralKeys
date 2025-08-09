@@ -861,7 +861,6 @@ do
 		frame:SetSize(32, 32)
 		frame.icon = frame:CreateTexture(nil, 'ARTWORK')
 
-
 		if i == 1 then
 			frame:SetPoint('TOPLEFT', affixTitle, 'BOTTOMLEFT', 0, -15)
 		else
@@ -904,22 +903,10 @@ local affixFrame = CreateFrame('FRAME', '$parentAffixFrame', AstralKeyFrameChara
 affixFrame:SetSize(185, 15)
 affixFrame:SetPoint('TOPLEFT', AstralKeyFrameCharacterFrameAffix1, 'BOTTOMLEFT', 0 , -10)
 
-local affixExpandButton = CreateFrame('BUTTON', '$parentAffixExpandButton', characterFrame)
-affixExpandButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline_keyboard_arrow_down_white_18dp')
-affixExpandButton:SetSize(24, 14)
-affixExpandButton:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
-affixExpandButton:SetPoint('BOTTOM', affixFrame, 'BOTTOM', 0, 0)
-
 do
 	for i = 1, (2 * addon.NUM_AFFIXES) do
 		local frame = CreateFrame('FRAME', '$parentAffix' .. i, affixFrame)
 		frame.id = (i % addon.NUM_AFFIXES) == 0 and addon.NUM_AFFIXES or i % addon.NUM_AFFIXES
-		if i < (addon.NUM_AFFIXES + 1) then
-			frame.weekOffset = 1
-		else
-			frame.weekOffset = 2
-		end
-
 		frame.affixID = 0
 		frame:SetSize(32, 32)
 		frame.texture = frame:CreateTexture(nil, 'ARTWORK')
@@ -939,7 +926,7 @@ do
 		frame.texture:SetAllPoints(frame)
 
 		function frame:UpdateInfo()
-			self.affixID = addon.GetAffixID(self.id, self.weekOffset)
+			self.affixID = addon.GetAffixID(self.id)
 			if self.affixID and self.affixID ~= 0 then
 				local _, _, texture = C_ChallengeMode.GetAffixInfo(self.affixID)
 				self.texture:SetTexture(texture)
@@ -962,103 +949,6 @@ do
 		frame:Hide()
 	end
 end
-
-affixFrame.expand = affixFrame:CreateAnimationGroup()
-
-local affixExpand = affixFrame.expand:CreateAnimation('Alpha')
-affixExpand:SetFromAlpha(0)
-affixExpand:SetToAlpha(1)
-affixExpand:SetDuration(.12)
-affixExpand:SetSmoothing('IN_OUT')
-
-affixExpand:SetScript('OnPlay', function()
-	affixExpandButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline_keyboard_arrow_up_white_18dp')
-	affixExpandButton:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
-	AstralKeyFrame.affixesExpanded = true
-	end)
-
-affixExpand:SetScript('OnUpdate', function(self)
-	local progress = self:GetProgress()
-
-	AstralKeyFrameCharacterFrameAffixFrame:SetHeight((progress * 85) + 15)
-	AstralKeyFrameCharacterFrameCharacterContainer:SetHeight(((1-progress) * 85) + 230)
-	AstralKeyFrameCharacterFrameCharacterTitle:SetPoint('TOPLEFT', affixFrame, 'BOTTOMLEFT', 0, -10)
-	affixExpandButton:SetPoint('BOTTOM', affixFrame, 'BOTTOM', 0, 0)
-	end)
-
-local affixIconsExpand = affixFrame.expand:CreateAnimation('Alpha')
-affixIconsExpand:SetDuration(0.08)
-affixIconsExpand:SetFromAlpha(0)
-affixIconsExpand:SetToAlpha(1)
-affixIconsExpand:SetSmoothing('IN_OUT')
-affixIconsExpand:SetStartDelay(0.1)
-
-affixIconsExpand:SetScript('OnPlay', function()
-	for i = 1, (addon.NUM_AFFIXES * 2) do
-		_G['AstralKeyFrameCharacterFrameAffixFrameAffix' .. i]:Show()
-	end
-	end)
-
-affixIconsExpand:SetScript('OnUpdate', function(self)
-	local alpha = self:GetSmoothProgress()
-	for i = 1, (addon.NUM_AFFIXES * 2) do
-		_G['AstralKeyFrameCharacterFrameAffixFrameAffix' .. i]:SetAlpha(alpha)
-	end
-	end)
-
-affixIconsExpand:SetScript('OnFinished', function()
-	end)
-
-affixFrame.collapse = affixFrame:CreateAnimationGroup()
-
-local affixIconsCollapse = affixFrame.collapse:CreateAnimation('Alpha')
-affixIconsCollapse:SetDuration(0.08)
-affixIconsCollapse:SetFromAlpha(1)
-affixIconsCollapse:SetToAlpha(0)
-affixIconsCollapse:SetSmoothing('IN_OUT')
-affixIconsCollapse:SetStartDelay(0.1)
-
-affixIconsCollapse:SetScript('OnFinished', function()
-	for i = 1, (addon.NUM_AFFIXES * 2) do
-		_G['AstralKeyFrameCharacterFrameAffixFrameAffix' .. i]:Hide()
-	end
-	end)
-
-affixIconsCollapse:SetScript('OnUpdate', function(self)
-	local alpha = self:GetSmoothProgress()
-	for i = 1, (addon.NUM_AFFIXES * 2) do
-		_G['AstralKeyFrameCharacterFrameAffixFrameAffix' .. i]:SetAlpha(alpha)
-	end
-	end)
-
-local affixCollapse = affixFrame.collapse:CreateAnimation('Alpha')
-affixCollapse:SetFromAlpha(1)
-affixCollapse:SetToAlpha(0)
-affixCollapse:SetDuration(.12)
-affixCollapse:SetSmoothing('IN_OUT')
-
-affixCollapse:SetScript('OnPlay', function()
-	affixExpandButton:SetNormalTexture('Interface\\AddOns\\AstralKeys\\Media\\Texture\\baseline_keyboard_arrow_down_white_18dp')
-	affixExpandButton:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8, 0.8)
-	AstralKeyFrame.affixesExpanded = false
-	end)
-
-affixCollapse:SetScript('OnUpdate', function(self)
-	local progress = self:GetSmoothProgress()
-
-	AstralKeyFrameCharacterFrameAffixFrame:SetHeight(((1-progress) * 85) + 15)
-	AstralKeyFrameCharacterFrameCharacterContainer:SetHeight((progress * 85) + 230)
-	AstralKeyFrameCharacterFrameCharacterTitle:SetPoint('TOPLEFT', affixFrame, 'BOTTOMLEFT', 0, -10)
-	affixExpandButton:SetPoint('BOTTOM', affixFrame, 'BOTTOM', 0, 0)
-	end)
-
-affixExpandButton:SetScript('OnClick', function()
-	if AstralKeyFrame.affixesExpanded then
-		affixFrame.collapse:Play()		
-	else
-		affixFrame.expand:Play()
-	end
-	end)
 
 -- Character Frames
 ----------------------------------------------------------------
