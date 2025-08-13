@@ -140,6 +140,12 @@ local function ListSort(A, v)
 					bOnline = true
 				end
 				if aOnline == bOnline then
+					if not a[v] then
+						return false
+					end
+					if not b[v] then
+						return true
+					end
 					if AstralKeysSettings.frame.orientation == 0 then
 						if a[v] > b[v] then
 							return true
