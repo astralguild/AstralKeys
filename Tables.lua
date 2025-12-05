@@ -1,7 +1,7 @@
 local _, addon = ...
 
 local FILTER_METHOD = {}
-local SORT_MEDTHOD = {}
+local SORT_METHOD = {}
 
 local function ListFilter(A, filters)
 	if not type(A) == 'table' then return end
@@ -140,14 +140,12 @@ local function ListSort(A, v)
 					bOnline = true
 				end
 				if aOnline == bOnline then
-					if not a[v] then
-						return false
-					end
-					if not b[v] then
-						return true
-					end
 					if AstralKeysSettings.frame.orientation == 0 then
-						if a[v] > b[v] then
+						if not a[v] then
+							return false
+						elseif not b[v] then
+							return true
+						elseif a[v] > b[v] then
 							return true
 						elseif
 							a[v] < b[v]  then
@@ -156,6 +154,10 @@ local function ListSort(A, v)
 							return CompareUnitNames(a, b)
 						end
 					else
+						if not a[v] then
+							return true
+						elseif not b[v] then
+							return false
 						if a[v] < b[v] then
 							return true
 						elseif
@@ -184,7 +186,7 @@ function addon.AddListSort(list, f)
 	if type(list) ~= 'string' and list == '' then return end
 	if type(f) ~= 'function' then return end
 
-	SORT_MEDTHOD[list] = f
+	SORT_METHOD[list] = f
 end
 
 function addon.UpdateTable(tbl, filters)
@@ -195,5 +197,5 @@ end
 
 function addon.SortTable(A, v)
 	ListSort(A, v)
-	--SORT_MEDTHOD[e.FrameListShown()](A, v)
+	--SORT_METHOD[e.FrameListShown()](A, v)
 end
