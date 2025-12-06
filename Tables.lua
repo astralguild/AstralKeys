@@ -158,7 +158,7 @@ local function ListSort(A, v)
 							return true
 						elseif not b[v] then
 							return false
-						if a[v] < b[v] then
+						elseif a[v] < b[v] then
 							return true
 						elseif
 							a[v] > b[v]  then
