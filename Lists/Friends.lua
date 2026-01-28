@@ -670,7 +670,7 @@ local function TooltipHook(self)
 
 	if self.GetUnit~=nil then 
     local _, uid = self:GetUnit()
-    if not UnitIsPlayer(uid) then return end
+    if not UnitIsHumanPlayer(uid) then return end
 
     local unitName, unitRealm = UnitFullName(uid)
     unitRealm = ((unitRealm ~= '' and unitRealm) or GetRealmName()):gsub('%s+', '')
