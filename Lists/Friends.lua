@@ -682,9 +682,14 @@ local function TooltipHook(self)
 	local id = addon.UnitID(unit)
 	if not id then return end
 
+	local unitMapId = addon.UnitMapID(id)
+	local unitMapName = addon.GetMapName(unitMapId)
+	local unitKeyLevel = addon.UnitKeyLevel(id)
+
+	-- Add tooltip lines
 	GameTooltip:AddLine(" ")
 	GameTooltip:AddLine(L["Current Keystone"])
-	GameTooltip:AddDoubleLine(addon.GetMapName(addon.UnitMapID(id)), addon.UnitKeyLevel(id), 1, 1, 1, 1, 1, 1)
+	GameTooltip:AddDoubleLine(unitMapName, unitKeyLevel, 1, 1, 1, 1, 1, 1)
 end
 
 TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, TooltipHook)
@@ -699,7 +704,6 @@ local function FriendUnitFunction(self, unit, class, mapID, keyLevel, weekly_bes
 	else
 		self.bestString:SetText(nil)
 	end
-	--self.weeklyTexture:SetShown(cache == 1)
 
 	if mplus_score then
 		local colour = addon.GetScoreColour(mplus_score)

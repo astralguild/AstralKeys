@@ -80,7 +80,19 @@ DUNGEON_TABLE[247] = L["The MOTHERLODE!!"]
 DUNGEON_TABLE[525] = L["Operation: Floodgate"]
 DUNGEON_TABLE[542] = L["Eco-Dome Al'dani"]
 
+-- Midnight Dungeons
 
+--DUNGEON_TABLE[X] = L["Magister's Terrace"]
+--DUNGEON_TABLE[X] = L["Murder Row"]
+--DUNGEON_TABLE[X] = L["Windrunner Spire"]
+--DUNGEON_TABLE[X] = L["The Blinding Vale"]
+--DUNGEON_TABLE[X] = L["Nexus Point Xenas"]
+--DUNGEON_TABLE[X] = L["Voidscar Arena"]
+--DUNGEON_TABLE[X] = L["Den of Nalorakk"]
+--DUNGEON_TABLE[X] = L["Maisara Caverns"]
+--DUNGEON_TABLE[X] = L["Pit of Saron"]
+--DUNGEON_TABLE[X] = L["Seat of the Triumvirate"]
+--DUNGEON_TABLE[X] = L["Skyreach"]
 
 function addon.GetMapName(mapID, full)
 	if not mapID then return nil end
