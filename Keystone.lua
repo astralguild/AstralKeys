@@ -13,6 +13,7 @@ QUALITIES.Artifact = 'ffe6cc80'
 
 addon.keystone = {}
 addon.inKey = false
+addon.refreshKeystoneAfterCombat = false
 
 addon.MYTHICKEY_ITEMID = 180653
 addon.TIMEWALKINGKEY_ITEMID = 187786
@@ -268,6 +269,11 @@ AstralEvents:Register('ITEM_CHANGED', function()
 end, 'keystoneMaybeChanged')
 AstralEvents:Register('GOSSIP_CLOSED', function()
 	local guid = UnitGUID('target')
+	if not canacessvalue(guid) then
+		-- Assume no access due to in-combat
+		addon.refreshKeystoneAfterCombat = true
+		return
+	end
 	if guid ~= nil then
 		local npc_id = select(6, strsplit('-', guid))
 		if tonumber(npc_id) == addon.MYTHICKEY_CITY_NPCID then
@@ -278,3 +284,12 @@ AstralEvents:Register('GOSSIP_CLOSED', function()
 		end
 	end
 end, 'keystoneObtainedOrDepleted')
+AstralEvents:Register('PLAYER_REGEN_ENABLED', function() 
+	if addon.refreshKeystoneAfterCombat then
+		C_Timer.After(3, function()
+			C_MythicPlus.RequestRewards()
+			addon.CheckKeystone()
+		end)
+		addon.refreshKeystoneAfterCombat = false
+	end
+end, 'keystoneRefreshAfterCombat')
