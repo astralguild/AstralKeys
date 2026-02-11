@@ -269,7 +269,7 @@ AstralEvents:Register('ITEM_CHANGED', function()
 end, 'keystoneMaybeChanged')
 AstralEvents:Register('GOSSIP_CLOSED', function()
 	local guid = UnitGUID('target')
-	if not canacessvalue(guid) then
+	if not canaccessvalue(guid) then
 		-- Assume no access due to in-combat
 		addon.refreshKeystoneAfterCombat = true
 		return
