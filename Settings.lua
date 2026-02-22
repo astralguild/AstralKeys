@@ -97,16 +97,20 @@ local function LoadDefaultSettings(addonName)
 	{
 		isEnabled = true,
 	})
-	addon:AddDefaultSettings('general', 'show_tooltip_key', {
+	addon:AddDefaultSettings('general', 'show_tooltip_key',
+	{
 		isEnabled = true,
 	})
-	addon:AddDefaultSettings('general', 'show_tooltip_forces', {
+	addon:AddDefaultSettings('general', 'show_tooltip_forces',
+	{
 		isEnabled = false,
 	})
-	addon:AddDefaultSettings('general', 'announce_party', {
+	addon:AddDefaultSettings('general', 'announce_party',
+	{
 		isEnabled = true,
 	})
-	addon:AddDefaultSettings('general', 'announce_guild', {
+	addon:AddDefaultSettings('general', 'announce_guild',
+	{
 		isEnabled = false,
 	})
 	addon:AddDefaultSettings('general', 'report_on_message',
@@ -117,21 +121,25 @@ local function LoadDefaultSettings(addonName)
 		['no_key'] = false,
 		['all_characters'] = false,
 	})
-	addon:AddDefaultSettings('general', 'expanded_tooltip', {
+	addon:AddDefaultSettings('general', 'expanded_tooltip',
+	{
 		isEnabled = true,
 	})
 
 	--Frame settings, collapsed, saved sorting, etc
 	addon:AddDefaultSettings('frame', 'orientation', 1)
 	addon:AddDefaultSettings('frame', 'sorth_method', 'character_name')
-	addon:AddDefaultSettings('frame', 'isCollapsed', {
+	addon:AddDefaultSettings('frame', 'isCollapsed',
+	{
 		isEnabled = false,
 	})
 	addon:AddDefaultSettings('frame', 'current_list', 'GUILD')
-	addon:AddDefaultSettings('frame', 'show_offline', {
+	addon:AddDefaultSettings('frame', 'show_offline',
+	{
 		isEnabled = true,
 	})
-	addon:AddDefaultSettings('frame', 'mingle_offline', {
+	addon:AddDefaultSettings('frame', 'mingle_offline',
+	{
 		isEnabled = false,
 	})
 	addon:AddDefaultSettings('frame', 'rank_filter',
@@ -149,10 +157,12 @@ local function LoadDefaultSettings(addonName)
 	})
 
 	-- Friend syncing options
-	addon:AddDefaultSettings('friendOptions', 'friend_sync', {
+	addon:AddDefaultSettings('friendOptions', 'friend_sync',
+	{
 		isEnabled = true,
 	})
-	addon:AddDefaultSettings('friendOptions', 'show_other_faction', {
+	addon:AddDefaultSettings('friendOptions', 'show_other_faction',
+	{
 		isEnabled = true,
 	})
 	AstralEvents:Unregister('ADDON_LOADED', 'LoadDefaultSettings')
