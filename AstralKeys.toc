@@ -2,8 +2,9 @@
 ## Title: Astral |cffff8000Keys|r
 ## Notes: Keystone Manager for Guilds and Friends
 ## Author: Astral
-## Version: 4.46
+## Version: 4.47
 ## SavedVariables: AstralKeys, AstralCharacters, AstralKeysSettings, AstralMinimap, AstralAffixes, AstralLists, AstralUnits
+## Category-enUS: |cff2596beAstral|r Addons
 ## X-Wago-ID: baNDZoKo
 ## X-Curse-Project-ID: 265199
 ## IconTexture: Interface\AddOns\AstralKeys\Media\Texture\Logo@2x
