@@ -82,19 +82,21 @@ DUNGEON_TABLE[542] = L["Eco-Dome Al'dani"]
 
 -- Midnight Dungeons
 
---DUNGEON_TABLE[X] = L["Magister's Terrace"]
---DUNGEON_TABLE[X] = L["Murder Row"]
---DUNGEON_TABLE[X] = L["Windrunner Spire"]
+DUNGEON_TABLE[558] = L["Magisters' Terrace"]
+DUNGEON_TABLE[560] = L["Maisara Caverns"]
+--DUNGEON_TABLE[12345] = L["Murder Row"]
+DUNGEON_TABLE[559] = L["Nexus-Point Xenas"]
+DUNGEON_TABLE[557] = L["Windrunner Spire"]
 --DUNGEON_TABLE[X] = L["The Blinding Vale"]
---DUNGEON_TABLE[X] = L["Nexus Point Xenas"]
 --DUNGEON_TABLE[X] = L["Voidscar Arena"]
 --DUNGEON_TABLE[X] = L["Den of Nalorakk"]
---DUNGEON_TABLE[X] = L["Maisara Caverns"]
---DUNGEON_TABLE[X] = L["Pit of Saron"]
---DUNGEON_TABLE[X] = L["Seat of the Triumvirate"]
---DUNGEON_TABLE[X] = L["Skyreach"]
+DUNGEON_TABLE[556] = L["Pit of Saron"]
+DUNGEON_TABLE[239] = L["Seat of the Triumvirate"]
+DUNGEON_TABLE[161] = L["Skyreach"]
 
 function addon.GetMapName(mapID, full)
 	if not mapID then return nil end
-	return (full and DUNGEON_TABLE[mapID .. "F"]) or DUNGEON_TABLE[mapID]
+	local mapName = (full and DUNGEON_TABLE[mapID .. "F"]) or DUNGEON_TABLE[mapID]
+	local apiName, _, _, _, _, _, _ = C_ChallengeMode.GetMapUIInfo(mapID)
+	return mapName or apiName
 end

@@ -1,6 +1,6 @@
 local _, addon = ...
 addon.Week = 0
-addon.EXPANSION_LEVEL = 80
+addon.EXPANSION_LEVEL = GetMaxLevelForLatestExpansion()
 addon.NUM_AFFIXES = 5
 
 if not AstralKeys then AstralKeys = {} end
