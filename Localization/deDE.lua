@@ -106,4 +106,10 @@ L["Black Rook Hold"] = 'Die Rabenwehr'
 L["The Everbloom"] = 'Der Immergrüne Flor'
 L["Throne of the Tides"] = 'Thron der Gezeiten'
 
-
+L["Magisters' Terrace"] = "Terrasse der Magister"
+L["Maisara Caverns"] = "Maisarakavernen"
+L["Nexus-Point Xenas"] = "Nexuspunkt Xenas"
+L["Windrunner Spire"] = "Windläuferturm"
+L["Pit of Saron"] = "Grube von Saron"
+L["Seat of the Triumvirate"] = "Sitz des Triumvirats"
+L["Skyreach"] = "Himmelsnadel"
