@@ -300,9 +300,8 @@ end
 
 local function ParseGuildChatCommands(text)
 	if UnitLevel('player') ~= addon.EXPANSION_LEVEL then return end -- Don't bother checking anything if the unit is unable to acquire a key
-	if canaccessvalue(text) then
-		text = gsub(text, "^%[%a+%] ", "") -- Strip off [SomeName] from message from using Identity-2
-	end
+	if not canaccessvalue(text) then return end
+	text = gsub(text, "^%[%a+%] ", "") -- Strip off [SomeName] from message from using Identity-2
 	if text:lower() == addon.KEYS_TEXT_COMMAND then
 		local guild = GetGuildInfo('player')
 		if AstralKeysSettings.general.report_on_message['guild'] or (guild == 'Astral' and addon.PlayerRealm() == 'Area52') then -- Guild leader for Astral desires this setting to be foreced on for members.
@@ -325,9 +324,8 @@ AstralEvents:Register('CHAT_MSG_GUILD', ParseGuildChatCommands, 'parseguildchat'
 
 local function ParsePartyChatCommands(text)
 	if UnitLevel('player') ~= addon.EXPANSION_LEVEL then return end -- Don't bother checking anything if the unit is unable to acquire a key
-	if canaccessvalue(text) then
-		text = gsub(text, "^%[%a+%] ", "") -- Strip off [SomeName] from message from using Identity-2
-	end
+	if not canaccessvalue(text) then return end
+	text = gsub(text, "^%[%a+%] ", "") -- Strip off [SomeName] from message from using Identity-2
 	if text:lower() == addon.KEYS_TEXT_COMMAND then
 		if AstralKeysSettings.general.report_on_message['party'] then
 			if AstralKeysSettings.general.report_on_message['all_characters'] then
@@ -368,9 +366,8 @@ end
 
 local function ParseRaidChatCommands(text)
 	if UnitLevel('player') ~= addon.EXPANSION_LEVEL then return end -- Don't bother checking anything if the unit is unable to acquire a key
-	if canaccessvalue(text) then
-		text = gsub(text, "^%[%a+%] ", "") -- Strip off [SomeName] from message from using Identity-2
-	end
+	if not canaccessvalue(text) then return end
+	text = gsub(text, "^%[%a+%] ", "") -- Strip off [SomeName] from message from using Identity-2
 	if text:lower() == addon.KEYS_TEXT_COMMAND then
 		if AstralKeysSettings.general.report_on_message['raid'] then
 			if AstralKeysSettings.general.report_on_message['all_characters'] then
