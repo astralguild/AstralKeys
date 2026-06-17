@@ -8,8 +8,13 @@ ASTRAL_KEYS_REFRESH_INTERVAL = 30 -- seconds
 
 function addon:SetUIScale()
 	local scale = string.match( GetCVar( "gxWindowedResolution" ), "%d+x(%d+)" )
+	local physicalHeight = select(2, GetPhysicalScreenSize())
 	uiScale = UIParent:GetScale()
-	mult = 768/scale/uiScale
+	if scale then
+		mult = 768/scale/uiScale
+	else
+		mult = 768/physicalHeight
+	end
 end
 
 function addon:Scale(x)
