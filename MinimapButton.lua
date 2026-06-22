@@ -38,6 +38,4 @@ function addon:OnInitialize()
 		},
 	})
 	addon.icon:Register("AstralKeys", astralkeysLDB, self.db.profile.minimap)
-
-	addon.Debug = false
 end

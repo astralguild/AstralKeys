@@ -10,6 +10,7 @@
 ## IconTexture: Interface\AddOns\AstralKeys\Media\Texture\Logo@2x
 ## AddonCompartmentFunc: OpenAstralKeysWindow
 
+Debug.lua
 Init.lua
 Localization\Localization.lua
 Localization\deDE.lua
