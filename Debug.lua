@@ -2,6 +2,8 @@ local _, addon = ...
 
 addon.Debug = false
 
+AstralKeys_Debug = {}
+
 function addon.Console(...)
 	print(WrapTextInColorCode('[AK]', '008888FF'), ...)
 end
@@ -23,4 +25,14 @@ function addon.DebugTableToString(o)
     else
         return tostring(o)
     end
+end
+
+function AstralKeys_Debug.enable(...)
+	addon.Debug = true
+	addon.PrintDebug('Enabling debug mode.')
+end
+
+function AstralKeys_Debug.disable(...)
+	addon.PrintDebug('Disabling debug mode.')
+	addon.Debug = false
 end
