@@ -336,14 +336,22 @@ end
 AstralEvents:Register('CHAT_MSG_GUILD', ParseGuildChatCommands, 'parseguildchat')
 
 local function ParsePartyChatCommands(text)
-	if UnitLevel('player') ~= addon.EXPANSION_LEVEL then return end -- Don't bother checking anything if the unit is unable to acquire a key
+	addon.PrintDebug('ParsePartyChatCommands')
+	if UnitLevel('player') ~= addon.EXPANSION_LEVEL then 
+		-- Don't bother checking anything if the unit is unable to acquire a key
+		addon.PrintDebug('Player not at max level: ' .. UnitLevel('player') .. ' ' .. addon.EXPANSION_LEVEL)
+		return 
+	end
 	if not canaccessvalue(text) then 
 		addon.PrintDebug('Unable to parse Party chat command. Addon is currently restricted from reading chat.')
 		return 
 	end
+	local origText = text
 	text = gsub(text, "^%[%a+%] ", "") -- Strip off [SomeName] from message from using Identity-2
+	addon.PrintDebug('Chat parsed: "' .. origText .. '" -> "' .. text .. '"')
 	if text:lower() == addon.KEYS_TEXT_COMMAND then
 		if AstralKeysSettings.general.report_on_message['party'] then
+			addon.PrintDebug('Keystone ID: ' .. addon.keystone.id)
 			if AstralKeysSettings.general.report_on_message['all_characters'] then
 				addon.AnnounceCharacterKeys('PARTY', true)
 			elseif addon.keystone.id then
