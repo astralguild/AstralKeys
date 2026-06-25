@@ -299,15 +299,23 @@ function addon.AnnounceKey()
 end
 
 local function ParseGuildChatCommands(text)
-	if UnitLevel('player') ~= addon.EXPANSION_LEVEL then return end -- Don't bother checking anything if the unit is unable to acquire a key
+	addon.PrintDebug('ParseGuildChatCommands')
+	if UnitLevel('player') ~= addon.EXPANSION_LEVEL then 
+		-- Don't bother checking anything if the unit is unable to acquire a key
+		addon.PrintDebug('Player not at max level: ' .. UnitLevel('player') .. ' ' .. addon.EXPANSION_LEVEL)
+		return 
+	end
 	if not canaccessvalue(text) then 
 		addon.PrintDebug('Unable to parse Guild chat command. Addon is currently restricted from reading chat.')
 		return 
 	end
+	local origText = text
 	text = gsub(text, "^%[%a+%] ", "") -- Strip off [SomeName] from message from using Identity-2
+	addon.PrintDebug('Chat parsed: "' .. origText .. '" -> "' .. text .. '"')
 	if text:lower() == addon.KEYS_TEXT_COMMAND then
 		local guild = GetGuildInfo('player')
 		if AstralKeysSettings.general.report_on_message['guild'] or (guild == 'Astral' and addon.PlayerRealm() == 'Area52') then -- Guild leader for Astral desires this setting to be foreced on for members.
+			addon.PrintDebug('Keystone ID: ' .. addon.keystone.id)
 			if AstralKeysSettings.general.report_on_message['all_characters'] then
 				addon.AnnounceCharacterKeys('GUILD', true)
 			elseif addon.keystone.id then
