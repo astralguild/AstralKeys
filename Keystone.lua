@@ -251,6 +251,9 @@ function InitKeystoneData()
 	if UnitLevel('player') < addon.EXPANSION_LEVEL then return end
 	AstralEvents:Register('CHALLENGE_MODE_MAPS_UPDATE', UpdateWeekly, 'weeklyCheck')
 	AstralEvents:Register('PLAYER_ENTERING_WORLD', addon.CheckKeystone, 'keystoneCheck')
+	C_Timer.After(3, function() 
+		addon.CheckKeystone()
+	end)
 end
 
 AstralEvents:Register('PLAYER_ENTERING_WORLD', InitKeystoneData, 'initData')
