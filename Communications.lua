@@ -315,7 +315,7 @@ local function ParseGuildChatCommands(text)
 	if text:lower() == addon.KEYS_TEXT_COMMAND then
 		local guild = GetGuildInfo('player')
 		if AstralKeysSettings.general.report_on_message['guild'] or (guild == 'Astral' and addon.PlayerRealm() == 'Area52') then -- Guild leader for Astral desires this setting to be foreced on for members.
-			addon.PrintDebug('Keystone ID: ' .. addon.keystone.id)
+			addon.PrintDebug('Keystone ID: ' .. (addon.keystone.id or 'nil'))
 			if AstralKeysSettings.general.report_on_message['all_characters'] then
 				addon.AnnounceCharacterKeys('GUILD', true)
 			elseif addon.keystone.id then
@@ -351,7 +351,7 @@ local function ParsePartyChatCommands(text)
 	addon.PrintDebug('Chat parsed: "' .. origText .. '" -> "' .. text .. '"')
 	if text:lower() == addon.KEYS_TEXT_COMMAND then
 		if AstralKeysSettings.general.report_on_message['party'] then
-			addon.PrintDebug('Keystone ID: ' .. addon.keystone.id)
+			addon.PrintDebug('Keystone ID: ' ..  (addon.keystone.id or 'nil'))
 			if AstralKeysSettings.general.report_on_message['all_characters'] then
 				addon.AnnounceCharacterKeys('PARTY', true)
 			elseif addon.keystone.id then
