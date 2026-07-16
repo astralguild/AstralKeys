@@ -1,6 +1,6 @@
 local _, addon = ...
 addon.Week = 0
-addon.EXPANSION_LEVEL = GetMaxLevelForLatestExpansion() or 90
+addon.EXPANSION_LEVEL = 90 -- TODO: investigate why GetMaxLevelForLatestExpansion() is unreliable
 addon.NUM_AFFIXES = 5
 
 if not AstralKeys then AstralKeys = {} end
