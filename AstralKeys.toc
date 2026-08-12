@@ -1,8 +1,8 @@
-## Interface: 120007
+## Interface: 120100
 ## Title: Astral |cffff8000Keys|r
 ## Notes: Keystone Manager for Guilds and Friends
 ## Author: Astral
-## Version: 4.56
+## Version: 4.57
 ## SavedVariables: AstralKeys, AstralCharacters, AstralKeysSettings, AstralMinimap, AstralAffixes, AstralLists, AstralUnits
 ## Category-enUS: |cffFF0000Astral|r Addons
 ## X-Wago-ID: baNDZoKo
