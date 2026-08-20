@@ -50,10 +50,10 @@ function addon.CheckKeystone()
 	if (not addon.keystone.id) or (id == addon.keystone.id and l < addon.keystone.level) then
 		addon.PushKeystone(false, id, l)
 	elseif id ~= addon.keystone.id or l ~= addon.keystone.level then
-    addon.PushKeystone(true, id, l)
-  else
-    addon.keystone = {level = l, id = id}
-  end
+    	addon.PushKeystone(true, id, l)
+  	else
+    	addon.keystone = {level = l, id = id}
+  	end
 end
 
 --|cffa335ee|Hkeystone:158923:251:12:10:5:13:117|h[Keystone: The Underrot (12)]|h|r
@@ -67,7 +67,7 @@ function addon.CreateKeyLink(mapID, keyLevel)
 	keyLevel = keyLevel or C_MythicPlus.GetOwnedKeystoneLevel()
 	if not mapName or not keyLevel then 
 		if not mapName then
-			addon.PrintDebug('addon.CreateKeyLink - Could not get mapName for mapID: ' .. mapID)
+			addon.PrintDebug('addon.CreateKeyLink - Could not get mapName for mapID: ' .. tostring(mapID))
 		end
 		if not keyLevel then
 			addon.PrintDebug('addon.CreateKeyLink - Could not get keystone level.')
