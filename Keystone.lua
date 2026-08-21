@@ -124,6 +124,9 @@ function addon.PushKeystone(announceKey, mapID, keyLevel)
 
 	local weeklyBest = 0
 	local mplusSummary = C_PlayerInfo.GetPlayerMythicPlusRatingSummary('player')
+	if not mplusSummary then
+		return -- Maybe not loaded yet?
+	end
 	local mplusScore = mplusSummary.currentSeasonScore
 	local runHistory = C_MythicPlus.GetRunHistory(false, true)
 
