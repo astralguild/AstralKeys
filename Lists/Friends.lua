@@ -106,7 +106,10 @@ local function UpdateNonBNetFriendList()
 
 	for i = 1, C_FriendList.GetNumOnlineFriends() do
 		local friendInfo = C_FriendList.GetFriendInfoByIndex(i)
-		local name = strformat('%s-%s', friendInfo.name, addon.PlayerRealm())
+		local name = friendInfo.name
+		if not name.find('-') then
+			name = strformat('%s-%s', friendInfo.name, addon.PlayerRealm())
+		end
 		NonBNFriend_List[name] = {isConnected = friendInfo.connected}
 		if FRIEND_LIST[name] then
 			FRIEND_LIST[name].isConnected = true
@@ -343,16 +346,8 @@ end
 -- Let's find out which friends are using Astral Keys, no need to spam every friend, just the ones using Astral keys
 local function PingFriendsForAstralKeys()
 	if not AstralKeysSettings.friendOptions.friend_sync.isEnabled then return end
-	for i = 1, C_FriendList.GetNumOnlineFriends() do -- Only parse over online friends
-		local friendInfo = C_FriendList.GetFriendInfoByIndex(i)
-		local name = strformat('%s-%s', friendInfo.name, addon.PlayerRealm())
-
-		NonBNFriend_List[name] = {isConnected = friendInfo.connected}
-	end
-
-	for index = 1, BNGetNumFriends() do
-		addon.BNFriendUpdate(index)
-	end
+	
+	UpdateNonBNetFriendList()
 
 	for gaID in pairs(BNFriendList) do
 		AstralComs:NewMessage('AstralKeys', 'BNet_query ping', 'BNET', gaID)
