@@ -182,6 +182,7 @@ function addon.UpdateCharacterBest()
 
 	local weeklyBest = 0
 	local mplusSummary = C_PlayerInfo.GetPlayerMythicPlusRatingSummary('player')
+	if not mplusSummary then return end   -- Unable to get summary currently
 	local mplusScore = mplusSummary.currentSeasonScore
 	local runHistory = C_MythicPlus.GetRunHistory(false, true)
 
