@@ -187,14 +187,26 @@ function AstralKeys_PushKeyList()
  
 	local msg = ''
 	while messageStack[1] do
-		msg = strformat('%s%s', msg, messageStack[1])
-		if msg:len() < 235 then -- Keep the message length less than 255 or player will disconnect
-			-- TODO: do not completely clear message and batch; see how ART does this
+		-- Check the combined length before appending so the batch never exceeds the 235-byte
+		-- budget (preventing >255-byte addon message truncation) and messageStack[1] is not
+		-- sent twice when a batch flushes.
+		local nextMsg = strformat('%s%s', msg, messageStack[1])
+		if nextMsg:len() < 235 then -- Keep the message length less than 255 or player will disconnect
+			msg = nextMsg
 			table.remove(messageStack, 1)
 		else
-			AstralComs:NewMessage('AstralKeys', strformat('%s %s', SYNC_VERSION, msg), 'GUILD')
-			msg = ''
+			if msg ~= '' then
+				AstralComs:NewMessage('AstralKeys', strformat('%s %s', SYNC_VERSION, msg), 'GUILD')
+				msg = ''
+			else
+				-- Single entry exceeds the byte budget; drop it to avoid an infinite loop
+				table.remove(messageStack, 1)
+			end
 		end
+	end
+	-- Flush the final (or only) batch remaining in msg after the queue is drained
+	if msg ~= '' then
+		AstralComs:NewMessage('AstralKeys', strformat('%s %s', SYNC_VERSION, msg), 'GUILD')
 	end
 end
 
