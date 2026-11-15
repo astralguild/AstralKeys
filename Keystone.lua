@@ -282,6 +282,20 @@ AstralEvents:Register('ITEM_CHANGED', function()
 		addon.CheckKeystone()
 	end)
 end, 'keystoneMaybeChanged')
+-- ITEM_CHANGED only fires when an existing keystone item transforms in place.
+-- Listen for BAG_UPDATE_DELAYED and compare against the cached keystone so newly
+-- acquired keystones (such as looting the Great Vault or claiming one from an NPC)
+-- are detected without requiring a relog.
+AstralEvents:Register('BAG_UPDATE_DELAYED', function()
+	if UnitLevel('player') < addon.EXPANSION_LEVEL then return end
+	local id, l = addon.GetCurrentKeystone()
+	if id and (id ~= addon.keystone.id or l ~= addon.keystone.level) then
+		C_Timer.After(3, function()
+			C_MythicPlus.RequestRewards()
+			addon.CheckKeystone()
+		end)
+	end
+end, 'keystoneBagUpdate')
 AstralEvents:Register('GOSSIP_CLOSED', function()
 	local guid = UnitGUID('target')
 	if not canaccessvalue(guid) then
